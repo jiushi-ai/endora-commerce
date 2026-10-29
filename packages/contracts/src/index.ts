@@ -60,8 +60,6 @@ export * from './record-rich-text.js';
 // Tasks and Projects (specs/163-projects-and-tasks/).
 export * from './tasks.js';
 export * from './projects.js';
-// Bidding — scarce-stock campaigns / sealed receipts (specs/165-mobii-bidding/).
-export * from './bidding.js';
 export * from './api-keys.js';
 export * from './webhooks.js';
 export * from './analytics.js';
@@ -120,6 +118,10 @@ export {
   // Feature 105, Phase 4 — the reserved set the editor and the refusal share.
   cmsReservedSegmentsResponseSchema,
   firstSlugSegment,
+  // R19D (feature 163) — the public path of a page that includes its parent's.
+  CMS_PAGE_PATH_MAX_LEVELS,
+  cmsPagePublicPaths,
+  type CmsPagePathNode,
   // Feature 151 — the Page Builder translation: the per-block declaration and
   // the two admin routes' shapes.
   translatablePathRe,
@@ -189,8 +191,6 @@ export {
   type CmsReferenceRegistryPort,
   type CmsPageRecord,
   type CmsPageReadPort,
-  type CmsPageStorefrontLink,
-  type CmsPageStorefrontLinkScope,
   type CmsSeededBlock,
   type CmsBlockSeedPort,
   type CmsBlockRecord,
@@ -222,6 +222,10 @@ export * from './admin-preferences.js';
 export * from './product-scope-overrides.js';
 export * from './product-value-resolver.js';
 export * from './storefront-value-overrides.js';
+export * from './product-scopes.js';
+export * from './product-url-keys.js';
+// Feature 167 — the storefront language path prefix (`specs/167-storefront-locale-path/`).
+export * from './storefront-language-path.js';
 export * from './mfa.js';
 export * from './prompt-actions.js';
 export * from './pwa.js';
