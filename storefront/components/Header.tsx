@@ -90,19 +90,13 @@ export function Header(props: {
             <span className="industria-topbar__chip">
               <strong>NIP</strong> 7251234567
             </span>
-            <CurrencySwitcher currency={props.currency} locale={props.locale} />
+            <CurrencySwitcher currency={props.currency} />
             <span className="industria-topbar__sep" aria-hidden="true" />
             <LocalizedAnchor href="/help" className="industria-topbar__item">
               <HelpIcon /> {t('chrome.b2bSupport')}
             </LocalizedAnchor>
-            {(() => {
-              const languageCodes = props.config.languages
-                .filter((l) => l.isActive)
-                .map((l) => l.code);
-              return languageCodes.length > 1 ? (
-                <LocaleSwitcher locale={props.locale} languageCodes={languageCodes} />
-              ) : null;
-            })()}
+            {/* Feature 167 — the channel's languages decide; it hides itself for one. */}
+            <LocaleSwitcher label={t('header.language')} />
           </div>
         </div>
       </div>

@@ -15,6 +15,7 @@ export type MessageKey =
   | 'a11y.navigating'
   | 'a11y.navigatingSlow'
   | 'nav.home'
+  | 'header.language'
   | 'nav.catalog'
   | 'nav.search'
   | 'nav.account'
@@ -744,6 +745,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'a11y.navigating': 'Loading the next page.',
     'a11y.navigatingSlow': 'Still loading. The next page is taking longer than usual.',
     'nav.home': 'Home',
+    'header.language': 'Language',
     'nav.catalog': 'Catalog',
     'nav.search': 'Search',
     'nav.account': 'Account',
@@ -1450,6 +1452,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'a11y.navigating': '正在加载下一页。',
     'a11y.navigatingSlow': '仍在加载。下一页比平时更慢。',
     'nav.home': '首页',
+    'header.language': '语言',
     'nav.catalog': '商品目录',
     'nav.search': '搜索',
     'nav.account': '账户',
@@ -2115,6 +2118,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'a11y.navigating': '正在加载下一页。',
     'a11y.navigatingSlow': '仍在加载。下一页比平时更慢。',
     'nav.home': '首页',
+    'header.language': '語言',
     'nav.catalog': '商品目录',
     'nav.search': '搜索',
     'nav.account': '账户',
@@ -2779,7 +2783,8 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'a11y.skipToContent': 'Przejdz do tresci',
     'a11y.navigating': 'Wczytywanie następnej strony.',
     'a11y.navigatingSlow': 'Nadal wczytujemy. Następna strona ładuje się dłużej niż zwykle.',
-    'nav.home': 'Strona glowna',
+    'nav.home': 'Strona główna',
+    'header.language': 'Język',
     'nav.catalog': 'Katalog',
     'nav.search': 'Wyszukiwanie',
     'nav.account': 'Konto',
