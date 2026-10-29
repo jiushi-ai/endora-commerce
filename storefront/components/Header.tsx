@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 import type { I18nConfigResponse, ResolvedMegamenu } from '@endora-commerce/contracts';
 import type { MeResult } from '../lib/api/account';
@@ -13,6 +12,7 @@ import { ShoppingListHeartBadge } from './ShoppingListHeartBadge';
 import { SearchAutocomplete } from './SearchAutocomplete';
 import { CurrencySwitcher, LocaleSwitcher } from './HeaderPreferenceSwitchers';
 import { publicApiBaseUrl } from '../lib/env.mjs';
+import { LocalizedLink, LocalizedAnchor, LocalizedForm } from '../lib/i18n/localized-link';
 
 /**
  * Industria-themed storefront header. Three rows:
@@ -92,15 +92,12 @@ export function Header(props: {
             </span>
             <CurrencySwitcher currency={props.currency} locale={props.locale} />
             <span className="industria-topbar__sep" aria-hidden="true" />
-            <a href="/help" className="industria-topbar__item">
+            <LocalizedAnchor href="/help" className="industria-topbar__item">
               <HelpIcon /> {t('chrome.b2bSupport')}
-            </a>
+            </LocalizedAnchor>
             {(() => {
-              // Align with Admin UI languages (en / zh-CN / zh-TW); keep pl-PL
-              // available as content locale elsewhere but out of this switcher.
-              const preferred = new Set(['en-US', 'zh-CN', 'zh-TW']);
               const languageCodes = props.config.languages
-                .filter((l) => l.isActive && preferred.has(l.code))
+                .filter((l) => l.isActive)
                 .map((l) => l.code);
               return languageCodes.length > 1 ? (
                 <LocaleSwitcher locale={props.locale} languageCodes={languageCodes} />
@@ -112,7 +109,7 @@ export function Header(props: {
 
       <header className="industria-header">
         <div className="mx-auto max-w-[1360px] px-[24px] industria-header__inner hidden min-[877px]:grid">
-          <Link href="/" className="industria-header__brand">
+          <LocalizedLink href="/" className="industria-header__brand">
             <img
               className="industria-header__mark h-8 w-8 rounded-md object-cover"
               src="/brand/mobii.png"
@@ -126,8 +123,8 @@ export function Header(props: {
               <span className="text-accent">{t('chrome.brand.textAccent')}</span>
               <small>{t('chrome.brandTagline')}</small>
             </span>
-          </Link>
-          <form
+          </LocalizedLink>
+          <LocalizedForm
             action="/search"
             method="GET"
             className="industria-search b2b-header__search"
@@ -149,7 +146,7 @@ export function Header(props: {
               showKeyboardHint
               salesChannelCode={props.salesChannelCode}
             />
-          </form>
+          </LocalizedForm>
           <div className="industria-header__actions">
             <ShoppingListHeartBadge
               apiBase={apiBaseUrl}
@@ -190,11 +187,11 @@ export function Header(props: {
                 account={drawerAccount}
               />
             ) : (
-              <Link href="/catalog" className="icon-btn" aria-label={t('nav.catalog')}>
+              <LocalizedLink href="/catalog" className="icon-btn" aria-label={t('nav.catalog')}>
                 <MenuIcon />
-              </Link>
+              </LocalizedLink>
             )}
-            <Link href="/" className="mr-auto inline-flex items-center gap-[8px]">
+            <LocalizedLink href="/" className="mr-auto inline-flex items-center gap-[8px]">
               <img
                 className="industria-header__mark h-8 w-8 rounded-md object-cover"
                 src="/brand/mobii.png"
@@ -212,7 +209,7 @@ export function Header(props: {
                   {t('chrome.brandTaglineShort')}
                 </small>
               </span>
-            </Link>
+            </LocalizedLink>
             <CompareCounterLink
               href="/compare"
               ariaLabel={t('chrome.compare')}
@@ -238,8 +235,7 @@ export function Header(props: {
         </div>
       </header>
 
-      {/* Feature 168 — tabs from the menu only (FR-004, FR-011). Hard-coded
-          "全部分类" / Quick Order chrome is gone; operators configure them. */}
+      {/* Feature 168 — tabs from the menu only (FR-004, FR-011). */}
       <NavigationBar
         className="industria-nav hidden min-[877px]:block"
         megamenu={props.megamenu ?? null}
@@ -277,14 +273,14 @@ function UserPill({
 }): ReactNode {
   if (!user) {
     return (
-      <Link href="/login" className="industria-header__user">
+      <LocalizedLink href="/login" className="industria-header__user">
         <span className="industria-header__user__avatar" aria-hidden="true">
           <UserIcon />
         </span>
         <span className="industria-header__user__name">
           <strong>{loginLabel}</strong>
         </span>
-      </Link>
+      </LocalizedLink>
     );
   }
 
@@ -293,14 +289,14 @@ function UserPill({
   const subtitle = user.organization?.name ?? email;
 
   return (
-    <Link href="/account" className="industria-header__user">
+    <LocalizedLink href="/account" className="industria-header__user">
       <span className="industria-header__user__avatar">{initials(user)}</span>
       <span className="industria-header__user__name">
         <strong>{fullName}</strong>
         <em>{subtitle}</em>
       </span>
       <ChevDownIcon />
-    </Link>
+    </LocalizedLink>
   );
 }
 

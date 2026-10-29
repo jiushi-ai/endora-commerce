@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { redirect } from 'next/navigation';
 import { getSessionCookie } from '../../../lib/session';
 import { getServerContext } from '../../../lib/server-context';
 import { getMe } from '../../../lib/api/account';
@@ -17,6 +16,7 @@ import {
 import { tForLocale } from '../../../lib/i18n/messages';
 import { accountRoleLabel } from '../../../lib/i18n/account-labels';
 import type { Metadata } from 'next';
+import { localeRedirect } from '../../../lib/i18n/navigation';
 
 /**
  * Not indexed (`specs/098-storefront-ssr-seo-a11y-suite/`, FR-010): an
@@ -36,7 +36,7 @@ export default async function AccountProfilePage({
   searchParams: Promise<{ pushSaved?: string; pushError?: string }>;
 }): Promise<ReactNode> {
   const session = await getSessionCookie();
-  if (!session) redirect('/login');
+  if (!session) return await localeRedirect('/login');
   const sp = await searchParams;
   const { locale, ctx } = await getServerContext();
   const t = tForLocale(locale);
@@ -110,9 +110,9 @@ export default async function AccountProfilePage({
 async function savePushPreferencesAction(formData: FormData): Promise<void> {
   'use server';
   const session = await getSessionCookie();
-  if (!session) redirect('/login');
+  if (!session) return await localeRedirect('/login');
   const patch = pushPreferencesPatch(formData);
-  if (!patch) redirect('/account');
+  if (!patch) return await localeRedirect('/account');
   const { ctx } = await getServerContext();
   let saved = true;
   try {
@@ -121,5 +121,5 @@ async function savePushPreferencesAction(formData: FormData): Promise<void> {
     saved = false;
   }
   // Outside the `try`: `redirect` throws by design.
-  redirect(saved ? '/account?pushSaved=1' : '/account?pushError=1');
+  return await localeRedirect(saved ? '/account?pushSaved=1' : '/account?pushError=1');
 }

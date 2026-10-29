@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ResolvedMenuItem } from '@endora-commerce/contracts';
+import { LocalizedAnchor } from '../../lib/i18n/localized-link';
 
 interface MenuButtonProps {
   item: ResolvedMenuItem;
@@ -28,8 +29,8 @@ export function MenuButton({ item }: MenuButtonProps): ReactNode {
   const variant = item.variant ?? 'primary';
   const className = `btn btn--sm ${variantClasses[variant] ?? variantClasses['primary']!}`;
   return (
-    <a href={item.url} className={className}>
+    <LocalizedAnchor href={item.url} className={className}>
       {item.label}
-    </a>
+    </LocalizedAnchor>
   );
 }

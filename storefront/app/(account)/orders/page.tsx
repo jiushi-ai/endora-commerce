@@ -1,12 +1,11 @@
 import type { ReactNode } from 'react';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { listMyOrders, resolveOrderStatusLabel } from '../../../lib/api/orders';
 import { getSessionCookie } from '../../../lib/session';
 import { getServerContext } from '../../../lib/server-context';
 import { formatMoney } from '../../../lib/i18n/money';
-import { tForLocale } from '../../../lib/i18n/messages';
 import type { Metadata } from 'next';
+import { localeRedirect } from '../../../lib/i18n/navigation';
+import { LocalizedLink } from '../../../lib/i18n/localized-link';
 
 /**
  * Not indexed (`specs/098-storefront-ssr-seo-a11y-suite/`, FR-010): an
@@ -24,18 +23,17 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function OrdersListPage(): Promise<ReactNode> {
   const session = await getSessionCookie();
-  if (!session) redirect('/login?next=/orders');
+  if (!session) return await localeRedirect('/login?next=/orders');
   const orders = await listMyOrders(session);
   const { locale } = await getServerContext();
-  const t = tForLocale(locale);
 
   if (orders.length === 0) {
     return (
       <div className="b2b-auth max-w-[720px]">
-        <h1>{t('account.orders.title')}</h1>
-        <p>{t('account.orders.empty')}</p>
+        <h1>Orders</h1>
+        <p>You don&apos;t have any orders yet.</p>
         <p>
-          <Link href="/catalog">{t('account.orders.browse')}</Link>
+          <LocalizedLink href="/catalog">Browse the catalog</LocalizedLink>
         </p>
       </div>
     );
@@ -43,28 +41,30 @@ export default async function OrdersListPage(): Promise<ReactNode> {
 
   return (
     <div className="b2b-auth max-w-[720px]">
-      <h1>{t('account.orders.title')}</h1>
+      <h1>Orders</h1>
       <table className="b2b-account__table">
         <thead>
           <tr>
-            <th>{t('account.orders.placed')}</th>
-            <th>{t('account.orders.order')}</th>
-            <th>{t('account.orders.status')}</th>
-            <th>{t('account.orders.payment')}</th>
-            <th className="text-right">{t('account.orders.total')}</th>
+            <th>Placed</th>
+            <th>Order</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th className="text-right">Total</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           {orders.map((o) => (
             <tr key={o.id}>
-              <td>{new Date(o.placedAt).toLocaleDateString(locale)}</td>
+              <td>{new Date(o.placedAt).toLocaleDateString()}</td>
               <td>{o.businessId}</td>
               <td>{resolveOrderStatusLabel(o, locale)}</td>
               <td>{o.paymentStatus}</td>
-              <td className="text-right">{formatMoney(o.total, o.currency, locale)}</td>
+              <td className="text-right">
+                {formatMoney(o.total, o.currency, locale)}
+              </td>
               <td>
-                <Link href={`/orders/${o.id}`}>{t('account.orders.open')}</Link>
+                <LocalizedLink href={`/orders/${o.id}`}>Open</LocalizedLink>
               </td>
             </tr>
           ))}

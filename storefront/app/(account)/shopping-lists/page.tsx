@@ -1,6 +1,4 @@
 import type { ReactNode } from 'react';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import {
   createShoppingList,
   deleteShoppingList,
@@ -13,6 +11,8 @@ import { StorefrontApiError } from '../../../lib/api/client';
 import { DeleteShoppingListButton } from '../../../components/shopping-lists/DeleteShoppingListButton';
 import { tForLocale } from '../../../lib/i18n/messages';
 import type { Metadata } from 'next';
+import { localeRedirect } from '../../../lib/i18n/navigation';
+import { LocalizedLink } from '../../../lib/i18n/localized-link';
 
 /**
  * Not indexed (`specs/098-storefront-ssr-seo-a11y-suite/`, FR-010): an
@@ -33,7 +33,7 @@ export default async function ShoppingListsPage({
   searchParams: Promise<{ error?: string }>;
 }): Promise<ReactNode> {
   const session = await getSessionCookie();
-  if (!session) redirect('/login?next=/account/shopping-lists');
+  if (!session) return await localeRedirect('/login?next=/account/shopping-lists');
   const lists = await listShoppingLists(session);
   const params = await searchParams;
   const { locale } = await getServerContext();
@@ -81,7 +81,7 @@ export default async function ShoppingListsPage({
             {lists.map((l) => (
               <tr key={l.id}>
                 <td>
-                  <Link href={`/shopping-lists/${l.id}`}>{l.name}</Link>
+                  <LocalizedLink href={`/shopping-lists/${l.id}`}>{l.name}</LocalizedLink>
                 </td>
                 <td>{l.items.length}</td>
                 <td>{new Date(l.updatedAt).toLocaleString(locale)}</td>
@@ -124,45 +124,45 @@ export default async function ShoppingListsPage({
 async function createAction(formData: FormData): Promise<void> {
   'use server';
   const session = await getSessionCookie();
-  if (!session) redirect('/login');
+  if (!session) return await localeRedirect('/login');
   const name = ((formData.get('name') as string) ?? '').trim();
-  if (!name) redirect('/shopping-lists?error=name-required');
+  if (!name) return await localeRedirect('/shopping-lists?error=name-required');
   let id: string;
   try {
     const created = await createShoppingList(session, name);
     id = created.id;
   } catch (err) {
     const message = err instanceof StorefrontApiError ? err.detail : 'Could not create list.';
-    redirect(`/shopping-lists?error=${encodeURIComponent(message)}`);
+    return await localeRedirect(`/shopping-lists?error=${encodeURIComponent(message)}`);
   }
-  redirect(`/shopping-lists/${id}`);
+  return await localeRedirect(`/shopping-lists/${id}`);
 }
 
 async function deleteAction(formData: FormData): Promise<void> {
   'use server';
   const session = await getSessionCookie();
-  if (!session) redirect('/login');
+  if (!session) return await localeRedirect('/login');
   const id = (formData.get('id') as string) ?? '';
   try {
     await deleteShoppingList(session, id);
   } catch (err) {
     const message = err instanceof StorefrontApiError ? err.detail : 'Could not delete list.';
-    redirect(`/shopping-lists?error=${encodeURIComponent(message)}`);
+    return await localeRedirect(`/shopping-lists?error=${encodeURIComponent(message)}`);
   }
-  redirect(`/shopping-lists`);
+  return await localeRedirect(`/shopping-lists`);
 }
 
 async function setDefaultAction(formData: FormData): Promise<void> {
   'use server';
   const session = await getSessionCookie();
-  if (!session) redirect('/login');
+  if (!session) return await localeRedirect('/login');
   const id = (formData.get('id') as string) ?? '';
   try {
     await setDefaultShoppingList(session, id);
   } catch (err) {
     const message =
       err instanceof StorefrontApiError ? err.detail : 'Could not set the default list.';
-    redirect(`/shopping-lists?error=${encodeURIComponent(message)}`);
+    return await localeRedirect(`/shopping-lists?error=${encodeURIComponent(message)}`);
   }
-  redirect('/shopping-lists');
+  return await localeRedirect('/shopping-lists');
 }

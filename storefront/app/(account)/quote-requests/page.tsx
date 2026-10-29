@@ -1,13 +1,12 @@
 import type { ReactNode } from 'react';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { listRfqs, type RfqStatus, type RfqSummary } from '../../../lib/api/rfq';
 import { getSessionCookie } from '../../../lib/session';
 import { getServerContext } from '../../../lib/server-context';
 import { formatMoney } from '../../../lib/i18n/money';
-import { tForLocale, type MessageKey } from '../../../lib/i18n/messages';
 import { RfqValidityMeta } from '../../../components/rfq/RfqValidityMeta';
 import type { Metadata } from 'next';
+import { localeRedirect } from '../../../lib/i18n/navigation';
+import { LocalizedLink } from '../../../lib/i18n/localized-link';
 
 /**
  * Not indexed (`specs/098-storefront-ssr-seo-a11y-suite/`, FR-010): an
@@ -17,14 +16,26 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 /**
- * Customer Quote Requests list (feature 008 / T033).
+ * Customer Quote Requests list (feature 008 / T033). Renders every
+ * RFQ visible to the caller with status, line count, total at the
+ * customer's price list, and a deep-link to the detail page.
+ *
+ * `RfqSummary.expiresAt` has been on the wire since feature 008 and was
+ * rendered by nothing; !1137 turned it into a rule the buyer is refused by. It
+ * now rides in the status cell rather than in a column of its own: most
+ * requests carry no deadline at all, and a column would put a blank in every
+ * one of their rows — which is exactly the "empty field where a date goes"
+ * that an absent deadline must not be rendered as. As a line attached to the
+ * status it is simply absent when there is nothing to say, and it sits with
+ * the other fact about where this request stands (Law of Proximity).
  */
 export default async function QuoteRequestsPage(): Promise<ReactNode> {
   const session = await getSessionCookie();
-  if (!session) redirect('/login?next=/quote-requests');
+  if (!session) return await localeRedirect('/login?next=/quote-requests');
   const rfqs = await listRfqs(session);
   const { locale } = await getServerContext();
-  const t = tForLocale(locale);
+  // One instant for the whole table, so two rows dated a millisecond apart
+  // cannot be classified against two different "now"s.
   const now = new Date();
 
   return (
@@ -37,14 +48,14 @@ export default async function QuoteRequestsPage(): Promise<ReactNode> {
           marginBottom: 18,
         }}
       >
-        <h1>{t('account.rfq.title')}</h1>
-        <Link href="/catalog" className="btn btn--outline btn--sm">
-          {t('account.rfq.browse')}
-        </Link>
+        <h1>Zapytania ofertowe</h1>
+        <LocalizedLink href="/catalog" className="btn btn--outline btn--sm">
+          Przeglądaj katalog
+        </LocalizedLink>
       </div>
 
       {rfqs.length === 0 ? (
-        <p className="muted">{t('account.rfq.empty')}</p>
+        <p className="muted">Nie masz jeszcze żadnych zapytań ofertowych.</p>
       ) : (
         <div
           style={{
@@ -57,11 +68,11 @@ export default async function QuoteRequestsPage(): Promise<ReactNode> {
           <table className="industria-orders" style={{ width: '100%' }}>
             <thead>
               <tr>
-                <th>{t('account.rfq.number')}</th>
-                <th>{t('account.rfq.date')}</th>
-                <th>{t('account.rfq.lines')}</th>
-                <th>{t('account.rfq.value')}</th>
-                <th>{t('account.rfq.status')}</th>
+                <th>Numer</th>
+                <th>Data</th>
+                <th>Pozycji</th>
+                <th>Wartość</th>
+                <th>Status</th>
                 <th></th>
               </tr>
             </thead>
@@ -71,14 +82,13 @@ export default async function QuoteRequestsPage(): Promise<ReactNode> {
                   <td>
                     <strong>#{r.businessId}</strong>
                   </td>
-                  <td>{new Date(r.createdAt).toLocaleDateString(locale)}</td>
+                  <td>{new Date(r.createdAt).toLocaleDateString('pl-PL')}</td>
                   <td>{r.lineCount}</td>
-                  <td style={{ fontWeight: 600 }}>{formatTotal(r, locale)}</td>
+                  <td style={{ fontWeight: 600 }}>{formatTotal(r)}</td>
                   <td>
                     <RfqStatusBadge
                       status={r.status}
                       awaiting={r.awaitingCustomerRevisionAcceptance}
-                      locale={locale}
                     />
                     <RfqValidityMeta
                       expiresAt={r.expiresAt}
@@ -88,9 +98,12 @@ export default async function QuoteRequestsPage(): Promise<ReactNode> {
                     />
                   </td>
                   <td>
-                    <Link href={`/quote-requests/${r.id}`} className="btn btn--outline btn--sm">
-                      {t('account.rfq.details')}
-                    </Link>
+                    <LocalizedLink
+                      href={`/quote-requests/${r.id}`}
+                      className="btn btn--outline btn--sm"
+                    >
+                      Szczegóły
+                    </LocalizedLink>
                   </td>
                 </tr>
               ))}
@@ -102,42 +115,34 @@ export default async function QuoteRequestsPage(): Promise<ReactNode> {
   );
 }
 
-function formatTotal(r: RfqSummary, locale: string): string {
+function formatTotal(r: RfqSummary): string {
   const total = r.totalAtAgreedPrice ?? r.totalAtCustomerPrice;
   if (total === null) return '—';
-  return formatMoney(total, r.currency, locale);
+  return formatMoney(total, r.currency);
 }
 
 function RfqStatusBadge({
   status,
   awaiting,
-  locale,
 }: {
   status: RfqStatus;
   awaiting: boolean;
-  locale: string;
 }): ReactNode {
-  const t = tForLocale(locale);
   if (awaiting) {
     return (
       <span className="industria-status industria-status--processing">
-        {t('account.rfq.status.awaiting')}
+        Oczekuje akceptacji
       </span>
     );
   }
-  const cls: Record<RfqStatus, string> = {
-    Pending: 'industria-status--processing',
-    'Created from admin': 'industria-status--processing',
-    Approved: 'industria-status--paid',
-    Completed: 'industria-status--delivered',
-    Canceled: 'industria-status--draft',
-    Expired: 'industria-status--draft',
+  const map: Record<RfqStatus, { cls: string; label: string }> = {
+    Pending: { cls: 'industria-status--processing', label: 'Oczekuje' },
+    'Created from admin': { cls: 'industria-status--processing', label: 'Od opiekuna' },
+    Approved: { cls: 'industria-status--paid', label: 'Zatwierdzone' },
+    Completed: { cls: 'industria-status--delivered', label: 'Zrealizowane' },
+    Canceled: { cls: 'industria-status--draft', label: 'Anulowane' },
+    Expired: { cls: 'industria-status--draft', label: 'Wygasłe' },
   };
-  const key = `account.rfq.status.${status}` as MessageKey;
-  const label = t(key);
-  return (
-    <span className={`industria-status ${cls[status] ?? 'industria-status--draft'}`}>
-      {label === key ? status : label}
-    </span>
-  );
+  const entry = map[status] ?? { cls: 'industria-status--draft', label: status };
+  return <span className={`industria-status ${entry.cls}`}>{entry.label}</span>;
 }

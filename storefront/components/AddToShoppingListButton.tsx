@@ -13,6 +13,7 @@ import {
   removeFromDefaultListAction,
   type ShoppingListOption,
 } from '../lib/actions/shoppingList';
+import { useLocalizedPath } from '../lib/i18n/localized-link';
 
 /**
  * Heart toggle for the customer's default shopping list. A first click adds the
@@ -48,6 +49,7 @@ export function AddToShoppingListButton(props: {
 }): ReactNode {
   const [state, setState] = useState<'idle' | 'busy' | 'error'>('idle');
   /** Whether this product is currently in the customer's default list. */
+  const localize = useLocalizedPath();
   const [inList, setInList] = useState(false);
   /** The customer's shopping lists — drives the split-button list picker; the
    *  arrow only renders when there is more than one list. */
@@ -123,7 +125,7 @@ export function AddToShoppingListButton(props: {
           itemId: existingItemId,
         });
         if (!res.ok && res.reason === 'auth') {
-          window.location.href = '/login?next=/shopping-lists';
+          window.location.href = localize(`/login?next=${encodeURIComponent(localize('/shopping-lists'))}`);
           return;
         }
         if (!res.ok) throw new Error('list');
@@ -136,7 +138,7 @@ export function AddToShoppingListButton(props: {
           quantity: props.quantity && props.quantity > 0 ? Math.floor(props.quantity) : 1,
         });
         if (!res.ok && res.reason === 'auth') {
-          window.location.href = '/login?next=/shopping-lists';
+          window.location.href = localize(`/login?next=${encodeURIComponent(localize('/shopping-lists'))}`);
           return;
         }
         if (!res.ok) throw new Error('list');
@@ -167,7 +169,7 @@ export function AddToShoppingListButton(props: {
         quantity: props.quantity && props.quantity > 0 ? Math.floor(props.quantity) : 1,
       });
       if (!res.ok && res.reason === 'auth') {
-        window.location.href = '/login?next=/shopping-lists';
+        window.location.href = localize(`/login?next=${encodeURIComponent(localize('/shopping-lists'))}`);
         return;
       }
       if (!res.ok) throw new Error('list');

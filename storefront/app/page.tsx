@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { listProducts, getCategoryTree } from '../lib/api/catalog';
 import { getCmsPageBySlug } from '../lib/api/cms';
@@ -19,6 +18,7 @@ import { cmsSocialMetadata } from '../lib/seo/cms-share-metadata';
 import { cmsRenderLocation, type PageSearchParams } from '../lib/page-builder/render-location';
 import { tForLocale, type MessageKey } from '../lib/i18n/messages';
 import { seo } from './seo';
+import { LocalizedLink } from '../lib/i18n/localized-link';
 
 /**
  * Indexable (`specs/098-storefront-ssr-seo-a11y-suite/`, FR-010/FR-012). The
@@ -178,11 +178,11 @@ export default async function HomePage({
             </p>
             <div className="mb-10 flex flex-wrap gap-3">
               {biddingPresent ? (
-                <Link href={biddingHref} className="btn btn--dark btn--lg">
+                <LocalizedLink href={biddingHref} className="btn btn--dark btn--lg">
                   {t('home.hero.ctaBidding')} <ArrowRightIcon />
-                </Link>
+                </LocalizedLink>
               ) : null}
-              <Link
+              <LocalizedLink
                 href="/catalog"
                 className={
                   biddingPresent ? 'btn btn--outline btn--lg' : 'btn btn--dark btn--lg'
@@ -195,7 +195,7 @@ export default async function HomePage({
                     <ArrowRightIcon />
                   </>
                 )}
-              </Link>
+              </LocalizedLink>
             </div>
             <div className="grid grid-cols-4 gap-[24px] max-[720px]:grid-cols-2">
               {[
@@ -265,9 +265,9 @@ export default async function HomePage({
             </div>
             {biddingPresent ? (
               <div className="mt-5">
-                <Link href={biddingHref} className="btn btn--lg w-full justify-center bg-white text-[var(--ink-900)] hover:bg-white/90">
+                <LocalizedLink href={biddingHref} className="btn btn--lg w-full justify-center bg-white text-[var(--ink-900)] hover:bg-white/90">
                   {t('home.hero.ctaBidding')} <ArrowRightIcon />
-                </Link>
+                </LocalizedLink>
               </div>
             ) : null}
           </div>
@@ -296,9 +296,9 @@ export default async function HomePage({
                 <li>{t('home.path.biddingStep2')}</li>
                 <li>{t('home.path.biddingStep3')}</li>
               </ol>
-              <Link href={biddingHref} className="btn btn--dark">
+              <LocalizedLink href={biddingHref} className="btn btn--dark">
                 {t('home.path.biddingCta')} <ArrowRightIcon />
-              </Link>
+              </LocalizedLink>
             </div>
           ) : null}
           <div
@@ -318,12 +318,12 @@ export default async function HomePage({
               <li>{t('home.path.procureStep3')}</li>
             </ol>
             <div className="flex flex-wrap gap-3">
-              <Link href="/catalog" className="btn btn--outline">
+              <LocalizedLink href="/catalog" className="btn btn--outline">
                 {t('home.path.procureCta')}
-              </Link>
-              <Link href="/quick-order" className="btn btn--ghost">
+              </LocalizedLink>
+              <LocalizedLink href="/quick-order" className="btn btn--ghost">
                 <LightningIcon /> {t('home.hero.quickOrderCsv')}
-              </Link>
+              </LocalizedLink>
             </div>
           </div>
         </div>
@@ -338,16 +338,16 @@ export default async function HomePage({
               <h2>{t('home.campaigns.title')}</h2>
               <p>{t('home.campaigns.body')}</p>
             </div>
-            <Link href={biddingHref} className="btn btn--ghost">
+            <LocalizedLink href={biddingHref} className="btn btn--ghost">
               {t('home.campaigns.viewAll')} <ArrowRightIcon />
-            </Link>
+            </LocalizedLink>
           </div>
           {!session ? (
             <div className="rounded-lg border border-dashed border-line bg-surface-alt px-6 py-10 text-center">
               <p className="m-0 mb-4 text-[14px] text-muted">{t('home.campaigns.signIn')}</p>
-              <Link href={BIDDING_LOGIN} className="btn btn--dark">
+              <LocalizedLink href={BIDDING_LOGIN} className="btn btn--dark">
                 {t('home.hero.ctaBidding')} <ArrowRightIcon />
-              </Link>
+              </LocalizedLink>
             </div>
           ) : openCampaigns.length === 0 ? (
             <p className="m-0 rounded-lg border border-line bg-surface-alt px-6 py-8 text-[14px] text-muted">
@@ -377,7 +377,7 @@ export default async function HomePage({
                         {dateFmt.format(new Date(c.closesAt))}
                       </span>
                     </div>
-                  </Link>
+                  </LocalizedLink>
                 </li>
               ))}
             </ul>
@@ -392,15 +392,15 @@ export default async function HomePage({
             <h2>{t('home.assortment.title')}</h2>
             <p>{t('home.assortment.body')}</p>
           </div>
-          <Link href="/catalog" className="btn btn--ghost">
+          <LocalizedLink href="/catalog" className="btn btn--ghost">
             {t('home.assortment.seeAll')} <ArrowRightIcon />
-          </Link>
+          </LocalizedLink>
         </div>
         <div className="grid grid-cols-6 gap-[16px] max-[1100px]:grid-cols-3 max-[600px]:grid-cols-2">
           {categoryTiles.map((c, i) => {
             const glyph = GLYPH_KEYS[i % GLYPH_KEYS.length] as keyof typeof GLYPHS;
             return (
-              <Link
+              <LocalizedLink
                 key={c.href}
                 href={c.href}
                 className="relative block rounded-lg border border-line bg-surface p-[22px] transition hover:-translate-y-[2px] hover:border-[var(--ink-700)]"
@@ -418,7 +418,7 @@ export default async function HomePage({
                 <span className="absolute right-[22px] top-[22px] text-line-strong">
                   <ArrowUpRightIcon />
                 </span>
-              </Link>
+              </LocalizedLink>
             );
           })}
         </div>
@@ -473,9 +473,9 @@ export default async function HomePage({
               <h2>{t('home.bestsellers.title')}</h2>
               <p>{t('home.bestsellers.body')}</p>
             </div>
-            <Link href="/catalog" className="btn btn--ghost">
+            <LocalizedLink href="/catalog" className="btn btn--ghost">
               {t('home.bestsellers.seeAll')} <ArrowRightIcon />
-            </Link>
+            </LocalizedLink>
           </div>
           <ul className="m-0 grid list-none grid-cols-4 gap-[16px] p-0 max-[1100px]:grid-cols-2">
             {products.data.map((p) => (

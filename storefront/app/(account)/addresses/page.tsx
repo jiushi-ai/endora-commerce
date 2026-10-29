@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { redirect } from 'next/navigation';
 import { getSessionCookie } from '../../../lib/session';
 import { getServerContext } from '../../../lib/server-context';
 import {
@@ -13,6 +12,7 @@ import { CountryPicker } from '../../../lib/dictionary/pickers/CountryPicker';
 import { tForLocale } from '../../../lib/i18n/messages';
 import { accountAddressKindLabel } from '../../../lib/i18n/account-labels';
 import type { Metadata } from 'next';
+import { localeRedirect } from '../../../lib/i18n/navigation';
 
 /**
  * Not indexed (`specs/098-storefront-ssr-seo-a11y-suite/`, FR-010): an
@@ -32,7 +32,7 @@ export default async function MyAddressesPage({
   searchParams: Promise<{ status?: string; error?: string }>;
 }): Promise<ReactNode> {
   const session = await getSessionCookie();
-  if (!session) redirect('/login');
+  if (!session) return await localeRedirect('/login');
   const params = await searchParams;
   const book = await listMyAddresses(session);
   const { locale } = await getServerContext();
@@ -171,7 +171,7 @@ export default async function MyAddressesPage({
 async function createAction(formData: FormData): Promise<void> {
   'use server';
   const session = await getSessionCookie();
-  if (!session) redirect('/login');
+  if (!session) return await localeRedirect('/login');
   const phone = (formData.get('phone') as string | null) || undefined;
   try {
     await createMyAddress(session, {
@@ -186,33 +186,33 @@ async function createAction(formData: FormData): Promise<void> {
     });
   } catch (err) {
     const message = err instanceof StorefrontApiError ? err.detail : 'Could not save address.';
-    redirect(`/addresses?error=${encodeURIComponent(message)}`);
+    return await localeRedirect(`/addresses?error=${encodeURIComponent(message)}`);
   }
-  redirect('/addresses?status=created');
+  return await localeRedirect('/addresses?status=created');
 }
 
 async function removeAction(formData: FormData): Promise<void> {
   'use server';
   const session = await getSessionCookie();
-  if (!session) redirect('/login');
+  if (!session) return await localeRedirect('/login');
   try {
     await deleteMyAddress(session, (formData.get('addressId') as string) ?? '');
   } catch (err) {
     const message = err instanceof StorefrontApiError ? err.detail : 'Could not remove address.';
-    redirect(`/addresses?error=${encodeURIComponent(message)}`);
+    return await localeRedirect(`/addresses?error=${encodeURIComponent(message)}`);
   }
-  redirect('/addresses?status=removed');
+  return await localeRedirect('/addresses?status=removed');
 }
 
 async function setDefaultAction(formData: FormData): Promise<void> {
   'use server';
   const session = await getSessionCookie();
-  if (!session) redirect('/login');
+  if (!session) return await localeRedirect('/login');
   try {
     await setMyDefaultAddress(session, (formData.get('addressId') as string) ?? '');
   } catch (err) {
     const message = err instanceof StorefrontApiError ? err.detail : 'Could not set default.';
-    redirect(`/addresses?error=${encodeURIComponent(message)}`);
+    return await localeRedirect(`/addresses?error=${encodeURIComponent(message)}`);
   }
-  redirect('/addresses?status=default');
+  return await localeRedirect('/addresses?status=default');
 }

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { tForLocale } from '../lib/i18n/messages';
+import { LocalizedAnchor, LocalizedForm } from '../lib/i18n/localized-link';
 
 /**
  * Industria-themed footer. Five-column dark layout with brand panel,
@@ -64,61 +65,61 @@ export function Footer(props: {
 
           <div>
             <h5 className={COL_HEADING}>{t('footer.shop')}</h5>
-            <a className={COL_LINK} href="/catalog">
+            <LocalizedAnchor className={COL_LINK} href="/catalog">
               {t('footer.catalog')}
-            </a>
-            <a className={COL_LINK} href="/c/fasteners">
+            </LocalizedAnchor>
+            <LocalizedAnchor className={COL_LINK} href="/c/fasteners">
               {t('footer.fasteners')}
-            </a>
-            <a className={COL_LINK} href="/c/tools">
+            </LocalizedAnchor>
+            <LocalizedAnchor className={COL_LINK} href="/c/tools">
               {t('footer.tools')}
-            </a>
-            <a className={COL_LINK} href="/c/electronics">
+            </LocalizedAnchor>
+            <LocalizedAnchor className={COL_LINK} href="/c/electronics">
               {t('footer.electronics')}
-            </a>
-            <a className={COL_LINK} href="/c/safety">
+            </LocalizedAnchor>
+            <LocalizedAnchor className={COL_LINK} href="/c/safety">
               {t('footer.safety')}
-            </a>
-            <a className={COL_LINK} href="/quick-order">
+            </LocalizedAnchor>
+            <LocalizedAnchor className={COL_LINK} href="/quick-order">
               {t('nav.quickOrder')}
-            </a>
+            </LocalizedAnchor>
           </div>
 
           <div>
             <h5 className={COL_HEADING}>{t('footer.account')}</h5>
-            <a className={COL_LINK} href="/account">
+            <LocalizedAnchor className={COL_LINK} href="/account">
               {t('footer.myAccount')}
-            </a>
-            <a className={COL_LINK} href="/orders">
+            </LocalizedAnchor>
+            <LocalizedAnchor className={COL_LINK} href="/orders">
               {t('footer.orders')}
-            </a>
-            <a className={COL_LINK} href="/invoices">
+            </LocalizedAnchor>
+            <LocalizedAnchor className={COL_LINK} href="/invoices">
               {t('footer.invoices')}
-            </a>
-            <a className={COL_LINK} href="/quote-requests">
+            </LocalizedAnchor>
+            <LocalizedAnchor className={COL_LINK} href="/quote-requests">
               {t('footer.rfq')}
-            </a>
-            <a className={COL_LINK} href="/shopping-lists">
+            </LocalizedAnchor>
+            <LocalizedAnchor className={COL_LINK} href="/shopping-lists">
               {t('footer.shoppingLists')}
-            </a>
-            <a className={COL_LINK} href="/credit-limit">
+            </LocalizedAnchor>
+            <LocalizedAnchor className={COL_LINK} href="/credit-limit">
               {t('footer.creditLimit')}
-            </a>
+            </LocalizedAnchor>
           </div>
 
           <div>
             <h5 className={COL_HEADING}>{t('footer.support')}</h5>
             {supportLinks.map((l) => (
-              <a key={l.path} className={COL_LINK} href={`/${l.path}`}>
+              <LocalizedAnchor key={l.path} className={COL_LINK} href={`/${l.path}`}>
                 {l.title}
-              </a>
+              </LocalizedAnchor>
             ))}
           </div>
 
           <div>
             <h5 className={COL_HEADING}>{t('footer.newsletter')}</h5>
             <p className="mb-3 text-[12px] text-[#a1a1aa]">{t('footer.newsletterHint')}</p>
-            <form action="/newsletter" method="POST">
+            <LocalizedForm action="/newsletter" method="POST">
               <input
                 className="mb-2 w-full rounded-md border border-white/12 bg-white/4 px-2.5 py-2 text-[13px] text-white placeholder:text-[#71717a]"
                 type="email"
@@ -129,7 +130,7 @@ export function Footer(props: {
               <button type="submit" className="btn btn--primary btn--block btn--sm">
                 {t('footer.newsletterSubmit')}
               </button>
-            </form>
+            </LocalizedForm>
           </div>
         </div>
 
@@ -141,15 +142,15 @@ export function Footer(props: {
           </span>
           {props.copyright}
           <span className="inline-flex gap-4">
-            <a className="text-[#a1a1aa] hover:text-white" href="/regulamin">
+            <LocalizedAnchor className="text-[#a1a1aa] hover:text-white" href="/regulamin">
               {t('footer.terms')}
-            </a>
-            <a className="text-[#a1a1aa] hover:text-white" href="/polityka-prywatnosci">
+            </LocalizedAnchor>
+            <LocalizedAnchor className="text-[#a1a1aa] hover:text-white" href="/polityka-prywatnosci">
               {t('footer.privacy')}
-            </a>
-            <a className="text-[#a1a1aa] hover:text-white" href="/cookies">
+            </LocalizedAnchor>
+            <LocalizedAnchor className="text-[#a1a1aa] hover:text-white" href="/cookies">
               {t('footer.cookies')}
-            </a>
+            </LocalizedAnchor>
           </span>
         </div>
 
