@@ -329,6 +329,108 @@ chatlog/                          # 评估与决策会话归档（如 2026-10-29
 
 ---
 
+
+## 八、执行开发任务过程文档
+
+> 总路线图来源：`chatlog/2026-10-30-chat1-Endora-架构改造任务`（A～E）+ 本文件一附 / §四 / §六。  
+> **规则：** 每批过程与产出记在对应「批次 *」下；工程规格以 `specs/165-mobii-bidding/` 为准。
+
+### 总体任务批次规划
+
+| 批次 | 对应阶段 | 一句话 |
+| --- | --- | --- |
+| **A** | P0 收口 | 钉死渠道 / 是否建 overlay 壳 / 验收清单 |
+| **B** | 实施前规格 | 施工说明书：spec / plan / data-model / contracts / tasks |
+| **C** | P1 底座 | 角色、对接人、货品内容规范（少量代码） |
+| **D** | P2 竞价 MVP | 新建 `bidding` + 大B/小b 竞价 UI |
+| **E** | P3→P4 | 预付/发货门禁 + 整链验收 |
+
+对齐 speckit：`specify → plan → tasks → implement`（B 完成后再进 C/D 实现）。
+
+---
+
+### 批次 A — 收口 P0（短）
+
+**计划项**
+
+1. 固定开发约定：销售渠道用 `default`（或文档写明 demo/`pl_default`）
+2. 确定 deployment/overlay 名（如 `mobii`）是否本阶段就要建壳
+3. （可选）把「一附」同步进简短验收清单，避免和 §四门禁漂移
+
+**执行记录（2026-10-30）**
+
+- [x] A.1 约定本地干净库店面渠道 = **`default`**（与 `backend/.env` 的 `DEFAULT_SALES_CHANNEL_CODE` 一致）；演示/`pl_default` 仅在库中存在该渠道时使用。
+- [x] A.2 已改 `storefront/.env` 与 `storefront/.env.example` → `NEXT_PUBLIC_SALES_CHANNEL_CODE=default`（改后需重启 storefront / `pnpm run dev`）。
+- [x] A.3 **本阶段不建** `apps/mobii` overlay 壳；竞价先落 `packages/modules/bidding`；需要部署专属种子时再开壳。
+- [x] A.4 产出文档：
+  - `pro_doc/dev-conventions-p0.md` — P0 约定全文
+  - `pro_doc/acceptance-checklist-mvp.md` — 验收清单（同步一附 + §四 + §6.2）
+
+---
+
+### 批次 B — 实施前规格（改造开工前必做）
+
+**计划项**
+
+1. 新建 `specs/NNN-mobii-bidding/`（或等价 slug）
+2. **spec**：Campaign / BidReceipt 状态机、门禁 G-*、大B/小b 用户故事、非目标
+3. **plan / data-model / contracts**：实体、API、与 orders/payments/shipments 缝
+4. **tasks**：按 P1→P2→P3 拆可勾选任务（TDD）
+
+**执行记录（2026-10-30）**
+
+- [x] B.1 新建目录 **`specs/165-mobii-bidding/`**（序号接在 164 之后，避免碰撞）
+- [x] B.2 产出：
+  - `spec.md` — 用户故事、FR、非目标、门禁引用
+  - `research.md` — 为何新建 bidding、不用 RFQ、渠道与 overlay 决策
+  - `plan.md` — P1–P3 技术路径
+  - `data-model.md` — Campaign / RuleVersion / BidReceipt / Approval / Allocation
+  - `contracts/bidding-api.md` — Admin/Storefront API 草稿与错误码
+  - `tasks.md` — T1–T5（C）、T10–T17（D）、T20–T25（E）
+- [x] B.3 规格状态：**Draft**，待你确认后再冻结并开始批次 C 写代码
+
+---
+
+### 批次 C — P1 底座（规格通过后）
+
+**计划项**
+
+1. 角色种子：运营 / 销售 / 售后 + 权限码  
+2. 组织多类型对接人（及线下联系人策略）  
+3. 货品+CMS 内容挂载规范；弱化购物车主路径（可关模块）
+
+**执行记录**
+
+- （未开始 — 等 B 规格确认）
+
+---
+
+### 批次 D — P2 竞价域 MVP（核心）
+
+**计划项**
+
+1. 新建模块 `bidding`（活动、规则版本、回执、签核）  
+2. 大B 竞价台；小b 活动列表/提交意向/看状态  
+3. 打通最小闭环（尚可不含完整发货门禁，或薄接到 P3）
+
+**执行记录**
+
+- （未开始）
+
+---
+
+### 批次 E — P3 履约门禁 → P4 验收
+
+**计划项**
+
+预付确认、交易编号、G-S1 发货门禁、异常释放库存、E2E。
+
+**执行记录**
+
+- （未开始）
+
+---
+
 ## 99、do-task.log List
 
 ### 1. Endora竞价评估归档与 PRO Mobii-by-Endora 蓝图
@@ -341,3 +443,14 @@ chatlog/                          # 评估与决策会话归档（如 2026-10-29
 汇总：确认「基于 Endora 改造、新建 bidding」后，完成评估会话归档，并将 PRO 从「意向独立开发」调整为 Mobii-by-Endora 蓝图（痛点门禁、模块处置、MVP 边界、产品/系统/模块/计划/文档结构）。
 
 feat-26-10-29 00:55:45 [1.1~1.4]：归档竞价评估 chatlog 并完善 PRO Mobii-by-Endora 蓝图
+
+### 2. §八总计划 + 批次 A/B 落地
+
+- [x] 2.1 将 A～E 总体批次规划写入 `PRO.md` §八，并规定过程记在各批次下
+- [x] 2.2 执行批次 A：渠道 `default`、不建 mobii 壳、约定与验收文档
+- [x] 2.3 执行批次 B：`specs/165-mobii-bidding/`（spec/plan/data-model/contracts/tasks/research）
+- [x] 2.4 更新本 §99
+
+汇总：§八成为执行台账；P0 约定与 MVP 验收清单落入 `pro_doc/`；竞价施工说明书落入 `specs/165-mobii-bidding/`（Draft）。本地店面 env 已改为 `default`（需重启 dev）。
+
+feat-26-10-30 00:48:04 [2.1~2.4]：写入§八总计划并完成批次A/B规格与P0约定
