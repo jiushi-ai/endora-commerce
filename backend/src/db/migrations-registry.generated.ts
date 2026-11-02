@@ -60,6 +60,9 @@ import { Migration20260724T173916ApiKeysDistributorBinding } from '@endora-comme
 import { Migration20260505T102206AssetsLibraryInit } from '@endora-commerce/mod-assets-library/migrations';
 import { Migration20261018T141739AssetsLibraryAssetVersionsPermalinks } from '@endora-commerce/mod-assets-library/migrations';
 
+// ── bidding ─────────────────────────────────────────────────────────────────
+import { Migration20261102T034500BiddingInit } from '@endora-commerce/mod-bidding/migrations';
+
 // ── blog ────────────────────────────────────────────────────────────────────
 import { Migration20260506T081055BlogInit } from '@endora-commerce/mod-blog/migrations';
 import { Migration20260903T101744BlogNamespaceBlockNames } from '@endora-commerce/mod-blog/migrations';
@@ -425,6 +428,9 @@ export const MIGRATION_REGISTRY: readonly MigrationRegistryEntry[] = [
   // ── assets_library ──────────────────────────────────────────────────────────
   migration('assets_library', Migration20260505T102206AssetsLibraryInit),
   migration('assets_library', Migration20261018T141739AssetsLibraryAssetVersionsPermalinks),
+
+  // ── bidding ─────────────────────────────────────────────────────────────────
+  migration('bidding', Migration20261102T034500BiddingInit),
 
   // ── blog ────────────────────────────────────────────────────────────────────
   migration('blog', Migration20260506T081055BlogInit),

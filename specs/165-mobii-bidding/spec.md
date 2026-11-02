@@ -2,7 +2,7 @@
 
 **Feature Branch / 功能分支**: `feat/165-mobii-bidding` (planned; spec directory `specs/165-mobii-bidding/` / 计划中；规格目录见左)  
 **Created / 创建日期**: 2026-10-30  
-**Status / 状态**: Approved (Batch C in progress — foundation) / 已批准（批次 C 进行中 — 底座）  
+**Status / 状态**: Approved (Batch D delivered — bidding MVP; Batch E next) / 已批准（批次 D 已交付 — 竞价 MVP；下一批 E）  
 **Input / 输入依据**: `pro_doc/PRO.md` §一–一附–§四–§六 (Mobii_Bidding_Platform_by_Endora)
 
 ## Vocabulary / 词汇表

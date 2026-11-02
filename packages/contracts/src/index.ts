@@ -60,6 +60,8 @@ export * from './record-rich-text.js';
 // Tasks and Projects (specs/163-projects-and-tasks/).
 export * from './tasks.js';
 export * from './projects.js';
+// Bidding — scarce-stock campaigns / sealed receipts (specs/165-mobii-bidding/).
+export * from './bidding.js';
 export * from './api-keys.js';
 export * from './webhooks.js';
 export * from './analytics.js';

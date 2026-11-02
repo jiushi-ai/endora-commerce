@@ -32,7 +32,7 @@ of the platform, not of what happens to be written.
 | [Assets Library](./assets-library/index.md) | Central digital-asset library with pluggable storage adapters, stable file URLs and permalinks, in-place file replacement, soft-delete with a retention sweep, and reference-protection guards | @endora-commerce/mod-assets-library |
 | [audit_logs](./audit_logs.md) | Sensitive-action audit trail | @endora-commerce/mod-audit-logs |
 | [auth](./auth.md) | Customer + admin sessions, password hashing, TOTP | @endora-commerce/mod-auth |
-| [Bidding](./bidding.md) | Scarce-stock bidding campaigns and Mobii admin role seeds (ops / sales / after-sales) | @endora-commerce/mod-bidding |
+| [Bidding](./bidding.md) | Scarce-stock bidding campaigns, sealed receipts, dual review, and thin order convert | @endora-commerce/mod-bidding |
 | [Blog](./blog/index.md) | Editorial Posts with Page Builder bodies, taxonomy (Categories + Tags), and storefront feeds | @endora-commerce/mod-blog |
 | [carts](./carts.md) | Customer shopping cart with anonymous→logged-in merge | @endora-commerce/mod-carts |
 | [Catalog](./catalog.md) | Products, variants, categories, attributes, sales channels | @endora-commerce/mod-catalog |

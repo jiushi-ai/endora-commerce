@@ -6,5 +6,5 @@
     "types": ["node"]
   },
   "include": ["src/**/*"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts"]
+  "exclude": ["src/admin/**/*", "src/**/*.test.ts", "src/**/*.spec.ts"]
 }

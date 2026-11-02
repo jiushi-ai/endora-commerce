@@ -1,34 +1,52 @@
 ---
 title: Bidding
-description: Scarce-stock bidding campaigns and Mobii admin role seeds (ops / sales / after-sales)
+description: Scarce-stock bidding campaigns, sealed receipts, dual review, and thin order convert
 ---
 
 # Bidding
 
-The `bidding` module is the home for Mobii-style scarce-stock allocation:
-campaigns, sealed bid receipts, dual review, and (later) gated fulfilment.
+The `bidding` module owns Mobii-style scarce-stock allocation: campaigns, sealed
+bid receipts, dual review, allocate, and a thin convert-to-order path.
 
-## Batch C (foundation)
+## Roles (Batch C)
 
-This release seeds three **protected** admin roles at boot while the module is
-present:
-
-| Code | Default name | Purpose |
+| Code | Default name | Notes |
 | --- | --- | --- |
-| `ops` | Operations | Customer org desk, catalog edit, order read |
-| `sales` | Sales | Sales-rep style permissions plus `customers:read` |
-| `after_sales` | After-sales | Order read/write (shipment admin shares these gates) |
+| `ops` | Operations | Campaign write + receipt review + allocate |
+| `sales` | Sales | Receipt review |
+| `after_sales` | After-sales | Order write + campaign read |
 
-No `bidding:*` permission codes are declared yet — those wait until campaign
-and receipt routes exist.
+## Permissions (Batch D)
+
+| Code | Purpose |
+| --- | --- |
+| `bidding:campaigns:read` | List/get campaigns |
+| `bidding:campaigns:write` | Create/edit/publish/close/convert |
+| `bidding:receipts:review` | Desk list + approve/reject |
+| `bidding:deposit:confirm` | Finance deposit confirm (thin) |
+| `bidding:allocate` | Record winners/losers |
+
+## Admin API
+
+Base: `/api/v1/admin/bidding/…` — see `specs/165-mobii-bidding/contracts/bidding-api.md`.
+
+## Storefront API
+
+Base: `/api/v1/bidding/…` — campaign list/detail, submit receipt, my receipts.
+
+## Thin convert (Batch D)
+
+`POST …/receipts/:id/convert-to-order` requires a **won** allocation and
+`deposit_confirmed` (or `won_pending_fulfilment`). It sets status `converted`
+and ensures a `tradeId`. Creating the Order row is deferred to Batch E.
 
 ## Activation
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
-| `bidding.activation` | on | Operator switch for the whole module. Off skips the role seeder and (later) every bidding surface. |
+| `bidding.activation` | on | Operator switch. Off skips seeder + routes/UI. |
 
-## Out of scope here
+## Non-goals
 
-Campaign entities, admin/storefront UI, and fulfilment gates land in later
-batches of feature 165. Do **not** stretch `quote_requests` into this model.
+Do **not** stretch `quote_requests` into this model. Mini-program and live
+auction engines are out of MVP.

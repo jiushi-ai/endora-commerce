@@ -17,7 +17,7 @@ Rendered from the module's own manifest, and from nothing written by hand. What 
 | --- | --- |
 | Module id | `bidding` |
 | Name | Bidding |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Ships from | `@endora-commerce/mod-bidding` |
 | Licence | `MIT` |
 
@@ -30,15 +30,25 @@ An operator switches this module on and off on **/platform/modules**. The choice
 | Module | Binding | What it means |
 | --- | --- | --- |
 | `admin_roles` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
+| `auth` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
 | `settings` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
 
 ## Permissions
 
-_None._
+| Code | Label | Also needs |
+| --- | --- | --- |
+| `bidding:allocate` | Allocate bidding winners and losers | `bidding:campaigns:write` |
+| `bidding:campaigns:read` | View bidding campaigns | — |
+| `bidding:campaigns:write` | Create and run bidding campaigns | `bidding:campaigns:read` |
+| `bidding:deposit:confirm` | Confirm bidding deposits | `bidding:receipts:review` |
+| `bidding:receipts:review` | Review bid receipts | `bidding:campaigns:read` |
 
 ## Command palette
 
-_None._
+| Action | Opens | Permission |
+| --- | --- | --- |
+| `open-bidding-campaigns` | `/bidding/campaigns` | `bidding:campaigns:read` |
+| `open-bidding-receipts` | `/bidding/receipts` | `bidding:receipts:review` |
 
 ## Settings
 

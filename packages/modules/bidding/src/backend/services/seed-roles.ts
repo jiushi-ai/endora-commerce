@@ -11,12 +11,10 @@ import type { AdminRolePort, SystemRoleCodePort } from '@endora-commerce/contrac
  *   after_sales  After-sales — order read/write (shipment admin routes share
  *                those codes; there is no `shipments:*` catalogue entry)
  *
- * Permission codes are looked up from existing manifests / the core
- * `PERMISSION_CATALOGUE` and module-owned catalogues. **No `bidding:*` codes
- * yet** — those wait until Batch D routes exist (permission-inventory).
- *
  * On rerun, keeps an admin-edited `name` and only refreshes drifted
  * permission arrays (same pattern as `blog`'s `seedBlogRoles`).
+ *
+ * Batch D adds `bidding:*` codes now that campaign/receipt routes exist.
  */
 
 export const BIDDING_ROLE_CODES = {
@@ -25,10 +23,21 @@ export const BIDDING_ROLE_CODES = {
   AFTER_SALES: 'after_sales',
 } as const;
 
+export const BIDDING_OPS_PERMISSIONS: readonly string[] = [
+  'customers:read',
+  'customers:manage',
+  'catalog:read',
+  'catalog:write',
+  'orders:read',
+  'bidding:campaigns:read',
+  'bidding:campaigns:write',
+  'bidding:receipts:review',
+  'bidding:allocate',
+];
+
 /**
  * Mirror of `admin_roles` demo `SALES_REPRESENTATIVE_PERMISSIONS` (not imported:
- * cross-module internals are forbidden). Plus `customers:read` for Mobii org
- * desk access.
+ * cross-module internals are forbidden). Plus `customers:read` and bidding review.
  */
 export const BIDDING_SALES_PERMISSIONS: readonly string[] = [
   'rfqs:handle',
@@ -37,6 +46,14 @@ export const BIDDING_SALES_PERMISSIONS: readonly string[] = [
   'crm:read',
   'crm:write',
   'customers:read',
+  'bidding:campaigns:read',
+  'bidding:receipts:review',
+];
+
+export const BIDDING_AFTER_SALES_PERMISSIONS: readonly string[] = [
+  'orders:read',
+  'orders:write',
+  'bidding:campaigns:read',
 ];
 
 const SEED_DEFINITIONS: Array<{
@@ -47,13 +64,7 @@ const SEED_DEFINITIONS: Array<{
   {
     code: BIDDING_ROLE_CODES.OPS,
     defaultName: 'Operations',
-    permissions: [
-      'customers:read',
-      'customers:manage',
-      'catalog:read',
-      'catalog:write',
-      'orders:read',
-    ],
+    permissions: [...BIDDING_OPS_PERMISSIONS],
   },
   {
     code: BIDDING_ROLE_CODES.SALES,
@@ -63,8 +74,7 @@ const SEED_DEFINITIONS: Array<{
   {
     code: BIDDING_ROLE_CODES.AFTER_SALES,
     defaultName: 'After-sales',
-    // Shipments admin routes are gated by `orders:read` / `orders:write`.
-    permissions: ['orders:read', 'orders:write'],
+    permissions: [...BIDDING_AFTER_SALES_PERMISSIONS],
   },
 ];
 

@@ -52,6 +52,7 @@ import { entities as apiKeysEntities } from '@endora-commerce/mod-api-keys/backe
 import { entities as assetsLibraryEntities } from '@endora-commerce/mod-assets-library/backend';
 import { entities as catalogEntities } from '@endora-commerce/mod-catalog/backend';
 import { entities as inventoryEntities } from '@endora-commerce/mod-inventory/backend';
+import { entities as biddingEntities } from '@endora-commerce/mod-bidding/backend';
 import { entities as blogEntities } from '@endora-commerce/mod-blog/backend';
 import { entities as cartsEntities } from '@endora-commerce/mod-carts/backend';
 import { entities as cmsEntities } from '@endora-commerce/mod-cms/backend';
@@ -119,6 +120,7 @@ export const ALL_ENTITIES = [
   ...(assetsLibraryEntities as readonly EntityClassLike[]),
   ...(catalogEntities as readonly EntityClassLike[]),
   ...(inventoryEntities as readonly EntityClassLike[]),
+  ...(biddingEntities as readonly EntityClassLike[]),
   ...(blogEntities as readonly EntityClassLike[]),
   ...(cartsEntities as readonly EntityClassLike[]),
   ...(cmsEntities as readonly EntityClassLike[]),

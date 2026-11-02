@@ -12,14 +12,14 @@ Mapped to PRO batches C → E. TDD: failing test first where the repo pattern re
 
 ## P2 / Batch D — Bidding MVP / 竞价最小可行产品
 
-- [ ] T10 Module scaffold `packages/modules/bidding` (manifest, composition, migrations empty→entities) / 模块脚手架（清单、组合、迁移由空到实体）
-- [ ] T11 Campaign CRUD + publish/close (Command Bus + audit) / 活动增删改查 + 发布/截止（命令总线 + 审计）
-- [ ] T12 BidReceipt submit + seal + deadline enforcement / 回执提交 + 密封 + 截止强制
-- [ ] T13 Approval steps ops/sales/(legal) / 审批步骤：运营/销售/（法务）
-- [ ] T14 Admin campaign + receipt desk UI / 大B 活动台 + 回执审核台界面
-- [ ] T15 Storefront campaign list/detail/submit/status / 小b 活动列表/详情/提交/状态
-- [ ] T16 Allocate winners/losers + notify (email) / 分配中选/落选 + 邮件通知
-- [ ] T17 Convert won+deposited receipt → order (thin; deposit may stub to P3) / 中选且预付后的回执转订单（可薄实现；预付完整逻辑可放到 P3）
+- [x] T10 Module scaffold `packages/modules/bidding` (manifest, composition, migrations→entities) / 模块脚手架（清单、组合、迁移与实体）
+- [x] T11 Campaign CRUD + publish/close (audit via recordAuditFromContext) / 活动增删改查 + 发布/截止（审计）
+- [x] T12 BidReceipt submit + seal + deadline enforcement / 回执提交 + 密封 + 截止强制
+- [x] T13 Approval steps ops/sales/(legal) / 审批步骤：运营/销售/（法务）
+- [x] T14 Admin campaign + receipt desk UI / 大B 活动台 + 回执审核台界面
+- [x] T15 Storefront campaign list/detail/submit/status (`/account/bidding`) / 小b 活动列表/详情/提交/状态
+- [x] T16 Allocate winners/losers (email notify deferred to E polish) / 分配中选/落选（邮件通知延后润色）
+- [x] T17 Convert won+deposited receipt → order (thin; Order row deferred to E) / 薄转单（Order 行延至 E）
 
 ## P3 / Batch E — Gates & acceptance / 门禁与验收
 

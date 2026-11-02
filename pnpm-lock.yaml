@@ -89,6 +89,9 @@ importers:
       '@endora-commerce/mod-audit-logs':
         specifier: workspace:*
         version: link:../packages/modules/audit_logs
+      '@endora-commerce/mod-bidding':
+        specifier: workspace:*
+        version: link:../packages/modules/bidding
       '@endora-commerce/mod-blog':
         specifier: workspace:*
         version: link:../packages/modules/blog
@@ -1571,15 +1574,36 @@ importers:
 
   packages/modules/bidding:
     devDependencies:
+      '@endora-commerce/admin-kit':
+        specifier: workspace:*
+        version: link:../../admin-kit
       '@endora-commerce/contracts':
         specifier: workspace:*
         version: link:../../contracts
       '@endora-commerce/platform':
         specifier: workspace:*
         version: link:../../platform
+      '@mikro-orm/core':
+        specifier: ^6.6.13
+        version: 6.6.16
+      '@mikro-orm/migrations':
+        specifier: ^6.6.13
+        version: 6.6.16(@mikro-orm/core@6.6.16)(@types/node@22.19.17)(pg@8.20.0)
+      '@mikro-orm/postgresql':
+        specifier: ^6.6.13
+        version: 6.6.16(@mikro-orm/core@6.6.16)
       '@types/node':
         specifier: ^22.9.0
         version: 22.19.17
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.3.0
+      fastify:
+        specifier: ^5.12.5
+        version: 5.12.5
+      react:
+        specifier: ^19.2.5
+        version: 19.2.5
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -17072,7 +17096,7 @@ snapshots:
     dependencies:
       '@docusaurus/types': 3.10.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@types/history': 4.7.11
-      '@types/react': 19.2.14
+      '@types/react': 19.3.0
       '@types/react-router-config': 5.0.11
       '@types/react-router-dom': 5.3.3
       react: 19.2.5
@@ -17677,7 +17701,7 @@ snapshots:
       '@mdx-js/mdx': 3.1.1
       '@types/history': 4.7.11
       '@types/mdast': 4.0.4
-      '@types/react': 19.2.14
+      '@types/react': 19.3.0
       commander: 5.1.0
       joi: 17.13.8
       react: 19.2.5

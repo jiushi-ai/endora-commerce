@@ -6,6 +6,8 @@ import type {
   UpsertAdminRoleInput,
 } from '@endora-commerce/contracts';
 import {
+  BIDDING_AFTER_SALES_PERMISSIONS,
+  BIDDING_OPS_PERMISSIONS,
   BIDDING_ROLE_CODES,
   BIDDING_SALES_PERMISSIONS,
   seedBiddingRoles,
@@ -87,13 +89,7 @@ describe('seedBiddingRoles over adminRolePort', () => {
       {
         code: BIDDING_ROLE_CODES.OPS,
         name: 'Operations',
-        permissions: [
-          'customers:read',
-          'customers:manage',
-          'catalog:read',
-          'catalog:write',
-          'orders:read',
-        ],
+        permissions: [...BIDDING_OPS_PERMISSIONS],
         requiresTwoFactor: false,
       },
       {
@@ -105,7 +101,7 @@ describe('seedBiddingRoles over adminRolePort', () => {
       {
         code: BIDDING_ROLE_CODES.AFTER_SALES,
         name: 'After-sales',
-        permissions: ['orders:read', 'orders:write'],
+        permissions: [...BIDDING_AFTER_SALES_PERMISSIONS],
         requiresTwoFactor: false,
       },
     ]);
@@ -117,13 +113,7 @@ describe('seedBiddingRoles over adminRolePort', () => {
       fakeAdminRolePort([
         roleRecord({
           code: BIDDING_ROLE_CODES.OPS,
-          permissions: [
-            'customers:read',
-            'customers:manage',
-            'catalog:read',
-            'catalog:write',
-            'orders:read',
-          ],
+          permissions: [...BIDDING_OPS_PERMISSIONS],
         }),
         roleRecord({
           code: BIDDING_ROLE_CODES.SALES,
@@ -131,7 +121,7 @@ describe('seedBiddingRoles over adminRolePort', () => {
         }),
         roleRecord({
           code: BIDDING_ROLE_CODES.AFTER_SALES,
-          permissions: ['orders:read', 'orders:write'],
+          permissions: [...BIDDING_AFTER_SALES_PERMISSIONS],
         }),
       ]),
       codes,
@@ -150,13 +140,7 @@ describe('seedBiddingRoles over adminRolePort', () => {
       roleRecord({
         code: BIDDING_ROLE_CODES.OPS,
         name: 'Ops desk',
-        permissions: [
-          'orders:read',
-          'catalog:write',
-          'customers:manage',
-          'catalog:read',
-          'customers:read',
-        ],
+        permissions: [...BIDDING_OPS_PERMISSIONS].reverse(),
       }),
       roleRecord({
         code: BIDDING_ROLE_CODES.SALES,
@@ -164,7 +148,7 @@ describe('seedBiddingRoles over adminRolePort', () => {
       }),
       roleRecord({
         code: BIDDING_ROLE_CODES.AFTER_SALES,
-        permissions: ['orders:write', 'orders:read'],
+        permissions: [...BIDDING_AFTER_SALES_PERMISSIONS].reverse(),
       }),
     ]);
 
@@ -188,7 +172,7 @@ describe('seedBiddingRoles over adminRolePort', () => {
       }),
       roleRecord({
         code: BIDDING_ROLE_CODES.AFTER_SALES,
-        permissions: ['orders:read', 'orders:write'],
+        permissions: [...BIDDING_AFTER_SALES_PERMISSIONS],
       }),
     ]);
 
@@ -198,13 +182,7 @@ describe('seedBiddingRoles over adminRolePort', () => {
       {
         code: BIDDING_ROLE_CODES.OPS,
         name: '运营',
-        permissions: [
-          'customers:read',
-          'customers:manage',
-          'catalog:read',
-          'catalog:write',
-          'orders:read',
-        ],
+        permissions: [...BIDDING_OPS_PERMISSIONS],
         requiresTwoFactor: true,
       },
     ]);

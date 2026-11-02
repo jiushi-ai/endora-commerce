@@ -419,9 +419,13 @@ chatlog/                          # 评估与决策会话归档（如 2026-10-29
 2. 大B 竞价台；小b 活动列表/提交意向/看状态  
 3. 打通最小闭环（尚可不含完整发货门禁，或薄接到 P3）
 
-**执行记录**
+**执行记录（2026-11-01）**
 
-- （未开始）
+- [x] D.1 contracts：`packages/contracts/src/bidding.ts` + ERROR_CODES + 权限/错误码清单
+- [x] D.2 实体+迁移：`bidding_campaigns` / rule_versions / `bid_receipts` / approval / allocation
+- [x] D.3 Admin/Storefront API：CRUD、publish/close、submit、approve、allocate、confirm-deposit、thin convert
+- [x] D.4 Admin UI：`/bidding/campaigns`、`/bidding/receipts`；Storefront：`/account/bidding`
+- [x] D.5 角色种子补 `bidding:*`；`tasks.md` P2 勾选；§99 台账
 
 ---
 
@@ -472,3 +476,17 @@ feat-26-10-30 00:48:04 [2.1~2.4]：写入§八总计划并完成批次A/B规格�
 汇总：规格 Approved；bidding 模块仅角色种子（无 bidding:*）；组织多类型对接人 API；底座约定文档落地。Admin UI / 竞价实体延至批次 D。
 
 feat-26-11-01 19:20:16 [3.1~3.5]：完成批次C底座（角色种子、对接人API、约定文档）
+
+### 4. 批次 D — P2 竞价 MVP（活动/回执/审核/薄转单）
+
+- [x] 4.1 contracts：bidding Zod、错误码、权限声明
+- [x] 4.2 实体+迁移 Campaign/RuleVersion/Receipt/Approval/Allocation
+- [x] 4.3 T11 活动 CRUD/publish/close + 审计
+- [x] 4.4 T12 回执提交/密封/截止 + 店面 API
+- [x] 4.5 T13 审批 ops/sales + T16 分配（邮件延后）
+- [x] 4.6 T17 薄转订单 + T14/T15 Admin/Storefront UI
+- [x] 4.7 更新 tasks.md / PRO §八 / 本 §99；composer/manifests 生成
+
+汇总：`bidding` 域 MVP 打通（活动→回执→双审→预付确认→分配→薄转单）；Admin `/bidding/*`；Storefront `/account/bidding`；Order 行创建与发货门禁完整校验留给批次 E。
+
+feat-26-11-01 19:58:16 [4.1~4.7]：完成批次D竞价MVP（实体API界面与薄转单）
