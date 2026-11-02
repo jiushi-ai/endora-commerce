@@ -1,0 +1,142 @@
+//15.275.0-es2019 (c6af8848c2687)
+(function bootGuard(projectId) {
+  var _a;
+  var w2 = window;
+  var pid = projectId != null ? projectId : (_a = w2.CS_CONF_BASE) == null ? void 0 : _a.projectId;
+  var mobilePid = readMobilePid();
+  var reason = "";
+  if (mobilePid !== null) {
+    if (mobilePid !== String(pid)) reason = "the SDK injected tag " + mobilePid;
+  } else if (typeof w2.CS_CONF !== "undefined") {
+    reason = "another Contentsquare tag already runs";
+  }
+  if (reason) {
+    w2.CSQ_TAGS = (w2.CSQ_TAGS || []).concat(pid);
+    var tagName = ("Contentsquare tag " + (pid != null ? pid : "")).trim();
+    throw new Error(tagName + " skipped: " + reason);
+  }
+  function readMobilePid() {
+    var _a2, _b, _c;
+    const p2 = w2.CS_mobilePid || typeof ((_a2 = w2.CSJavascriptBridge) == null ? void 0 : _a2.getMobilePid) === "function" && w2.CSJavascriptBridge.getMobilePid() || ((_c = /CS_mobilePid=([^\s;]+)/.exec(((_b = w2.navigator) == null ? void 0 : _b.userAgent) || "")) == null ? void 0 : _c[1]);
+    return p2 ? String(p2) : null;
+  }
+})(3150);
+var CS_CONF={"collectionEnabled":true,"useSentry":false,"projectId":3150,"status":1,"hostnames":["nvidia.com","rainfocus.com","docs.nvidia.com"],"crossDomainTracking":0,"crossDomainSingleIframeTracking":0,"consentRequired":0,"allowSubdomains":1,"visitorCookieTimeout":34164000000,"sampleRate":100,"replayRecordingRate":20,"validationRate":10,"lastTrackingDraw":1749076063,"trackerDomain":"c.contentsquare.net","recordingDomain":"r.contentsquare.net","useMalkaPipeline":1,"ed":"l.contentsquare.net/log/web","eMerchandisingEnabled":0,"mouseMoveHeatmapEnabled":1,"jsErrorsEnabled":1,"customErrorsEnabled":1,"jsCustomErrorsEnabled":0,"apiErrorsEnabled":1,"customHashIdEnabled":0,"recordingEncryptionEnabled":0,"recordingEncryptionPublicKey":null,"recordingEncryptionPublicKeyId":0,"secureCookiesEnabled":0,"triggerSessionReplayEnabled":0,"triggerSessionReplayRegex":null,"dynamicIdRegex":"(^arve-youtube-.+)","whitelistedAttributes":[],"replayRecordingUnmaskedUrlRegex":"","replayRecordingUnmaskedUrlRegexRules":[],"replayRecordingMaskedUrlRegexRules":[],"replayRecordingMaskedUrlRegex":"","anonymisationMethod":null,"tagDeploymentMode":"CONTENTSQUARE","experimental":null,"iframesTracking":1,"textVisibilityEnabled":0,"cookielessTrackingEnabled":0,"malkaUrlEnabled":0,"malkaEtrEnabled":0,"pathComputationRules":{"reliableSelectors":[],"uniqueAttributes":[],"uniqueCssSelectors":[]},"asyncSerializerEnabled":1,"pendingInactivityTimeout":5000,"accessibilityEnabled":0,"uxaDomain":"app.contentsquare.com","webviewsTrackingEnabled":0,"useStaticResourceManager":1,"performanceTimingOptions":{"withNavigation":false,"withResource":false},"replayConsentRequiredForSession":0,"eventsApiEnabled":0,"clickedElementTextEnabled":1,"collectHierarchy":1,"collectSubmit":1,"collectTargetText":1,"apiErrors":{"collectStandardHeaders":0,"collectionRules":[{"bodyAttributePaths":[{"path":"errors[0].message","encrypted":0,"primary":0,"type":"response"}],"collectQueryParam":0,"collectRequestBody":0,"collectResponseBody":0,"customHeaders":[],"url":"graphql","statusCode":200,"bodyContent":"errors\":"},{"bodyAttributePaths":[{"path":"errors[0].message","encrypted":0,"primary":0,"type":"response"}],"collectQueryParam":0,"collectRequestBody":0,"collectResponseBody":0,"customHeaders":[],"url":"graphql","statusCode":200,"bodyContent":"errors\":"},{"bodyAttributePaths":[],"collectQueryParam":0,"collectRequestBody":0,"collectResponseBody":0,"customHeaders":[{"headerName":"cf-cache-status","encrypted":0,"type":"request"},{"headerName":"cf-ray","encrypted":0,"type":"request"},{"headerName":"x-cache-enabled","encrypted":0,"type":"request"},{"headerName":"x-cache","encrypted":0,"type":"request"},{"headerName":"x-amz-cf-id","encrypted":0,"type":"request"},{"headerName":"x-ray","encrypted":0,"type":"request"},{"headerName":"upgrade","encrypted":0,"type":"request"},{"headerName":"X-Request-Id","encrypted":0,"type":"request"},{"headerName":"x-wix-request-id","encrypted":0,"type":"request"},{"headerName":"X-Pass-Why","encrypted":0,"type":"request"},{"headerName":"x-nginx-cache-status","encrypted":0,"type":"request"},{"headerName":"trace-id","encrypted":0,"type":"request"},{"headerName":"traceparent","encrypted":0,"type":"request"},{"headerName":"X-NewRelic-Transaction","encrypted":0,"type":"request"},{"headerName":"X-Datadog-Trace-ID","encrypted":0,"type":"request"}]},{"bodyAttributePaths":[],"collectQueryParam":0,"collectRequestBody":0,"collectResponseBody":0,"customHeaders":[{"headerName":"cf-cache-status","encrypted":0,"type":"request"},{"headerName":"cf-ray","encrypted":0,"type":"request"},{"headerName":"x-cache-enabled","encrypted":0,"type":"request"},{"headerName":"x-cache","encrypted":0,"type":"request"},{"headerName":"x-amz-cf-id","encrypted":0,"type":"request"},{"headerName":"x-ray","encrypted":0,"type":"request"},{"headerName":"upgrade","encrypted":0,"type":"request"},{"headerName":"X-Request-Id","encrypted":0,"type":"request"},{"headerName":"x-wix-request-id","encrypted":0,"type":"request"},{"headerName":"X-Pass-Why","encrypted":0,"type":"request"},{"headerName":"x-nginx-cache-status","encrypted":0,"type":"request"},{"headerName":"trace-id","encrypted":0,"type":"request"},{"headerName":"traceparent","encrypted":0,"type":"request"},{"headerName":"X-NewRelic-Transaction","encrypted":0,"type":"request"},{"headerName":"X-Datadog-Trace-ID","encrypted":0,"type":"request"}]}]},"customErrors":{"consoleMessageLogLevels":[]},"displayAdOptions":null,"taskSchedulerOptions":{"enabled":1},"malkaQuotaServiceDomain":"q-aeu1.contentsquare.net","malkaRecordingDomain":"k-aeu1.contentsquare.net","staticResourceManagerDomain":"srm.ba.contentsquare.net","voc":{"siteId":null,"enabled":0},"trackingCodeVerified":true,"isLegacyHJ":false,"anonymizeDigits":null,"dynamicConfDomain":"t.contentsquare.net/settings","tagVerificationDomain":"tcvsapi.contentsquare.com","startMode":1,"maskMedia":false,"tagVerificationEnabled":true,"useBootstrapFile":true,"urlBlacklist":null,"paProxyDomainUri":"api.eu.hp.contentsquare.net","heapEnvironment":{"env_id":"1875635319","heap_tag_status":"cs_crosswrites_heap","heap_storage_location":"eu-west-1"},"identityEncryptionKey":"MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAlL8xaiIUlNZLxrm8XMtTLHMbemquLst2omH6itNokm81n/P/KUJdaAJGopwXDj6TL9zrhnJWrxnyVGI6jEbOSw0RMaLahwVVhwtIuTFtcx6VlsKYEZqn+QBTARMiGR46Z0j6/5+w2x439lFueWn+VADuUBWQ7b+wOozD/SBrUTx2lgv0npyv29OLJvLkeCabUWRNBNErx7R+CZ7LUMt74y2xTuYkDR/hEoApBA7O9WGRrCQ97+Jc74NC84Fmh/VkeyBozV8XHKsT7EUxyPFP61cTh6XUP7F+5hPkE+KlprTkwTGx6P3W4aiUQYwD/klFmSJZ0tPYDUNjSYPOuco0sY8rhihf0ZpfvaMog+JMbieuBMG+xG6+wFifZEh9cXwTVbtIuaKMI7unbgiqJrgL15XzHWEeRluWUEcgBPTACVfQbEq8JYyfRyKEzmGyYcsv/cdFx0FegSRI1hdg516pSKpEefWCUcGEvtCAN/V8aTJWam/Jyci9NFfsuNMfd+lNAgMBAAE="};
+CS_CONF.tagHost=(function(s){var h=/^[a-z][a-z0-9+.-]*:\/\/([^\/?#:]+)/i.exec(s);h=h?h[1].toLowerCase():"";return /(^|\.)contentsquare\.net$/.test(h)?"contentsquare":/(^|\.)clicktale\.net$/.test(h)?"clicktale":"self"})((document.currentScript||{}).src||"");
+var CS_INTEGRATIONS_CONF = {"usertesting":[],"adobe-target":[],"foresee":[],"youtube":[{"key":"enableVideoStarted","value":true},{"key":"enableVideoPaused","value":true},{"key":"enableVideoCompleted","value":true},{"key":"enableVideoPlayDuration","value":true},{"key":"enableVideoQuality","value":true},{"key":"enableVideoMuted","value":true},{"key":"enableVolumeChanged","value":true}]};
+(function(){function e(){return window.csqDebuggerEnabled===!0||window.location.href.includes(`csqDebuggerEnabled=true`)}function t(t,n,r=`info`){if(!e())return;let i=r===`warn`?`rgb(255, 86, 2)`:`#2a9d8f`;console.log(`%cCSQ INTEGRATION: [${t}] : ${n}`,`color: ${i}; font-weight: bold`)}function n(e,t){let n=document.getElementById(`csKey`),r=document.getElementById(`csValue`);return n!==null&&(n.textContent=e),r!==null&&(r.textContent=String(t)),`Dynamic variable with ${e} and value ${t} sent`}function r(){return window._uxa=window._uxa||[],window._uxa}function i(e){return e instanceof Error?e.message:String(e)}function a(t,n){try{t()}catch(t){r().push([`logSnippetError`,n,t]),e()&&(console.log(`%cCSQ INTEGRATION ERROR: [${n}] : ${i(t)}`,`color:rgb(228, 25, 45); font-weight: bold`),console.log(t))}}function o(e,t){var n,r;(n=window).CS_CONF!=null||(n.CS_CONF={integrations:[]}),(r=window.CS_CONF).integrations!=null||(r.integrations=[]);let i={name:e,version:t};window.CS_CONF.integrations.push(i)}function s(e,t){var n,r;let i=(n=window.CS_INTEGRATIONS_CONF)==null?void 0:n[e];return i==null||(r=i.find(e=>e.key===t))==null?void 0:r.value}function c(e){let{integrationSlug:t,setPageView:n=!1,withTimestamp:i=!1,iframeEnabled:a=!1}=e;return new Promise(e=>{function o(r){if(r!=null&&r.replayLink&&r!=null&&r.isRecording){let a=`https://${r.replayLink}&vd=${t}`;if(!n&&!i){let e=new URL(a);e.searchParams.set(`pvid`,`1`),a=e.toString()}e(a)}}function s(){r().push([`replay:link:generate`,{withTimestamp:i},o])}a?s():r().push([`onRecordingStateChange`,e=>{e!=null&&e.isRecording&&s()}])})}function l(e,t){r().push([`trackDynamicVariable`,{key:e,value:t}])}function u(e){r().push([`trackPageview`,e])}function d(e){r().push([`trackEventTriggerRecording`,`@ETS@${e}`])}function f(e,r){return(i,a)=>{let o=`${r}${i}`;l(o,a),t(e,n(o,a))}}var p=`usertesting`,m=`UGC_UT_`,h=f(p,m),g=!1;function _(e){let t=e.replace(/[[\]]/g,`\\$&`),n=RegExp(`[?&]${t}(=([^&#]*)|&|#|$)`).exec(window.location.href);return!n||!n[2]?``:decodeURIComponent(n[2].replace(/\+/g,` `))}function v(e,t){let n=new XMLHttpRequest;n.open(`POST`,e,!0),n.setRequestHeader(`Content-Type`,`application/json`),n.send(t)}a(()=>{o(`UserTesting`,`3.2.2`);let e=s(p,`sendArtificialPageviews`)===!0,t=s(p,`setReplayLinkToCurrentPV`)===!0;function n(t,n,r,i){h(t,n),g&&r===`etr`&&d(`${m}${t}`),i&&e&&u(`${window.location.pathname}?${i}`)}let r=document.location.search;if(r.indexOf(`utm_source=UserTesting`)>-1&&r.indexOf(`utm_campaign=`)>-1&&r.indexOf(`utm_content=`)>-1){let e=_(`utm_campaign`),r=_(`utm_content`);r&&c({integrationSlug:p,setPageView:t}).then(e=>{a(()=>{g=!0,e&&v(`https://cloudhub-prod.usertesting.com/usertesting/api/v1/partner-analytics`,JSON.stringify({usertesting_eid:r,external_link:e,partner_name:`Contentsquare`}))},p)}),e&&n(`Study ID`,e,`etr`,`cs_usertesting=study_id_${e}`)}},p)})();
+(function(){function e(){return window.csqDebuggerEnabled===!0||window.location.href.includes(`csqDebuggerEnabled=true`)}function t(t,n,r=`info`){if(!e())return;let i=r===`warn`?`rgb(255, 86, 2)`:`#2a9d8f`;console.log(`%cCSQ INTEGRATION: [${t}] : ${n}`,`color: ${i}; font-weight: bold`)}function n(e,t){let n=document.getElementById(`csKey`),r=document.getElementById(`csValue`);return n!==null&&(n.textContent=e),r!==null&&(r.textContent=String(t)),`Dynamic variable with ${e} and value ${t} sent`}function r(){return window._uxa=window._uxa||[],window._uxa}function i(e){return e instanceof Error?e.message:String(e)}function a(t,n){try{t()}catch(t){r().push([`logSnippetError`,n,t]),e()&&(console.log(`%cCSQ INTEGRATION ERROR: [${n}] : ${i(t)}`,`color:rgb(228, 25, 45); font-weight: bold`),console.log(t))}}function o(e,t){var n,r;(n=window).CS_CONF!=null||(n.CS_CONF={integrations:[]}),(r=window.CS_CONF).integrations!=null||(r.integrations=[]);let i={name:e,version:t};window.CS_CONF.integrations.push(i)}function s(e,t){var n,r;let i=(n=window.CS_INTEGRATIONS_CONF)==null?void 0:n[e];return i==null||(r=i.find(e=>e.key===t))==null?void 0:r.value}function c(e,t){r().push([`trackDynamicVariable`,{key:e,value:t}])}function l(e,r){return(i,a)=>{let o=`${r}${i}`;c(o,a),t(e,n(o,a))}}function u(e,t,n=window){let r=e.split(`.`);function i(e,n){let a=r[e];a!==void 0&&(e===r.length-1?d(a,t,n):d(a,()=>{let t=n[a];t!==void 0&&i(e+1,t)},n))}i(0,n)}function d(e,t,n){let r=n;if(r[e]){t();return}let i,a=!1;Object.defineProperty(r,e,{configurable:!0,enumerable:!0,get(){return i},set(e){i=e,a||(a=!0,t())}})}var f=`adobe-target`,p=l(f,`AB_AT_`),m=[];a(()=>{var e;o(`Adobe Target`,`3.8.2`);let t=s(f,`customObjectName`),n=(e=t==null?void 0:t.trim())==null?`ttMETA`:e;document.addEventListener(`at-request-succeeded`,e=>{a(()=>{var t;g((t=e.detail)==null?void 0:t.responseTokens)},f)}),u(n,()=>_(n))},f);function h(e){return e.CampaignName&&e.RecipeName?{campaignName:e.CampaignName,variationName:e.RecipeName}:e.campaign&&e.experience?{campaignName:e.campaign,variationName:e.experience}:e[`activity.name`]&&e[`experience.name`]?{campaignName:e[`activity.name`],variationName:e[`experience.name`]}:null}function g(e){if(Array.isArray(e))for(let t of e){let e=h(t);if(!e)continue;let{campaignName:n,variationName:r}=e,i=`${n}~~~~${r}`;m.includes(i)||(m.push(i),p(n,r))}}function _(e){setTimeout(()=>{g(window[e])},500)}})();
+(function(){function e(){return window.csqDebuggerEnabled===!0||window.location.href.includes(`csqDebuggerEnabled=true`)}function t(t,n,r=`info`){if(!e())return;let i=r===`warn`?`rgb(255, 86, 2)`:`#2a9d8f`;console.log(`%cCSQ INTEGRATION: [${t}] : ${n}`,`color: ${i}; font-weight: bold`)}function n(e,t){let n=document.getElementById(`csKey`),r=document.getElementById(`csValue`);return n!==null&&(n.textContent=e),r!==null&&(r.textContent=String(t)),`Dynamic variable with ${e} and value ${t} sent`}function r(){return window._uxa=window._uxa||[],window._uxa}function i(e){return e instanceof Error?e.message:String(e)}function a(t,n){try{t()}catch(t){r().push([`logSnippetError`,n,t]),e()&&(console.log(`%cCSQ INTEGRATION ERROR: [${n}] : ${i(t)}`,`color:rgb(228, 25, 45); font-weight: bold`),console.log(t))}}function o(t,n){r().push([`logSnippetError`,n,t]),e()&&console.log(`%cCSQ INTEGRATION LOG ERROR: [${n}] : ${i(t)}`,`color:rgb(228, 25, 45); font-weight: bold`)}function s(e,t){var n,r;(n=window).CS_CONF!=null||(n.CS_CONF={integrations:[]}),(r=window.CS_CONF).integrations!=null||(r.integrations=[]);let i={name:e,version:t};window.CS_CONF.integrations.push(i)}function c(e,t){var n,r;let i=(n=window.CS_INTEGRATIONS_CONF)==null?void 0:n[e];return i==null||(r=i.find(e=>e.key===t))==null?void 0:r.value}function l(e){let{integrationSlug:t,setPageView:n=!1,withTimestamp:i=!1,iframeEnabled:a=!1}=e;return new Promise(e=>{function o(r){if(r!=null&&r.replayLink&&r!=null&&r.isRecording){let a=`https://${r.replayLink}&vd=${t}`;if(!n&&!i){let e=new URL(a);e.searchParams.set(`pvid`,`1`),a=e.toString()}e(a)}}function s(){r().push([`replay:link:generate`,{withTimestamp:i},o])}a?s():r().push([`onRecordingStateChange`,e=>{e!=null&&e.isRecording&&s()}])})}function u(e,t){r().push([`trackDynamicVariable`,{key:e,value:t}])}function d(e){r().push([`trackPageview`,e])}function f(e){r().push([`trackEventTriggerRecording`,`@ETS@${e}`])}function p(e,r){return(i,a)=>{let o=`${r}${i}`;u(o,a),t(e,n(o,a))}}function m(e,t,n=window){let r=e.split(`.`);function i(e,n){let a=r[e];a!==void 0&&(e===r.length-1?h(a,t,n):h(a,()=>{let t=n[a];t!==void 0&&i(e+1,t)},n))}i(0,n)}function h(e,t,n){let r=n;if(r[e]){t();return}let i,a=!1;Object.defineProperty(r,e,{configurable:!0,enumerable:!0,get(){return i},set(e){i=e,a||(a=!0,t())}})}var g=`foresee`,_=`FB_FS_`,v=`cs_foresee`,y=p(g,_),b=!1;a(()=>{s(`Verint (ForeSee)`,`3.2.2`);let e=c(g,`sendArtificialPageviews`)===!0,t=c(g,`setReplayLinkToCurrentPV`)===!0;function n(){setTimeout(()=>{a(()=>{typeof window.fsReady==`function`&&window.fsReady(()=>{a(()=>{var n,r,i,s;l({integrationSlug:g,setPageView:t}).then(e=>{a(()=>{var t;b=!0,e&&(t=window.FSR)!=null&&t.CPPS&&typeof window.FSR.CPPS.set==`function`&&window.FSR.CPPS.set(`ContentsquareReplay`,e)},g)},e=>o(e,g)),(n=window.FSR)!=null&&n.onInviteShown&&typeof window.FSR.onInviteShown.subscribe==`function`&&window.FSR.onInviteShown.subscribe(t=>{a(()=>{let n=t,r=n==null?void 0:n.uid;y(`Feedback Invite Displayed`,r?`Survey ID : ${r}`:`true`),e&&d(`${window.location.pathname}?${v}=feedback_invite_displayed`)},g)},!0,!0),(r=window.FSR)!=null&&r.onInviteAccepted&&typeof window.FSR.onInviteAccepted.subscribe==`function`&&window.FSR.onInviteAccepted.subscribe(t=>{a(()=>{let n=t,r=n==null?void 0:n.uid;y(`Feedback Invite Submitted`,r?`Survey ID : ${r}`:`true`),b&&f(`${_}Feedback Invite Submitted`),e&&d(`${window.location.pathname}?${v}=feedback_invite_submitted`)},g)},!0,!0),(i=window.FSR)!=null&&i.onFeedbackShown&&typeof window.FSR.onFeedbackShown.subscribe==`function`&&window.FSR.onFeedbackShown.subscribe(t=>{a(()=>{y(`Feedback Displayed`,`true`),e&&d(`${window.location.pathname}?${v}=feedback_displayed`)},g)},!0,!0),(s=window.FSR)!=null&&s.onFeedbackSubmitted&&typeof window.FSR.onFeedbackSubmitted.subscribe==`function`&&window.FSR.onFeedbackSubmitted.subscribe(t=>{a(()=>{let n=t,r=n==null?void 0:n.mid;y(`Feedback Submitted`,r?`Survey ID : ${r}`:`true`),b&&f(`${_}Feedback Submitted`),e&&d(`${window.location.pathname}?${v}=feedback_submitted`),n!=null&&n.rating&&y(`Feedback Rating`,Number.parseInt(n.rating,10))},g)},!0,!0)},g)})},g)},500)}m(`FSR`,n)},g)})();
+(function(){function e(){return window.csqDebuggerEnabled===!0||window.location.href.includes(`csqDebuggerEnabled=true`)}function t(t,n,r=`info`){if(!e())return;let i=r===`warn`?`rgb(255, 86, 2)`:`#2a9d8f`;console.log(`%cCSQ INTEGRATION: [${t}] : ${n}`,`color: ${i}; font-weight: bold`)}function n(e,t){let n=document.getElementById(`csKey`),r=document.getElementById(`csValue`);return n!==null&&(n.textContent=e),r!==null&&(r.textContent=String(t)),`Dynamic variable with ${e} and value ${t} sent`}function r(){return window._uxa=window._uxa||[],window._uxa}function i(e){return e instanceof Error?e.message:String(e)}function a(t,n){try{t()}catch(t){r().push([`logSnippetError`,n,t]),e()&&(console.log(`%cCSQ INTEGRATION ERROR: [${n}] : ${i(t)}`,`color:rgb(228, 25, 45); font-weight: bold`),console.log(t))}}function o(e,t){var n,r;(n=window).CS_CONF!=null||(n.CS_CONF={integrations:[]}),(r=window.CS_CONF).integrations!=null||(r.integrations=[]);let i={name:e,version:t};window.CS_CONF.integrations.push(i)}function s(e,t){var n,r;let i=(n=window.CS_INTEGRATIONS_CONF)==null?void 0:n[e];return i==null||(r=i.find(e=>e.key===t))==null?void 0:r.value}function c(e,t){r().push([`trackDynamicVariable`,{key:e,value:t}])}function l(e,r){return(i,a)=>{let o=`${r}${i}`;c(o,a),t(e,n(o,a))}}function u(e){try{return typeof e==`string`&&JSON.parse(e)}catch(e){return!1}}var d=`youtube`,f=l(d,`VA_YT_`);a(()=>{o(`Youtube`,`2.7.1`);let e=s(d,`enableVideoStarted`)===!0,t=s(d,`enableVideoPaused`)===!0,n=s(d,`enableVideoCompleted`)===!0,r=s(d,`enableVideoPlayDuration`)===!0,i=s(d,`enableVideoQuality`)===!0,c=s(d,`enableVolumeChanged`)===!0,l=s(d,`enableVideoMuted`)===!0,p=`iframe[src^="https://www.youtube.com/embed/"]`,m=`iframe[src^="https://www.youtube-nocookie.com/embed/"]`,h=!1,g=!1,_,v=``,y=!1,b=new Map,x=document.querySelectorAll(p);x.length===0&&(x=document.querySelectorAll(m),x.length>0&&(h=!0));function S(e){var t,n;return(t=(n=/\/embed\/([^/?]+)/.exec(e))==null?void 0:n[1])==null?``:t}function C(){for(let e=0;e<x.length;e++){let t=x[e];t&&t.contentWindow&&typeof t.contentWindow.postMessage==`function`&&(h?t.contentWindow.postMessage(`{"event":"listening"}`,`https://www.youtube-nocookie.com`):t.contentWindow.postMessage(`{"event":"listening"}`,`https://www.youtube.com`))}}function w(){_!==void 0&&(clearInterval(_),_=void 0)}function T(){if(_!==void 0)return;C();let e=setInterval(C,300);_=e,setTimeout(()=>{_===e&&w()},5e3)}function E(){a(()=>{if(!g){g=!0;let o=[],s=``,p=0,m=``,h=0,_=0,b=0;window.addEventListener(`message`,g=>{let x=g.data;(g.origin===`https://www.youtube.com`||g.origin===`https://www.youtube-nocookie.com`)&&x&&a(()=>{var a;let d=u(x);if(!d)return;let g=d.info;if(!g)return;let S=(a=g.videoData)==null?void 0:a.video_id;if(S){if(v&&S!==v)return;y=!0}else if(!y)return;if(w(),S&&(s=S),g.duration&&(p=g.duration),p&&s){if(g.playerState!==void 0&&(m=g.playerState,!Number.isNaN(m))){let r=``,i=``;if(n&&m===0?(r=`complete_`,i=`Video completed`):e&&m===1?(r=`play_`,i=`Video started`):t&&m===2&&(r=`pause_`,i=`Video paused`),r&&i){let e=`${r}${s}`;o.includes(e)||(o.push(e),f(i,`Video ID : ${s}`))}}if(d.event===`infoDelivery`){if(i&&g.playbackQuality&&!g.duration){let e=g.playbackQuality;e&&f(`Video quality`,`Video ID : ${s} - Quality : ${e}`)}if(l&&g.muted){let e=`muted_${s}`;o.includes(e)||(o.push(e),f(`Video muted`,`Video ID : ${s}`))}if(c&&g.volume!==void 0){let e=`initialvolume_${s}`;if(o.includes(e)||(o.push(e),_=g.volume),b=g.volume,b!==_){let e=`volumechanged_${s}`;o.includes(e)||(o.push(e),b=_,f(`Video volume changed`,`Video ID : ${s}`))}}if(r&&g.currentTime&&(h=g.currentTime,!Number.isNaN(h))){h=Math.round(h);let e=Math.round(h/p*100),t=``;if(e>=25&&(t=`25`),e>=50&&(t=`50`),e>=75&&(t=`75`),e===100&&(t=`100`),t){let e=`videoduration_${t}_${s}`;o.includes(e)||(o.push(e),f(`Video play view duration`,`Video ID : ${s} : ${t}%`))}}}}},d)})}T()},d)}x.length===0?new MutationObserver(()=>{a(()=>{if(document.querySelector(p)||document.querySelector(m)){x=document.querySelectorAll(p),x.length===0&&(x=document.querySelectorAll(m),x.length>0&&(h=!0));let e=!1;for(let t=0;t<x.length;t++){let n=x[t];!n||b.get(n)===n.src||(b.set(n,n.src),e=!0,v=S(n.src),y=!1)}e&&E()}},d)}).observe(document.documentElement,{childList:!0,subtree:!0,attributes:!0,attributeFilter:[`src`]}):setTimeout(()=>{E()},500)},d)})();
+function injectTag(stable, candidate, share) {
+  if (typeof CS_CONF === "undefined") {
+    return;
+  }
+  const d2 = document;
+  const logUrl = `https://${CS_CONF.ed}`;
+  const pid = CS_CONF.projectId;
+  const w2 = window;
+  const injectedPids = w2.CS_TAG_PIDS = w2.CS_TAG_PIDS || {};
+  const injected = injectedPids[String(pid)];
+  if (injected) {
+    if (injected !== 1) CS_CONF.rollout = injected.rollout;
+    return;
+  }
+  const n2 = navigator;
+  const isBot = n2.webdriver === true || /bot[/;-]|\bbot\b|spider|crawl|slurp|headlesschrome|lighthouse|prerender|google-inspectiontool|facebookexternalhit|mediapartners/i.test(
+    n2.userAgent || ""
+  );
+  const rollout = candidate && share && !isBot ? { arm: Math.random() < share ? "candidate" : "stable", share } : null;
+  CS_CONF.rollout = rollout;
+  injectedPids[String(pid)] = { rollout };
+  function log2(message2, level = "critical") {
+    const page = location.origin + location.pathname;
+    const msg = `${logUrl}?a=uxa&l=${level}&m=${encodeURIComponent(message2)}&pid=${pid}&p=${encodeURIComponent(page)}`;
+    fetch(msg, { mode: "cors", credentials: "omit", keepalive: true }).catch(
+      () => {
+        const image = new Image();
+        image.crossOrigin = "anonymous";
+        image.src = msg;
+      }
+    );
+  }
+  const currentScript = document.currentScript;
+  const hjDomains = ["static-integration.hotjar.com", "static.hotjar.com"];
+  const isHotjar = hjDomains.some((x2) => currentScript == null ? void 0 : currentScript.src.includes(x2));
+  const origin = isHotjar ? new URL(currentScript.src).origin : "https://t.contentsquare.net";
+  const path2 = (rollout == null ? void 0 : rollout.arm) === "candidate" && candidate ? candidate : stable;
+  const expectedSrc = new URL(`${origin}/${path2}`).href;
+  const element = d2.createElement("script");
+  let stopped = false;
+  let errorTimer;
+  const observer = new MutationObserver((records) => checkAttributes(records));
+  function cleanup() {
+    stopped = true;
+    clearTimeout(errorTimer);
+    observer.disconnect();
+    d2.removeEventListener("securitypolicyviolation", onCsp);
+    element.onload = null;
+    element.onerror = null;
+  }
+  function report(cause) {
+    log2(`Bootstrap error: ${cause}`);
+  }
+  function checkAttributes(records = observer.takeRecords()) {
+    if (stopped) return true;
+    for (const attribute of ["src", "type"]) {
+      const expected = attribute === "src" ? expectedSrc : null;
+      const observed = element.getAttribute(attribute);
+      if (attribute === "src" && element.src !== expectedSrc || observed !== expected || records.some(
+        (record) => record.attributeName === attribute && record.oldValue !== expected
+      )) {
+        cleanup();
+        report(`${attribute} changed observed=${JSON.stringify(observed)}`);
+        return true;
+      }
+    }
+    return false;
+  }
+  function onCsp(event) {
+    if (stopped || !event.isTrusted || event.disposition !== "enforce" || !["script-src", "script-src-elem"].includes(event.effectiveDirective) || event.blockedURI !== expectedSrc && !(event.target === element && event.blockedURI === origin)) {
+      return;
+    }
+    if (checkAttributes()) return;
+    cleanup();
+    report(
+      `csp blocked directive=${event.effectiveDirective} blockedURI=${event.blockedURI}`
+    );
+  }
+  d2.addEventListener("securitypolicyviolation", onCsp);
+  element.onload = () => {
+    if (!checkAttributes()) cleanup();
+  };
+  element.onerror = () => {
+    if (checkAttributes() || errorTimer !== void 0) return;
+    errorTimer = setTimeout(() => {
+      if (checkAttributes()) return;
+      cleanup();
+      report("others");
+    }, 0);
+  };
+  try {
+    element.src = expectedSrc;
+    element.async = true;
+    element.fetchPriority = "high";
+    element.crossOrigin = "anonymous";
+    if (!checkAttributes()) {
+      observer.observe(element, {
+        attributes: true,
+        attributeFilter: ["src", "type"],
+        attributeOldValue: true
+      });
+    }
+    (d2.head || d2.documentElement).appendChild(element);
+    checkAttributes();
+  } catch (error2) {
+    cleanup();
+    throw error2;
+  }
+}
+injectTag("releases/15.275.0/es2019/1f80404-bc56bbb4.js");
+
+// signature-84bf084379febca354bdad0bd241004c0dba0472513e92c82d187342c6791cd5

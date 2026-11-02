@@ -6,12 +6,12 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
-  <a href="https://www.npmjs.com/package/@endora-commerce/cli"><img src="https://img.shields.io/npm/v/@endora-commerce/cli?label=npm&amp;logo=npm" alt="npm version of @endora-commerce/cli"></a>
+  <a href="https://www.npmjs.com/package/@endora-commerce/cli"><img src="https://img.shields.io/npm/v/@endora-commerce/cli?label=npm&logo=npm" alt="npm version of @endora-commerce/cli"></a>
   <a href="https://docs.commerce.endora.software"><img src="https://img.shields.io/badge/docs-docs.commerce.endora.software-6322C8" alt="Documentation"></a>
-  <a href="https://discord.gg/GJ2Yk9CvY"><img src="https://img.shields.io/badge/Discord-join%20us-5865F2?logo=discord&amp;logoColor=white" alt="Join us on Discord"></a>
+  <a href="https://discord.gg/GJ2Yk9CvY"><img src="https://img.shields.io/badge/Discord-join%20us-5865F2?logo=discord&logoColor=white" alt="Join us on Discord"></a>
   <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome"></a>
-  <img src="https://img.shields.io/badge/built%20with-Fastify-000000?logo=fastify&amp;logoColor=white" alt="Built with Fastify">
-  <img src="https://img.shields.io/badge/built%20with-Next.js-000000?logo=nextdotjs&amp;logoColor=white" alt="Built with Next.js">
+  <img src="https://img.shields.io/badge/built%20with-Fastify-000000?logo=fastify&logoColor=white" alt="Built with Fastify">
+  <img src="https://img.shields.io/badge/built%20with-Next.js-000000?logo=nextdotjs&logoColor=white" alt="Built with Next.js">
 </p>
 
 **Open-source commerce for B2B and B2C** — quote requests and direct purchase on one codebase,
@@ -95,12 +95,12 @@ The second is the one development command. It starts the three in one terminal w
 labelled by its layer; Ctrl-C stops them all. Each layer keeps its own command — the end of the
 first command prints them — and builds and deploys on its own.
 
-| | Address |
-| --- | --- |
-| Storefront | `http://localhost:3000` |
-| API | `http://localhost:3001` |
-| Admin | `http://localhost:3002` — sign in with the administrator's e-mail and the password you chose |
-| Mailpit (caught e-mail) | `http://localhost:8025` |
+|                         | Address                                                                                         |
+| ----------------------- | ----------------------------------------------------------------------------------------------- |
+| Storefront              | `http://localhost:3000`                                                                       |
+| API                     | `http://localhost:3001`                                                                       |
+| Admin                   | `http://localhost:3002` — sign in with the administrator's e-mail and the password you chose |
+| Mailpit (caught e-mail) | `http://localhost:8025`                                                                       |
 
 A machine that already runs something on one of those ports is the ordinary case. The installer
 checks before it writes: a taken port — a development service's, the API's, the admin's or the
@@ -167,15 +167,15 @@ dependency or alters baseline resource use updates them in the same pull request
 
 ### Development
 
-| Resource | Minimum | Recommended |
-| --- | --- | --- |
-| CPU | 4 vCPU (x86_64 or ARM64) | 8 vCPU |
-| RAM | 8 GB | 16 GB |
-| Disk | 20 GB free (SSD strongly preferred) | 40 GB free (NVMe SSD) |
-| OS | Linux (Ubuntu 22.04+ / Debian 12+ / Arch / Fedora), macOS 13+, Windows 11 + WSL2 | Linux |
-| Docker | Docker Engine 24+ with Docker Compose v2 | — |
-| Node.js | 22.x LTS (see `.nvmrc`) — minimum **22.18** (MikroORM 7 needs 22.17; unflagged type stripping needs 22.18) | — |
-| pnpm | 9.15.0, pinned by `packageManager` — any pnpm ≥ 9.7, or `corepack enable`, switches to it on its own | — |
+| Resource | Minimum                                                                                                             | Recommended           |
+| -------- | ------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| CPU      | 4 vCPU (x86_64 or ARM64)                                                                                            | 8 vCPU                |
+| RAM      | 8 GB                                                                                                                | 16 GB                 |
+| Disk     | 20 GB free (SSD strongly preferred)                                                                                 | 40 GB free (NVMe SSD) |
+| OS       | Linux (Ubuntu 22.04+ / Debian 12+ / Arch / Fedora), macOS 13+, Windows 11 + WSL2                                    | Linux                 |
+| Docker   | Docker Engine 24+ with Docker Compose v2                                                                            | —                    |
+| Node.js  | 22.x LTS (see `.nvmrc`) — minimum **22.18** (MikroORM 7 needs 22.17; unflagged type stripping needs 22.18) | —                    |
+| pnpm     | 9.15.0, pinned by `packageManager` — any pnpm ≥ 9.7, or `corepack enable`, switches to it on its own          | —                    |
 
 Approximate resident usage with everything running (`pnpm run dev` + Docker stack + Vitest in
 watch mode): PostgreSQL 16 ~150 MB, Redis 7 ~50 MB, Meilisearch 1.11 ~300 MB (larger with the
@@ -186,17 +186,17 @@ catalogue), Mailpit ~20 MB, and ~500–800 MB for each of the three Node.js proc
 Target workload: a single supplier with a catalogue of hundreds of thousands of products, and
 hundreds of quote requests and hundreds of orders per month.
 
-| Resource | Minimum | Recommended |
-| --- | --- | --- |
-| CPU | 4 vCPU | 8 vCPU |
-| RAM | 8 GB | 16 GB |
-| Disk | 40 GB SSD | 100 GB NVMe SSD (with daily database backups) |
-| OS | Linux LTS (Ubuntu 22.04+ / Debian 12+) | — |
-| Network | Static public IPv4, HTTPS terminator (nginx / Caddy / Cloudflare) | — |
-| PostgreSQL | 16.x | — |
-| Redis | 7.x | — |
-| Meilisearch | 1.11.x | — |
-| Node.js | 22.x LTS (minimum 22.18) | — |
+| Resource    | Minimum                                                           | Recommended                                   |
+| ----------- | ----------------------------------------------------------------- | --------------------------------------------- |
+| CPU         | 4 vCPU                                                            | 8 vCPU                                        |
+| RAM         | 8 GB                                                              | 16 GB                                         |
+| Disk        | 40 GB SSD                                                         | 100 GB NVMe SSD (with daily database backups) |
+| OS          | Linux LTS (Ubuntu 22.04+ / Debian 12+)                            | —                                            |
+| Network     | Static public IPv4, HTTPS terminator (nginx / Caddy / Cloudflare) | —                                            |
+| PostgreSQL  | 16.x                                                              | —                                            |
+| Redis       | 7.x                                                               | —                                            |
+| Meilisearch | 1.11.x                                                            | —                                            |
+| Node.js     | 22.x LTS (minimum 22.18)                                          | —                                            |
 
 Container orchestration (Kubernetes, Docker Swarm, Nomad) is an operational choice, not a
 requirement; running each service directly on the VPS under systemd, with PostgreSQL, Redis and
@@ -209,16 +209,16 @@ to its own node. Queues run on Redis (BullMQ).
 This section is for working on Endora Commerce itself, in this repository. It is a pnpm
 monorepo:
 
-| Path | What it is |
-| --- | --- |
-| `backend/` | The API server's composition roots, the static-check estate and the backend test suites |
-| `admin/` | The React admin application (Vite) |
-| `storefront/` | The reference Next.js storefront, server-rendered |
-| `packages/platform/` | The kernel: HTTP layer, event bus, command bus, tenancy, module lifecycle |
-| `packages/contracts/` | Zod schemas — the source of truth for every API shape |
+| Path                       | What it is                                                                                                         |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `backend/`               | The API server's composition roots, the static-check estate and the backend test suites                            |
+| `admin/`                 | The React admin application (Vite)                                                                                 |
+| `storefront/`            | The reference Next.js storefront, server-rendered                                                                  |
+| `packages/platform/`     | The kernel: HTTP layer, event bus, command bus, tenancy, module lifecycle                                          |
+| `packages/contracts/`    | Zod schemas — the source of truth for every API shape                                                             |
 | `packages/modules/<id>/` | One package per domain module: entities, services, routes, migrations, translations, admin screens, docs and tests |
-| `packages/cli/` | The `endora` command |
-| `docs/` | The Docusaurus documentation site |
+| `packages/cli/`          | The `endora` command                                                                                             |
+| `docs/`                  | The Docusaurus documentation site                                                                                  |
 
 ### Set up
 
@@ -268,17 +268,17 @@ Run `pnpm self-update` from outside the checkout.
 Each application reads a `.env` in its own directory, and the `.env.example` beside it holds
 safe defaults for the Docker stack. The variables you are most likely to set:
 
-| Variable | Application | What it does |
-| --- | --- | --- |
-| `DATABASE_URL`, `REDIS_URL`, `MEILISEARCH_URL`, `MEILISEARCH_API_KEY` | backend | The three services. |
-| `SMTP_URL`, `MAIL_FROM` | backend | Outgoing e-mail (`smtp://localhost:1025` is Mailpit). Unset in development, e-mail is written to the console. |
-| `SETTINGS_SECRET_ENCRYPTION_KEY` | backend | Base64 32-byte key (`openssl rand -base64 32`) encrypting secret settings and stored credentials at rest. Writing a secret without it fails; rotating it invalidates stored secrets. |
-| `ASSETS_LIBRARY_HMAC_KEY` | backend | Signs short-lived URLs for private assets on local storage (`openssl rand -hex 32`). |
-| `DEFAULT_SALES_CHANNEL_CODE`, `SALES_CHANNEL_HOST_MAP` | backend | Which sales channel is the default, and which request host maps to which channel (`shop-a.example=channel-a,…`). |
-| `PWA_VAPID_SUBJECT` | backend | The `mailto:` contact sent with Web Push messages. |
-| `BACKEND_BASE_URL`, `NEXT_PUBLIC_API_BASE_URL` | storefront | **Required.** The storefront refuses to build or start without them rather than pointing every visitor at `localhost`. |
-| `NEXT_PUBLIC_BUILD_ID` / `VITE_BUILD_ID` | storefront / admin | Set per deployment so the service-worker cache is invalidated on a new release. |
-| `VITE_API_BASE_URL` | admin | Where the admin reaches the API. |
+| Variable                                                                      | Application        | What it does                                                                                                                                                                           |
+| ----------------------------------------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`, `REDIS_URL`, `MEILISEARCH_URL`, `MEILISEARCH_API_KEY` | backend            | The three services.                                                                                                                                                                    |
+| `SMTP_URL`, `MAIL_FROM`                                                   | backend            | Outgoing e-mail (`smtp://localhost:1025` is Mailpit). Unset in development, e-mail is written to the console.                                                                        |
+| `SETTINGS_SECRET_ENCRYPTION_KEY`                                            | backend            | Base64 32-byte key (`openssl rand -base64 32`) encrypting secret settings and stored credentials at rest. Writing a secret without it fails; rotating it invalidates stored secrets. |
+| `ASSETS_LIBRARY_HMAC_KEY`                                                   | backend            | Signs short-lived URLs for private assets on local storage (`openssl rand -hex 32`).                                                                                                 |
+| `DEFAULT_SALES_CHANNEL_CODE`, `SALES_CHANNEL_HOST_MAP`                    | backend            | Which sales channel is the default, and which request host maps to which channel (`shop-a.example=channel-a,…`).                                                                    |
+| `PWA_VAPID_SUBJECT`                                                         | backend            | The `mailto:` contact sent with Web Push messages.                                                                                                                                   |
+| `BACKEND_BASE_URL`, `NEXT_PUBLIC_API_BASE_URL`                            | storefront         | **Required.** The storefront refuses to build or start without them rather than pointing every visitor at `localhost`.                                                         |
+| `NEXT_PUBLIC_BUILD_ID` / `VITE_BUILD_ID`                                  | storefront / admin | Set per deployment so the service-worker cache is invalidated on a new release.                                                                                                        |
+| `VITE_API_BASE_URL`                                                         | admin              | Where the admin reaches the API.                                                                                                                                                       |
 
 A module's own settings — payment and delivery methods, storage adapters, analytics, feeds —
 live in the Settings module and are described on that module's documentation page, not in
