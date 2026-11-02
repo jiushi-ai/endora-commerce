@@ -1,0 +1,8 @@
+{
+  "settingGroups.bidding.name": "Bidding",
+  "settingLabels.bidding.activation.name": "Bidding enabled",
+  "settingLabels.bidding.activation.description": "Switches scarce-stock bidding on or off for this instance: role seeds at boot, and (once shipped) campaign and receipt surfaces. Off is non-destructive — seeded roles stay in the database.",
+  "roles.ops.label": "Operations",
+  "roles.sales.label": "Sales",
+  "roles.after_sales.label": "After-sales"
+}

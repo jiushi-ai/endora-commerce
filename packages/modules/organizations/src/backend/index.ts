@@ -70,6 +70,7 @@ import {
   SalesRepAssignmentService,
   type SalesRepAssignmentPort,
 } from './services/sales-rep-assignment-service.js';
+import { OrganizationStaffAssignmentService } from './services/staff-assignment-service.js';
 import { OrgRegistrationNotifier } from './services/org-registration-notifier.js';
 import { makeSetCartApprovalPolicyCommand } from './commands/set-cart-approval-policy.command.js';
 import { Organization } from './entities/organization.entity.js';
@@ -78,6 +79,7 @@ import { MinisterstwoFinansowClient } from './integrations/ministerstwo-finansow
 import type { OrganizationEventBus } from './services/registration-service.js';
 import { organizationsModule, type OrganizationsModuleOptions } from './plugin.js';
 import { registerOrganizationsSalesRepRoutes } from './routes.sales-reps.js';
+import { registerOrganizationStaffAssignmentRoutes } from './routes.staff-assignments.js';
 import {
   EMAIL_VERIFICATION_DEFAULT,
   NEW_ORG_REGISTRATION_DEFAULT,
@@ -91,8 +93,10 @@ import { OrganizationDeliveryMethodLink } from './entities/organization-delivery
 import { OrganizationInvitation } from './entities/organization-invitation.entity.js';
 import { OrganizationPaymentMethodLink } from './entities/organization-payment-method-link.entity.js';
 import { OrganizationSalesRepAssignment } from './entities/organization-sales-rep-assignment.entity.js';
+import { OrganizationStaffAssignment } from './entities/organization-staff-assignment.entity.js';
 import { OrganizationTaxIdValidation } from './entities/organization-tax-id-validation.entity.js';
 import { OrganizationWarehouseLink } from './entities/organization-warehouse-link.entity.js';
+import type { OrganizationStaffAssignmentPort } from '@endora-commerce/contracts';
 
 /**
  * `organizations` — the tenancy root, and seven container names claimed by a
@@ -274,6 +278,11 @@ export interface OrganizationsCradle {
    * rep holds `organizations:rollup` (feature 056 / T143a).
    */
   readonly organizationSalesRepScopePort: SalesRepAssignmentPort;
+  /**
+   * Multi-kind org owners (ops / sales / after_sales) — feature 165. Separate
+   * from `organizationSalesRepScopePort` / RFQ visibility.
+   */
+  readonly organizationStaffAssignmentPort: OrganizationStaffAssignmentPort;
   readonly organizationInheritancePort: OrganizationInheritanceService;
   readonly organizationModerationService: OrganizationModerationService;
   readonly organizationRegistrationNotifier: OrgRegistrationNotifier;
@@ -799,6 +808,21 @@ export function registerModule(ctx: ModuleContext): void {
   );
 
   /**
+   * Multi-kind staff owners (feature 165 / Batch C). Gated like every other
+   * owned port so a switched-off `organizations` answers 503 rather than an
+   * empty list that reads as "nobody is assigned".
+   */
+  ctx.di.providePort<OrganizationStaffAssignmentPort>(
+    'organizationStaffAssignmentPort',
+    ctx
+      .asFunction(
+        ({ emFactory, auditLogService }: OrganizationsCradle): OrganizationStaffAssignmentPort =>
+          new OrganizationStaffAssignmentService(emFactory, auditLogService),
+      )
+      .singleton(),
+  );
+
+  /**
    * The tenant reach of an authenticated admin, for the platform's
    * request-scope hook.
    *
@@ -861,6 +885,23 @@ export function registerModule(ctx: ModuleContext): void {
       salesRepAssignment: lazyPort<SalesRepAssignmentPort>(
         ctx,
         'organizationSalesRepScopePort',
+      ),
+      adminUsers: lazyPort<AdminUserReadPort>(ctx, 'adminUserReadPort'),
+    });
+  });
+
+  /**
+   * Multi-kind staff assignment endpoints (feature 165 / Batch C / T2).
+   * Admin UI for these routes is deferred; API + service land first.
+   */
+  ctx.routes(async (app) => {
+    await registerOrganizationStaffAssignmentRoutes(app, {
+      emFactory: cradle().emFactory,
+      requireAdmin: (permission) => async (req, reply) =>
+        cradle().requireAdmin(permission)(req, reply),
+      staffAssignment: lazyPort<OrganizationStaffAssignmentPort>(
+        ctx,
+        'organizationStaffAssignmentPort',
       ),
       adminUsers: lazyPort<AdminUserReadPort>(ctx, 'adminUserReadPort'),
     });
@@ -966,6 +1007,7 @@ export const entities = [
   OrganizationInvitation,
   OrganizationPaymentMethodLink,
   OrganizationSalesRepAssignment,
+  OrganizationStaffAssignment,
   OrganizationTaxIdValidation,
   OrganizationWarehouseLink,
   Organization,

@@ -2,7 +2,7 @@
 
 **Spec / 规格**: `specs/165-mobii-bidding/spec.md`  
 **Created / 创建**: 2026-10-30  
-**Status / 状态**: Draft (Batch B) / 草稿（批次 B）
+**Status / 状态**: Approved (Batch C in progress) / 已批准（批次 C 进行中）
 
 ## Summary / 摘要
 

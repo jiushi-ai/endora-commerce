@@ -387,6 +387,9 @@ importers:
       '@endora-commerce/mod-auth':
         specifier: workspace:*
         version: link:../packages/modules/auth
+      '@endora-commerce/mod-bidding':
+        specifier: workspace:*
+        version: link:../packages/modules/bidding
       '@endora-commerce/mod-blog':
         specifier: workspace:*
         version: link:../packages/modules/blog
@@ -1559,6 +1562,24 @@ importers:
       ioredis:
         specifier: ^5.10.1
         version: 5.10.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@22.19.17)(happy-dom@20.14.5)(jsdom@29.1.1(@noble/hashes@2.0.1))(vite@7.3.7(@types/node@22.19.17)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.23.15)(yaml@2.9.0))
+
+  packages/modules/bidding:
+    devDependencies:
+      '@endora-commerce/contracts':
+        specifier: workspace:*
+        version: link:../../contracts
+      '@endora-commerce/platform':
+        specifier: workspace:*
+        version: link:../../platform
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.19.17
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -8064,6 +8085,7 @@ packages:
   '@smithy/smithy-client@4.12.13':
     resolution: {integrity: sha512-y/Pcj1V9+qG98gyu1gvftHB7rDpdh+7kIBIggs55yGm3JdtBV8GT8IFF3a1qxZ79QnaJHX9GXzvBG6tAd+czJA==}
     engines: {node: '>=18.0.0'}
+    deprecated: Deprecated due to a bug in custom logger data redaction. See https://github.com/aws/aws-sdk-js-v3/issues/8393.
 
   '@smithy/types@4.14.1':
     resolution: {integrity: sha512-59b5HtSVrVR/eYNei3BUj3DCPKD/G7EtDDe7OEJE7i7FtQFugYo6MxbotS8mVJkLNVf8gYaAlEBwwtJ9HzhWSg==}

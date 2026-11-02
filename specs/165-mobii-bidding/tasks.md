@@ -4,11 +4,11 @@ Mapped to PRO batches C → E. TDD: failing test first where the repo pattern re
 
 ## P1 / Batch C — Foundation / 底座
 
-- [ ] T1 Seed admin roles: ops / sales / after-sales (+ permission codes for later bidding) / 种子管理员角色：运营/销售/售后（含后续竞价权限码）
-- [ ] T2 Extend organization owners: ops + sales + after-sales assignment model/UI / 扩展组织对接人：运营+销售+售后的分配模型与界面
-- [ ] T3 Offline contacts strategy (custom fields and/or CRM) documented + minimal UI / 线下联系人策略（自定义字段和/或 CRM）成文 + 最小界面
-- [ ] T4 Catalog/CMS attachment conventions for high-end docs (install / after-sales / process pages) / 高端文档挂载约定（安装说明/售后/流程页）
-- [ ] T5 Optionally deactivate cart-first promotions modules on Mobii deploy notes / 可选：在 Mobii 部署说明中关闭以购物车为主的促销等模块
+- [x] T1 Seed admin roles: ops / sales / after-sales (existing catalogue perms; `bidding:*` deferred to D) / 种子管理员角色：运营/销售/售后（现有权限目录；`bidding:*` 延至 D）
+- [x] T2 Extend organization owners: ops + sales + after-sales assignment model + API (Admin UI deferred) / 扩展组织对接人：模型+API（管理端界面后置）
+- [x] T3 Offline contacts strategy (custom fields and/or CRM) documented + minimal UI / 线下联系人策略成文（见 `pro_doc/mobii-foundation-conventions.md`）
+- [x] T4 Catalog/CMS attachment conventions for high-end docs / 高端文档挂载约定（同上）
+- [x] T5 Optionally deactivate cart-first modules — Mobii deploy notes / 可选关闭购物车主路径模块的部署说明（同上）
 
 ## P2 / Batch D — Bidding MVP / 竞价最小可行产品
 

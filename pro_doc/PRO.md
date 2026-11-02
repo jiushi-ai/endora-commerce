@@ -388,7 +388,8 @@ chatlog/                          # 评估与决策会话归档（如 2026-10-29
   - `data-model.md` — Campaign / RuleVersion / BidReceipt / Approval / Allocation
   - `contracts/bidding-api.md` — Admin/Storefront API 草稿与错误码
   - `tasks.md` — T1–T5（C）、T10–T17（D）、T20–T25（E）
-- [x] B.3 规格状态：**Draft**，待你确认后再冻结并开始批次 C 写代码
+- [x] B.3 规格状态：**Draft** → 已由负责人确认，进入批次 C
+- [x] B.4 规格状态更新为 **Approved**（`specs/165-mobii-bidding/spec.md` / `plan.md`）
 
 ---
 
@@ -400,9 +401,13 @@ chatlog/                          # 评估与决策会话归档（如 2026-10-29
 2. 组织多类型对接人（及线下联系人策略）  
 3. 货品+CMS 内容挂载规范；弱化购物车主路径（可关模块）
 
-**执行记录**
+**执行记录（2026-11-02）**
 
-- （未开始 — 等 B 规格确认）
+- [x] C.1 规格标为 **Approved**；开工
+- [x] C.2 T1：模块包 `packages/modules/bidding/` — boot 种子角色 `ops` / `sales` / `after_sales`（仅既有权限码；无 `bidding:*`）；`bidding.activation` 开关
+- [x] C.3 T2：新表 `organization_staff_assignments` + port/API（不碰 RFQ 的 `organization_sales_rep_assignments`）；Admin UI 后置
+- [x] C.4 T3/T4/T5：`pro_doc/mobii-foundation-conventions.md`（线下联系人、货品/CMS 挂载、可选关促销等模块）
+- [x] C.5 `tasks.md` P1 勾选；本 §八 / §99 台账更新
 
 ---
 
@@ -455,3 +460,15 @@ feat-26-10-29 00:55:45 [1.1~1.4]：归档竞价评估 chatlog 并完善 PRO Mobi
 汇总：§八成为执行台账；P0 约定与 MVP 验收清单落入 `pro_doc/`；竞价施工说明书落入 `specs/165-mobii-bidding/`（Draft）。本地店面 env 已改为 `default`（需重启 dev）。
 
 feat-26-10-30 00:48:04 [2.1~2.4]：写入§八总计划并完成批次A/B规格与P0约定
+
+### 3. 批次 C — P1 底座（角色种子 / 对接人 / 约定）
+
+- [x] 3.1 规格标为 Approved；§八批次 C 开工记录
+- [x] 3.2 T1：`packages/modules/bidding` 种子角色 ops/sales/after_sales + 注册进 backend
+- [x] 3.3 T2：`organization_staff_assignments` 实体/迁移/服务/API（保留 RFQ sales-rep 表）
+- [x] 3.4 T3/T4/T5：`pro_doc/mobii-foundation-conventions.md`
+- [x] 3.5 更新 tasks.md / PRO §八 / 本 §99
+
+汇总：规格 Approved；bidding 模块仅角色种子（无 bidding:*）；组织多类型对接人 API；底座约定文档落地。Admin UI / 竞价实体延至批次 D。
+
+feat-26-11-01 19:20:16 [3.1~3.5]：完成批次C底座（角色种子、对接人API、约定文档）

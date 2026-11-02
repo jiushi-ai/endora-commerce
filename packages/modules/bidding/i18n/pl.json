@@ -1,0 +1,8 @@
+{
+  "settingGroups.bidding.name": "Licytacje",
+  "settingLabels.bidding.activation.name": "Licytacje włączone",
+  "settingLabels.bidding.activation.description": "Włącza lub wyłącza licytacje rzadkich zapasów w tej instancji: ziarna ról przy starcie oraz (po wdrożeniu) powierzchnie kampanii i ofert. Wyłączenie jest niedestrukcyjne — zasiane role pozostają w bazie.",
+  "roles.ops.label": "Operacje",
+  "roles.sales.label": "Sprzedaż",
+  "roles.after_sales.label": "Posprzedaż"
+}

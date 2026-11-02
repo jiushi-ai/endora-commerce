@@ -437,6 +437,65 @@ export const salesRepOrganizationSchema = z.object({
 });
 export type SalesRepOrganization = z.infer<typeof salesRepOrganizationSchema>;
 
+// --- Multi-kind org staff assignment (feature 165 / Batch C) ----------------
+//
+// Separate from `organization_sales_rep_assignments`, which RFQ scope still
+// reads. Kinds align with Mobii seeded roles: ops / sales / after_sales.
+
+export const ORGANIZATION_STAFF_KINDS = ['ops', 'sales', 'after_sales'] as const;
+export type OrganizationStaffKind = (typeof ORGANIZATION_STAFF_KINDS)[number];
+
+export const organizationStaffKindSchema = z.enum(ORGANIZATION_STAFF_KINDS);
+
+export const assignOrganizationStaffRequestSchema = z.object({
+  adminUserId: uuidSchema,
+  kind: organizationStaffKindSchema,
+});
+export type AssignOrganizationStaffRequest = z.infer<typeof assignOrganizationStaffRequestSchema>;
+
+export const organizationStaffAssignmentSchema = z.object({
+  id: uuidSchema,
+  organizationId: uuidSchema,
+  adminUserId: uuidSchema,
+  kind: organizationStaffKindSchema,
+  displayName: z.string(),
+  email: z.string().email(),
+  assignedAt: isoDateTimeSchema,
+  assignedByAdminUserId: uuidSchema.nullable(),
+});
+export type OrganizationStaffAssignment = z.infer<typeof organizationStaffAssignmentSchema>;
+
+export interface OrganizationStaffAssignmentRow {
+  id: string;
+  organizationId: string;
+  adminUserId: string;
+  kind: OrganizationStaffKind;
+  assignedByAdminUserId: string | null;
+  createdAt: Date;
+}
+
+/**
+ * Multi-kind staff owners on an organization (feature 165). Does **not** replace
+ * `SalesRepAssignmentPort` / RFQ visibility.
+ */
+export interface OrganizationStaffAssignmentPort {
+  listForOrganization(
+    organizationId: string,
+    kind?: OrganizationStaffKind,
+  ): Promise<OrganizationStaffAssignmentRow[]>;
+  upsert(input: {
+    organizationId: string;
+    adminUserId: string;
+    kind: OrganizationStaffKind;
+    assignedByAdminUserId?: string | null;
+  }): Promise<OrganizationStaffAssignmentRow>;
+  unassign(input: {
+    organizationId: string;
+    adminUserId: string;
+    kind: OrganizationStaffKind;
+  }): Promise<boolean>;
+}
+
 // ---------------------------------------------------------------------------
 // --- ports -----------------------------------------------------------------
 //

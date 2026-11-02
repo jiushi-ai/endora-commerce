@@ -115,6 +115,14 @@ const modules = [
   },
   {
     type: 'category',
+    label: 'Bidding', key: 'bidding',
+    link: { type: 'doc', id: 'modules/bidding' },
+    items: [
+      'module-reference/bidding',
+    ],
+  },
+  {
+    type: 'category',
     label: 'Blog', key: 'blog',
     link: { type: 'doc', id: 'modules/blog/index' },
     items: [
