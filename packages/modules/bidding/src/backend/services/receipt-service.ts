@@ -3,9 +3,12 @@ import {
   ERROR_CODES,
   type AllocateCampaignRequest,
   type ApproveBidReceiptRequest,
+  type AssetsLibraryPort,
   type BiddingAllocationOutcome,
   type BiddingReceipt,
   type BiddingReceiptAdmin,
+  type BiddingReceiptAttachment,
+  type OrganizationDetailsPort,
   type RejectBidReceiptRequest,
   type SubmitBidReceiptRequest,
 } from '@endora-commerce/contracts';
@@ -18,6 +21,20 @@ import { BidReceipt } from '../entities/bid-receipt.entity.js';
 import { BiddingAllocationResult } from '../entities/bidding-allocation-result.entity.js';
 import { BiddingCampaign } from '../entities/bidding-campaign.entity.js';
 import { BiddingCampaignRuleVersion } from '../entities/bidding-campaign-rule-version.entity.js';
+
+/** Prefer a forced download when the library served a `/assets/file/:id` URL. */
+function asDownloadLink(url: string, assetId: string): string {
+  const [beforeFragment = ''] = url.split('#');
+  const [path = '', query] = beforeFragment.split('?');
+  if (!path.endsWith(`/assets/file/${assetId}`)) return url;
+  if (query !== undefined && new URLSearchParams(query).has('download')) return url;
+  return `${beforeFragment}${query === undefined ? '?' : '&'}download=1`;
+}
+
+export interface ReceiptAdminEnrichment {
+  organizations: OrganizationDetailsPort;
+  assetsLibrary: AssetsLibraryPort;
+}
 
 function toReceiptDto(row: BidReceipt, sealPrices: boolean): BiddingReceipt {
   return {
@@ -55,10 +72,13 @@ export class BiddingReceiptService {
     private readonly auditLog?: AuditPort,
   ) {}
 
-  async listForAdmin(filters?: {
-    campaignId?: string;
-    status?: string;
-  }): Promise<BiddingReceiptAdmin[]> {
+  async listForAdmin(
+    filters?: {
+      campaignId?: string;
+      status?: string;
+    },
+    enrich?: ReceiptAdminEnrichment,
+  ): Promise<BiddingReceiptAdmin[]> {
     const em = this.emFactory();
     const where: Record<string, unknown> = {};
     if (filters?.campaignId) where.campaignId = filters.campaignId;
@@ -68,15 +88,64 @@ export class BiddingReceiptService {
     const campaigns = campaignIds.length
       ? await em.find(BiddingCampaign, { id: { $in: campaignIds } })
       : [];
-    const statusByCampaign = new Map(campaigns.map((c) => [c.id, c.status]));
-    return rows.map((row) => {
-      const campaignStatus = statusByCampaign.get(row.campaignId);
+    const campaignById = new Map(campaigns.map((c) => [c.id, c]));
+
+    const orgNameById = new Map<string, string>();
+    if (enrich && rows.length > 0) {
+      const orgIds = [...new Set(rows.map((r) => r.organizationId))];
+      const orgs = await enrich.organizations.findByIds(orgIds);
+      for (const org of orgs) orgNameById.set(org.id, org.name);
+    }
+
+    const attachmentCache = new Map<string, BiddingReceiptAttachment>();
+    async function resolveAttachment(assetId: string): Promise<BiddingReceiptAttachment> {
+      const hit = attachmentCache.get(assetId);
+      if (hit) return hit;
+      if (!enrich) {
+        const stub: BiddingReceiptAttachment = { id: assetId, filename: assetId, url: null };
+        attachmentCache.set(assetId, stub);
+        return stub;
+      }
+      try {
+        const asset = await enrich.assetsLibrary.getAsset(assetId);
+        const resolved: BiddingReceiptAttachment = {
+          id: asset.id,
+          filename: asset.filename,
+          url: asDownloadLink(asset.url, asset.id),
+        };
+        attachmentCache.set(assetId, resolved);
+        return resolved;
+      } catch {
+        const missing: BiddingReceiptAttachment = {
+          id: assetId,
+          filename: assetId.slice(0, 8) + '…',
+          url: null,
+        };
+        attachmentCache.set(assetId, missing);
+        return missing;
+      }
+    }
+
+    const out: BiddingReceiptAdmin[] = [];
+    for (const row of rows) {
+      const campaign = campaignById.get(row.campaignId);
       const seal =
-        campaignStatus === 'published' ||
-        campaignStatus === 'draft' ||
-        campaignStatus === undefined;
-      return toReceiptDto(row, seal);
-    });
+        campaign?.status === 'published' ||
+        campaign?.status === 'draft' ||
+        campaign === undefined;
+      const base = toReceiptDto(row, seal);
+      const attachments = await Promise.all(
+        (row.attachmentAssetIds ?? []).map((id) => resolveAttachment(id)),
+      );
+      out.push({
+        ...base,
+        campaignCode: campaign?.code,
+        campaignTitle: campaign?.title,
+        organizationName: orgNameById.get(row.organizationId) ?? null,
+        attachments,
+      });
+    }
+    return out;
   }
 
   async listMine(organizationId: string): Promise<BiddingReceipt[]> {

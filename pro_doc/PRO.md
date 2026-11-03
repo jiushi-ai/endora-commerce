@@ -430,6 +430,7 @@ chatlog/                          # 评估与决策会话归档（如 2026-10-29
 - [x] D.7 UI 打磨（批次 6，方案二）：列表页 New+ / 筛选 / 分页；独立创建页 + active 商品下拉；Close bids 加深；小b Open 样式 + 分页
 - [x] D.8 UI 文案/按钮（批次 7）：Close bids 对齐 Enter new（outline）；列表/创建页短词 label；`i18n:reload` 写入 DB
 - [x] D.9 意向模板/附件 UI（批次 8）：Receipts 筛选分页；大B 创建上传模板 PDF；小b 下载模板 + 上传签章 PDF（替换 UUID 粘贴）
+- [x] D.10 Receipts 可读性（批次 9）：Campaign code/title、Org name；Intent PDF Preview/Download
 
 ---
 
@@ -538,3 +539,13 @@ feat-26-11-03 00:08:14 [7.1~7.3]：竞价Close bids outline与Admin人读短词i
 汇总：补齐 G-C3 用户路径（模板→线下盖章→上传）；Receipts 对齐列表标准；E 不再重复做模板 UI。
 
 feat-26-11-03 01:11:01 [8.1~8.4]：竞价Receipts筛选分页与意向模板下载上传
+
+### 9. 批次 D — Receipts 列表可读性 + 意向 PDF 预览下载
+
+- [x] 9.1 Admin list API 补齐 campaignCode/Title、organizationName、attachments[{id,filename,url}]
+- [x] 9.2 ReceiptsPage：Campaign/Org 人读列；Intent PDF Preview/Download；按钮 title 说明
+- [x] 9.3 contracts+bidding build、`i18n:reload`、backend 热重启；§八 D.10 / 本 §99
+
+汇总：大B 回执台不再只显示 UUID；可在线预览/下载小b 签章意向 PDF。Ops approve = 运营过审；Convert = 预付确认后薄转订单。
+
+feat-26-11-03 01:39:16 [9.1~9.3]：竞价Receipts显示活动与商户名并支持意向PDF预览下载

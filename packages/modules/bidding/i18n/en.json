@@ -67,7 +67,7 @@
   "receipts.error.load": "Could not load receipts.",
   "receipts.error.action": "Receipt action failed.",
   "receipts.filter.search": "Search",
-  "receipts.filter.searchPlaceholder": "Receipt, campaign, or org id",
+  "receipts.filter.searchPlaceholder": "Code, title, org name, or id",
   "receipts.filter.status": "Status",
   "receipts.filter.statusAll": "All statuses",
   "receipts.status.submitted": "Submitted",
@@ -87,9 +87,15 @@
   "receipts.col.org": "Organization",
   "receipts.col.status": "Status",
   "receipts.col.bid": "Bid",
+  "receipts.col.attachment": "Intent PDF",
   "receipts.col.actions": "Actions",
   "receipts.action.ops": "Ops approve",
+  "receipts.action.opsHint": "Operations review: approve this sealed bid to pass it to sales.",
   "receipts.action.sales": "Sales approve",
+  "receipts.action.salesHint": "Sales review: approve after ops, then deposit can be confirmed.",
   "receipts.action.deposit": "Confirm deposit",
-  "receipts.action.convert": "Convert"
+  "receipts.action.convert": "Convert",
+  "receipts.action.convertHint": "Create a thin order from this deposit-confirmed receipt.",
+  "receipts.action.preview": "Preview",
+  "receipts.action.download": "Download"
 }

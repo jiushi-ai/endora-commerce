@@ -191,9 +191,20 @@ export const biddingReceiptSchema = z.object({
 });
 export type BiddingReceipt = z.infer<typeof biddingReceiptSchema>;
 
+/** One intent PDF (or other asset) on an admin receipt row. */
+export const biddingReceiptAttachmentSchema = z.object({
+  id: uuidSchema,
+  filename: z.string(),
+  url: z.string().nullable(),
+});
+export type BiddingReceiptAttachment = z.infer<typeof biddingReceiptAttachmentSchema>;
+
 /** Admin desk view — peer prices visible after close_for_bids / allocate. */
 export const biddingReceiptAdminSchema = biddingReceiptSchema.extend({
-  organizationName: z.string().optional(),
+  campaignCode: z.string().optional(),
+  campaignTitle: z.string().optional(),
+  organizationName: z.string().nullable().optional(),
+  attachments: z.array(biddingReceiptAttachmentSchema).optional(),
 });
 export type BiddingReceiptAdmin = z.infer<typeof biddingReceiptAdminSchema>;
 

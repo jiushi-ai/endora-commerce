@@ -5,6 +5,8 @@ import {
   createBiddingCampaignRequestSchema,
   rejectBidReceiptRequestSchema,
   updateBiddingCampaignRequestSchema,
+  type AssetsLibraryPort,
+  type OrganizationDetailsPort,
 } from '@endora-commerce/contracts';
 import type { RequireAdminFactory } from '@endora-commerce/platform/kernel';
 import type { BiddingCampaignService } from './services/campaign-service.js';
@@ -14,6 +16,8 @@ export interface BiddingAdminRoutesDeps {
   requireAdmin: RequireAdminFactory;
   campaigns: BiddingCampaignService;
   receipts: BiddingReceiptService;
+  organizations: OrganizationDetailsPort;
+  assetsLibrary: AssetsLibraryPort;
 }
 
 function actorAdminUserId(request: {
@@ -33,7 +37,7 @@ export async function registerBiddingAdminRoutes(
   app: FastifyInstance,
   deps: BiddingAdminRoutesDeps,
 ): Promise<void> {
-  const { requireAdmin, campaigns, receipts } = deps;
+  const { requireAdmin, campaigns, receipts, organizations, assetsLibrary } = deps;
 
   app.get('/api/v1/admin/bidding/campaigns', { preHandler: requireAdmin('bidding:campaigns:read') }, async () => {
     const data = await campaigns.list();
@@ -104,7 +108,7 @@ export async function registerBiddingAdminRoutes(
       const filters: { campaignId?: string; status?: string } = {};
       if (request.query.campaignId !== undefined) filters.campaignId = request.query.campaignId;
       if (request.query.status !== undefined) filters.status = request.query.status;
-      const data = await receipts.listForAdmin(filters);
+      const data = await receipts.listForAdmin(filters, { organizations, assetsLibrary });
       return { data, pagination: { nextCursor: null, hasMore: false } };
     },
   );

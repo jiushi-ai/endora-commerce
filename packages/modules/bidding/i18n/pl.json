@@ -67,7 +67,7 @@
   "receipts.error.load": "Nie udało się wczytać ofert.",
   "receipts.error.action": "Akcja oferty nie powiodła się.",
   "receipts.filter.search": "Szukaj",
-  "receipts.filter.searchPlaceholder": "Id oferty, kampanii lub org",
+  "receipts.filter.searchPlaceholder": "Kod, tytuł, nazwa org lub id",
   "receipts.filter.status": "Status",
   "receipts.filter.statusAll": "Wszystkie statusy",
   "receipts.status.submitted": "Złożona",
@@ -87,9 +87,15 @@
   "receipts.col.org": "Organizacja",
   "receipts.col.status": "Status",
   "receipts.col.bid": "Oferta",
+  "receipts.col.attachment": "PDF intencji",
   "receipts.col.actions": "Akcje",
   "receipts.action.ops": "Zatwierdź (ops)",
+  "receipts.action.opsHint": "Przegląd operacji: zatwierdź ofertę, aby przekazać ją do sprzedaży.",
   "receipts.action.sales": "Zatwierdź (sprzedaż)",
+  "receipts.action.salesHint": "Przegląd sprzedaży: zatwierdź po ops, potem można potwierdzić depozyt.",
   "receipts.action.deposit": "Potwierdź depozyt",
-  "receipts.action.convert": "Konwertuj"
+  "receipts.action.convert": "Konwertuj",
+  "receipts.action.convertHint": "Utwórz cienkie zamówienie z oferty z potwierdzonym depozytem.",
+  "receipts.action.preview": "Podgląd",
+  "receipts.action.download": "Pobierz"
 }

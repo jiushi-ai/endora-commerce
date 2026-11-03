@@ -4,6 +4,7 @@ import type {
   AdminRolePort,
   AssetsLibraryPort,
   BiddingFulfilmentGatePort,
+  OrganizationDetailsPort,
   SystemRoleCodePort,
 } from '@endora-commerce/contracts';
 import type { AuditPort, ModuleContext, RequireAdminFactory } from '@endora-commerce/platform/kernel';
@@ -117,6 +118,8 @@ export function registerModule(ctx: ModuleContext): void {
         cradle().requireAdmin(permission)(req, reply),
       campaigns: cradle().biddingCampaignService,
       receipts: cradle().biddingReceiptService,
+      organizations: lazyPort<OrganizationDetailsPort>(ctx, 'organizationDetailsPort'),
+      assetsLibrary: lazyPort<AssetsLibraryPort>(ctx, 'assetsLibraryPort'),
     });
   });
 

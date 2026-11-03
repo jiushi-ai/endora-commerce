@@ -40,7 +40,7 @@ const STATUS_OPTIONS = [
 const PAGE_SIZES: readonly PageSizeOption[] = [10, 20, 50];
 
 /**
- * Admin receipt review desk — filters + pagination (Batch D polish).
+ * Admin receipt review desk — readable campaign/org labels + attachment links.
  */
 export function ReceiptsPage(): ReactNode {
   const t = useTranslation('bidding');
@@ -81,6 +81,8 @@ export function ReceiptsPage(): ReactNode {
       return (
         row.id.toLowerCase().includes(q) ||
         row.campaignId.toLowerCase().includes(q) ||
+        (row.campaignCode?.toLowerCase().includes(q) ?? false) ||
+        (row.campaignTitle?.toLowerCase().includes(q) ?? false) ||
         row.organizationId.toLowerCase().includes(q) ||
         (row.organizationName?.toLowerCase().includes(q) ?? false)
       );
@@ -185,66 +187,109 @@ export function ReceiptsPage(): ReactNode {
                     <TableHead>{t('receipts.col.org')}</TableHead>
                     <TableHead>{t('receipts.col.status')}</TableHead>
                     <TableHead>{t('receipts.col.bid')}</TableHead>
+                    <TableHead>{t('receipts.col.attachment')}</TableHead>
                     <TableHead>{t('receipts.col.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pageRows.map((row) => (
-                    <TableRow key={row.id}>
-                      <TableCell className="font-mono text-xs">{row.id.slice(0, 8)}…</TableCell>
-                      <TableCell className="font-mono text-xs">{row.campaignId.slice(0, 8)}…</TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {row.organizationName ?? `${row.organizationId.slice(0, 8)}…`}
-                      </TableCell>
-                      <TableCell>{row.status}</TableCell>
-                      <TableCell className="text-sm">
-                        {row.bidUnitPrice ?? '—'} × {row.bidQty ?? '—'}
-                      </TableCell>
-                      <TableCell className="space-x-2">
-                        {row.status === 'submitted' || row.status === 'ops_review' ? (
-                          <Button
-                            size="sm"
-                            disabled={busyId === row.id}
-                            onClick={() => void approve(row.id, 'ops')}
-                          >
-                            {t('receipts.action.ops')}
-                          </Button>
-                        ) : null}
-                        {row.status === 'sales_review' ? (
-                          <Button
-                            size="sm"
-                            disabled={busyId === row.id}
-                            onClick={() => void approve(row.id, 'sales')}
-                          >
-                            {t('receipts.action.sales')}
-                          </Button>
-                        ) : null}
-                        {row.status === 'await_deposit' ? (
-                          <Button
-                            size="sm"
-                            disabled={busyId === row.id}
-                            onClick={() => void confirmDeposit(row.id)}
-                          >
-                            {t('receipts.action.deposit')}
-                          </Button>
-                        ) : null}
-                        {row.status === 'deposit_confirmed' ||
-                        row.status === 'won_pending_fulfilment' ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={busyId === row.id}
-                            onClick={() => void convert(row.id)}
-                          >
-                            {t('receipts.action.convert')}
-                          </Button>
-                        ) : null}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {pageRows.map((row) => {
+                    const primary = row.attachments?.[0];
+                    return (
+                      <TableRow key={row.id}>
+                        <TableCell className="font-mono text-xs">{row.id.slice(0, 8)}…</TableCell>
+                        <TableCell>
+                          <div className="text-sm font-medium">
+                            {row.campaignTitle ?? row.campaignId.slice(0, 8) + '…'}
+                          </div>
+                          {row.campaignCode ? (
+                            <div className="text-muted-foreground font-mono text-xs">
+                              {row.campaignCode}
+                            </div>
+                          ) : null}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {row.organizationName ?? `${row.organizationId.slice(0, 8)}…`}
+                        </TableCell>
+                        <TableCell>{row.status}</TableCell>
+                        <TableCell className="text-sm">
+                          {row.bidUnitPrice ?? '—'} × {row.bidQty ?? '—'}
+                        </TableCell>
+                        <TableCell className="space-x-2 whitespace-nowrap">
+                          {primary?.url ? (
+                            <>
+                              <a
+                                href={primary.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary text-sm underline-offset-4 hover:underline"
+                              >
+                                {t('receipts.action.preview')}
+                              </a>
+                              <a
+                                href={
+                                  primary.url.includes('download=')
+                                    ? primary.url
+                                    : `${primary.url}${primary.url.includes('?') ? '&' : '?'}download=1`
+                                }
+                                download={primary.filename}
+                                className="text-primary text-sm underline-offset-4 hover:underline"
+                              >
+                                {t('receipts.action.download')}
+                              </a>
+                            </>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="space-x-2">
+                          {row.status === 'submitted' || row.status === 'ops_review' ? (
+                            <Button
+                              size="sm"
+                              disabled={busyId === row.id}
+                              onClick={() => void approve(row.id, 'ops')}
+                              title={t('receipts.action.opsHint')}
+                            >
+                              {t('receipts.action.ops')}
+                            </Button>
+                          ) : null}
+                          {row.status === 'sales_review' ? (
+                            <Button
+                              size="sm"
+                              disabled={busyId === row.id}
+                              onClick={() => void approve(row.id, 'sales')}
+                              title={t('receipts.action.salesHint')}
+                            >
+                              {t('receipts.action.sales')}
+                            </Button>
+                          ) : null}
+                          {row.status === 'await_deposit' ? (
+                            <Button
+                              size="sm"
+                              disabled={busyId === row.id}
+                              onClick={() => void confirmDeposit(row.id)}
+                            >
+                              {t('receipts.action.deposit')}
+                            </Button>
+                          ) : null}
+                          {row.status === 'deposit_confirmed' ||
+                          row.status === 'won_pending_fulfilment' ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={busyId === row.id}
+                              onClick={() => void convert(row.id)}
+                              title={t('receipts.action.convertHint')}
+                            >
+                              {t('receipts.action.convert')}
+                            </Button>
+                          ) : null}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                   {pageRows.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-muted-foreground text-sm">
+                      <TableCell colSpan={7} className="text-muted-foreground text-sm">
                         {t('receipts.empty')}
                       </TableCell>
                     </TableRow>
