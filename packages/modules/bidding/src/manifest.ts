@@ -36,7 +36,7 @@ export const manifest = defineModuleManifest({
   description:
     'Scarce-stock bidding campaigns and sealed bid receipts for Mobii-style allocation.',
   version: '0.2.0',
-  dependencies: ['admin_roles', 'settings', 'auth'],
+  dependencies: ['admin_roles', 'settings', 'auth', 'assets_library'],
   settings,
   activation: { settingCode: BIDDING_SETTING_CODES.ACTIVATION, default: true },
   permissions: [

@@ -2,6 +2,7 @@ import type { EntityManager } from '@mikro-orm/postgresql';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import type {
   AdminRolePort,
+  AssetsLibraryPort,
   BiddingFulfilmentGatePort,
   SystemRoleCodePort,
 } from '@endora-commerce/contracts';
@@ -16,8 +17,10 @@ import { BiddingAllocationResult } from './entities/bidding-allocation-result.en
 import { BiddingCampaign } from './entities/bidding-campaign.entity.js';
 import { BiddingCampaignRuleVersion } from './entities/bidding-campaign-rule-version.entity.js';
 import { registerBiddingAdminRoutes } from './routes.admin.js';
+import { registerBiddingIntentUploadRoutes } from './routes.intent-upload.js';
 import { registerBiddingStorefrontRoutes } from './routes.storefront.js';
 import { BiddingCampaignService } from './services/campaign-service.js';
+import { BiddingIntentAttachmentUploadService } from './services/intent-attachment-upload-service.js';
 import { BiddingReceiptService } from './services/receipt-service.js';
 import { seedBiddingRoles } from './services/seed-roles.js';
 
@@ -34,6 +37,7 @@ export interface BiddingCradle {
   readonly customerContextResolver: (req: FastifyRequest) => { organizationId: string };
   readonly biddingCampaignService: BiddingCampaignService;
   readonly biddingReceiptService: BiddingReceiptService;
+  readonly biddingIntentAttachmentUploadService: BiddingIntentAttachmentUploadService;
 }
 
 export function registerModule(ctx: ModuleContext): void {
@@ -50,6 +54,15 @@ export function registerModule(ctx: ModuleContext): void {
       .asFunction(
         ({ emFactory, auditLogService }: BiddingCradle) =>
           new BiddingReceiptService(emFactory, auditLogService),
+      )
+      .singleton(),
+    biddingIntentAttachmentUploadService: ctx
+      .asFunction(
+        ({ emFactory }: BiddingCradle) =>
+          new BiddingIntentAttachmentUploadService(
+            emFactory,
+            lazyPort<AssetsLibraryPort>(ctx, 'assetsLibraryPort'),
+          ),
       )
       .singleton(),
   });
@@ -113,6 +126,14 @@ export function registerModule(ctx: ModuleContext): void {
       requireCustomer: (req, reply) => cradle().requireCustomer(req, reply),
       resolveCustomerContext: (req) => cradle().customerContextResolver(req),
       receipts: cradle().biddingReceiptService,
+    });
+  });
+
+  ctx.routes(async (app) => {
+    await registerBiddingIntentUploadRoutes(app, {
+      uploadService: cradle().biddingIntentAttachmentUploadService,
+      requireCustomer: (req, reply) => cradle().requireCustomer(req, reply),
+      resolveCustomerContext: (req) => cradle().customerContextResolver(req),
     });
   });
 }

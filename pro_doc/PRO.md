@@ -429,6 +429,7 @@ chatlog/                          # 评估与决策会话归档（如 2026-10-29
 - [x] D.6 UI 补齐（批次 5）：Admin Create draft 表单；Storefront 账户侧栏 Bidding 入口
 - [x] D.7 UI 打磨（批次 6，方案二）：列表页 New+ / 筛选 / 分页；独立创建页 + active 商品下拉；Close bids 加深；小b Open 样式 + 分页
 - [x] D.8 UI 文案/按钮（批次 7）：Close bids 对齐 Enter new（outline）；列表/创建页短词 label；`i18n:reload` 写入 DB
+- [x] D.9 意向模板/附件 UI（批次 8）：Receipts 筛选分页；大B 创建上传模板 PDF；小b 下载模板 + 上传签章 PDF（替换 UUID 粘贴）
 
 ---
 
@@ -436,7 +437,9 @@ chatlog/                          # 评估与决策会话归档（如 2026-10-29
 
 **计划项**
 
-预付确认、交易编号、G-S1 发货门禁、异常释放库存、E2E。
+预付确认强化、交易编号串联、**G-S1 发货门禁校验**（回执通过 + **意向附件已在档** + 款项确认 + 库存锁定）、异常释放库存、E2E。
+
+> 说明：意向书「模板上传 / 小b 下载与签章 PDF 上传」属 **批次 D（D.9）已补齐**；批次 E **不再做该 UI**，只在发货门禁中校验附件已存在。
 
 **执行记录**
 
@@ -524,3 +527,14 @@ feat-26-11-02 23:33:13 [6.1~6.4]：竞价Admin列表筛选分页与独立创建�
 汇总：修复 Admin 显示 i18n key 的问题（新 key 需 reload 进 `translation_bundles`）；Close bids 视觉对齐订单地址模式按钮。
 
 feat-26-11-03 00:08:14 [7.1~7.3]：竞价Close bids outline与Admin人读短词i18n
+
+### 8. 批次 D 补齐 — Receipts 列表 + 意向模板下载/上传
+
+- [x] 8.1 Admin `/bidding/receipts`：搜索/状态筛选 + PaginationFooter
+- [x] 8.2 Admin 创建活动：`AssetFieldPicker` 上传意向模板 PDF → `intentTemplateAssetId`
+- [x] 8.3 小b 提交页：下载模板 + 上传签章 PDF（`intent-template` / `intent-attachments` API）；替换 UUID 输入
+- [x] 8.4 rebuild / `i18n:reload`；§八 D.9；批次 E 清单改为仅履约校验附件在档
+
+汇总：补齐 G-C3 用户路径（模板→线下盖章→上传）；Receipts 对齐列表标准；E 不再重复做模板 UI。
+
+feat-26-11-03 01:11:01 [8.1~8.4]：竞价Receipts筛选分页与意向模板下载上传

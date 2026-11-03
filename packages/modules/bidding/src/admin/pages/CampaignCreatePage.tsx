@@ -12,6 +12,7 @@ import {
   PageHeader,
   Select,
 } from '@endora-commerce/admin-kit/ui';
+import { AssetFieldPicker } from '@endora-commerce/admin-kit/components';
 import { useTranslation } from '@endora-commerce/admin-kit/i18n';
 
 type SalesChannelRow = { id: string; code: string; systemDefault?: boolean };
@@ -54,6 +55,7 @@ export function CampaignCreatePage(): ReactNode {
   const [minUnitPrice, setMinUnitPrice] = useState('100.00');
   const [currency, setCurrency] = useState('USD');
   const [maxQtyPerOrg, setMaxQtyPerOrg] = useState('1');
+  const [intentTemplateAssetId, setIntentTemplateAssetId] = useState('');
 
   useEffect(() => {
     void (async () => {
@@ -115,6 +117,7 @@ export function CampaignCreatePage(): ReactNode {
         audience: { organizationIds: [], customerGroupIds: [] },
         opensAt: new Date(opensAt).toISOString(),
         closesAt: new Date(closesAt).toISOString(),
+        intentTemplateAssetId: intentTemplateAssetId.trim() || null,
         rules: {
           minUnitPrice: minUnitPrice.trim(),
           currency: currency.trim().toUpperCase(),
@@ -266,6 +269,21 @@ export function CampaignCreatePage(): ReactNode {
                   value={currency}
                   onChange={(ev) => setCurrency(ev.target.value)}
                 />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="bid-template">{t('campaigns.create.intentTemplate')}</Label>
+                <AssetFieldPicker
+                  id="bid-template"
+                  value={intentTemplateAssetId}
+                  onChange={setIntentTemplateAssetId}
+                  allowUpload
+                  disabled={creating}
+                  placeholder={t('campaigns.create.intentTemplatePlaceholder')}
+                  chooseLabel={t('campaigns.create.intentTemplateChoose')}
+                  changeLabel={t('campaigns.create.intentTemplateChange')}
+                  clearLabel={t('campaigns.create.intentTemplateClear')}
+                />
+                <p className="text-muted-foreground text-xs">{t('campaigns.create.intentTemplateHint')}</p>
               </div>
             </div>
             <div className="flex gap-2">

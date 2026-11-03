@@ -59,9 +59,15 @@ export default async function AccountBiddingDetailPage({
       ) : null}
 
       {open && !myReceipt ? (
-        <SubmitBidForm campaignId={campaign.id} />
+        <SubmitBidForm
+          campaignId={campaign.id}
+          hasIntentTemplate={Boolean(campaign.intentTemplateAssetId)}
+        />
       ) : open && myReceipt && ['rejected', 'withdrawn'].includes(myReceipt.status) ? (
-        <SubmitBidForm campaignId={campaign.id} />
+        <SubmitBidForm
+          campaignId={campaign.id}
+          hasIntentTemplate={Boolean(campaign.intentTemplateAssetId)}
+        />
       ) : null}
 
       {!open && !myReceipt ? <p className="muted">This campaign is not open for new bids.</p> : null}

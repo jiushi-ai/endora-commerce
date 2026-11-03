@@ -14,6 +14,7 @@ export interface StorefrontBiddingCampaign {
   opensAt: string;
   closesAt: string;
   qty: number;
+  intentTemplateAssetId?: string | null;
 }
 
 export interface StorefrontBiddingReceipt {
