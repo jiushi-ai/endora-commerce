@@ -1039,6 +1039,102 @@ export const MINTED_ERROR_CODES: MintedErrorCodes = {
       'placement earns when the basket it is handed belongs to another sales channel. The raise ' +
       'site is `orders`\' placement; the noun is the order.',
   },
+  ORDER_CART_APPROVAL_REQUIRED: {
+    to: 'orders',
+    reason:
+      'Minted by issue #648 for the refusal order placement earns when the basket it is handed ' +
+      'awaits its Organization\'s cart approval — the policy applies to its owner and it is not ' +
+      'approved. The raise site is `orders`\' placement, which asks `carts` through ' +
+      '`CartPlacementApplyPort.awaitsApproval`; the noun is the order being placed.',
+  },
+  ORGANIZATION_PERMISSION_REQUIRED: {
+    to: 'organizations',
+    reason:
+      'Minted by feature 170 (`specs/170-organization-roles/` WP-02a, ' +
+      '`contracts/organization-permission-port.md` §3) for the refusal of a buyer action the member\'s organization role does not allow (403, `details: { permission, permissionLabel }`). Raised by `organizations`\' permission port on behalf of every module that gates an action on an organization permission: what a role allows is that module\'s rule, whichever module\'s action it refuses. ' +
+      'The noun is the organization\'s role, which `organizations` owns.',
+  },
+  ORGANIZATION_ROLE_NAME_TAKEN: {
+    to: 'organizations',
+    reason:
+      'Minted by feature 170 (`specs/170-organization-roles/` WP-02a, ' +
+      '`contracts/organization-permission-port.md` §3) for a custom role named like another role of the organization, or like a predefined role\'s label in a shipped language (409, research R-29). ' +
+      'The noun is the organization\'s role, which `organizations` owns.',
+  },
+  ORGANIZATION_ROLE_STALE: {
+    to: 'organizations',
+    reason:
+      'Minted by feature 170 (`specs/170-organization-roles/` WP-02a, ' +
+      '`contracts/organization-permission-port.md` §3) for a role write whose `expectedVersion` is no longer the stored one (409, R-29). ' +
+      'The noun is the organization\'s role, which `organizations` owns.',
+  },
+  ORGANIZATION_ROLE_LIMIT_REACHED: {
+    to: 'organizations',
+    reason:
+      'Minted by feature 170 (`specs/170-organization-roles/` WP-02a, ' +
+      '`contracts/organization-permission-port.md` §3) for the 51st custom role of an organization (422, FR-004). ' +
+      'The noun is the organization\'s role, which `organizations` owns.',
+  },
+  ORGANIZATION_ROLE_PROTECTED: {
+    to: 'organizations',
+    reason:
+      'Minted by feature 170 (`specs/170-organization-roles/` WP-02a, ' +
+      '`contracts/organization-permission-port.md` §3) for an edit, rename or delete a predefined role does not allow (409, US 6.3). ' +
+      'The noun is the organization\'s role, which `organizations` owns.',
+  },
+  ORGANIZATION_ROLE_REPLACEMENT_REQUIRED: {
+    to: 'organizations',
+    reason:
+      'Minted by feature 170 (`specs/170-organization-roles/` WP-02a, ' +
+      '`contracts/organization-permission-port.md` §3) for deleting a role somebody holds without a different replacement role (422, FR-024). ' +
+      'The noun is the organization\'s role, which `organizations` owns.',
+  },
+  ORGANIZATION_PERMISSION_UNKNOWN: {
+    to: 'organizations',
+    reason:
+      'Minted by feature 170 (`specs/170-organization-roles/` WP-02a, ' +
+      '`contracts/organization-permission-port.md` §3) for a submitted organization-permission code no module declares (422). ' +
+      'The noun is the organization\'s role, which `organizations` owns.',
+  },
+  ORDER_DELIVERY_METHOD_UNAVAILABLE: {
+    to: 'orders',
+    reason:
+      'Minted for the refusal of a delivery method that cannot be used for the order being ' +
+      'previewed or placed — not active, refused by its adapter, outside the Organization\'s ' +
+      'allow-list or not offered in the order\'s sales channel (issue #86). It was raised as ' +
+      '`VALIDATION_FAILED` with an English sentence the envelope never replaces. The noun is the ' +
+      'order\'s method choice and every raise site is `orders`\' (`OrderService`, both method ' +
+      'gates); `DELIVERY_METHOD_*` is the family `delivery_methods` would reach for.',
+  },
+  ORDER_PAYMENT_METHOD_UNAVAILABLE: {
+    to: 'orders',
+    reason:
+      'The payment twin of `ORDER_DELIVERY_METHOD_UNAVAILABLE` (issue #86), on the same ' +
+      'reasoning; `PAYMENT_METHOD_*` is the family `payment_methods` would reach for.',
+  },
+  ORDER_BELOW_MINIMUM_VALUE: {
+    to: 'orders',
+    reason:
+      'Minted for the refusal of an order whose basket is below the sales channel\'s minimum ' +
+      'order value (issue #86). It was raised as `VALIDATION_FAILED` with `details.code = ' +
+      '\'order_below_minimum\'` and an English sentence; `details` now carries the minimum, the ' +
+      'basket value and the currency the sentences name. The one raise site is ' +
+      '`OrderService.placeOrder`, and the setting is `orders.min_order_value`.',
+  },
+  ORDER_COMMENTS_CLOSED: {
+    to: 'orders',
+    reason:
+      'Minted for the refusal of a comment on an order in a terminal status (issue #86). It was ' +
+      'raised as `VALIDATION_FAILED` with an English sentence. The one raise site is ' +
+      '`OrderCommentService`, reached by the buyer and by an operator.',
+  },
+  ORDER_CLONE_NO_LINES: {
+    to: 'orders',
+    reason:
+      'Minted for the refusal to copy an order with no lines into a quote request (issue #86). ' +
+      'It was raised as `VALIDATION_FAILED` with an English sentence. The one raise site is ' +
+      '`OrderCloneToQuoteService.clone`; the noun is the order.',
+  },
   ASSET_REPLACE_KIND_MISMATCH: {
     to: 'assets_library',
     reason:

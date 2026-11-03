@@ -34,6 +34,7 @@ import { Migration20260912T094646OrganizationsSalesChannelOrganizations } from '
 import { Migration20261003T184802OrganizationsRepairEmptyPaths } from './20261003T184802_organizations_repair_empty_paths.js';
 import { Migration20261018T104644OrganizationsChannelAccessBackfill } from './20261018T104644_organizations_channel_access_backfill.js';
 import { Migration20261102T014300OrganizationsStaffAssignments } from './20261102T014300_organizations_staff_assignments.js';
+import { Migration20261103T173304OrganizationsOrganizationRoles } from './20261103T173304_organizations_organization_roles.js';
 
 export const migrations = [
   Migration20260424T205317OrganizationsInit,
@@ -48,6 +49,7 @@ export const migrations = [
   Migration20261003T184802OrganizationsRepairEmptyPaths,
   Migration20261018T104644OrganizationsChannelAccessBackfill,
   Migration20261102T014300OrganizationsStaffAssignments,
+  Migration20261103T173304OrganizationsOrganizationRoles,
 ];
 
 export {
@@ -63,4 +65,5 @@ export {
   Migration20261003T184802OrganizationsRepairEmptyPaths,
   Migration20261018T104644OrganizationsChannelAccessBackfill,
   Migration20261102T014300OrganizationsStaffAssignments,
+  Migration20261103T173304OrganizationsOrganizationRoles,
 };
