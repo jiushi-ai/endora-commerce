@@ -61,6 +61,7 @@ import {
 import type { SalesChannelMembershipPort } from '@endora-commerce/platform/kernel';
 import { HttpError } from '@endora-commerce/platform/http';
 import { encodeCursor, decodeCursor } from '@endora-commerce/platform/http';
+import { attributeFilterMatches } from './attribute-filter-match.js';
 import { productSummaryText } from './product-summary-text.js';
 
 /** A uuid as the database spells one — anything else is a 404 or a discarded cursor, not a query. */
@@ -451,33 +452,26 @@ function jsStringOfNumeric(n: string): string {
 }
 
 /**
- * JavaScript's `String(value)` for a `jsonb` SQL expression, as the attribute
- * filter needs it.
+ * JavaScript's `String(value)` for a **non-array** `jsonb` SQL expression, as
+ * the attribute filter needs it — the text one option is compared as.
  *
  * A string or a boolean is its own text, a number is
  * {@link jsStringOfNumeric}, a JSON `null` reads `'null'` and an object reads
- * `[object Object]`. An **array** — a multiselect — joins its elements with a
- * comma, each rendered the same way except that a `null` element is empty,
- * which is `Array.prototype.join`'s rule.
+ * `[object Object]`. An array is not this function's: `#attributeCondition`
+ * walks a multiselect's elements and renders each one here (issue #684).
  *
- * One kind is not reproduced: an array **nested inside** an array. JavaScript
- * flattens it into the join (`[[1, 2], 3]` reads `1,2,3`); here the inner array
- * contributes its JSON text. No attribute type stores one.
+ * One kind is not reproduced: an array **nested inside** a multiselect.
+ * JavaScript renders it as its comma-joined elements (`[1, 2]` reads `1,2`);
+ * here it contributes its JSON text. No attribute type stores one.
  */
 function jsStringOfJsonb(value: string): string {
-  const scalar = (v: string, nullText: string): string =>
-    `(case jsonb_typeof(${v}) ` +
-    `when 'null' then '${nullText}' ` +
-    `when 'object' then '[object Object]' ` +
-    `when 'number' then (select ${jsStringOfNumeric('num.n')} ` +
-    `from (select (${v} #>> '{}')::numeric as n) num) ` +
-    `else ${v} #>> '{}' end)`;
   return (
     `(case jsonb_typeof(${value}) ` +
-    `when 'array' then (` +
-    `select coalesce(string_agg(${scalar('el.value', '')}, ',' order by el.position), '') ` +
-    `from jsonb_array_elements(${value}) with ordinality as el(value, position)) ` +
-    `else ${scalar(value, 'null')} end)`
+    `when 'null' then 'null' ` +
+    `when 'object' then '[object Object]' ` +
+    `when 'number' then (select ${jsStringOfNumeric('num.n')} ` +
+    `from (select (${value} #>> '{}')::numeric as n) num) ` +
+    `else ${value} #>> '{}' end)`
   );
 }
 
@@ -1004,8 +998,9 @@ export class CatalogQueryService {
    *  - **the category** is an `exists` over this module's own
    *    `product_categories`, against the tree's ids rather than against every
    *    product id the tree holds, which is what the page-side test loaded;
-   *  - **each attribute filter** is `#passesPageFilters`' string comparison
-   *    restated — see `#attributeCondition`.
+   *  - **each attribute filter** is not built here but in `#listingFilters`,
+   *    as `#attributeCondition` — {@link attributeFilterMatches}, the page-side
+   *    predicate, restated in SQL.
    *
    * **No `raw()` fragment is created here** — these are descriptions, and the
    * caller turns them into keys in the expression that executes them. A
@@ -1087,15 +1082,10 @@ export class CatalogQueryService {
    * One `filter[attr.<key>]`, as SQL: the product's value for `key`, rendered
    * the way `#passesPageFilters` renders it, is one of the requested values.
    *
-   * That method compares `String(value)`, so this is `String` restated for the
-   * JSON kinds a stored value can take — see {@link jsStringOfJsonb}. A key the
-   * product does not carry is SQL `NULL` throughout and matches nothing, which
-   * is the method's `undefined` arm.
-   *
-   * The comparison is deliberately not improved here. A multiselect holding two
-   * options matches neither of them alone, on either side of this change; that
-   * is a question about what the filter means, and answering it in the
-   * statement only would make the page-side predicate disagree with it.
+   * A scalar is walked as a one-element array, each element rendered by
+   * {@link jsStringOfJsonb}. A key the product does not carry is SQL `NULL`,
+   * walked as no element, and matches nothing — the function's `undefined`
+   * arm; an empty multiselect matches nothing for the same reason.
    */
   #attributeCondition(key: string, values: readonly string[]): ListingCondition {
     const wanted = values.map((v) => String(v));

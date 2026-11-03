@@ -178,6 +178,7 @@ import { Migration20260819T142837CustomerAccountsFoldEmailCase } from '@endora-c
 import { Migration20260825T124759CustomerAccountsDropLegacyTwoFactorSecret } from '@endora-commerce/mod-customer-accounts/migrations';
 import { Migration20260825T141659CustomerAccountsOrganizationRequired } from '@endora-commerce/mod-customer-accounts/migrations';
 import { Migration20260912T094701CustomerAccountsSalesChannelCustomerAccounts } from '@endora-commerce/mod-customer-accounts/migrations';
+import { Migration20261103T190132CustomerAccountsOrganizationRoleAssignment } from '@endora-commerce/mod-customer-accounts/migrations';
 import { Migration20261115T145934CustomerAccountsPreferredLanguage } from '@endora-commerce/mod-customer-accounts/migrations';
 
 // ── customers ───────────────────────────────────────────────────────────────
@@ -555,6 +556,7 @@ export const MIGRATION_REGISTRY: readonly MigrationRegistryEntry[] = [
   migration('customer_accounts', Migration20260825T124759CustomerAccountsDropLegacyTwoFactorSecret),
   migration('customer_accounts', Migration20260825T141659CustomerAccountsOrganizationRequired),
   migration('customer_accounts', Migration20260912T094701CustomerAccountsSalesChannelCustomerAccounts),
+  migration('customer_accounts', Migration20261103T190132CustomerAccountsOrganizationRoleAssignment),
   migration('customer_accounts', Migration20261115T145934CustomerAccountsPreferredLanguage),
 
   // ── customers ───────────────────────────────────────────────────────────────

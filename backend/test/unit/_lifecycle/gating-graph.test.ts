@@ -90,6 +90,11 @@ describe('acknowledgedPortEdgesFrom — the withheld edges, from the manifests',
     // `organizations:creditLimitReadPort` moved there. The behaviour is
     // unchanged in every case: the gate refused before and refuses now.
     //
+    // One more arrives with `specs/170-organization-roles/` WP-02b, in the same
+    // mutual pair: `organizations` deletes a role its members hold by running
+    // `customer_accounts`' `customer_account.change_role` as a child Command
+    // per holder, resolved as `customerAccountRoleCommandPort`.
+    //
     // What makes the acknowledgement honest is that the edge is in the refusal
     // graph either way: withholding it from `dependencies` withdraws the
     // ordering claim and nothing else, so no owner becomes switchable-off
@@ -117,6 +122,7 @@ describe('acknowledgedPortEdgesFrom — the withheld edges, from the manifests',
       'organizations:addressServicePort',
       'organizations:customerAccountMemberWritePort',
       'organizations:customerAccountReadPort',
+      'organizations:customerAccountRoleCommandPort',
       'organizations:customerAuthPort',
       'organizations:customerRolePort',
       'organizations:passwordResetService',
