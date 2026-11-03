@@ -428,6 +428,7 @@ chatlog/                          # 评估与决策会话归档（如 2026-10-29
 - [x] D.5 角色种子补 `bidding:*`；`tasks.md` P2 勾选；§99 台账
 - [x] D.6 UI 补齐（批次 5）：Admin Create draft 表单；Storefront 账户侧栏 Bidding 入口
 - [x] D.7 UI 打磨（批次 6，方案二）：列表页 New+ / 筛选 / 分页；独立创建页 + active 商品下拉；Close bids 加深；小b Open 样式 + 分页
+- [x] D.8 UI 文案/按钮（批次 7）：Close bids 对齐 Enter new（outline）；列表/创建页短词 label；`i18n:reload` 写入 DB
 
 ---
 
@@ -513,3 +514,13 @@ feat-26-11-02 19:59:44 [5.1~5.3]：补齐竞价建单表单与小b账户Bidding�
 汇总：大B 对齐 Projects 列表交互（筛选+分页+独立 New 页）；小b 竞价台 Open CTA 与分页可读性提升。履约门禁仍属批次 E。
 
 feat-26-11-02 23:33:13 [6.1~6.4]：竞价Admin列表筛选分页与独立创建页、Storefront Open与分页
+
+### 7. 批次 D UI — Close bids outline + 人读短词 i18n
+
+- [x] 7.1 Close bids 改为与订单「Enter new」同款 `variant="outline"`（去掉偏紫底）
+- [x] 7.2 列表/创建页 label 改为短词（New campaign、Search、Status、Bidding code、Create…）；`pnpm --filter backend run i18n:reload`
+- [x] 7.3 rebuild `mod-bidding`；更新 §八 D.8 / 本 §99
+
+汇总：修复 Admin 显示 i18n key 的问题（新 key 需 reload 进 `translation_bundles`）；Close bids 视觉对齐订单地址模式按钮。
+
+feat-26-11-03 00:08:14 [7.1~7.3]：竞价Close bids outline与Admin人读短词i18n

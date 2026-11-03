@@ -189,7 +189,6 @@ export function CampaignsPage(): ReactNode {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="border-primary bg-primary/15 text-primary hover:bg-primary/25"
                             disabled={busyId === row.id}
                             onClick={() => void runAction(row.id, 'close-bids')}
                           >
