@@ -496,11 +496,56 @@ export type OrgCartDetailPayload = z.infer<typeof orgCartDetailPayloadSchema>;
 export const orgCartDetailResponseSchema = z.object({ data: orgCartDetailPayloadSchema });
 export type OrgCartDetailResponse = z.infer<typeof orgCartDetailResponseSchema>;
 
+/**
+ * Issue #650 — one line of {@link orgCartDetailViewSchema}: what the
+ * administrator is approving, at the price stored on the line.
+ */
+export const orgCartDetailLineSchema = z.object({
+  id: uuidSchema,
+  productId: uuidSchema,
+  variantId: uuidSchema.nullable(),
+  /** The product's name in the response language, the packaging unit appended; `null` when the product is gone. */
+  displayName: z.string().nullable(),
+  productSku: z.string().nullable(),
+  quantity: z.number().int().positive(),
+  unitPrice: moneySchema,
+  lineTotal: moneySchema,
+});
+export type OrgCartDetailLine = z.infer<typeof orgCartDetailLineSchema>;
+
+/**
+ * `GET /api/v1/organization/carts/:id` — the Organization administrator's view
+ * of one cart, as the route answers it (issue #650 added `items`).
+ *
+ * {@link orgCartDetailPayloadSchema} above is not this route's shape and never
+ * was: the route has answered the summary fields plus the approval timestamps
+ * since feature 027. It is left as published rather than changed under its
+ * consumers.
+ */
+export const orgCartDetailViewSchema = orgCartSummarySchema.extend({
+  ownerCustomerAccountId: uuidSchema.nullable(),
+  approvedAt: isoDateTimeSchema.nullable(),
+  rejectedAt: isoDateTimeSchema.nullable(),
+  rejectedReason: z.string().nullable(),
+  items: z.array(orgCartDetailLineSchema),
+});
+export type OrgCartDetailView = z.infer<typeof orgCartDetailViewSchema>;
+
+export const orgCartDetailViewResponseSchema = z.object({ data: orgCartDetailViewSchema });
+export type OrgCartDetailViewResponse = z.infer<typeof orgCartDetailViewResponseSchema>;
+
+/**
+ * @deprecated The per-Organization cart-approval policy is replaced by the
+ * `carts.order_without_approval` organization permission
+ * (`specs/170-organization-roles/`, OR-3, FR-031); removed with the policy endpoints.
+ */
 export const setCartApprovalPolicySchema = z.object({
   requiresCartApproval: z.boolean(),
 });
+/** @deprecated See {@link setCartApprovalPolicySchema}. */
 export type SetCartApprovalPolicy = z.infer<typeof setCartApprovalPolicySchema>;
 
+/** @deprecated See {@link setCartApprovalPolicySchema}. */
 export const cartApprovalPolicyResponseSchema = z.object({
   data: z.object({
     organizationId: uuidSchema,
@@ -508,6 +553,7 @@ export const cartApprovalPolicyResponseSchema = z.object({
     updatedAt: isoDateTimeSchema,
   }),
 });
+/** @deprecated See {@link setCartApprovalPolicySchema}. */
 export type CartApprovalPolicyResponse = z.infer<typeof cartApprovalPolicyResponseSchema>;
 
 export const rejectOrgCartSchema = z.object({

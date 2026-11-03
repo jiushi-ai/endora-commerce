@@ -77,6 +77,11 @@ export interface CustomerGroupReadPort {
 
 // --- records -----------------------------------------------------------------
 
+/**
+ * @deprecated Replaced by the account's organization role id
+ * (`specs/170-organization-roles/`, research R-23); kept, dual-written, until
+ * the legacy removal.
+ */
 export type CustomerAccountRole = 'organization_admin' | 'regular_user';
 
 export type CustomerAccountBlockSource = 'staff' | 'org_owner';
@@ -101,6 +106,7 @@ export interface CustomerAccountRecord {
   email: string;
   firstName: string;
   lastName: string;
+  /** @deprecated The role id replaces it (`specs/170-organization-roles/`, research R-23). */
   role: CustomerAccountRole;
   emailVerifiedAt: Date | null;
   /** Whether a confirmed TOTP enrolment exists. The secret itself never travels. */
@@ -196,6 +202,9 @@ export interface CustomerAccountReadPort {
    * one id and optionally counting only unblocked accounts. This is the shape
    * the "an organisation may not lose its last admin" rule is spelled with, in
    * three modules, three slightly different ways.
+   *
+   * @deprecated Replaced by `countAdministrators` over the administrator-kind
+   * role (`specs/170-organization-roles/` `contracts/commands-audit-events.md` §3).
    */
   countByOrganizationRole(
     organizationId: string,
@@ -255,6 +264,7 @@ export interface CustomerAccountCreateInput {
   password: string;
   firstName: string;
   lastName: string;
+  /** @deprecated The role id replaces it (`specs/170-organization-roles/`, research R-23). */
   role: CustomerAccountRole;
   /**
    * Whether the address is already confirmed. Accepting an invitation implies
