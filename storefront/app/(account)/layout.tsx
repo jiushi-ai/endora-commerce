@@ -60,6 +60,7 @@ export default async function AccountLayout({
             <Link href="/orders">Orders</Link>
             <Link href="/returns">Returns</Link>
             <Link href="/quote-requests">Quote requests</Link>
+            <Link href="/account/bidding">Bidding</Link>
             <Link href="/shopping-lists">Shopping lists</Link>
             <Link href="/quick-order">Quick order</Link>
             <Link href="/organization">Organization</Link>

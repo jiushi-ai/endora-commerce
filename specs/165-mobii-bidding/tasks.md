@@ -17,7 +17,9 @@ Mapped to PRO batches C → E. TDD: failing test first where the repo pattern re
 - [x] T12 BidReceipt submit + seal + deadline enforcement / 回执提交 + 密封 + 截止强制
 - [x] T13 Approval steps ops/sales/(legal) / 审批步骤：运营/销售/（法务）
 - [x] T14 Admin campaign + receipt desk UI / 大B 活动台 + 回执审核台界面
+- [x] T14b Admin create-draft form on campaigns desk / 活动台新建 draft 表单（D UI 补齐）
 - [x] T15 Storefront campaign list/detail/submit/status (`/account/bidding`) / 小b 活动列表/详情/提交/状态
+- [x] T15b Storefront account nav link to `/account/bidding` / 账户侧栏 Bidding 入口（D UI 补齐）
 - [x] T16 Allocate winners/losers (email notify deferred to E polish) / 分配中选/落选（邮件通知延后润色）
 - [x] T17 Convert won+deposited receipt → order (thin; Order row deferred to E) / 薄转单（Order 行延至 E）
 

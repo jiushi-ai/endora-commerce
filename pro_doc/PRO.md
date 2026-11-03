@@ -426,6 +426,8 @@ chatlog/                          # 评估与决策会话归档（如 2026-10-29
 - [x] D.3 Admin/Storefront API：CRUD、publish/close、submit、approve、allocate、confirm-deposit、thin convert
 - [x] D.4 Admin UI：`/bidding/campaigns`、`/bidding/receipts`；Storefront：`/account/bidding`
 - [x] D.5 角色种子补 `bidding:*`；`tasks.md` P2 勾选；§99 台账
+- [x] D.6 UI 补齐（批次 5）：Admin Create draft 表单；Storefront 账户侧栏 Bidding 入口
+- [x] D.7 UI 打磨（批次 6，方案二）：列表页 New+ / 筛选 / 分页；独立创建页 + active 商品下拉；Close bids 加深；小b Open 样式 + 分页
 
 ---
 
@@ -490,3 +492,24 @@ feat-26-11-01 19:20:16 [3.1~3.5]：完成批次C底座（角色种子、对接�
 汇总：`bidding` 域 MVP 打通（活动→回执→双审→预付确认→分配→薄转单）；Admin `/bidding/*`；Storefront `/account/bidding`；Order 行创建与发货门禁完整校验留给批次 E。
 
 feat-26-11-01 19:58:16 [4.1~4.7]：完成批次D竞价MVP（实体API界面与薄转单）
+
+### 5. 批次 D UI 补齐 — 建单表单 + 小b 菜单入口
+
+- [x] 5.1 Admin `/bidding/campaigns`：Create draft 表单（渠道选择 + product/variant UUID）
+- [x] 5.2 Storefront 账户侧栏增加 Bidding → `/account/bidding`
+- [x] 5.3 重建 `mod-bidding` admin dist；更新 §八 D.6 / 本 §99
+
+汇总：补齐 D 薄 UI 缺口——大B 可在页面建 draft 活动再 Publish；小b 登录后可从账户菜单进入竞价页，无需手输 URL。履约门禁仍属批次 E。
+
+feat-26-11-02 19:59:44 [5.1~5.3]：补齐竞价建单表单与小b账户Bidding菜单
+
+### 6. 批次 D UI 打磨 — 方案二列表/创建拆分 + 筛选分页
+
+- [x] 6.1 Admin Campaigns 列表：New+、搜索/状态筛选、PaginationFooter；Close bids 加深
+- [x] 6.2 Admin 独立创建页 `/bidding/campaigns/new` + active simple 商品下拉
+- [x] 6.3 Storefront Open 按钮样式（btn--dark）+ campaigns/receipts 本地分页
+- [x] 6.4 重建 `mod-bidding` dist；更新 §八 D.7 / 本 §99
+
+汇总：大B 对齐 Projects 列表交互（筛选+分页+独立 New 页）；小b 竞价台 Open CTA 与分页可读性提升。履约门禁仍属批次 E。
+
+feat-26-11-02 23:33:13 [6.1~6.4]：竞价Admin列表筛选分页与独立创建页、Storefront Open与分页

@@ -12,6 +12,11 @@ export const contributions: AdminContributions = {
       index: true,
     },
     {
+      path: '/bidding/campaigns/new',
+      component: () => import('./pages/CampaignCreatePage.js'),
+      requiredPermission: 'bidding:campaigns:write',
+    },
+    {
       path: '/bidding/receipts',
       component: () => import('./pages/ReceiptsPage.js'),
       requiredPermission: 'bidding:receipts:review',
