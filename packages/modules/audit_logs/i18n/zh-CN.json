@@ -1,6 +1,6 @@
 {
-  "nav.auditLog.label": "Audit log",
-  "actions.openAuditLog.label": "Audit log",
-  "actions.openAuditLog.description": "Who changed what, and when",
-  "auditLog.tenant.escape_hatch": "Cross-organization access"
+  "nav.auditLog.label": "审核日志",
+  "actions.openAuditLog.label": "审核日志",
+  "actions.openAuditLog.description": "谁改变了什么以及何时改变",
+  "auditLog.tenant.escape_hatch": "跨组织访问"
 }

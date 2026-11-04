@@ -1,7 +1,7 @@
 {
-  "nav.apiKeys.label": "API keys",
-  "actions.openApiKeys.label": "API keys",
-  "actions.openApiKeys.description": "Machine-to-machine bearer tokens",
-  "errors.API_KEY_OUT_OF_SCOPE": "API key lacks the required scope: {requiredScope}.",
-  "errors.API_KEY_SCOPE_NOT_HELD": "You can only give an API key scopes your own role holds. Your role does not hold: {scopes}."
+  "nav.apiKeys.label": "API 密鑰",
+  "actions.openApiKeys.label": "API 密鑰",
+  "actions.openApiKeys.description": "機器對機器不記名令牌",
+  "errors.API_KEY_OUT_OF_SCOPE": "API 密鑰缺少所需的範圍：{requiredScope}。",
+  "errors.API_KEY_SCOPE_NOT_HELD": "您只能指定您自己的角色所擁有的 API 密鑰範圍。您的角色不成立：{scopes}。"
 }

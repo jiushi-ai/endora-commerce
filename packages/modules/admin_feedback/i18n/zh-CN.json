@@ -1,11 +1,11 @@
 {
-  "settingGroups.admin_feedback.name": "Feedback",
-  "settingLabels.admin_feedback.module_enabled.name": "Feedback module enabled",
-  "settingLabels.admin_feedback.module_enabled.description": "Shows the \"Send feedback\" link in the admin and lets administrators send feedback to the makers of Endora Commerce. Switch it off if this instance must not send any data to Endora: the link disappears and nothing is sent. Nothing is stored either way.",
-  "settingLabels.admin_feedback.relay_url.name": "Feedback relay address",
-  "settingLabels.admin_feedback.relay_url.description": "The http(s) address feedback is sent to. Leave the default to reach Endora support. Empty switches sending off while keeping the module on.",
-  "actions.openAdminFeedbackSettings.label": "Feedback settings",
-  "actions.openAdminFeedbackSettings.description": "Decide whether administrators can send feedback to Endora, and where it goes",
-  "errors.ADMIN_FEEDBACK_NOT_CONFIGURED": "Sending feedback is switched off on this instance.",
-  "errors.ADMIN_FEEDBACK_DELIVERY_FAILED": "Your feedback could not be delivered. Try again later."
+  "settingGroups.admin_feedback.name": "反馈意见",
+  "settingLabels.admin_feedback.module_enabled.name": "反馈模块已启用",
+  "settingLabels.admin_feedback.module_enabled.description": "在管理员中显示“发送反馈”链接，并允许管理员向 Endora Commerce 的制作者发送反馈。如果此实例不得向 Endora 发送任何数据，请将其关闭：链接消失并且不会发送任何内容。无论哪种方式都不会存储任何内容。",
+  "settingLabels.admin_feedback.relay_url.name": "反馈继电器地址",
+  "settingLabels.admin_feedback.relay_url.description": "反馈的http(s)地址被发送到。保留默认值以获得 Endora 支持。空开关发送信号，同时保持模块开启。",
+  "actions.openAdminFeedbackSettings.label": "反馈设置",
+  "actions.openAdminFeedbackSettings.description": "决定管理员是否可以向 Endora 发送反馈以及反馈的去向",
+  "errors.ADMIN_FEEDBACK_NOT_CONFIGURED": "在此实例上发送反馈已关闭。",
+  "errors.ADMIN_FEEDBACK_DELIVERY_FAILED": "无法送达您的反馈。稍后再试。"
 }

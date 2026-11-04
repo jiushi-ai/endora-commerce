@@ -1,13 +1,13 @@
 {
-  "nav.adminRoles.label": "Roles",
-  "actions.openAdminRoles.label": "Admin roles",
-  "actions.openAdminRoles.description": "Which permissions each admin role grants",
-  "errors.ADMIN_ROLE_CODE_TAKEN": "A role with that code already exists. Pick a different code, or edit the existing role.",
-  "errors.ADMIN_ROLE_IN_USE": "This role is still assigned, so it cannot be deleted. Reassign the accounts that hold it first.",
-  "errors.ADMIN_ROLE_IN_USE.assigned": "This role is still assigned to {assigned} admin account(s), so it cannot be deleted. Reassign them first.",
-  "errors.ADMIN_ROLE_IN_USE.assigned_to_deleted": "This role is still assigned to {deleted} deleted account(s). Restoring one of them restores the role with it, so the role cannot be deleted while they are in the bin.",
-  "errors.ADMIN_ROLE_PROTECTED": "The \"{role}\" role is seeded by the platform or one of its modules and cannot be deleted.",
-  "errors.ADMIN_ROLE_REQUIRED": "This administrator account has no role, so it cannot use the admin panel. Ask a platform administrator to assign it a role.",
-  "errors.ADMIN_ROLE_GRANT_EXCEEDED": "Your own role does not hold these permissions, so you cannot grant them or change a role that holds them: {permissions}.",
-  "errors.ADMIN_ROLE_PROTECTED.modify": "The \"{role}\" role is seeded by the platform or one of its modules. Only an administrator with full access can change it."
+  "nav.adminRoles.label": "角色",
+  "actions.openAdminRoles.label": "管理員角色",
+  "actions.openAdminRoles.description": "每個管理員角色授予哪些權限",
+  "errors.ADMIN_ROLE_CODE_TAKEN": "具有該代碼的角色已存在。選擇不同的代碼，或編輯現有角色。",
+  "errors.ADMIN_ROLE_IN_USE": "該角色仍處於分配狀態，因此無法刪除。重新分配首先持有它的帳戶。",
+  "errors.ADMIN_ROLE_IN_USE.assigned": "此角色仍分配給 {assigned} 管理員帳戶，因此無法刪除。首先重新分配它們。",
+  "errors.ADMIN_ROLE_IN_USE.assigned_to_deleted": "此角色仍分配給 {deleted} 已刪除的帳戶。恢復其中之一會同時恢復該角色，因此當它們位於垃圾箱中時，無法刪除該角色。",
+  "errors.ADMIN_ROLE_PROTECTED": "“{role}”角色由平臺​​或其模塊之一播種，無法刪除。",
+  "errors.ADMIN_ROLE_REQUIRED": "該管理員帳戶沒有角色，因此無法使用管理面板。請求平臺管理員為其分配角色。",
+  "errors.ADMIN_ROLE_GRANT_EXCEEDED": "您自己的角色不擁有這些權限，因此您無法授予這些權限或更改擁有這些權限的角色：{permissions}。",
+  "errors.ADMIN_ROLE_PROTECTED.modify": "“{role}”角色由平臺​​或其模塊之一播種。只有具有完全訪問權限的管理員才能更改它。"
 }

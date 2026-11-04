@@ -1,5 +1,5 @@
 {
-  "errors.PAYMENT_NOT_DUE": "This order is not awaiting payment.",
-  "errors.PAYMENT_ORDER_CLOSED": "This order is closed and can no longer be paid.",
-  "errors.PAYMENT_ADAPTER_UNAVAILABLE": "The payment method this order was placed with is no longer available."
+  "errors.PAYMENT_NOT_DUE": "该订单不等待付款。",
+  "errors.PAYMENT_ORDER_CLOSED": "该订单已关闭，无法再付款。",
+  "errors.PAYMENT_ADAPTER_UNAVAILABLE": "此订单所使用的付款方式不再可用。"
 }

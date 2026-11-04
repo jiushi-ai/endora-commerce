@@ -1,15 +1,15 @@
 {
-  "adminRoles.permission.mfa:reset": "Reset a user's 2FA",
-  "adminRoles.permission.mfa:manage": "Manage 2FA policies and organization enforcement",
-  "errors.MFA_SOCIAL_LAST_CREDENTIAL": "This is the last sign-in identity linked to the account, and the account has no password on record — removing it could lock its holder out for good. Set a password for the account first, then this link can be removed.",
-  "errors.MFA_ALREADY_ENROLLED": "Two-factor authentication is already set up on this account, so there is nothing left to configure. To move it to a different authenticator app, switch it off first and then set it up again.",
-  "errors.MFA_INVALID_CHALLENGE": "This sign-in step is no longer valid — it has expired, or it was already finished. Sign in again to start a new one.",
-  "errors.MFA_INVALID_CODE": "That code was not accepted. A code from your authenticator app is only valid for about half a minute, so wait for the next one and enter it without spaces; a recovery code can be used only once.",
-  "errors.MFA_NOT_ENABLED": "Two-factor authentication is not available here, so it cannot be switched on for this account. Your administrator decides where it can be used — ask them to enable it.",
-  "errors.MFA_NO_ACTIVE_ENROLMENT": "Two-factor authentication is not switched on for this account, so there are no recovery codes to reissue. Set it up first — the codes are handed to you at the end of setup.",
-  "errors.MFA_NO_PENDING_ENROLMENT": "There is no setup waiting to be confirmed — it was either finished already, or started again somewhere else. Begin the setup again and scan the new QR code before entering a code.",
-  "errors.MFA_REAUTH_REQUIRED": "Switching two-factor authentication off has to be confirmed by you. Enter a current code from your authenticator app, or the password for this account.",
-  "errors.MFA_TOO_MANY_ATTEMPTS": "Too many incorrect codes were entered, so this sign-in attempt was stopped. Sign in again and use the next code straight from your authenticator app, or one of your recovery codes.",
-  "errors.MFA_WRONG_SURFACE": "This sign-in was started somewhere else, so the code cannot be confirmed here. Go back to the page you were signing in on and enter it there.",
-  "errors.MFA_DEACTIVATION_BLOCKED": "Two-factor authentication cannot be switched off while administrators are required to use it. Turn off the setting \"Admin UI — enforce 2FA\" (mfa.admin.totp_enforced) first, then switch the module off."
+  "adminRoles.permission.mfa:reset": "重置用户的 2FA",
+  "adminRoles.permission.mfa:manage": "管理 2FA 政策和组织实施",
+  "errors.MFA_SOCIAL_LAST_CREDENTIAL": "这是与该帐户关联的最后一个登录身份，并且该帐户没有记录密码 - 删除它可能会永久锁定其持有者。先为帐户设置密码，然后才能删除此链接。",
+  "errors.MFA_ALREADY_ENROLLED": "该帐户已设置双因素身份验证，因此无需进行任何配置。要将其移至其他身份验证器应用程序，请先将其关闭，然后重新设置。",
+  "errors.MFA_INVALID_CHALLENGE": "此登录步骤不再有效 - 它已过期，或者已经完成。再次登录以开始新的登录。",
+  "errors.MFA_INVALID_CODE": "该代码未被接受。身份验证器应用程序中的代码仅在大约半分钟内有效，因此请等待下一个代码并输入（不带空格）；恢复代码只能使用一次。",
+  "errors.MFA_NOT_ENABLED": "此处不提供双因素身份验证，因此无法为此帐户启用双因素身份验证。您的管理员决定可以在哪里使用它 - 请他们启用它。",
+  "errors.MFA_NO_ACTIVE_ENROLMENT": "该帐户未启用双因素身份验证，因此没有可重新发出的恢复代码。首先进行设置 - 代码将在设置结束时交给您。",
+  "errors.MFA_NO_PENDING_ENROLMENT": "没有等待确认的设置 - 它要么已经完成，要么在其他地方重新开始。再次开始设置并在输入代码之前扫描新的二维码。",
+  "errors.MFA_REAUTH_REQUIRED": "关闭双因素身份验证必须由您确认。输入身份验证器应用程序中的当前代码或该帐户的密码。",
+  "errors.MFA_TOO_MANY_ATTEMPTS": "输入的错误代码过多，因此此登录尝试被停止。再次登录并直接使用身份验证器应用程序中的下一个代码或恢复代码之一。",
+  "errors.MFA_WRONG_SURFACE": "此登录是在其他地方启动的，因此无法在此处确认代码。返回您登录的页面并在那里输入。",
+  "errors.MFA_DEACTIVATION_BLOCKED": "当管理员需要使用双因素身份验证时，无法关闭它。首先关闭设置“管理 UI — 强制执行 2FA”(mfa.admin.totp_enforced)，然后关闭模块。"
 }

@@ -1,5 +1,5 @@
 {
-  "actions.openPaymentMethods.label": "Payment methods",
-  "actions.openPaymentMethods.description": "Define payment methods and choose which ones are offered to buyers",
-  "nav.paymentMethods.label": "Payment methods"
+  "actions.openPaymentMethods.label": "付款方式",
+  "actions.openPaymentMethods.description": "定義付款方式並選擇向買家提供的付款方式",
+  "nav.paymentMethods.label": "付款方式"
 }

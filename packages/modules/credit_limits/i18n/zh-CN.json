@@ -1,9 +1,9 @@
 {
-  "errors.ADJUSTMENT_BELOW_ACTIVE": "The credit limit cannot be lowered below the amount that active reservations are already holding. Release or settle those reservations first, or set a higher amount.",
-  "errors.CREDIT_LIMIT_ALREADY_GRANTED": "This organization already has a credit limit. Adjust the existing limit instead of granting a second one.",
-  "errors.CREDIT_LIMIT_NOT_GRANTED": "No credit limit has been granted for this organization.",
-  "errors.LIMIT_INSUFFICIENT": "The available credit limit ({availableAmount} {currency}) does not cover this order ({orderTotal} {currency}). Reduce the order or choose a different payment method.",
-  "nav.creditLimits.label": "Credit limits",
-  "actions.openCreditLimits.label": "Credit limits",
-  "actions.openCreditLimits.description": "Customer credit limits & balances"
+  "errors.ADJUSTMENT_BELOW_ACTIVE": "信用额度不能低于有效预订已持有的金额。首先释放或结算这些保留，或设置更高的金额。",
+  "errors.CREDIT_LIMIT_ALREADY_GRANTED": "该组织已有信用额度。调整现有限制而不是授予第二个限制。",
+  "errors.CREDIT_LIMIT_NOT_GRANTED": "尚未授予该组织任何信用额度。",
+  "errors.LIMIT_INSUFFICIENT": "可用信用额度 ({availableAmount} {currency}) 不涵盖此订单 ({orderTotal} {currency})。减少订单或选择不同的付款方式。",
+  "nav.creditLimits.label": "信用额度",
+  "actions.openCreditLimits.label": "信用额度",
+  "actions.openCreditLimits.description": "客户信用额度和余额"
 }

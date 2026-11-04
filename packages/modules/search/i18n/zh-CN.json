@@ -1,10 +1,10 @@
 {
-  "errors.QUERY_TOO_SHORT": "The search phrase is too short.",
-  "errors.QUERY_TOO_LONG": "The search phrase is too long.",
-  "errors.LIMIT_OUT_OF_RANGE": "The result limit is outside the allowed range.",
-  "errors.SEARCH_BACKEND_UNAVAILABLE": "Search is temporarily unavailable. Try again later.",
-  "errors.PHRASE_REQUIRED": "Enter a search phrase.",
-  "errors.PHRASE_TOO_LONG": "The search phrase is too long.",
-  "errors.RESULT_COUNT_INVALID": "The number of results is invalid.",
-  "errors.LLM_CONFIG_INCOMPLETE": "LLM search configuration is incomplete."
+  "errors.QUERY_TOO_SHORT": "搜索短语太短。",
+  "errors.QUERY_TOO_LONG": "搜索短语太长。",
+  "errors.LIMIT_OUT_OF_RANGE": "结果极限超出了允许的范围。",
+  "errors.SEARCH_BACKEND_UNAVAILABLE": "暂时无法搜索。稍后再试。",
+  "errors.PHRASE_REQUIRED": "输入搜索短语。",
+  "errors.PHRASE_TOO_LONG": "搜索短语太长。",
+  "errors.RESULT_COUNT_INVALID": "结果数无效。",
+  "errors.LLM_CONFIG_INCOMPLETE": "LLM 搜索配置不完整。"
 }

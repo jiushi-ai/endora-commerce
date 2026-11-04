@@ -1,10 +1,10 @@
 {
-  "nav.adminUsers.label": "Users",
-  "actions.openAdminUsers.label": "Admin users",
-  "actions.openAdminUsers.description": "Accounts that can sign in to the Admin UI",
-  "errors.ADMIN_AUTHENTICATION_THROTTLED": "Too many incorrect passwords or codes were entered for this account, so further attempts are paused. Wait a few minutes and try again.",
-  "errors.ADMIN_AUTHENTICATION_UNAVAILABLE": "Sign-in is temporarily unavailable because a service it depends on is not responding. Try again in a moment; if it keeps happening, contact whoever runs this platform.",
-  "errors.ADMIN_USER_ROLE_REQUIRED": "An administrator account must hold a role. Choose a role for this account.",
-  "errors.NEW_PASSWORD_UNCHANGED": "The new password is the same as the current one. Choose a different password.",
-  "errors.ADMIN_USER_OUTRANKS_ACTOR": "This account's role holds permissions your own role does not ({permissions}), so you cannot change it, set its password, deactivate it or delete it."
+  "nav.adminUsers.label": "用户",
+  "actions.openAdminUsers.label": "管理员用户",
+  "actions.openAdminUsers.description": "可以登录管理 UI 的帐户",
+  "errors.ADMIN_AUTHENTICATION_THROTTLED": "为此帐户输入的错误密码或代码过多，因此将暂停进一步的尝试。等待几分钟，然后重试。",
+  "errors.ADMIN_AUTHENTICATION_UNAVAILABLE": "登录暂时不可用，因为它所依赖的服务没有响应。稍后再试；如果这种情况持续发生，请联系该平台的运营者。",
+  "errors.ADMIN_USER_ROLE_REQUIRED": "管理员帐户必须拥有一个角色。为此帐户选择一个角色。",
+  "errors.NEW_PASSWORD_UNCHANGED": "新密码与当前密码相同。选择不同的密码。",
+  "errors.ADMIN_USER_OUTRANKS_ACTOR": "此帐户的角色拥有您自己的角色所没有的权限 ({permissions})，因此您无法更改它、设置其密码、停用它或删除它。"
 }

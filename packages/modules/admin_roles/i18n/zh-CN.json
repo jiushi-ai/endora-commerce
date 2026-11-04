@@ -1,13 +1,13 @@
 {
-  "nav.adminRoles.label": "Roles",
-  "actions.openAdminRoles.label": "Admin roles",
-  "actions.openAdminRoles.description": "Which permissions each admin role grants",
-  "errors.ADMIN_ROLE_CODE_TAKEN": "A role with that code already exists. Pick a different code, or edit the existing role.",
-  "errors.ADMIN_ROLE_IN_USE": "This role is still assigned, so it cannot be deleted. Reassign the accounts that hold it first.",
-  "errors.ADMIN_ROLE_IN_USE.assigned": "This role is still assigned to {assigned} admin account(s), so it cannot be deleted. Reassign them first.",
-  "errors.ADMIN_ROLE_IN_USE.assigned_to_deleted": "This role is still assigned to {deleted} deleted account(s). Restoring one of them restores the role with it, so the role cannot be deleted while they are in the bin.",
-  "errors.ADMIN_ROLE_PROTECTED": "The \"{role}\" role is seeded by the platform or one of its modules and cannot be deleted.",
-  "errors.ADMIN_ROLE_REQUIRED": "This administrator account has no role, so it cannot use the admin panel. Ask a platform administrator to assign it a role.",
-  "errors.ADMIN_ROLE_GRANT_EXCEEDED": "Your own role does not hold these permissions, so you cannot grant them or change a role that holds them: {permissions}.",
-  "errors.ADMIN_ROLE_PROTECTED.modify": "The \"{role}\" role is seeded by the platform or one of its modules. Only an administrator with full access can change it."
+  "nav.adminRoles.label": "角色",
+  "actions.openAdminRoles.label": "管理员角色",
+  "actions.openAdminRoles.description": "每个管理员角色授予哪些权限",
+  "errors.ADMIN_ROLE_CODE_TAKEN": "具有该代码的角色已存在。选择不同的代码，或编辑现有角色。",
+  "errors.ADMIN_ROLE_IN_USE": "该角色仍处于分配状态，因此无法删除。重新分配首先持有它的帐户。",
+  "errors.ADMIN_ROLE_IN_USE.assigned": "此角色仍分配给 {assigned} 管理员帐户，因此无法删除。首先重新分配它们。",
+  "errors.ADMIN_ROLE_IN_USE.assigned_to_deleted": "此角色仍分配给 {deleted} 已删除的帐户。恢复其中之一会同时恢复该角色，因此当它们位于垃圾箱中时，无法删除该角色。",
+  "errors.ADMIN_ROLE_PROTECTED": "“{role}”角色由平台​​或其模块之一播种，无法删除。",
+  "errors.ADMIN_ROLE_REQUIRED": "该管理员帐户没有角色，因此无法使用管理面板。请求平台管理员为其分配角色。",
+  "errors.ADMIN_ROLE_GRANT_EXCEEDED": "您自己的角色不拥有这些权限，因此您无法授予这些权限或更改拥有这些权限的角色：{permissions}。",
+  "errors.ADMIN_ROLE_PROTECTED.modify": "“{role}”角色由平台​​或其模块之一播种。只有具有完全访问权限的管理员才能更改它。"
 }

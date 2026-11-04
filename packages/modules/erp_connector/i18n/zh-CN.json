@@ -1,5 +1,5 @@
 {
-  "erp_connector.nav.label": "ERP connectors",
-  "erp_connector.nav.description": "Shared ERP connector infrastructure",
-  "errors.ERP_CONNECTOR_ALREADY_ACTIVE": "Another ERP connector is already active ({activeModuleId}). Switch it off first."
+  "erp_connector.nav.label": "ERP连接器",
+  "erp_connector.nav.description": "共享 ERP 连接器基础架构",
+  "errors.ERP_CONNECTOR_ALREADY_ACTIVE": "另一个 ERP 连接器已处于活动状态 ({activeModuleId})。首先将其关闭。"
 }

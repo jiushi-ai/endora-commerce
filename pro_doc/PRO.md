@@ -602,3 +602,13 @@ feat-26-11-03 23:39:56 [12.1~12.3]：竞价活动详情页（draft可编辑，�
 汇总：大B 界面语言切换改为英文/简体/繁体。字典业务语言池未改；小b 店面内容语言仍走 Dictionary，需另批若要对齐 zh-CN/zh-TW。多数模块中文包暂为英文拷贝占位，可后续分模块润色。
 
 feat-26-11-04 00:18:02 [13.1~13.3]：Admin界面多语改为en/zh-CN/zh-TW并全量补齐语言包
+
+### 14. Admin A0–A2 — 机翻补齐 zh-CN/zh-TW（小b 另批）
+
+- [x] 14.1 A0：`_i18n` 机翻 zh-CN + OpenCC→zh-TW；壳层/分页/通用键人工校正（品牌名保留英文）
+- [x] 14.2 A1–A2：其余 60 个模块 en→zh-CN 机翻并写 zh-TW；保留已有中文（bidding 等）；脚本 `scripts/mt-admin-i18n-zh.mjs`
+- [x] 14.3 抽检侧栏/订单/CRM；`.gitignore` 忽略 `scripts/.mt-cache/`；本 §99（小b B0+B1 未做）
+
+汇总：大B 管理端 zh-CN/zh-TW 由英文占位改为机翻（约 1.1 万键），A0 壳层关键键已人工润色。生效需后端 `i18n:reload`（或重启）。小b 店面 Dictionary/内容语言留待下一步。
+
+feat-26-11-04 01:12:47 [14.1~14.3]：Admin A0-A2机翻补齐zh-CN/zh-TW（壳层人工校正）

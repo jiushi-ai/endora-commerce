@@ -1,5 +1,5 @@
 {
-  "registry.alreadyActive": "Another PIM connector is already active: {{moduleId}}",
-  "registry.alreadyActive.detail": "Deactivate the other connector before activating this one.",
-  "errors.PIM_CONNECTOR_ALREADY_ACTIVE": "Another PIM connector is already active ({activeModuleId}). Switch it off first."
+  "registry.alreadyActive": "另一個 PIM 連接器已處於活動狀態：{{moduleId}}",
+  "registry.alreadyActive.detail": "在激活此連接器之前先停用另一個連接器。",
+  "errors.PIM_CONNECTOR_ALREADY_ACTIVE": "另一個 PIM 連接器已處於活動狀態 ({activeModuleId})。首先將其關閉。"
 }

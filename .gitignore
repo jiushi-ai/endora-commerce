@@ -64,6 +64,7 @@ lerna-debug.log*
 .swc/
 .tsbuildinfo
 *.tsbuildinfo
+scripts/.mt-cache/
 
 # Environment & secrets
 .env

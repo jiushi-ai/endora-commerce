@@ -1,7 +1,7 @@
 {
   "settingGroups.bidding.name": "竞价",
   "settingLabels.bidding.activation.name": "启用竞价",
-  "settingLabels.bidding.activation.description": "Switches scarce-stock bidding on or off for this instance: role seeds at boot, and campaign and receipt surfaces. Off is non-destructive — seeded roles stay in the database.",
+  "settingLabels.bidding.activation.description": "在这种情况下打开或关闭稀缺股票竞价：启动时的角色种子，以及活动和收据表面。关闭是非破坏性的——种子角色保留在数据库中。",
   "roles.ops.label": "运营",
   "roles.sales.label": "销售",
   "roles.after_sales.label": "售后",
