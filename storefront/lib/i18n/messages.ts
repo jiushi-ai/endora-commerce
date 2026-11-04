@@ -897,6 +897,7 @@ export type MessageKey =
   | 'account.lists.default'
   | 'account.lists.isDefault'
   | 'account.lists.setDefault'
+  | 'account.lists.readOnlyNote'
   | 'account.lists.delete.button'
   | 'account.lists.delete.title'
   | 'account.lists.delete.body'
@@ -1793,6 +1794,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.delete.confirm': 'Delete list',
     'account.lists.delete.pending': 'Deleting…',
     'account.lists.autoDefaultName': 'Default',
+    'account.lists.readOnlyNote': 'Your role allows viewing shopping lists but not changing them.',
     'account.org.taxId': 'Tax ID',
     'account.org.status': 'Status',
 
@@ -2720,6 +2722,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.delete.confirm': '删除清单',
     'account.lists.delete.pending': '删除中…',
     'account.lists.autoDefaultName': '默认',
+    'account.lists.readOnlyNote': '您的角色可以查看采购清单，但不能修改。',
     'account.org.taxId': '税号',
     'account.org.status': '状态',
 
@@ -3648,6 +3651,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.delete.confirm': '刪除清單',
     'account.lists.delete.pending': '刪除中…',
     'account.lists.autoDefaultName': '預設',
+    'account.lists.readOnlyNote': '您的角色可以查看採購清單，但不能修改。',
     'account.org.taxId': '稅號',
     'account.org.status': '狀態',
 
@@ -4619,6 +4623,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.delete.confirm': 'Usuń listę',
     'account.lists.delete.pending': 'Usuwanie…',
     'account.lists.autoDefaultName': 'Domyślna',
+    'account.lists.readOnlyNote': 'Twoja rola pozwala przeglądać listy zakupów, ale nie pozwala ich zmieniać.',
     'account.org.taxId': 'NIP',
     'account.org.status': 'Status',
 
