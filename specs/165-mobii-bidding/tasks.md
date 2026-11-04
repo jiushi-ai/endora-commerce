@@ -20,14 +20,23 @@ Mapped to PRO batches C → E. TDD: failing test first where the repo pattern re
 - [x] T14b Admin create-draft form on campaigns desk / 活动台新建 draft 表单（D UI 补齐）
 - [x] T15 Storefront campaign list/detail/submit/status (`/account/bidding`) / 小b 活动列表/详情/提交/状态
 - [x] T15b Storefront account nav link to `/account/bidding` / 账户侧栏 Bidding 入口（D UI 补齐）
-- [x] T16 Allocate winners/losers (email notify deferred to E polish) / 分配中选/落选（邮件通知延后润色）
-- [x] T17 Convert won+deposited receipt → order (thin; Order row deferred to E) / 薄转单（Order 行延至 E）
+- [x] T16 Allocate winners/losers API (desk + email → E / T16′) / 分配 API（台面与邮件 → E / T16′）
+- [x] T17 Thin convert won+deposited → tradeId stub (real Order → E / T17′) / 薄转单（真 Order → E / T17′）
+- [x] T14c Intent template upload/download + signed PDF on receipts (D.9; not re-done in E) / 意向模板与签章 PDF（D.9；E 不再做该 UI）
+- [x] T14d Receipts human-readable campaign/org + PDF preview/download (D.10) / 回执台人读列与 PDF 预览下载（D.10）
 
-## P3 / Batch E — Gates & acceptance / 门禁与验收
+## P3 / Batch E — Fulfilment gates & acceptance / 履约门禁与验收
 
-- [ ] T20 Deposit confirm + amount check (G-M3/G-M5) / 预付确认 + 金额校验
-- [ ] T21 Trade id wiring across payment/order/shipment / 交易编号贯穿收款/订单/发货
-- [ ] T22 Ship checklist gate (G-S1/G-S2) / 发货清单门禁
+> D polish (§99 batches 5–9) already shipped create form, nav, filters/pagination, intent template UI, and receipts PDF preview. **E does not redo that UI.** Ship gate only asserts attachment-on-file.
+> D 人工补齐（§99 批次 5–9）已交付建单、菜单、筛选分页、意向模板 UI、回执 PDF 预览。**E 不再做上述 UI**；发货门禁只校验附件已在档。
+
+**Order of work / 建议执行顺序：** T17′ → T20 → T16′ → T21 → T22/T23 → T24/T25
+
+- [ ] T17′ Convert won+deposited → **real Order** (replace thin convert) / 真转订单（接替薄转单）
+- [ ] T20 Deposit confirm + amount check (G-M3/G-M5); desk-operable path / 预付确认 + 金额校验；台面可操作
+- [ ] T16′ Allocate winners/losers **desk** + optional email notify / 分配中选/落选台 + 可选邮件通知
+- [ ] T21 Trade id wiring across payment/order/shipment (G-M4) / 交易编号贯穿收款/订单/发货
+- [ ] T22 Ship checklist gate (G-S1/G-S2) **incl. intent attachment present** (no template UI) / 发货门禁（含意向附件在档校验；不做模板 UI）
 - [ ] T23 Inventory reserve/release (G-S3/G-S5) / 库存预留/释放
 - [ ] T24 E2E / acceptance against `pro_doc/acceptance-checklist-mvp.md` / 对照验收清单做端到端验收
 - [ ] T25 Off-state coverage for `bidding` module / `bidding` 关闭态覆盖
