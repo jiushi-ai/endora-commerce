@@ -1,6 +1,12 @@
 import type { EntityManager } from '@mikro-orm/postgresql';
 import type { FastifyRequest } from 'fastify';
-import type { CartWritePort, CatalogProductReadPort, RfqCustomerPort } from '@endora-commerce/contracts';
+import type {
+  CartWritePort,
+  CatalogProductAvailabilityPort,
+  CatalogProductReadPort,
+  OrganizationPermissionPort,
+  RfqCustomerPort,
+} from '@endora-commerce/contracts';
 import type { AuditPort } from '@endora-commerce/platform/kernel';
 import type { ModuleContext } from '@endora-commerce/platform/kernel';
 import { lazyPort } from '@endora-commerce/platform/kernel';
@@ -68,6 +74,7 @@ export interface ShoppingListsCradle {
 }
 
 export function registerModule(ctx: ModuleContext): void {
+  const permissions = lazyPort<OrganizationPermissionPort>(ctx, 'organizationPermissionPort');
   ctx.di.register({
     // Contribution point, defaulted to a no-op: a composition with no `carts`
     // save-to-list bridge simply never asks for the service.
@@ -106,6 +113,10 @@ export function registerModule(ctx: ModuleContext): void {
             ctx.cradle<ShoppingListsCradle>().requireCustomer(req, reply),
           resolveCustomerContext: (req: FastifyRequest) =>
             ctx.cradle<ShoppingListsCradle>().customerContextResolver(req),
+          // `specs/170-organization-roles/` — the route guards' port: a lazy
+          // proxy resolving per call, behind a thunk. `organizations` is a
+          // binding dependency already, and non-deactivatable.
+          organizationPermissions: () => permissions,
           exposeShoppingListService: (service) => {
             ctx.cradle<ShoppingListsCradle>().shoppingListServiceSink(service);
           },
