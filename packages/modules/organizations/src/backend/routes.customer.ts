@@ -6,13 +6,29 @@ import {
   createAddressRequestSchema,
   updateAddressRequestSchema,
   ERROR_CODES,
+  organizationPermissionPreHandler,
   type AddressServicePort,
   type CustomerAccountReadPort,
   type CustomerAccountRecord,
   type CustomerAuthPort,
+  type OrganizationPermissionGuardRequest,
+  type OrganizationPermissionPort,
+  type OrganizationRoleReadPort,
 } from '@endora-commerce/contracts';
 import { HttpError } from '@endora-commerce/platform/http';
 import { Organization } from './entities/organization.entity.js';
+import { describeModerationStatus } from './services/moderation-message.js';
+import type { OrganizationsTranslate } from './services/organizations-prose.js';
+import { memberSessionRole } from './services/member-role-views.js';
+
+/**
+ * The organization permission an Organization's shared addresses are written
+ * under (`specs/170-organization-roles/` WP-03; FR-014a, owner ruling OR-8,
+ * research R-8b). Declared by `addresses`, which owns the entity and the write
+ * behind `addressServicePort`; enforced here, at the route seam. Reading the
+ * list stays open to every member.
+ */
+const MANAGE_ADDRESSES = 'addresses.manage';
 
 export interface OrganizationsCustomerDeps {
   customerAuthService: CustomerAuthPort;
@@ -41,6 +57,18 @@ export interface OrganizationsCustomerDeps {
   };
   /** Read-only EntityManager factory for the GET /me endpoint. */
   emFactory: () => EntityManager;
+  /**
+   * `specs/170-organization-roles/` WP-03 — the member's role and effective
+   * permissions on `GET /api/v1/me` (FR-056), and the `addresses.manage` gate
+   * (FR-014a). The permission port is resolved per request.
+   */
+  organizationRoles: Pick<OrganizationRoleReadPort, 'roleRef'>;
+  organizationPermissions: () => OrganizationPermissionPort;
+  /**
+   * This module's bundle, for `moderationMessage` in the language the response
+   * is answered in (issue #95). Absent, English.
+   */
+  translate?: OrganizationsTranslate;
 }
 
 export async function registerOrganizationsCustomerRoutes(
@@ -53,6 +81,14 @@ export async function registerOrganizationsCustomerRoutes(
     requireCustomer,
     resolveCustomerContext,
   } = deps;
+  // `request.actor` is the `auth` module's declaration-merging augmentation,
+  // which a package does not see (see `routes.admin.ts`'s `adminActorOf`); the
+  // guard reads it structurally.
+  const requireManageAddresses = organizationPermissionPreHandler(deps.organizationPermissions, MANAGE_ADDRESSES);
+  const manageAddresses = [
+    requireCustomer,
+    (request: FastifyRequest) => requireManageAddresses(request as unknown as OrganizationPermissionGuardRequest),
+  ];
 
   app.get(
     '/api/v1/me',
@@ -69,10 +105,19 @@ export async function registerOrganizationsCustomerRoutes(
         ? await em.findOne(Organization, { id: ctx.organizationId })
         : null;
       const impersonatorAdminUserId = ctx.impersonatorAdminUserId ?? null;
+      const language = await request.responseLanguage();
       return {
         data: {
-          customerAccount: serializeCustomer(customer),
-          organization: organization ? serializeOrganization(organization) : null,
+          customerAccount: {
+            ...serializeCustomer(customer),
+            ...(await memberSessionRole(deps.organizationRoles, deps.organizationPermissions(), customer, language)),
+          },
+          organization: organization
+            ? serializeOrganization(
+                organization,
+                await describeModerationStatus(deps.translate, organization.status, language),
+              )
+            : null,
           impersonation: impersonatorAdminUserId
             ? { impersonatorAdminUserId }
             : null,
@@ -113,7 +158,7 @@ export async function registerOrganizationsCustomerRoutes(
 
   app.post(
     '/api/v1/organizations/mine/addresses',
-    { preHandler: requireCustomer, schema: { body: createAddressRequestSchema } },
+    { preHandler: manageAddresses, schema: { body: createAddressRequestSchema } },
     async (request, reply) => {
       const ctx = resolveCustomerContext(request);
       const body = createAddressRequestSchema.parse(request.body);
@@ -134,7 +179,7 @@ export async function registerOrganizationsCustomerRoutes(
 
   app.patch<{ Params: { id: string } }>(
     '/api/v1/organizations/mine/addresses/:id',
-    { preHandler: requireCustomer, schema: { body: updateAddressRequestSchema } },
+    { preHandler: manageAddresses, schema: { body: updateAddressRequestSchema } },
     async (request) => {
       const ctx = resolveCustomerContext(request);
       const body = updateAddressRequestSchema.parse(request.body);
@@ -153,7 +198,7 @@ export async function registerOrganizationsCustomerRoutes(
 
   app.delete<{ Params: { id: string } }>(
     '/api/v1/organizations/mine/addresses/:id',
-    { preHandler: requireCustomer },
+    { preHandler: manageAddresses },
     async (request, reply) => {
       const ctx = resolveCustomerContext(request);
       await addressService.deleteAddress(ctx.organizationId, request.params.id);
@@ -195,7 +240,6 @@ function serializeCustomer(c: CustomerAccountRecord) {
     email: c.email,
     firstName: c.firstName,
     lastName: c.lastName,
-    role: c.role,
     emailVerifiedAt: c.emailVerifiedAt?.toISOString() ?? null,
     twoFactorEnabled: c.twoFactorEnabled,
     preferredLanguage: c.preferredLanguage ?? null,
