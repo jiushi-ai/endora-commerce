@@ -95,10 +95,14 @@ export interface RequestLanguageDeps {
  */
 export function normalise(tag: string | null | undefined): SupportedLanguage | null {
   if (!tag) return null;
-  const primary = tag.split('-', 1)[0]?.trim().toLowerCase() ?? '';
-  return (SUPPORTED_LANGUAGES as readonly string[]).includes(primary)
-    ? (primary as SupportedLanguage)
-    : null;
+  const trimmed = tag.trim();
+  if (!trimmed) return null;
+  const supported = SUPPORTED_LANGUAGES as readonly string[];
+  // Exact first so `zh-CN` / `zh-TW` are not collapsed to unsupported `zh`.
+  const exact = supported.find((code) => code.toLowerCase() === trimmed.toLowerCase());
+  if (exact) return exact as SupportedLanguage;
+  const primary = trimmed.split('-', 1)[0]?.toLowerCase() ?? '';
+  return supported.includes(primary) ? (primary as SupportedLanguage) : null;
 }
 
 /**

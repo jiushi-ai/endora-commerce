@@ -24,7 +24,8 @@ interface LanguageOption {
 
 const LANGUAGES: ReadonlyArray<LanguageOption> = [
   { code: 'en', labelKey: 'profilePage.language.option.en', flag: '🇬🇧' },
-  { code: 'pl', labelKey: 'profilePage.language.option.pl', flag: '🇵🇱' },
+  { code: 'zh-CN', labelKey: 'profilePage.language.option.zh-CN', flag: '🇨🇳' },
+  { code: 'zh-TW', labelKey: 'profilePage.language.option.zh-TW', flag: '🇹🇼' },
 ];
 
 function flagFor(code: SupportedAdminLanguage): string {

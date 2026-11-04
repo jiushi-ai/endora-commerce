@@ -2368,5 +2368,7 @@
   "pageBuilder.assetPicker.selectVideo": "Wybierz wideo",
   "pageBuilder.assetPicker.selectFile": "Wybierz plik",
   "pageBuilder.blogCategory.all": "Wszystkie kategorie",
-  "pageBuilder.blogCategory.slugPlaceholder": "Slug kategorii"
+  "pageBuilder.blogCategory.slugPlaceholder": "Slug kategorii",
+  "profilePage.language.option.zh-CN": "Chiński uproszczony",
+  "profilePage.language.option.zh-TW": "Chiński tradycyjny"
 }

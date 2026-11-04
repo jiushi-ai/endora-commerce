@@ -335,7 +335,8 @@ function LanguageSection(): ReactNode {
             style={{ maxWidth: 240 }}
           >
             <option value="en">{t('profilePage.language.option.en')}</option>
-            <option value="pl">{t('profilePage.language.option.pl')}</option>
+            <option value="zh-CN">{t('profilePage.language.option.zh-CN')}</option>
+            <option value="zh-TW">{t('profilePage.language.option.zh-TW')}</option>
           </select>
           <button
             type="button"

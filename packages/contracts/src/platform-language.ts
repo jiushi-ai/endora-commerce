@@ -16,7 +16,12 @@ import { z } from 'zod';
  * line. `normalise` in `backend/src/kernel/i18n/request-language.ts` is the
  * bridge between the two, and a bridge needs both ends named.
  */
-export const SupportedLanguageSchema = z.enum(['en', 'pl']);
+/**
+ * UI translation-bundle languages.
+ * `pl` remains shippable (existing bundles kept); Admin chrome offers
+ * `en` / `zh-CN` / `zh-TW` in the language picker.
+ */
+export const SupportedLanguageSchema = z.enum(['en', 'pl', 'zh-CN', 'zh-TW']);
 export type SupportedLanguage = z.infer<typeof SupportedLanguageSchema>;
 
 /** Convenience: every supported value as a runtime array. */

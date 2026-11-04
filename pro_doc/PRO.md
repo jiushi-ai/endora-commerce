@@ -592,3 +592,13 @@ feat-26-11-03 22:33:03 [11.1~11.5]：完成批次E真转订单与履约门禁（
 汇总：T24 人工验收发现无法查看活动详情；补齐详情页与 draft-only 编辑（与后端 update 门禁一致）。Publish / Close bids 仍在列表操作。
 
 feat-26-11-03 23:39:56 [12.1~12.3]：竞价活动详情页（draft可编辑，已发布只读）
+
+### 13. Admin UI 多语 — en / zh-CN / zh-TW（保留 pl 包）
+
+- [x] 13.1 `SUPPORTED_LANGUAGES` 增加 `zh-CN`/`zh-TW`；`normalise` 先精确匹配；Admin 顶栏/Profile 选项改为 en/zh-CN/zh-TW
+- [x] 13.2 全模块 + platform `_lifecycle` 新增 `zh-CN.json`/`zh-TW.json`（`pl.json` 保留）；`check:bundle-pairing` 清零
+- [x] 13.3 bidding 关键中文译稿；`_i18n` 语言选项文案；contracts/platform/admin-shell build；本 §99
+
+汇总：大B 界面语言切换改为英文/简体/繁体。字典业务语言池未改；小b 店面内容语言仍走 Dictionary，需另批若要对齐 zh-CN/zh-TW。多数模块中文包暂为英文拷贝占位，可后续分模块润色。
+
+feat-26-11-04 00:18:02 [13.1~13.3]：Admin界面多语改为en/zh-CN/zh-TW并全量补齐语言包
