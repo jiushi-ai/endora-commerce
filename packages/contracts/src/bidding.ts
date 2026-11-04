@@ -84,6 +84,7 @@ export const BIDDING_ERROR_CODES = [
   'BIDDING_ATTACHMENT_REQUIRED',
   'BIDDING_STEP_REQUIRED',
   'BIDDING_DEPOSIT_REQUIRED',
+  'BIDDING_DEPOSIT_AMOUNT_MISMATCH',
   'BIDDING_SHIP_CHECKLIST_FAILED',
   'BIDDING_INVALID_TRANSITION',
   'BIDDING_ALREADY_SUBMITTED',
@@ -205,8 +206,17 @@ export const biddingReceiptAdminSchema = biddingReceiptSchema.extend({
   campaignTitle: z.string().optional(),
   organizationName: z.string().nullable().optional(),
   attachments: z.array(biddingReceiptAttachmentSchema).optional(),
+  /** Expected deposit from frozen rules (null when no deposit configured). */
+  expectedDepositAmount: amountSchema.nullable().optional(),
+  expectedDepositCurrency: currencyCodeSchema.nullable().optional(),
 });
 export type BiddingReceiptAdmin = z.infer<typeof biddingReceiptAdminSchema>;
+
+/** Finance confirms received deposit amount (G-M5). */
+export const confirmDepositRequestSchema = z.object({
+  amountReceived: amountSchema,
+});
+export type ConfirmDepositRequest = z.infer<typeof confirmDepositRequestSchema>;
 
 export const approveBidReceiptRequestSchema = z.object({
   step: biddingApprovalStepSchema,
@@ -232,6 +242,15 @@ export const allocateCampaignRequestSchema = z.object({
     .min(1),
 });
 export type AllocateCampaignRequest = z.infer<typeof allocateCampaignRequestSchema>;
+
+/**
+ * Convert a won+deposited receipt into a real Order (Batch E / T17′).
+ * Omit `customerAccountId` to pick the organisation's first member account.
+ */
+export const convertToOrderRequestSchema = z.object({
+  customerAccountId: uuidSchema.optional(),
+});
+export type ConvertToOrderRequest = z.infer<typeof convertToOrderRequestSchema>;
 
 export const biddingAllocationResultSchema = z.object({
   id: uuidSchema,

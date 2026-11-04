@@ -48,6 +48,22 @@ export const manifest = defineModuleManifest({
     'orders',
     'transactional_emails',
   ],
+  /**
+   * Feature 165 / T22 — bidding ship checklist. Presence is decided in front of
+   * the gate (`effectiveState.isPresent('bidding')`); with bidding off, create
+   * shipment behaves as before.
+   */
+  nonBindingDependencies: [
+    {
+      moduleId: 'bidding',
+      name: 'biddingFulfilmentGatePort',
+      kind: 'degrades-without',
+      whenAbsent: 'Shipment create does not enforce the Mobii bidding checklist.',
+      reason:
+        'createShipment asks `isPresent(\'bidding\')` before resolving the gate; non-bidding ' +
+        'orders must still ship when the bidding module is off or not installed.',
+    },
+  ],
   // Feature 073 (Constitution XVII) — the operator's activation control. It
   // only became real in T124: until this module registered its own routes there
   // was no seam for a gate to sit on.

@@ -8,6 +8,13 @@ import {
   type BiddingReceipt,
   type BiddingReceiptAdmin,
   type BiddingReceiptAttachment,
+  type CartWritePort,
+  type CatalogProductReadPort,
+  type ConfirmDepositRequest,
+  type ConvertToOrderRequest,
+  type CustomerAccountReadPort,
+  type DefaultPreferencePort,
+  type OrderPlacementPort,
   type OrganizationDetailsPort,
   type RejectBidReceiptRequest,
   type SubmitBidReceiptRequest,
@@ -21,6 +28,15 @@ import { BidReceipt } from '../entities/bid-receipt.entity.js';
 import { BiddingAllocationResult } from '../entities/bidding-allocation-result.entity.js';
 import { BiddingCampaign } from '../entities/bidding-campaign.entity.js';
 import { BiddingCampaignRuleVersion } from '../entities/bidding-campaign-rule-version.entity.js';
+
+/** Cross-module ports for real Order convert (Batch E / T17′). */
+export interface BiddingConvertDeps {
+  carts: CartWritePort;
+  orderPlacement: OrderPlacementPort;
+  catalogProducts: CatalogProductReadPort;
+  customerAccounts: CustomerAccountReadPort;
+  defaultPreferences: DefaultPreferencePort;
+}
 
 /** Prefer a forced download when the library served a `/assets/file/:id` URL. */
 function asDownloadLink(url: string, assetId: string): string {
@@ -63,13 +79,42 @@ function orgEligible(
   return orgIds.includes(organizationId);
 }
 
+/** Expected deposit from frozen rule + bid (null = no deposit configured). */
+export function expectedDepositAmount(
+  rule: {
+    depositPercent?: number | null;
+    depositAmount?: string | null;
+  },
+  bidUnitPrice: string | number | null | undefined,
+  bidQty: number | null | undefined,
+): string | null {
+  if (rule.depositAmount != null && String(rule.depositAmount).trim() !== '') {
+    return Number(rule.depositAmount).toFixed(2);
+  }
+  if (
+    rule.depositPercent != null &&
+    bidUnitPrice != null &&
+    bidQty != null &&
+    Number.isFinite(Number(bidUnitPrice)) &&
+    Number.isFinite(bidQty)
+  ) {
+    return ((Number(bidUnitPrice) * bidQty * Number(rule.depositPercent)) / 100).toFixed(2);
+  }
+  return null;
+}
+
+function amountsMatch(expected: string, received: string): boolean {
+  return Math.round(Number(expected) * 100) === Math.round(Number(received) * 100);
+}
+
 /**
- * BidReceipt submit, dual review, deposit confirm, allocate, thin convert.
+ * BidReceipt submit, dual review, deposit confirm, allocate, convert → Order.
  */
 export class BiddingReceiptService {
   constructor(
     private readonly emFactory: () => EntityManager,
     private readonly auditLog?: AuditPort,
+    private readonly convertDeps?: BiddingConvertDeps,
   ) {}
 
   async listForAdmin(
@@ -89,6 +134,11 @@ export class BiddingReceiptService {
       ? await em.find(BiddingCampaign, { id: { $in: campaignIds } })
       : [];
     const campaignById = new Map(campaigns.map((c) => [c.id, c]));
+    const ruleIds = [...new Set(rows.map((r) => r.ruleVersionId))];
+    const rules = ruleIds.length
+      ? await em.find(BiddingCampaignRuleVersion, { id: { $in: ruleIds } })
+      : [];
+    const ruleById = new Map(rules.map((r) => [r.id, r]));
 
     const orgNameById = new Map<string, string>();
     if (enrich && rows.length > 0) {
@@ -137,12 +187,18 @@ export class BiddingReceiptService {
       const attachments = await Promise.all(
         (row.attachmentAssetIds ?? []).map((id) => resolveAttachment(id)),
       );
+      const rule = ruleById.get(row.ruleVersionId);
+      const expected = rule
+        ? expectedDepositAmount(rule, row.bidUnitPrice, row.bidQty)
+        : null;
       out.push({
         ...base,
         campaignCode: campaign?.code,
         campaignTitle: campaign?.title,
         organizationName: orgNameById.get(row.organizationId) ?? null,
         attachments,
+        expectedDepositAmount: expected,
+        expectedDepositCurrency: rule?.currency ?? null,
       });
     }
     return out;
@@ -275,7 +331,11 @@ export class BiddingReceiptService {
     return this.decide(receiptId, adminUserId, body.step, 'reject', body.note);
   }
 
-  async confirmDeposit(receiptId: string, adminUserId: string): Promise<BiddingReceipt> {
+  async confirmDeposit(
+    receiptId: string,
+    adminUserId: string,
+    body: ConfirmDepositRequest,
+  ): Promise<BiddingReceipt> {
     const em = this.emFactory();
     const row = await em.findOne(BidReceipt, { id: receiptId });
     if (!row) {
@@ -288,12 +348,33 @@ export class BiddingReceiptService {
         'Receipt is not awaiting deposit.',
       );
     }
+    const rule = await em.findOne(BiddingCampaignRuleVersion, { id: row.ruleVersionId });
+    if (!rule) {
+      throw new HttpError(422, ERROR_CODES.BIDDING_RULE_REQUIRED, 'Rule version missing.');
+    }
+    const expected = expectedDepositAmount(rule, row.bidUnitPrice, row.bidQty);
+    if (expected != null && !amountsMatch(expected, body.amountReceived)) {
+      throw new HttpError(
+        422,
+        ERROR_CODES.BIDDING_DEPOSIT_AMOUNT_MISMATCH,
+        `Deposit amount mismatch: expected ${expected} ${rule.currency}, received ${body.amountReceived}.`,
+        { expected, received: body.amountReceived, currency: rule.currency },
+      );
+    }
+    if (expected == null && Number(body.amountReceived) !== 0) {
+      throw new HttpError(
+        422,
+        ERROR_CODES.BIDDING_DEPOSIT_AMOUNT_MISMATCH,
+        'Campaign has no deposit requirement; amountReceived must be 0.',
+        { expected: '0.00', received: body.amountReceived },
+      );
+    }
     const step = em.create(BidApprovalStepRow, {
       receiptId: row.id,
       step: 'finance_deposit',
       actorAdminUserId: adminUserId,
       decision: 'approve',
-      note: null,
+      note: `amountReceived=${body.amountReceived}`,
     });
     em.persist(step);
     row.status = 'deposit_confirmed';
@@ -304,7 +385,12 @@ export class BiddingReceiptService {
         objectType: 'bid_receipt',
         objectId: row.id,
         stateBefore: { status: 'await_deposit' },
-        stateAfter: { status: 'deposit_confirmed', tradeId: row.tradeId },
+        stateAfter: {
+          status: 'deposit_confirmed',
+          tradeId: row.tradeId,
+          amountReceived: body.amountReceived,
+          expectedDeposit: expected,
+        },
       });
     }
     await em.flush();
@@ -375,15 +461,33 @@ export class BiddingReceiptService {
   }
 
   /**
-   * Thin convert (Batch D): requires won path + deposit confirmed.
-   * Sets status `converted` and keeps `orderId` null until Batch E wires
-   * OrderCreationAdmin — trade id is already on the receipt.
+   * Convert won + deposit-confirmed receipt into a real Order (T17′).
+   * Seeds the buyer cart at the bid unit price, then `orderPlacementPort.placeOrder`.
    */
-  async convertToOrder(receiptId: string, adminUserId: string): Promise<BiddingReceipt> {
+  async convertToOrder(
+    receiptId: string,
+    adminUserId: string,
+    body: ConvertToOrderRequest = {},
+  ): Promise<BiddingReceipt> {
+    const deps = this.convertDeps;
+    if (!deps) {
+      throw new HttpError(
+        503,
+        ERROR_CODES.MODULE_DISABLED,
+        'Order convert collaborators are not wired.',
+      );
+    }
     const em = this.emFactory();
     const row = await em.findOne(BidReceipt, { id: receiptId });
     if (!row) {
       throw new HttpError(404, ERROR_CODES.BIDDING_RECEIPT_NOT_FOUND, 'Receipt not found.');
+    }
+    if (row.status === 'converted' || row.orderId) {
+      throw new HttpError(
+        409,
+        ERROR_CODES.BIDDING_INVALID_TRANSITION,
+        'Receipt is already converted.',
+      );
     }
     if (row.status !== 'deposit_confirmed' && row.status !== 'won_pending_fulfilment') {
       throw new HttpError(
@@ -403,9 +507,81 @@ export class BiddingReceiptService {
         'Only a won receipt can convert to an order.',
       );
     }
+    const campaign = await em.findOne(BiddingCampaign, { id: row.campaignId });
+    if (!campaign) {
+      throw new HttpError(404, ERROR_CODES.BIDDING_CAMPAIGN_NOT_FOUND, 'Campaign not found.');
+    }
+    const rule = await em.findOne(BiddingCampaignRuleVersion, { id: row.ruleVersionId });
+    if (!rule) {
+      throw new HttpError(422, ERROR_CODES.BIDDING_RULE_REQUIRED, 'Rule version missing.');
+    }
+    if (row.bidUnitPrice == null || row.bidQty == null) {
+      throw new HttpError(422, ERROR_CODES.VALIDATION_FAILED, 'Receipt is missing bid price or qty.');
+    }
+
+    const customerAccountId = await this.resolveConvertCustomer(
+      deps,
+      row.organizationId,
+      body.customerAccountId,
+    );
+    const defaults = await deps.defaultPreferences.resolveForCustomer(customerAccountId);
+    if (
+      !defaults.paymentMethodId ||
+      !defaults.deliveryMethodId ||
+      !defaults.billingAddressId ||
+      !defaults.shippingAddressId
+    ) {
+      throw new HttpError(
+        422,
+        ERROR_CODES.VALIDATION_FAILED,
+        'Customer is missing one-click defaults (payment, delivery, billing, shipping).',
+        { code: 'bidding_convert_missing_defaults' },
+      );
+    }
+
+    // Campaign create UI stores a simple product id in `productVariantId`.
+    const product = await deps.catalogProducts.findById(campaign.productVariantId);
+    if (!product) {
+      throw new HttpError(
+        404,
+        ERROR_CODES.PRODUCT_NOT_FOUND,
+        'Campaign product is no longer available.',
+      );
+    }
+    const qty =
+      alloc.allocatedQty > 0 ? alloc.allocatedQty : row.bidQty;
+    const cartCtx = {
+      customerAccountId,
+      organizationId: row.organizationId,
+      salesChannelId: campaign.salesChannelId,
+    };
+    await deps.carts.replaceItemsForCustomer(cartCtx, [
+      {
+        productId: product.id,
+        quantity: qty,
+        unitPrice: String(row.bidUnitPrice),
+        currency: rule.currency,
+      },
+    ]);
+
+    // G-M4: tradeId must exist before placement so the order note carries it.
     if (!row.tradeId) row.tradeId = `TRD-${randomUUID().slice(0, 8).toUpperCase()}`;
+
+    const placed = await deps.orderPlacement.placeOrder(
+      { customerAccountId, organizationId: row.organizationId },
+      {
+        deliveryAddressId: defaults.shippingAddressId,
+        billingAddressId: defaults.billingAddressId,
+        deliveryMethodId: defaults.deliveryMethodId,
+        paymentMethodId: defaults.paymentMethodId,
+        salesChannelId: campaign.salesChannelId,
+        idempotencyKey: `bidding-convert:${row.id}`,
+        customerNote: `Bidding trade ${row.tradeId}`,
+      },
+    );
+
+    row.orderId = placed.id;
     row.status = 'converted';
-    // orderId stays null in Batch D thin path — Batch E creates the Order row.
     if (this.auditLog) {
       recordAuditFromContext(this.auditLog, em, {
         action: 'bidding.receipt.convert',
@@ -416,12 +592,40 @@ export class BiddingReceiptService {
           status: 'converted',
           tradeId: row.tradeId,
           by: adminUserId,
-          orderId: null,
+          orderId: placed.id,
+          customerAccountId,
         },
       });
     }
     await em.flush();
     return toReceiptDto(row, false);
+  }
+
+  private async resolveConvertCustomer(
+    deps: BiddingConvertDeps,
+    organizationId: string,
+    explicitId: string | undefined,
+  ): Promise<string> {
+    if (explicitId) {
+      const account = await deps.customerAccounts.findInOrganization(explicitId, organizationId);
+      if (!account) {
+        throw new HttpError(
+          422,
+          ERROR_CODES.VALIDATION_FAILED,
+          'customerAccountId is not a member of the receipt organisation.',
+        );
+      }
+      return account.id;
+    }
+    const members = await deps.customerAccounts.listByOrganization(organizationId);
+    if (members.length === 0) {
+      throw new HttpError(
+        422,
+        ERROR_CODES.VALIDATION_FAILED,
+        'Organisation has no customer account to place the order for.',
+      );
+    }
+    return members[0]!.id;
   }
 
   private applyAllocationToReceipt(receipt: BidReceipt, outcome: BiddingAllocationOutcome): void {
@@ -484,7 +688,11 @@ export class BiddingReceiptService {
       }
       row.status = 'await_deposit';
     } else if (step === 'finance_deposit') {
-      return this.confirmDeposit(receiptId, adminUserId);
+      throw new HttpError(
+        422,
+        ERROR_CODES.VALIDATION_FAILED,
+        'Use confirm-deposit with amountReceived for finance_deposit.',
+      );
     } else {
       throw new HttpError(422, ERROR_CODES.VALIDATION_FAILED, 'Unknown approval step.');
     }

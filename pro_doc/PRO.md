@@ -449,7 +449,13 @@ chatlog/                          # 评估与决策会话归档（如 2026-10-29
 
 **执行记录**
 
-- （未开始；清单已于 2026-11-03 重排，见 §99 批次 10）
+- [x] E.1 T17′ 真转订单：`cartWritePort` 播种竞价单价 + `orderPlacementPort.placeOrder`，回写 `orderId`
+- [x] E.2 T20 预付金额校验：`confirm-deposit` 要求 `amountReceived` 对齐规则应收；Receipts 台面可点
+- [x] E.3 T16′ Receipts 台 Mark won/lost（allocate API）；邮件通知仍后置
+- [x] E.4 T21 `tradeId` 写回执 + 订单 customerNote；台面展示 Trade/Order
+- [x] E.5 T22 发货门禁含附件在档；`shipments.createShipment` 在 bidding 在场时调用 gate
+- [x] E.6 T23 转单路径由 `placeOrder` 预留库存（分配时预留后置）
+- [x] E.7 T25 activation 声明 + 单测；T24 人工业务验收留给操作者对照清单
 
 ---
 
@@ -564,3 +570,15 @@ feat-26-11-03 01:39:16 [9.1~9.3]：竞价Receipts显示活动与商户名并支�
 汇总：基于 D 人工验证与批次 5–9 补齐结果，将 E 收窄为「真 Order → 预付金额 → 分配台 → tradeId → 发货/库存 → 验收/关闭态」；模板/建单/PDF 预览 UI 明确移出 E。业务代码未改。
 
 feat-26-11-03 22:08:15 [10.1~10.3]：按D验证结果重排批次E任务清单（仅文档）
+
+### 11. 批次 E — 履约门禁与真转订单实现
+
+- [x] 11.1 T17′：`convertToOrder` 经 cart seed + `orderPlacementPort` 写真实 Order / `orderId`
+- [x] 11.2 T20：`confirm-deposit` 金额校验 + Receipts 台输入实收
+- [x] 11.3 T16′：Receipts Mark won/lost（allocate）；邮件仍后置
+- [x] 11.4 T21/T22：tradeId 订单备注 + 发货门禁（含附件）+ shipments 接线
+- [x] 11.5 T23/T25：placeOrder 预留库存；activation 关闭态单测；更新 tasks/PRO/docs
+
+汇总：批次 E 工程项落地（真 Order、预付金额、分配台、tradeId、发货门禁含附件、shipments 可选调用）。T24 人工业务验收与 allocate 邮件通知仍待操作者/后置。Convert 依赖买家 one-click 默认地址与支付方式。
+
+feat-26-11-03 22:33:03 [11.1~11.5]：完成批次E真转订单与履约门禁（发货接线）

@@ -111,11 +111,49 @@ export function ReceiptsPage(): ReactNode {
     }
   };
 
-  const confirmDeposit = async (id: string): Promise<void> => {
-    setBusyId(id);
+  const confirmDeposit = async (row: BiddingReceiptAdmin): Promise<void> => {
+    const expected = row.expectedDepositAmount ?? '0.00';
+    const currency = row.expectedDepositCurrency ?? '';
+    const entered = window.prompt(
+      t('receipts.action.depositPrompt', { expected, currency }),
+      expected,
+    );
+    if (entered == null) return;
+    const amountReceived = entered.trim();
+    if (!amountReceived) {
+      setError(t('receipts.action.depositMissingAmount'));
+      return;
+    }
+    setBusyId(row.id);
     setError(null);
     try {
-      await apiClient.post(`/api/v1/admin/bidding/receipts/${id}/confirm-deposit`, {});
+      await apiClient.post(`/api/v1/admin/bidding/receipts/${row.id}/confirm-deposit`, {
+        amountReceived,
+      });
+      await refresh();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.envelope.error.message : t('receipts.error.action'));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const allocateOne = async (
+    row: BiddingReceiptAdmin,
+    outcome: 'won' | 'lost',
+  ): Promise<void> => {
+    setBusyId(row.id);
+    setError(null);
+    try {
+      await apiClient.post(`/api/v1/admin/bidding/campaigns/${row.campaignId}/allocate`, {
+        results: [
+          {
+            receiptId: row.id,
+            outcome,
+            allocatedQty: outcome === 'won' ? (row.bidQty ?? 0) : 0,
+          },
+        ],
+      });
       await refresh();
     } catch (err) {
       setError(err instanceof ApiError ? err.envelope.error.message : t('receipts.error.action'));
@@ -187,6 +225,7 @@ export function ReceiptsPage(): ReactNode {
                     <TableHead>{t('receipts.col.org')}</TableHead>
                     <TableHead>{t('receipts.col.status')}</TableHead>
                     <TableHead>{t('receipts.col.bid')}</TableHead>
+                    <TableHead>{t('receipts.col.tradeId')}</TableHead>
                     <TableHead>{t('receipts.col.attachment')}</TableHead>
                     <TableHead>{t('receipts.col.actions')}</TableHead>
                   </TableRow>
@@ -213,6 +252,14 @@ export function ReceiptsPage(): ReactNode {
                         <TableCell>{row.status}</TableCell>
                         <TableCell className="text-sm">
                           {row.bidUnitPrice ?? '—'} × {row.bidQty ?? '—'}
+                        </TableCell>
+                        <TableCell className="font-mono text-xs">
+                          {row.tradeId ?? '—'}
+                          {row.orderId ? (
+                            <div className="text-muted-foreground" title={row.orderId}>
+                              ord {row.orderId.slice(0, 8)}…
+                            </div>
+                          ) : null}
                         </TableCell>
                         <TableCell className="space-x-2 whitespace-nowrap">
                           {primary?.url ? (
@@ -262,11 +309,34 @@ export function ReceiptsPage(): ReactNode {
                               {t('receipts.action.sales')}
                             </Button>
                           ) : null}
+                          {row.status === 'await_deposit' || row.status === 'deposit_confirmed' ? (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={busyId === row.id}
+                                onClick={() => void allocateOne(row, 'won')}
+                                title={t('receipts.action.wonHint')}
+                              >
+                                {t('receipts.action.won')}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={busyId === row.id}
+                                onClick={() => void allocateOne(row, 'lost')}
+                                title={t('receipts.action.lostHint')}
+                              >
+                                {t('receipts.action.lost')}
+                              </Button>
+                            </>
+                          ) : null}
                           {row.status === 'await_deposit' ? (
                             <Button
                               size="sm"
                               disabled={busyId === row.id}
-                              onClick={() => void confirmDeposit(row.id)}
+                              onClick={() => void confirmDeposit(row)}
+                              title={t('receipts.action.depositHint')}
                             >
                               {t('receipts.action.deposit')}
                             </Button>
@@ -289,7 +359,7 @@ export function ReceiptsPage(): ReactNode {
                   })}
                   {pageRows.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-muted-foreground text-sm">
+                      <TableCell colSpan={8} className="text-muted-foreground text-sm">
                         {t('receipts.empty')}
                       </TableCell>
                     </TableRow>

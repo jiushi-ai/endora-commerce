@@ -74,12 +74,20 @@ export class ShipmentService {
     private readonly deliveryMethodRead: DeliveryMethodReadPort,
     private readonly auditLog: AuditPort,
     private readonly events?: ShippingEventBus,
+    /**
+     * Optional Mobii bidding ship checklist (feature 165 / T22). Absent or a
+     * no-op when `bidding` is off — non-bidding orders must still ship.
+     */
+    private readonly assertBiddingShipAllowed?: (orderId: string) => Promise<void>,
   ) {}
 
   async createShipment(orderId: string): Promise<Shipment> {
     // command-coverage-ignore: creates a pending shipment attempt + invokes the
     // delivery adapter; fulfilment mechanics — the order "shipped" transition is
     // audited in the orders flow.
+    if (this.assertBiddingShipAllowed) {
+      await this.assertBiddingShipAllowed(orderId);
+    }
     const run = async (): Promise<{ shipment: Shipment; adapterKey: string }> => {
       const em = this.emFactory();
       return em.transactional(async (tx) => {

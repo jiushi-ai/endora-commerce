@@ -7,8 +7,8 @@ import {
 /**
  * Bidding module — feature 165 (Mobii).
  *
- * Batch D owns campaigns, sealed receipts, dual review, allocate, and thin
- * convert. Batch C role seeds remain. Fulfilment gates deepen in Batch E.
+ * Campaigns, sealed receipts, dual review, allocate, and real Order convert
+ * (Batch E / T17′). Fulfilment ship gates deepen in later E tasks.
  */
 export const BIDDING_SETTING_CODES = {
   ACTIVATION: 'bidding.activation',
@@ -35,8 +35,19 @@ export const manifest = defineModuleManifest({
   name: 'Bidding',
   description:
     'Scarce-stock bidding campaigns and sealed bid receipts for Mobii-style allocation.',
-  version: '0.2.0',
-  dependencies: ['admin_roles', 'settings', 'auth', 'assets_library', 'organizations'],
+  version: '0.3.0',
+  dependencies: [
+    'admin_roles',
+    'settings',
+    'auth',
+    'assets_library',
+    'organizations',
+    'catalog',
+    'customer_accounts',
+    'carts',
+    'orders',
+    'quick_order',
+  ],
   settings,
   activation: { settingCode: BIDDING_SETTING_CODES.ACTIVATION, default: true },
   permissions: [

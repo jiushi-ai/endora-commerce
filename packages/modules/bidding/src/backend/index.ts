@@ -4,13 +4,16 @@ import type {
   AdminRolePort,
   AssetsLibraryPort,
   BiddingFulfilmentGatePort,
+  CartWritePort,
+  CatalogProductReadPort,
+  CustomerAccountReadPort,
+  DefaultPreferencePort,
+  OrderPlacementPort,
   OrganizationDetailsPort,
   SystemRoleCodePort,
 } from '@endora-commerce/contracts';
 import type { AuditPort, ModuleContext, RequireAdminFactory } from '@endora-commerce/platform/kernel';
 import { effectiveState, lazyPort } from '@endora-commerce/platform/kernel';
-import { ERROR_CODES } from '@endora-commerce/contracts';
-import { HttpError } from '@endora-commerce/platform/http';
 
 import { BidApprovalStepRow } from './entities/bid-approval-step.entity.js';
 import { BidReceipt } from './entities/bid-receipt.entity.js';
@@ -21,13 +24,14 @@ import { registerBiddingAdminRoutes } from './routes.admin.js';
 import { registerBiddingIntentUploadRoutes } from './routes.intent-upload.js';
 import { registerBiddingStorefrontRoutes } from './routes.storefront.js';
 import { BiddingCampaignService } from './services/campaign-service.js';
+import { assertBiddingReceiptShipReady } from './services/fulfilment-gate.js';
 import { BiddingIntentAttachmentUploadService } from './services/intent-attachment-upload-service.js';
 import { BiddingReceiptService } from './services/receipt-service.js';
 import { seedBiddingRoles } from './services/seed-roles.js';
 
 /**
- * `bidding` — feature 165 (Mobii). Batch D: campaigns, receipts, approval,
- * allocate, thin convert. Role seeder from Batch C remains.
+ * `bidding` — feature 165 (Mobii). Campaigns, receipts, approval, allocate,
+ * real Order convert (T17′). Role seeder from Batch C remains.
  */
 
 export interface BiddingCradle {
@@ -54,7 +58,19 @@ export function registerModule(ctx: ModuleContext): void {
     biddingReceiptService: ctx
       .asFunction(
         ({ emFactory, auditLogService }: BiddingCradle) =>
-          new BiddingReceiptService(emFactory, auditLogService),
+          new BiddingReceiptService(emFactory, auditLogService, {
+            carts: lazyPort<CartWritePort>(ctx, 'cartWritePort'),
+            orderPlacement: lazyPort<OrderPlacementPort>(ctx, 'orderPlacementPort'),
+            catalogProducts: lazyPort<CatalogProductReadPort>(ctx, 'catalogProductReadPort'),
+            customerAccounts: lazyPort<CustomerAccountReadPort>(
+              ctx,
+              'customerAccountReadPort',
+            ),
+            defaultPreferences: lazyPort<DefaultPreferencePort>(
+              ctx,
+              'defaultPreferencePort',
+            ),
+          }),
       )
       .singleton(),
     biddingIntentAttachmentUploadService: ctx
@@ -69,8 +85,8 @@ export function registerModule(ctx: ModuleContext): void {
   });
 
   /**
-   * Batch E will enforce the ship checklist; Batch D publishes a fail-closed
-   * stub that refuses until deposit/trade wiring lands (G-S1 placeholder).
+   * Ship checklist (T22 / G-S1): tradeId + intent attachment + converted path.
+   * Non-bidding orders (no receipt for orderId) pass through.
    */
   ctx.di.providePort<BiddingFulfilmentGatePort>(
     'biddingFulfilmentGatePort',
@@ -80,24 +96,8 @@ export function registerModule(ctx: ModuleContext): void {
           assertShipAllowed: async (orderId: string) => {
             const em = emFactory();
             const receipt = await em.findOne(BidReceipt, { orderId });
-            if (!receipt) {
-              // Order is not from bidding — gate does not apply.
-              return;
-            }
-            if (receipt.status !== 'converted' && receipt.status !== 'won_pending_fulfilment') {
-              throw new HttpError(
-                409,
-                ERROR_CODES.BIDDING_SHIP_CHECKLIST_FAILED,
-                'Bidding fulfilment checklist incomplete for this order.',
-              );
-            }
-            if (!receipt.tradeId) {
-              throw new HttpError(
-                409,
-                ERROR_CODES.BIDDING_SHIP_CHECKLIST_FAILED,
-                'Bidding trade id missing on receipt.',
-              );
-            }
+            if (!receipt) return;
+            assertBiddingReceiptShipReady(receipt);
           },
         }),
       )

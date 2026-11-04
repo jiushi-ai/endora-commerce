@@ -32,14 +32,14 @@ Mapped to PRO batches C → E. TDD: failing test first where the repo pattern re
 
 **Order of work / 建议执行顺序：** T17′ → T20 → T16′ → T21 → T22/T23 → T24/T25
 
-- [ ] T17′ Convert won+deposited → **real Order** (replace thin convert) / 真转订单（接替薄转单）
-- [ ] T20 Deposit confirm + amount check (G-M3/G-M5); desk-operable path / 预付确认 + 金额校验；台面可操作
-- [ ] T16′ Allocate winners/losers **desk** + optional email notify / 分配中选/落选台 + 可选邮件通知
-- [ ] T21 Trade id wiring across payment/order/shipment (G-M4) / 交易编号贯穿收款/订单/发货
-- [ ] T22 Ship checklist gate (G-S1/G-S2) **incl. intent attachment present** (no template UI) / 发货门禁（含意向附件在档校验；不做模板 UI）
-- [ ] T23 Inventory reserve/release (G-S3/G-S5) / 库存预留/释放
-- [ ] T24 E2E / acceptance against `pro_doc/acceptance-checklist-mvp.md` / 对照验收清单做端到端验收
-- [ ] T25 Off-state coverage for `bidding` module / `bidding` 关闭态覆盖
+- [x] T17′ Convert won+deposited → **real Order** (replace thin convert) / 真转订单（接替薄转单）
+- [x] T20 Deposit confirm + amount check (G-M3/G-M5); desk-operable path / 预付确认 + 金额校验；台面可操作
+- [x] T16′ Allocate winners/losers **desk** (email notify still deferred) / 分配中选/落选台（邮件仍后置）
+- [x] T21 Trade id on receipt + order customer note + ship gate (G-M4 MVP) / 交易编号回执/订单备注/发货门禁
+- [x] T22 Ship checklist gate (G-S1) **incl. intent attachment present**; shipments wired / 发货门禁含附件在档；shipments 已接线
+- [x] T23 Inventory reserve via `placeOrder` on convert (allocate-time reserve deferred) / 转单时由 placeOrder 预留库存（分配时预留后置）
+- [ ] T24 E2E / acceptance against `pro_doc/acceptance-checklist-mvp.md` (human) / 对照验收清单做人工业务验收
+- [x] T25 Off-state coverage for `bidding` module (activation + kernel gates) / 关闭态：activation 声明 + 内核门控
 
 ## Explicitly later / 明确后置
 

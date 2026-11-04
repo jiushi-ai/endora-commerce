@@ -1,6 +1,7 @@
 import type { EntityManager } from '@mikro-orm/postgresql';
 import type { EventBus } from '@endora-commerce/platform/events';
 import type {
+  BiddingFulfilmentGatePort,
   CustomerAccountReadPort,
   DeliveryMethodReadPort,
   EmailDefaultsRegistryPort,
@@ -14,7 +15,7 @@ import type {
   ShippingEmailRendererPort,
 } from '@endora-commerce/contracts';
 import type { ModuleContext } from '@endora-commerce/platform/kernel';
-import { lazyPort } from '@endora-commerce/platform/kernel';
+import { effectiveState, lazyPort } from '@endora-commerce/platform/kernel';
 import type { AuditPort } from '@endora-commerce/platform/kernel';
 import type { RequireAdminFactory } from '@endora-commerce/platform/kernel';
 import { ShipmentService } from './services/shipment-service.js';
@@ -129,6 +130,14 @@ export function registerModule(ctx: ModuleContext): void {
             lazyPort<DeliveryMethodReadPort>(ctx, 'deliveryMethodReadPort'),
             auditLogService,
             eventBus as ShippingEventBus,
+            async (orderId) => {
+              // degrades-without bidding: non-Mobii deployments skip the gate.
+              if (!effectiveState.isPresent('bidding')) return;
+              await lazyPort<BiddingFulfilmentGatePort>(
+                ctx,
+                'biddingFulfilmentGatePort',
+              ).assertShipAllowed(orderId);
+            },
           ),
       )
       .singleton(),

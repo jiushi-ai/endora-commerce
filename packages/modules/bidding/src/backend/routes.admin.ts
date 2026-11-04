@@ -2,6 +2,8 @@ import type { FastifyInstance } from 'fastify';
 import {
   allocateCampaignRequestSchema,
   approveBidReceiptRequestSchema,
+  confirmDepositRequestSchema,
+  convertToOrderRequestSchema,
   createBiddingCampaignRequestSchema,
   rejectBidReceiptRequestSchema,
   updateBiddingCampaignRequestSchema,
@@ -137,19 +139,39 @@ export async function registerBiddingAdminRoutes(
     },
   );
 
-  app.post<{ Params: { id: string } }>(
+  app.post<{ Params: { id: string }; Body: unknown }>(
     '/api/v1/admin/bidding/receipts/:id/confirm-deposit',
-    { preHandler: requireAdmin('bidding:deposit:confirm') },
-    async (request) => ({
-      data: await receipts.confirmDeposit(request.params.id, actorAdminUserId(request)),
-    }),
+    {
+      preHandler: requireAdmin('bidding:deposit:confirm'),
+      schema: { body: confirmDepositRequestSchema },
+    },
+    async (request) => {
+      const body = confirmDepositRequestSchema.parse(request.body);
+      return {
+        data: await receipts.confirmDeposit(
+          request.params.id,
+          actorAdminUserId(request),
+          body,
+        ),
+      };
+    },
   );
 
-  app.post<{ Params: { id: string } }>(
+  app.post<{ Params: { id: string }; Body: unknown }>(
     '/api/v1/admin/bidding/receipts/:id/convert-to-order',
-    { preHandler: requireAdmin('bidding:campaigns:write') },
-    async (request) => ({
-      data: await receipts.convertToOrder(request.params.id, actorAdminUserId(request)),
-    }),
+    {
+      preHandler: requireAdmin('bidding:campaigns:write'),
+      schema: { body: convertToOrderRequestSchema },
+    },
+    async (request) => {
+      const body = convertToOrderRequestSchema.parse(request.body ?? {});
+      return {
+        data: await receipts.convertToOrder(
+          request.params.id,
+          actorAdminUserId(request),
+          body,
+        ),
+      };
+    },
   );
 }
