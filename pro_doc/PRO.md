@@ -612,3 +612,13 @@ feat-26-11-04 00:18:02 [13.1~13.3]：Admin界面多语改为en/zh-CN/zh-TW并全
 汇总：大B 管理端 zh-CN/zh-TW 由英文占位改为机翻（约 1.1 万键），A0 壳层关键键已人工润色。生效需后端 `i18n:reload`（或重启）。小b 店面 Dictionary/内容语言留待下一步。
 
 feat-26-11-04 01:12:47 [14.1~14.3]：Admin A0-A2机翻补齐zh-CN/zh-TW（壳层人工校正）
+
+### 15. 大B 品牌 — Mobii logo + 多语系平台名
+
+- [x] 15.1 Logo：`pro_doc/docs/mobii.png` → `admin/public/brand/mobii.png`；`BrandLogo` 改为 `<img>`
+- [x] 15.2 系统名 i18n：`appShell.brand.*` en / zh-CN / zh-TW（及 pl）；`i18n:reload`
+- [x] 15.3 更新本 §99
+
+汇总：侧栏品牌改为 Mobii 图 + 「Mobii / 竞价平台」分语系展示（en: Bidding；zh-CN: 竞价平台；zh-TW: 競價平台）；Logo 各语系共用。
+
+feat-26-11-04 01:41:10 [15.1~15.3]：大B侧栏换成Mobii logo与多语系平台名
