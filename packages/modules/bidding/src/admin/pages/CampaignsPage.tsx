@@ -168,14 +168,33 @@ export function CampaignsPage(): ReactNode {
                 <TableBody>
                   {pageRows.map((row) => (
                     <TableRow key={row.id}>
-                      <TableCell className="font-mono text-sm">{row.code}</TableCell>
-                      <TableCell>{row.title}</TableCell>
+                      <TableCell className="font-mono text-sm">
+                        <Link
+                          to={`/bidding/campaigns/${row.id}`}
+                          className="text-primary underline-offset-4 hover:underline"
+                        >
+                          {row.code}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Link
+                          to={`/bidding/campaigns/${row.id}`}
+                          className="text-primary underline-offset-4 hover:underline"
+                        >
+                          {row.title}
+                        </Link>
+                      </TableCell>
                       <TableCell>{row.status}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {new Date(row.opensAt).toLocaleString()} →{' '}
                         {new Date(row.closesAt).toLocaleString()}
                       </TableCell>
                       <TableCell className="space-x-2">
+                        <Button size="sm" variant="outline" asChild>
+                          <Link to={`/bidding/campaigns/${row.id}`}>
+                            {t('campaigns.action.view')}
+                          </Link>
+                        </Button>
                         {row.status === 'draft' ? (
                           <Button
                             size="sm"

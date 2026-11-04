@@ -17,6 +17,11 @@ export const contributions: AdminContributions = {
       requiredPermission: 'bidding:campaigns:write',
     },
     {
+      path: '/bidding/campaigns/:id',
+      component: () => import('./pages/CampaignDetailPage.js'),
+      requiredPermission: 'bidding:campaigns:read',
+    },
+    {
       path: '/bidding/receipts',
       component: () => import('./pages/ReceiptsPage.js'),
       requiredPermission: 'bidding:receipts:review',

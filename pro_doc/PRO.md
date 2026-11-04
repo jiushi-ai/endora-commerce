@@ -582,3 +582,13 @@ feat-26-11-03 22:08:15 [10.1~10.3]：按D验证结果重排批次E任务清单�
 汇总：批次 E 工程项落地（真 Order、预付金额、分配台、tradeId、发货门禁含附件、shipments 可选调用）。T24 人工业务验收与 allocate 邮件通知仍待操作者/后置。Convert 依赖买家 one-click 默认地址与支付方式。
 
 feat-26-11-03 22:33:03 [11.1~11.5]：完成批次E真转订单与履约门禁（发货接线）
+
+### 12. T24 补齐 — 竞价活动详情页（draft 可编辑 / 已发布只读）
+
+- [x] 12.1 GET `/campaigns/:id` 返回 `{ campaign, rules }`；Admin 路由 `/bidding/campaigns/:id`
+- [x] 12.2 列表 code/title/View 进详情；详情可返回列表；draft 可 PATCH，非 draft 只读
+- [x] 12.3 i18n en/pl；rebuild；tasks T26；本 §99
+
+汇总：T24 人工验收发现无法查看活动详情；补齐详情页与 draft-only 编辑（与后端 update 门禁一致）。Publish / Close bids 仍在列表操作。
+
+feat-26-11-03 23:39:56 [12.1~12.3]：竞价活动详情页（draft可编辑，已发布只读）

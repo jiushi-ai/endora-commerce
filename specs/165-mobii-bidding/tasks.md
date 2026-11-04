@@ -40,6 +40,7 @@ Mapped to PRO batches C → E. TDD: failing test first where the repo pattern re
 - [x] T23 Inventory reserve via `placeOrder` on convert (allocate-time reserve deferred) / 转单时由 placeOrder 预留库存（分配时预留后置）
 - [ ] T24 E2E / acceptance against `pro_doc/acceptance-checklist-mvp.md` (human) / 对照验收清单做人工业务验收
 - [x] T25 Off-state coverage for `bidding` module (activation + kernel gates) / 关闭态：activation 声明 + 内核门控
+- [x] T26 Campaign detail view (`/bidding/campaigns/:id`); draft editable, published+ read-only / 活动详情页；draft 可编辑，已发布只读
 
 ## Explicitly later / 明确后置
 

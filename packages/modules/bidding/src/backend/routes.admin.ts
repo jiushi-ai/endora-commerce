@@ -49,7 +49,7 @@ export async function registerBiddingAdminRoutes(
   app.get<{ Params: { id: string } }>(
     '/api/v1/admin/bidding/campaigns/:id',
     { preHandler: requireAdmin('bidding:campaigns:read') },
-    async (request) => ({ data: await campaigns.getById(request.params.id) }),
+    async (request) => ({ data: await campaigns.getDetailById(request.params.id) }),
   );
 
   app.post(

@@ -267,7 +267,15 @@ export type BiddingAllocationResult = z.infer<typeof biddingAllocationResultSche
 // Envelopes
 // ---------------------------------------------------------------------------
 
+/** Admin campaign detail — campaign row + latest/frozen rule snapshot. */
+export const biddingCampaignDetailSchema = z.object({
+  campaign: biddingCampaignSchema,
+  rules: biddingRuleVersionSchema.nullable(),
+});
+export type BiddingCampaignDetail = z.infer<typeof biddingCampaignDetailSchema>;
+
 export const biddingCampaignEnvelopeSchema = dataEnvelope(biddingCampaignSchema);
+export const biddingCampaignDetailEnvelopeSchema = dataEnvelope(biddingCampaignDetailSchema);
 export const biddingCampaignListEnvelopeSchema = collectionEnvelope(biddingCampaignSchema);
 export const biddingReceiptEnvelopeSchema = dataEnvelope(biddingReceiptSchema);
 export const biddingReceiptListEnvelopeSchema = collectionEnvelope(biddingReceiptAdminSchema);

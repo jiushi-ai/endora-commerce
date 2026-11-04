@@ -1,16 +1,17 @@
 import type { EntityManager } from '@mikro-orm/postgresql';
 import {
   ERROR_CODES,
+  type BiddingCampaign,
+  type BiddingCampaignDetail,
   type CreateBiddingCampaignRequest,
   type UpdateBiddingCampaignRequest,
-  type BiddingCampaign,
 } from '@endora-commerce/contracts';
 import { HttpError } from '@endora-commerce/platform/http';
 import { recordAuditFromContext } from '@endora-commerce/platform/commands';
 import type { AuditPort } from '@endora-commerce/platform/kernel';
 import { BiddingCampaign as CampaignEntity } from '../entities/bidding-campaign.entity.js';
 import { BiddingCampaignRuleVersion } from '../entities/bidding-campaign-rule-version.entity.js';
-import { toCampaignDto } from './campaign-mapper.js';
+import { toCampaignDto, toRuleVersionDto } from './campaign-mapper.js';
 
 /**
  * Campaign lifecycle: draft → publish (freeze rules) → close-bids → allocate.
@@ -28,12 +29,32 @@ export class BiddingCampaignService {
   }
 
   async getById(id: string): Promise<BiddingCampaign> {
+    const detail = await this.getDetailById(id);
+    return detail.campaign;
+  }
+
+  /** Campaign + latest rule (frozen `currentRuleVersionId`, else newest draft version). */
+  async getDetailById(id: string): Promise<BiddingCampaignDetail> {
     const em = this.emFactory();
     const row = await em.findOne(CampaignEntity, { id });
     if (!row) {
       throw new HttpError(404, ERROR_CODES.BIDDING_CAMPAIGN_NOT_FOUND, 'Campaign not found.');
     }
-    return toCampaignDto(row);
+    let ruleRow: BiddingCampaignRuleVersion | null = null;
+    if (row.currentRuleVersionId) {
+      ruleRow = await em.findOne(BiddingCampaignRuleVersion, { id: row.currentRuleVersionId });
+    }
+    if (!ruleRow) {
+      ruleRow = await em.findOne(
+        BiddingCampaignRuleVersion,
+        { campaignId: id },
+        { orderBy: { version: 'DESC' } },
+      );
+    }
+    return {
+      campaign: toCampaignDto(row),
+      rules: ruleRow ? toRuleVersionDto(ruleRow) : null,
+    };
   }
 
   async create(input: CreateBiddingCampaignRequest, adminUserId: string): Promise<BiddingCampaign> {
