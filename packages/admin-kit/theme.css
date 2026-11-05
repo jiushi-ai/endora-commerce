@@ -558,25 +558,23 @@ body,
   outline-offset: -2px;
 }
 .b2b-sidebar__brand-logo {
+  /* Mobii PNG already carries its own green tile — no light pad/inset, or the
+     mark sits in a white frame against the dark sidebar. */
   width: 28px; height: 28px;
   border-radius: 7px;
-  /* A light ground, not the accent gradient it replaced. The mark is wine
-     (#8A1C5C) and the accent hue is indigo (248), so the gradient fought it;
-     and on the sidebar's own #1a1c1e the mark measures 1.95:1, which is
-     invisible. On this tint it is 8.37:1, and the tile itself sits at
-     16.35:1 against the sidebar. #fbf9ff rather than plain white because it
-     is the palette's own near-white. */
-  background: #fbf9ff;
-  display: grid; place-items: center;
-  padding: 3px;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset;
+  overflow: hidden;
+  background: transparent;
+  display: block;
+  padding: 0;
+  box-shadow: none;
   flex-shrink: 0;
 }
 .b2b-sidebar__brand-logo svg,
 .b2b-sidebar__brand-logo img {
   width: 100%; height: 100%;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
 }
 /* #9f67ff, not the palette's #7c3aed: this is 14px/600 text, so WCAG AA asks
    4.5:1 and measured against #1a1c1e the darker violet gives 3.00:1 while this
