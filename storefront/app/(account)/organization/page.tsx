@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { getSessionCookie } from '../../../lib/session';
+import { getServerContext } from '../../../lib/server-context';
 import { getMe } from '../../../lib/api/account';
+import { tForLocale } from '../../../lib/i18n/messages';
 import type { Metadata } from 'next';
 
 /**
@@ -21,25 +23,27 @@ export default async function OrganizationPage(): Promise<ReactNode> {
   const me = await getMe(session);
   const o = me.organization;
   if (!o) redirect('/account');
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
   return (
     <>
       <h2>{o.name}</h2>
       <table className="b2b-account__table">
         <tbody>
           <tr>
-            <th scope="row">Tax ID</th>
+            <th scope="row">{t('account.org.taxId')}</th>
             <td>{o.taxId}</td>
           </tr>
           <tr>
-            <th scope="row">Status</th>
+            <th scope="row">{t('account.org.status')}</th>
             <td>{o.status}</td>
           </tr>
           <tr>
-            <th scope="row">VAT status</th>
+            <th scope="row">{t('account.org.vatStatus')}</th>
             <td>{o.vatStatus}</td>
           </tr>
           <tr>
-            <th scope="row">Registered address</th>
+            <th scope="row">{t('account.org.registeredAddress')}</th>
             <td>
               {o.registeredAddress.street}
               <br />

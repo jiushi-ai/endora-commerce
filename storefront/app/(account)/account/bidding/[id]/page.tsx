@@ -3,8 +3,10 @@ import Link from 'next/link';
 import { redirect, notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getSessionCookie } from '../../../../../lib/session';
+import { getServerContext } from '../../../../../lib/server-context';
 import { getBiddingCampaign } from '../../../../../lib/api/bidding';
 import { SubmitBidForm } from '../../../../../components/bidding/SubmitBidForm';
+import { tForLocale } from '../../../../../lib/i18n/messages';
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -19,6 +21,8 @@ export default async function AccountBiddingDetailPage({
   const session = await getSessionCookie();
   if (!session) redirect('/login');
   const { id } = await params;
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
 
   let detail: Awaited<ReturnType<typeof getBiddingCampaign>>;
   try {
@@ -33,26 +37,26 @@ export default async function AccountBiddingDetailPage({
   return (
     <>
       <p>
-        <Link href="/account/bidding">← Campaigns</Link>
+        <Link href="/account/bidding">{t('account.bidding.back')}</Link>
       </p>
       <h2>{campaign.title}</h2>
       <p className="muted">
-        <code>{campaign.code}</code> · {campaign.status} · closes{' '}
-        {new Date(campaign.closesAt).toLocaleString()}
+        <code>{campaign.code}</code> · {campaign.status} · {t('account.bidding.closes')}{' '}
+        {new Date(campaign.closesAt).toLocaleString(locale)}
       </p>
 
       {myReceipt ? (
         <section className="mb-[16px]">
-          <h3>Your receipt</h3>
+          <h3>{t('account.bidding.receipt')}</h3>
           <p>
-            Status: <strong>{myReceipt.status}</strong>
+            {t('account.bidding.status')}: <strong>{myReceipt.status}</strong>
           </p>
           <p>
-            Bid: {myReceipt.bidUnitPrice ?? '—'} × {myReceipt.bidQty ?? '—'}
+            {t('account.bidding.bid')}: {myReceipt.bidUnitPrice ?? '—'} × {myReceipt.bidQty ?? '—'}
           </p>
           {myReceipt.tradeId ? (
             <p>
-              Trade id: <code>{myReceipt.tradeId}</code>
+              {t('account.bidding.tradeId')}: <code>{myReceipt.tradeId}</code>
             </p>
           ) : null}
         </section>
@@ -70,7 +74,7 @@ export default async function AccountBiddingDetailPage({
         />
       ) : null}
 
-      {!open && !myReceipt ? <p className="muted">This campaign is not open for new bids.</p> : null}
+      {!open && !myReceipt ? <p className="muted">{t('account.bidding.closed')}</p> : null}
     </>
   );
 }

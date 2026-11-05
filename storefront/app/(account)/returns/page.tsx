@@ -3,7 +3,9 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { listMyReturns } from '../../../lib/api/returns';
 import { getSessionCookie } from '../../../lib/session';
+import { getServerContext } from '../../../lib/server-context';
 import { formatMoney } from '../../../lib/i18n/money';
+import { tForLocale } from '../../../lib/i18n/messages';
 import type { Metadata } from 'next';
 
 /**
@@ -21,39 +23,39 @@ export default async function ReturnsListPage(): Promise<ReactNode> {
   const session = await getSessionCookie();
   if (!session) redirect('/login?next=/returns');
   const cases = await listMyReturns(session);
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
 
   return (
     <div className="b2b-auth max-w-[720px]">
-      <h1>Returns &amp; complaints</h1>
+      <h1>{t('account.returns.title')}</h1>
       <p>
-        <Link href="/returns/new">Start a new return</Link>
+        <Link href="/returns/new">{t('account.returns.start')}</Link>
       </p>
       {cases.length === 0 ? (
-        <p>You don&apos;t have any returns yet.</p>
+        <p>{t('account.returns.empty')}</p>
       ) : (
         <table className="b2b-account__table">
           <thead>
             <tr>
-              <th>Submitted</th>
-              <th>RMA</th>
-              <th>Kind</th>
-              <th>Status</th>
-              <th className="text-right">Refund</th>
+              <th>{t('account.returns.submitted')}</th>
+              <th>{t('account.returns.rma')}</th>
+              <th>{t('account.returns.kind')}</th>
+              <th>{t('account.returns.status')}</th>
+              <th className="text-right">{t('account.returns.refund')}</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {cases.map((c) => (
               <tr key={c.id}>
-                <td>{new Date(c.submittedAt).toLocaleDateString()}</td>
+                <td>{new Date(c.submittedAt).toLocaleDateString(locale)}</td>
                 <td>{c.rmaNumber ?? '—'}</td>
                 <td>{c.kind}</td>
                 <td>{c.statusLabel}</td>
-                <td className="text-right">
-                  {formatMoney(c.totalRefundAmount, c.currency)}
-                </td>
+                <td className="text-right">{formatMoney(c.totalRefundAmount, c.currency, locale)}</td>
                 <td>
-                  <Link href={`/returns/${c.id}`}>Open</Link>
+                  <Link href={`/returns/${c.id}`}>{t('account.returns.open')}</Link>
                 </td>
               </tr>
             ))}

@@ -1,9 +1,12 @@
 import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { getSessionCookie } from '../../../../lib/session';
+import { getServerContext } from '../../../../lib/server-context';
 import { createAddress, deleteAddress, listAddresses } from '../../../../lib/api/organization';
 import { StorefrontApiError } from '../../../../lib/api/client';
 import { CountryPicker } from '../../../../lib/dictionary/pickers/CountryPicker';
+import { tForLocale } from '../../../../lib/i18n/messages';
+import { accountAddressKindLabel } from '../../../../lib/i18n/account-labels';
 import type { Metadata } from 'next';
 
 /**
@@ -28,41 +31,43 @@ export default async function AddressesPage({
   if (!session) redirect('/login');
   const params = await searchParams;
   const addresses = await listAddresses(session);
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
 
   return (
     <>
-      <h2>Addresses</h2>
+      <h2>{t('account.org.addressesTitle')}</h2>
       {params.status === 'created' ? (
-        <p className="b2b-auth__success">Address added.</p>
+        <p className="b2b-auth__success">{t('account.addresses.created')}</p>
       ) : null}
       {params.status === 'removed' ? (
-        <p className="b2b-auth__success">Address removed.</p>
+        <p className="b2b-auth__success">{t('account.addresses.removed')}</p>
       ) : null}
       {params.error ? <p className="b2b-auth__error">{params.error}</p> : null}
 
       <table className="b2b-account__table">
         <thead>
           <tr>
-            <th>Kind</th>
-            <th>Recipient</th>
-            <th>Address</th>
-            <th>Default</th>
+            <th>{t('account.addresses.kind')}</th>
+            <th>{t('account.addresses.recipient')}</th>
+            <th>{t('account.addresses.address')}</th>
+            <th>{t('account.addresses.default')}</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           {addresses.map((a) => (
             <tr key={a.id}>
-              <td>{a.kind}</td>
+              <td>{accountAddressKindLabel(a.kind, locale)}</td>
               <td>{a.recipientName}</td>
               <td>
                 {a.street}, {a.postalCode} {a.city}, {a.country}
               </td>
-              <td>{a.isDefault ? 'yes' : ''}</td>
+              <td>{a.isDefault ? t('account.addresses.yes') : ''}</td>
               <td>
                 <form action={removeAddressAction}>
                   <input type="hidden" name="id" value={a.id} />
-                  <button type="submit">Remove</button>
+                  <button type="submit">{t('account.addresses.remove')}</button>
                 </form>
               </td>
             </tr>
@@ -70,56 +75,51 @@ export default async function AddressesPage({
         </tbody>
       </table>
 
-      <h3>Add an address</h3>
+      <h3>{t('account.addresses.addHeading')}</h3>
       <form action={createAddressAction} className="b2b-auth__form">
         <div className="b2b-auth__row">
           <div className="b2b-auth__field">
-            <label htmlFor="addr-kind">Kind</label>
+            <label htmlFor="addr-kind">{t('account.addresses.kind')}</label>
             <select id="addr-kind" name="kind" defaultValue="delivery">
-              <option value="delivery">delivery</option>
-              <option value="billing">billing</option>
+              <option value="delivery">{t('account.addresses.kind.delivery')}</option>
+              <option value="billing">{t('account.addresses.kind.billing')}</option>
             </select>
           </div>
           <div className="b2b-auth__field">
-            <label htmlFor="addr-recipient">Recipient</label>
+            <label htmlFor="addr-recipient">{t('account.addresses.recipient')}</label>
             <input id="addr-recipient" name="recipientName" required maxLength={160} placeholder=" " />
           </div>
         </div>
         <div className="b2b-auth__field">
-          <label htmlFor="addr-street">Street</label>
+          <label htmlFor="addr-street">{t('account.addresses.street')}</label>
           <input id="addr-street" name="street" required maxLength={255} placeholder=" " />
         </div>
         <div className="b2b-auth__row">
           <div className="b2b-auth__field">
-            <label htmlFor="addr-city">City</label>
+            <label htmlFor="addr-city">{t('account.addresses.city')}</label>
             <input id="addr-city" name="city" required maxLength={120} placeholder=" " />
           </div>
           <div className="b2b-auth__field">
-            <label htmlFor="addr-postal">Postal code</label>
+            <label htmlFor="addr-postal">{t('account.addresses.postal')}</label>
             <input id="addr-postal" name="postalCode" required maxLength={20} placeholder=" " />
           </div>
         </div>
         <div className="b2b-auth__row">
           <div className="b2b-auth__field">
-            <label htmlFor="addr-country">Country</label>
-            <CountryPicker
-              id="addr-country"
-              name="country"
-              required
-              defaultValue="PL"
-            />
+            <label htmlFor="addr-country">{t('account.addresses.country')}</label>
+            <CountryPicker id="addr-country" name="country" required defaultValue="PL" />
           </div>
           <div className="b2b-auth__field">
-            <label htmlFor="addr-phone">Phone (optional)</label>
+            <label htmlFor="addr-phone">{t('account.addresses.phone')}</label>
             <input id="addr-phone" name="phone" maxLength={32} placeholder=" " />
           </div>
         </div>
         <label>
-          <input type="checkbox" name="isDefault" value="true" /> Make this the default for its
-          kind
+          <input type="checkbox" name="isDefault" value="true" />{' '}
+          {t('account.addresses.makeDefaultCheckbox')}
         </label>
         <div className="b2b-auth__actions">
-          <button type="submit">Add address</button>
+          <button type="submit">{t('account.addresses.addSubmit')}</button>
         </div>
       </form>
     </>

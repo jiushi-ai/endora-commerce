@@ -8,8 +8,10 @@ import {
   setDefaultShoppingList,
 } from '../../../lib/api/shopping-lists';
 import { getSessionCookie } from '../../../lib/session';
+import { getServerContext } from '../../../lib/server-context';
 import { StorefrontApiError } from '../../../lib/api/client';
 import { DeleteShoppingListButton } from '../../../components/shopping-lists/DeleteShoppingListButton';
+import { tForLocale } from '../../../lib/i18n/messages';
 import type { Metadata } from 'next';
 
 /**
@@ -34,45 +36,44 @@ export default async function ShoppingListsPage({
   if (!session) redirect('/login?next=/account/shopping-lists');
   const lists = await listShoppingLists(session);
   const params = await searchParams;
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
 
   return (
     <>
-      <h2>Shopping lists</h2>
-      <p className="b2b-auth__hint">
-        Save recurring orders as lists. Convert all or selected items into a cart or quote
-        request when you&apos;re ready.
-      </p>
+      <h2>{t('account.lists.title')}</h2>
+      <p className="b2b-auth__hint">{t('account.lists.intro')}</p>
       {params.error ? <p className="b2b-auth__error">{params.error}</p> : null}
 
       <form action={createAction} className="flex items-end gap-2">
         <div className="flex flex-1 flex-col gap-1">
           <label htmlFor="new-name" className="text-sm text-fg-soft">
-            Create a new list
+            {t('account.lists.createLabel')}
           </label>
           <input
             id="new-name"
             name="name"
             required
             maxLength={160}
-            placeholder="Weekly restock"
+            placeholder={t('account.lists.createPlaceholder')}
             className="w-full rounded-md border border-line px-3 py-2 text-sm"
           />
         </div>
         <button type="submit" className="btn btn--primary">
-          Create list
+          {t('account.lists.createSubmit')}
         </button>
       </form>
 
       {lists.length === 0 ? (
-        <p className="muted">No lists yet.</p>
+        <p className="muted">{t('account.lists.empty')}</p>
       ) : (
         <table className="b2b-account__table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Items</th>
-              <th>Updated</th>
-              <th>Default</th>
+              <th>{t('account.lists.name')}</th>
+              <th>{t('account.lists.items')}</th>
+              <th>{t('account.lists.updated')}</th>
+              <th>{t('account.lists.default')}</th>
               <th></th>
             </tr>
           </thead>
@@ -83,15 +84,17 @@ export default async function ShoppingListsPage({
                   <Link href={`/shopping-lists/${l.id}`}>{l.name}</Link>
                 </td>
                 <td>{l.items.length}</td>
-                <td>{new Date(l.updatedAt).toLocaleString()}</td>
+                <td>{new Date(l.updatedAt).toLocaleString(locale)}</td>
                 <td>
                   {l.isDefault ? (
-                    <span className="industria-status industria-status--paid">Domyślna</span>
+                    <span className="industria-status industria-status--paid">
+                      {t('account.lists.isDefault')}
+                    </span>
                   ) : (
                     <form action={setDefaultAction} style={{ display: 'inline' }}>
                       <input type="hidden" name="id" value={l.id} />
                       <button type="submit" className="btn btn--outline btn--sm">
-                        Ustaw jako domyślną
+                        {t('account.lists.setDefault')}
                       </button>
                     </form>
                   )}

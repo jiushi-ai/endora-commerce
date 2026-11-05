@@ -5,6 +5,7 @@ import { listMyOrders, resolveOrderStatusLabel } from '../../../lib/api/orders';
 import { getSessionCookie } from '../../../lib/session';
 import { getServerContext } from '../../../lib/server-context';
 import { formatMoney } from '../../../lib/i18n/money';
+import { tForLocale } from '../../../lib/i18n/messages';
 import type { Metadata } from 'next';
 
 /**
@@ -26,14 +27,15 @@ export default async function OrdersListPage(): Promise<ReactNode> {
   if (!session) redirect('/login?next=/orders');
   const orders = await listMyOrders(session);
   const { locale } = await getServerContext();
+  const t = tForLocale(locale);
 
   if (orders.length === 0) {
     return (
       <div className="b2b-auth max-w-[720px]">
-        <h1>Orders</h1>
-        <p>You don&apos;t have any orders yet.</p>
+        <h1>{t('account.orders.title')}</h1>
+        <p>{t('account.orders.empty')}</p>
         <p>
-          <Link href="/catalog">Browse the catalog</Link>
+          <Link href="/catalog">{t('account.orders.browse')}</Link>
         </p>
       </div>
     );
@@ -41,30 +43,28 @@ export default async function OrdersListPage(): Promise<ReactNode> {
 
   return (
     <div className="b2b-auth max-w-[720px]">
-      <h1>Orders</h1>
+      <h1>{t('account.orders.title')}</h1>
       <table className="b2b-account__table">
         <thead>
           <tr>
-            <th>Placed</th>
-            <th>Order</th>
-            <th>Status</th>
-            <th>Payment</th>
-            <th className="text-right">Total</th>
+            <th>{t('account.orders.placed')}</th>
+            <th>{t('account.orders.order')}</th>
+            <th>{t('account.orders.status')}</th>
+            <th>{t('account.orders.payment')}</th>
+            <th className="text-right">{t('account.orders.total')}</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           {orders.map((o) => (
             <tr key={o.id}>
-              <td>{new Date(o.placedAt).toLocaleDateString()}</td>
+              <td>{new Date(o.placedAt).toLocaleDateString(locale)}</td>
               <td>{o.businessId}</td>
               <td>{resolveOrderStatusLabel(o, locale)}</td>
               <td>{o.paymentStatus}</td>
-              <td className="text-right">
-                {formatMoney(o.total, o.currency, locale)}
-              </td>
+              <td className="text-right">{formatMoney(o.total, o.currency, locale)}</td>
               <td>
-                <Link href={`/orders/${o.id}`}>Open</Link>
+                <Link href={`/orders/${o.id}`}>{t('account.orders.open')}</Link>
               </td>
             </tr>
           ))}

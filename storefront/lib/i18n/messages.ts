@@ -530,6 +530,142 @@ export type MessageKey =
   | 'account.nav.orgAddresses'
   | 'account.nav.members'
   | 'account.nav.signOut'
+  | 'account.profile.title'
+  | 'account.profile.name'
+  | 'account.profile.email'
+  | 'account.profile.role'
+  | 'account.profile.twoFactor'
+  | 'account.profile.organization'
+  | 'account.profile.verified'
+  | 'account.profile.unverified'
+  | 'account.profile.enabled'
+  | 'account.profile.disabled'
+  | 'account.role.organization_admin'
+  | 'account.role.regular_user'
+  | 'account.password.title'
+  | 'account.password.current'
+  | 'account.password.new'
+  | 'account.password.submit'
+  | 'account.password.updated'
+  | 'account.password.failed'
+  | 'account.addresses.title'
+  | 'account.addresses.kind'
+  | 'account.addresses.recipient'
+  | 'account.addresses.address'
+  | 'account.addresses.default'
+  | 'account.addresses.makeDefault'
+  | 'account.addresses.remove'
+  | 'account.addresses.empty'
+  | 'account.addresses.addHeading'
+  | 'account.addresses.street'
+  | 'account.addresses.city'
+  | 'account.addresses.postal'
+  | 'account.addresses.country'
+  | 'account.addresses.phone'
+  | 'account.addresses.kind.delivery'
+  | 'account.addresses.kind.billing'
+  | 'account.addresses.created'
+  | 'account.addresses.removed'
+  | 'account.addresses.defaultUpdated'
+  | 'account.addresses.orgHeading'
+  | 'account.addresses.orgHint'
+  | 'account.addresses.addSubmit'
+  | 'account.orders.title'
+  | 'account.orders.empty'
+  | 'account.orders.browse'
+  | 'account.orders.placed'
+  | 'account.orders.order'
+  | 'account.orders.status'
+  | 'account.orders.payment'
+  | 'account.orders.total'
+  | 'account.orders.open'
+  | 'account.returns.title'
+  | 'account.returns.start'
+  | 'account.returns.empty'
+  | 'account.returns.submitted'
+  | 'account.returns.rma'
+  | 'account.returns.kind'
+  | 'account.returns.status'
+  | 'account.returns.refund'
+  | 'account.returns.open'
+  | 'account.rfq.title'
+  | 'account.rfq.browse'
+  | 'account.rfq.empty'
+  | 'account.rfq.number'
+  | 'account.rfq.date'
+  | 'account.rfq.lines'
+  | 'account.rfq.value'
+  | 'account.rfq.status'
+  | 'account.rfq.open'
+  | 'account.lists.title'
+  | 'account.lists.intro'
+  | 'account.lists.createLabel'
+  | 'account.lists.createPlaceholder'
+  | 'account.lists.createSubmit'
+  | 'account.lists.empty'
+  | 'account.lists.name'
+  | 'account.lists.items'
+  | 'account.lists.updated'
+  | 'account.lists.default'
+  | 'account.lists.isDefault'
+  | 'account.lists.setDefault'
+  | 'account.org.taxId'
+  | 'account.org.status'
+  | 'account.org.vatStatus'
+  | 'account.org.registeredAddress'
+  | 'account.members.title'
+  | 'account.members.adminRequired'
+  | 'account.members.name'
+  | 'account.members.email'
+  | 'account.members.role'
+  | 'account.members.actions'
+  | 'account.members.save'
+  | 'account.members.remove'
+  | 'account.members.pending'
+  | 'account.members.sent'
+  | 'account.members.expires'
+  | 'account.members.revoke'
+  | 'account.members.inviteHeading'
+  | 'account.members.inviteSubmit'
+  | 'account.members.invited'
+  | 'account.members.revoked'
+  | 'account.bidding.campaigns'
+  | 'account.bidding.receipt'
+  | 'account.bidding.status'
+  | 'account.bidding.bid'
+  | 'account.bidding.tradeId'
+  | 'account.bidding.closed'
+  | 'account.bidding.closes'
+  | 'account.addresses.makeDefaultCheckbox'
+  | 'account.rfq.details'
+  | 'account.rfq.status.awaiting'
+  | 'account.rfq.status.Pending'
+  | 'account.rfq.status.Created from admin'
+  | 'account.rfq.status.Approved'
+  | 'account.rfq.status.Completed'
+  | 'account.rfq.status.Canceled'
+  | 'account.rfq.status.Expired'
+  | 'account.bidding.title'
+  | 'account.bidding.intro'
+  | 'account.bidding.code'
+  | 'account.bidding.titleCol'
+  | 'account.bidding.closesCol'
+  | 'account.bidding.open'
+  | 'account.bidding.emptyCampaigns'
+  | 'account.bidding.receiptsHeading'
+  | 'account.bidding.emptyReceipts'
+  | 'account.bidding.back'
+  | 'account.org.addressesTitle'
+  | 'account.bidding.showing'
+  | 'account.bidding.rowsPerPage'
+  | 'account.bidding.pageOf'
+  | 'account.bidding.previous'
+  | 'account.bidding.next'
+  | 'account.bidding.campaignCol'
+  | 'account.bidding.unavailable'
+  | 'account.bidding.pagerCampaigns'
+  | 'account.bidding.pagerReceipts'
+  | 'account.addresses.yes'
   | 'footer.blurb'
   | 'footer.shop'
   | 'footer.catalog'
@@ -1005,6 +1141,142 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.nav.orgAddresses': 'Org addresses',
     'account.nav.members': 'Members',
     'account.nav.signOut': 'Sign out',
+    'account.profile.title': 'Your profile',
+    'account.profile.name': 'Name',
+    'account.profile.email': 'Email',
+    'account.profile.role': 'Role',
+    'account.profile.twoFactor': 'Two-factor',
+    'account.profile.organization': 'Organization',
+    'account.profile.verified': '(verified)',
+    'account.profile.unverified': '(unverified)',
+    'account.profile.enabled': 'Enabled',
+    'account.profile.disabled': 'Disabled',
+    'account.role.organization_admin': 'Organization Admin',
+    'account.role.regular_user': 'Regular User',
+    'account.password.title': 'Change password',
+    'account.password.current': 'Current password',
+    'account.password.new': 'New password (min 12 characters)',
+    'account.password.submit': 'Update password',
+    'account.password.updated': 'Your password is updated.',
+    'account.password.failed': 'Could not update your password.',
+    'account.addresses.title': 'My addresses',
+    'account.addresses.kind': 'Kind',
+    'account.addresses.recipient': 'Recipient',
+    'account.addresses.address': 'Address',
+    'account.addresses.default': 'Default',
+    'account.addresses.makeDefault': 'Make default',
+    'account.addresses.remove': 'Remove',
+    'account.addresses.empty': 'No addresses yet.',
+    'account.addresses.addHeading': 'Add an address',
+    'account.addresses.street': 'Street',
+    'account.addresses.city': 'City',
+    'account.addresses.postal': 'Postal code',
+    'account.addresses.country': 'Country',
+    'account.addresses.phone': 'Phone (optional)',
+    'account.addresses.kind.delivery': 'Delivery',
+    'account.addresses.kind.billing': 'Billing',
+    'account.addresses.created': 'Address added.',
+    'account.addresses.removed': 'Address removed.',
+    'account.addresses.defaultUpdated': 'Default updated.',
+    'account.addresses.orgHeading': 'Organization addresses',
+    'account.addresses.orgHint': 'Shared addresses you can use at checkout.',
+    'account.addresses.addSubmit': 'Add address',
+    'account.orders.title': 'Orders',
+    'account.orders.empty': 'You don\'t have any orders yet.',
+    'account.orders.browse': 'Browse the catalog',
+    'account.orders.placed': 'Placed',
+    'account.orders.order': 'Order',
+    'account.orders.status': 'Status',
+    'account.orders.payment': 'Payment',
+    'account.orders.total': 'Total',
+    'account.orders.open': 'Open',
+    'account.returns.title': 'Returns & complaints',
+    'account.returns.start': 'Start a new return',
+    'account.returns.empty': 'You don\'t have any returns yet.',
+    'account.returns.submitted': 'Submitted',
+    'account.returns.rma': 'RMA',
+    'account.returns.kind': 'Kind',
+    'account.returns.status': 'Status',
+    'account.returns.refund': 'Refund',
+    'account.returns.open': 'Open',
+    'account.rfq.title': 'Quote requests',
+    'account.rfq.browse': 'Browse catalog',
+    'account.rfq.empty': 'You don\'t have any quote requests yet.',
+    'account.rfq.number': 'Number',
+    'account.rfq.date': 'Date',
+    'account.rfq.lines': 'Lines',
+    'account.rfq.value': 'Value',
+    'account.rfq.status': 'Status',
+    'account.rfq.open': 'Open',
+    'account.lists.title': 'Shopping lists',
+    'account.lists.intro': 'Save recurring orders as lists. Convert all or selected items into a cart or quote request when you are ready.',
+    'account.lists.createLabel': 'Create a new list',
+    'account.lists.createPlaceholder': 'Weekly restock',
+    'account.lists.createSubmit': 'Create list',
+    'account.lists.empty': 'No lists yet.',
+    'account.lists.name': 'Name',
+    'account.lists.items': 'Items',
+    'account.lists.updated': 'Updated',
+    'account.lists.default': 'Default',
+    'account.lists.isDefault': 'Default',
+    'account.lists.setDefault': 'Set as default',
+    'account.org.taxId': 'Tax ID',
+    'account.org.status': 'Status',
+    'account.org.vatStatus': 'VAT status',
+    'account.org.registeredAddress': 'Registered address',
+    'account.members.title': 'Members',
+    'account.members.adminRequired': 'Organization Admin role required.',
+    'account.members.name': 'Name',
+    'account.members.email': 'Email',
+    'account.members.role': 'Role',
+    'account.members.actions': 'Actions',
+    'account.members.save': 'Save',
+    'account.members.remove': 'Remove',
+    'account.members.pending': 'Pending invitations',
+    'account.members.sent': 'Sent',
+    'account.members.expires': 'Expires',
+    'account.members.revoke': 'Revoke',
+    'account.members.inviteHeading': 'Invite a new member',
+    'account.members.inviteSubmit': 'Send invitation',
+    'account.members.invited': 'Invitation sent to {email}.',
+    'account.members.revoked': 'Invitation revoked.',
+    'account.bidding.campaigns': 'Campaigns',
+    'account.bidding.receipt': 'Your receipt',
+    'account.bidding.status': 'Status',
+    'account.bidding.bid': 'Bid',
+    'account.bidding.tradeId': 'Trade id',
+    'account.bidding.closed': 'This campaign is not open for new bids.',
+    'account.bidding.closes': 'closes',
+    'account.addresses.makeDefaultCheckbox': 'Make this the default for its kind',
+    'account.rfq.details': 'Details',
+    'account.rfq.status.awaiting': 'Awaiting acceptance',
+    'account.rfq.status.Pending': 'Pending',
+    'account.rfq.status.Created from admin': 'From account manager',
+    'account.rfq.status.Approved': 'Approved',
+    'account.rfq.status.Completed': 'Completed',
+    'account.rfq.status.Canceled': 'Canceled',
+    'account.rfq.status.Expired': 'Expired',
+    'account.bidding.title': 'Bidding campaigns',
+    'account.bidding.intro': 'Scarce-stock campaigns visible to your organization.',
+    'account.bidding.code': 'Code',
+    'account.bidding.titleCol': 'Title',
+    'account.bidding.closesCol': 'Closes',
+    'account.bidding.open': 'Open',
+    'account.bidding.emptyCampaigns': 'No open campaigns.',
+    'account.bidding.receiptsHeading': 'My receipts',
+    'account.bidding.emptyReceipts': 'No receipts yet.',
+    'account.bidding.back': '← Campaigns',
+    'account.org.addressesTitle': 'Organization addresses',
+    'account.bidding.showing': 'Showing {start}–{end} of {total}',
+    'account.bidding.rowsPerPage': 'Rows per page',
+    'account.bidding.pageOf': 'Page {page} of {total}',
+    'account.bidding.previous': 'Previous',
+    'account.bidding.next': 'Next',
+    'account.bidding.campaignCol': 'Campaign',
+    'account.bidding.unavailable': 'Bidding is unavailable right now (module off or session).',
+    'account.bidding.pagerCampaigns': 'Campaigns',
+    'account.bidding.pagerReceipts': 'Receipts',
+    'account.addresses.yes': 'yes',
     'footer.blurb': 'B2B wholesale of industrial components. Bearings, drives, automation, electrics, pneumatics and tools. Same-day shipping, deferred-payment invoices and full technical documentation.',
     'footer.shop': 'Shop',
     'footer.catalog': 'Catalog',
@@ -1489,6 +1761,142 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.nav.orgAddresses': '组织地址',
     'account.nav.members': '成员',
     'account.nav.signOut': '退出登录',
+    'account.profile.title': '个人资料',
+    'account.profile.name': '姓名',
+    'account.profile.email': '邮箱',
+    'account.profile.role': '角色',
+    'account.profile.twoFactor': '双重验证',
+    'account.profile.organization': '组织',
+    'account.profile.verified': '（已验证）',
+    'account.profile.unverified': '（未验证）',
+    'account.profile.enabled': '已启用',
+    'account.profile.disabled': '未启用',
+    'account.role.organization_admin': '组织管理员',
+    'account.role.regular_user': '普通用户',
+    'account.password.title': '修改密码',
+    'account.password.current': '当前密码',
+    'account.password.new': '新密码（至少 12 位）',
+    'account.password.submit': '更新密码',
+    'account.password.updated': '密码已更新。',
+    'account.password.failed': '无法更新密码。',
+    'account.addresses.title': '我的地址',
+    'account.addresses.kind': '类型',
+    'account.addresses.recipient': '收件人',
+    'account.addresses.address': '地址',
+    'account.addresses.default': '默认',
+    'account.addresses.makeDefault': '设为默认',
+    'account.addresses.remove': '删除',
+    'account.addresses.empty': '暂无地址。',
+    'account.addresses.addHeading': '添加地址',
+    'account.addresses.street': '街道',
+    'account.addresses.city': '城市',
+    'account.addresses.postal': '邮编',
+    'account.addresses.country': '国家',
+    'account.addresses.phone': '电话（可选）',
+    'account.addresses.kind.delivery': '收货',
+    'account.addresses.kind.billing': '账单',
+    'account.addresses.created': '地址已添加。',
+    'account.addresses.removed': '地址已删除。',
+    'account.addresses.defaultUpdated': '默认地址已更新。',
+    'account.addresses.orgHeading': '组织地址',
+    'account.addresses.orgHint': '结账时可使用的共享地址。',
+    'account.addresses.addSubmit': '添加地址',
+    'account.orders.title': '订单',
+    'account.orders.empty': '暂无订单。',
+    'account.orders.browse': '浏览目录',
+    'account.orders.placed': '下单时间',
+    'account.orders.order': '订单号',
+    'account.orders.status': '状态',
+    'account.orders.payment': '支付',
+    'account.orders.total': '合计',
+    'account.orders.open': '查看',
+    'account.returns.title': '退货与投诉',
+    'account.returns.start': '发起退货',
+    'account.returns.empty': '暂无退货记录。',
+    'account.returns.submitted': '提交时间',
+    'account.returns.rma': 'RMA',
+    'account.returns.kind': '类型',
+    'account.returns.status': '状态',
+    'account.returns.refund': '退款',
+    'account.returns.open': '查看',
+    'account.rfq.title': '询价单',
+    'account.rfq.browse': '浏览目录',
+    'account.rfq.empty': '暂无询价单。',
+    'account.rfq.number': '编号',
+    'account.rfq.date': '日期',
+    'account.rfq.lines': '行数',
+    'account.rfq.value': '金额',
+    'account.rfq.status': '状态',
+    'account.rfq.open': '查看',
+    'account.lists.title': '采购清单',
+    'account.lists.intro': '将常用订单保存为清单，需要时可将全部或部分商品转入购物车或询价单。',
+    'account.lists.createLabel': '新建清单',
+    'account.lists.createPlaceholder': '例如：每周补货',
+    'account.lists.createSubmit': '创建清单',
+    'account.lists.empty': '暂无清单。',
+    'account.lists.name': '名称',
+    'account.lists.items': '商品数',
+    'account.lists.updated': '更新时间',
+    'account.lists.default': '默认',
+    'account.lists.isDefault': '默认',
+    'account.lists.setDefault': '设为默认',
+    'account.org.taxId': '税号',
+    'account.org.status': '状态',
+    'account.org.vatStatus': '增值税状态',
+    'account.org.registeredAddress': '注册地址',
+    'account.members.title': '成员',
+    'account.members.adminRequired': '需要组织管理员权限。',
+    'account.members.name': '姓名',
+    'account.members.email': '邮箱',
+    'account.members.role': '角色',
+    'account.members.actions': '操作',
+    'account.members.save': '保存',
+    'account.members.remove': '移除',
+    'account.members.pending': '待处理邀请',
+    'account.members.sent': '发送时间',
+    'account.members.expires': '过期时间',
+    'account.members.revoke': '撤销',
+    'account.members.inviteHeading': '邀请新成员',
+    'account.members.inviteSubmit': '发送邀请',
+    'account.members.invited': '已向 {email} 发送邀请。',
+    'account.members.revoked': '邀请已撤销。',
+    'account.bidding.campaigns': '竞价活动',
+    'account.bidding.receipt': '我的回执',
+    'account.bidding.status': '状态',
+    'account.bidding.bid': '出价',
+    'account.bidding.tradeId': '成交编号',
+    'account.bidding.closed': '该活动当前不接受新出价。',
+    'account.bidding.closes': '截止',
+    'account.addresses.makeDefaultCheckbox': '设为该类型的默认地址',
+    'account.rfq.details': '详情',
+    'account.rfq.status.awaiting': '待接受',
+    'account.rfq.status.Pending': '待处理',
+    'account.rfq.status.Created from admin': '来自客户经理',
+    'account.rfq.status.Approved': '已批准',
+    'account.rfq.status.Completed': '已完成',
+    'account.rfq.status.Canceled': '已取消',
+    'account.rfq.status.Expired': '已过期',
+    'account.bidding.title': '竞价活动',
+    'account.bidding.intro': '对本组织可见的稀缺库存竞价活动。',
+    'account.bidding.code': '编码',
+    'account.bidding.titleCol': '标题',
+    'account.bidding.closesCol': '截止',
+    'account.bidding.open': '打开',
+    'account.bidding.emptyCampaigns': '暂无开放活动。',
+    'account.bidding.receiptsHeading': '我的回执',
+    'account.bidding.emptyReceipts': '暂无回执。',
+    'account.bidding.back': '← 竞价活动',
+    'account.org.addressesTitle': '组织地址',
+    'account.bidding.showing': '显示 {start}–{end} / 共 {total}',
+    'account.bidding.rowsPerPage': '每页行数',
+    'account.bidding.pageOf': '第 {page} / {total} 页',
+    'account.bidding.previous': '上一页',
+    'account.bidding.next': '下一页',
+    'account.bidding.campaignCol': '活动',
+    'account.bidding.unavailable': '竞价暂时不可用（模块未启用或会话无效）。',
+    'account.bidding.pagerCampaigns': '活动',
+    'account.bidding.pagerReceipts': '回执',
+    'account.addresses.yes': '是',
     'footer.blurb': '工业元器件 B2B 批发。轴承、传动、自动化、电气、气动与工具。当日发货、账期发票与完整技术资料。',
     'footer.shop': '商店',
     'footer.catalog': '商品目录',
@@ -1974,6 +2382,142 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.nav.orgAddresses': '組織地址',
     'account.nav.members': '成員',
     'account.nav.signOut': '登出',
+    'account.profile.title': '個人資料',
+    'account.profile.name': '姓名',
+    'account.profile.email': '電子郵件',
+    'account.profile.role': '角色',
+    'account.profile.twoFactor': '雙重驗證',
+    'account.profile.organization': '組織',
+    'account.profile.verified': '（已驗證）',
+    'account.profile.unverified': '（未驗證）',
+    'account.profile.enabled': '已啟用',
+    'account.profile.disabled': '未啟用',
+    'account.role.organization_admin': '組織管理員',
+    'account.role.regular_user': '一般使用者',
+    'account.password.title': '修改密碼',
+    'account.password.current': '目前密碼',
+    'account.password.new': '新密碼（至少 12 位）',
+    'account.password.submit': '更新密碼',
+    'account.password.updated': '密碼已更新。',
+    'account.password.failed': '無法更新密碼。',
+    'account.addresses.title': '我的地址',
+    'account.addresses.kind': '類型',
+    'account.addresses.recipient': '收件人',
+    'account.addresses.address': '地址',
+    'account.addresses.default': '預設',
+    'account.addresses.makeDefault': '設為預設',
+    'account.addresses.remove': '刪除',
+    'account.addresses.empty': '尚無地址。',
+    'account.addresses.addHeading': '新增地址',
+    'account.addresses.street': '街道',
+    'account.addresses.city': '城市',
+    'account.addresses.postal': '郵遞區號',
+    'account.addresses.country': '國家',
+    'account.addresses.phone': '電話（選填）',
+    'account.addresses.kind.delivery': '收貨',
+    'account.addresses.kind.billing': '帳單',
+    'account.addresses.created': '地址已新增。',
+    'account.addresses.removed': '地址已刪除。',
+    'account.addresses.defaultUpdated': '預設地址已更新。',
+    'account.addresses.orgHeading': '組織地址',
+    'account.addresses.orgHint': '結帳時可使用的共用地址。',
+    'account.addresses.addSubmit': '新增地址',
+    'account.orders.title': '訂單',
+    'account.orders.empty': '尚無訂單。',
+    'account.orders.browse': '瀏覽目錄',
+    'account.orders.placed': '下單時間',
+    'account.orders.order': '訂單號',
+    'account.orders.status': '狀態',
+    'account.orders.payment': '付款',
+    'account.orders.total': '合計',
+    'account.orders.open': '查看',
+    'account.returns.title': '退貨與申訴',
+    'account.returns.start': '發起退貨',
+    'account.returns.empty': '尚無退貨記錄。',
+    'account.returns.submitted': '提交時間',
+    'account.returns.rma': 'RMA',
+    'account.returns.kind': '類型',
+    'account.returns.status': '狀態',
+    'account.returns.refund': '退款',
+    'account.returns.open': '查看',
+    'account.rfq.title': '詢價單',
+    'account.rfq.browse': '瀏覽目錄',
+    'account.rfq.empty': '尚無詢價單。',
+    'account.rfq.number': '編號',
+    'account.rfq.date': '日期',
+    'account.rfq.lines': '行數',
+    'account.rfq.value': '金額',
+    'account.rfq.status': '狀態',
+    'account.rfq.open': '查看',
+    'account.lists.title': '採購清單',
+    'account.lists.intro': '將常用訂單儲存為清單，需要時可將全部或部分商品轉入購物車或詢價單。',
+    'account.lists.createLabel': '新建清單',
+    'account.lists.createPlaceholder': '例如：每週補貨',
+    'account.lists.createSubmit': '建立清單',
+    'account.lists.empty': '尚無清單。',
+    'account.lists.name': '名稱',
+    'account.lists.items': '商品數',
+    'account.lists.updated': '更新時間',
+    'account.lists.default': '預設',
+    'account.lists.isDefault': '預設',
+    'account.lists.setDefault': '設為預設',
+    'account.org.taxId': '稅號',
+    'account.org.status': '狀態',
+    'account.org.vatStatus': '增值稅狀態',
+    'account.org.registeredAddress': '註冊地址',
+    'account.members.title': '成員',
+    'account.members.adminRequired': '需要組織管理員權限。',
+    'account.members.name': '姓名',
+    'account.members.email': '電子郵件',
+    'account.members.role': '角色',
+    'account.members.actions': '操作',
+    'account.members.save': '儲存',
+    'account.members.remove': '移除',
+    'account.members.pending': '待處理邀請',
+    'account.members.sent': '傳送時間',
+    'account.members.expires': '到期時間',
+    'account.members.revoke': '撤銷',
+    'account.members.inviteHeading': '邀請新成員',
+    'account.members.inviteSubmit': '傳送邀請',
+    'account.members.invited': '已向 {email} 傳送邀請。',
+    'account.members.revoked': '邀請已撤銷。',
+    'account.bidding.campaigns': '競價活動',
+    'account.bidding.receipt': '我的回執',
+    'account.bidding.status': '狀態',
+    'account.bidding.bid': '出價',
+    'account.bidding.tradeId': '成交編號',
+    'account.bidding.closed': '此活動目前不接受新出價。',
+    'account.bidding.closes': '截止',
+    'account.addresses.makeDefaultCheckbox': '設為此類型的預設地址',
+    'account.rfq.details': '詳情',
+    'account.rfq.status.awaiting': '待接受',
+    'account.rfq.status.Pending': '待處理',
+    'account.rfq.status.Created from admin': '來自客戶經理',
+    'account.rfq.status.Approved': '已核准',
+    'account.rfq.status.Completed': '已完成',
+    'account.rfq.status.Canceled': '已取消',
+    'account.rfq.status.Expired': '已過期',
+    'account.bidding.title': '競價活動',
+    'account.bidding.intro': '對本組織可見的稀缺庫存競價活動。',
+    'account.bidding.code': '編碼',
+    'account.bidding.titleCol': '標題',
+    'account.bidding.closesCol': '截止',
+    'account.bidding.open': '開啟',
+    'account.bidding.emptyCampaigns': '暫無開放活動。',
+    'account.bidding.receiptsHeading': '我的回執',
+    'account.bidding.emptyReceipts': '暫無回執。',
+    'account.bidding.back': '← 競價活動',
+    'account.org.addressesTitle': '組織地址',
+    'account.bidding.showing': '顯示 {start}–{end} / 共 {total}',
+    'account.bidding.rowsPerPage': '每頁列數',
+    'account.bidding.pageOf': '第 {page} / {total} 頁',
+    'account.bidding.previous': '上一頁',
+    'account.bidding.next': '下一頁',
+    'account.bidding.campaignCol': '活動',
+    'account.bidding.unavailable': '競價暫時不可用（模組未啟用或工作階段無效）。',
+    'account.bidding.pagerCampaigns': '活動',
+    'account.bidding.pagerReceipts': '回執',
+    'account.addresses.yes': '是',
     'footer.blurb': '工業元器件 B2B 批發。軸承、傳動、自動化、電氣、氣動與工具。當日發貨、帳期發票與完整技術資料。',
     'footer.shop': '商店',
     'footer.catalog': '商品目錄',
@@ -2501,6 +3045,142 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.nav.orgAddresses': 'Adresy organizacji',
     'account.nav.members': 'Członkowie',
     'account.nav.signOut': 'Wyloguj',
+    'account.profile.title': 'Twój profil',
+    'account.profile.name': 'Imię i nazwisko',
+    'account.profile.email': 'E-mail',
+    'account.profile.role': 'Rola',
+    'account.profile.twoFactor': 'Weryfikacja dwuetapowa',
+    'account.profile.organization': 'Organizacja',
+    'account.profile.verified': '(zweryfikowany)',
+    'account.profile.unverified': '(niezweryfikowany)',
+    'account.profile.enabled': 'Włączone',
+    'account.profile.disabled': 'Wyłączone',
+    'account.role.organization_admin': 'Administrator organizacji',
+    'account.role.regular_user': 'Zwykły użytkownik',
+    'account.password.title': 'Zmień hasło',
+    'account.password.current': 'Aktualne hasło',
+    'account.password.new': 'Nowe hasło (min. 12 znaków)',
+    'account.password.submit': 'Zaktualizuj hasło',
+    'account.password.updated': 'Hasło zostało zaktualizowane.',
+    'account.password.failed': 'Nie udało się zaktualizować hasła.',
+    'account.addresses.title': 'Moje adresy',
+    'account.addresses.kind': 'Rodzaj',
+    'account.addresses.recipient': 'Odbiorca',
+    'account.addresses.address': 'Adres',
+    'account.addresses.default': 'Domyślny',
+    'account.addresses.makeDefault': 'Ustaw jako domyślny',
+    'account.addresses.remove': 'Usuń',
+    'account.addresses.empty': 'Brak adresów.',
+    'account.addresses.addHeading': 'Dodaj adres',
+    'account.addresses.street': 'Ulica',
+    'account.addresses.city': 'Miasto',
+    'account.addresses.postal': 'Kod pocztowy',
+    'account.addresses.country': 'Kraj',
+    'account.addresses.phone': 'Telefon (opcjonalnie)',
+    'account.addresses.kind.delivery': 'Dostawa',
+    'account.addresses.kind.billing': 'Rozliczeniowy',
+    'account.addresses.created': 'Adres dodany.',
+    'account.addresses.removed': 'Adres usunięty.',
+    'account.addresses.defaultUpdated': 'Domyślny adres zaktualizowany.',
+    'account.addresses.orgHeading': 'Adresy organizacji',
+    'account.addresses.orgHint': 'Współdzielone adresy dostępne przy kasie.',
+    'account.addresses.addSubmit': 'Dodaj adres',
+    'account.orders.title': 'Zamówienia',
+    'account.orders.empty': 'Nie masz jeszcze żadnych zamówień.',
+    'account.orders.browse': 'Przeglądaj katalog',
+    'account.orders.placed': 'Złożono',
+    'account.orders.order': 'Zamówienie',
+    'account.orders.status': 'Status',
+    'account.orders.payment': 'Płatność',
+    'account.orders.total': 'Suma',
+    'account.orders.open': 'Otwórz',
+    'account.returns.title': 'Zwroty i reklamacje',
+    'account.returns.start': 'Rozpocznij zwrot',
+    'account.returns.empty': 'Nie masz jeszcze żadnych zwrotów.',
+    'account.returns.submitted': 'Złożono',
+    'account.returns.rma': 'RMA',
+    'account.returns.kind': 'Rodzaj',
+    'account.returns.status': 'Status',
+    'account.returns.refund': 'Zwrot',
+    'account.returns.open': 'Otwórz',
+    'account.rfq.title': 'Zapytania ofertowe',
+    'account.rfq.browse': 'Przeglądaj katalog',
+    'account.rfq.empty': 'Nie masz jeszcze żadnych zapytań ofertowych.',
+    'account.rfq.number': 'Numer',
+    'account.rfq.date': 'Data',
+    'account.rfq.lines': 'Pozycji',
+    'account.rfq.value': 'Wartość',
+    'account.rfq.status': 'Status',
+    'account.rfq.open': 'Otwórz',
+    'account.lists.title': 'Listy zakupowe',
+    'account.lists.intro': 'Zapisuj powtarzalne zamówienia jako listy. Gdy będziesz gotowy, przenieś wszystkie lub wybrane pozycje do koszyka albo zapytania ofertowego.',
+    'account.lists.createLabel': 'Utwórz nową listę',
+    'account.lists.createPlaceholder': 'Tygodniowe uzupełnienie',
+    'account.lists.createSubmit': 'Utwórz listę',
+    'account.lists.empty': 'Brak list.',
+    'account.lists.name': 'Nazwa',
+    'account.lists.items': 'Pozycje',
+    'account.lists.updated': 'Aktualizacja',
+    'account.lists.default': 'Domyślna',
+    'account.lists.isDefault': 'Domyślna',
+    'account.lists.setDefault': 'Ustaw jako domyślną',
+    'account.org.taxId': 'NIP',
+    'account.org.status': 'Status',
+    'account.org.vatStatus': 'Status VAT',
+    'account.org.registeredAddress': 'Adres rejestrowy',
+    'account.members.title': 'Członkowie',
+    'account.members.adminRequired': 'Wymagana rola administratora organizacji.',
+    'account.members.name': 'Imię i nazwisko',
+    'account.members.email': 'E-mail',
+    'account.members.role': 'Rola',
+    'account.members.actions': 'Akcje',
+    'account.members.save': 'Zapisz',
+    'account.members.remove': 'Usuń',
+    'account.members.pending': 'Oczekujące zaproszenia',
+    'account.members.sent': 'Wysłano',
+    'account.members.expires': 'Wygasa',
+    'account.members.revoke': 'Cofnij',
+    'account.members.inviteHeading': 'Zaproś nowego członka',
+    'account.members.inviteSubmit': 'Wyślij zaproszenie',
+    'account.members.invited': 'Wysłano zaproszenie do {email}.',
+    'account.members.revoked': 'Zaproszenie cofnięte.',
+    'account.bidding.campaigns': 'Kampanie',
+    'account.bidding.receipt': 'Twój paragon',
+    'account.bidding.status': 'Status',
+    'account.bidding.bid': 'Oferta',
+    'account.bidding.tradeId': 'Id transakcji',
+    'account.bidding.closed': 'Ta kampania nie przyjmuje nowych ofert.',
+    'account.bidding.closes': 'zamyka się',
+    'account.addresses.makeDefaultCheckbox': 'Ustaw jako domyślny dla tego rodzaju',
+    'account.rfq.details': 'Szczegóły',
+    'account.rfq.status.awaiting': 'Oczekuje akceptacji',
+    'account.rfq.status.Pending': 'Oczekuje',
+    'account.rfq.status.Created from admin': 'Od opiekuna',
+    'account.rfq.status.Approved': 'Zatwierdzone',
+    'account.rfq.status.Completed': 'Zrealizowane',
+    'account.rfq.status.Canceled': 'Anulowane',
+    'account.rfq.status.Expired': 'Wygasłe',
+    'account.bidding.title': 'Kampanie przetargowe',
+    'account.bidding.intro': 'Kampanie ograniczonego zapasu widoczne dla Twojej organizacji.',
+    'account.bidding.code': 'Kod',
+    'account.bidding.titleCol': 'Tytuł',
+    'account.bidding.closesCol': 'Zamyka się',
+    'account.bidding.open': 'Otwórz',
+    'account.bidding.emptyCampaigns': 'Brak otwartych kampanii.',
+    'account.bidding.receiptsHeading': 'Moje paragony',
+    'account.bidding.emptyReceipts': 'Brak paragonów.',
+    'account.bidding.back': '← Kampanie',
+    'account.org.addressesTitle': 'Adresy organizacji',
+    'account.bidding.showing': 'Pokazuję {start}–{end} z {total}',
+    'account.bidding.rowsPerPage': 'Wierszy na stronę',
+    'account.bidding.pageOf': 'Strona {page} z {total}',
+    'account.bidding.previous': 'Poprzednia',
+    'account.bidding.next': 'Następna',
+    'account.bidding.campaignCol': 'Kampania',
+    'account.bidding.unavailable': 'Przetargi są teraz niedostępne (moduł wyłączony lub sesja).',
+    'account.bidding.pagerCampaigns': 'Kampanie',
+    'account.bidding.pagerReceipts': 'Paragony',
+    'account.addresses.yes': 'tak',
     'footer.blurb': 'Hurtownia B2B komponentów przemysłowych. Łożyska, napędy, automatyka, elektryka, pneumatyka i narzędzia. Wysyłka tego samego dnia, faktura z odroczonym terminem płatności i pełna dokumentacja techniczna.',
     'footer.shop': 'Sklep',
     'footer.catalog': 'Katalog',

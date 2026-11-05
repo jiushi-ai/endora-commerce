@@ -31,7 +31,11 @@ export function ProductGallery(props: {
   return (
     <div>
       {gallery.length > 0 ? (
-        <GallerySwitcher gallery={gallery} alt={props.alt} locale={props.locale} />
+        <GallerySwitcher
+          gallery={gallery}
+          alt={props.alt}
+          {...(props.locale ? { locale: props.locale } : {})}
+        />
       ) : props.placeholderUrl ? (
         <img
           src={toAbsoluteAssetUrl(props.placeholderUrl)}

@@ -6,6 +6,7 @@ import type {
   StorefrontBiddingCampaign,
   StorefrontBiddingReceipt,
 } from '../../lib/api/bidding';
+import { tForLocale } from '../../lib/i18n/messages';
 
 const PAGE_SIZES = [5, 10, 20] as const;
 
@@ -17,8 +18,10 @@ export function BiddingDeskClient(props: {
   campaigns: StorefrontBiddingCampaign[];
   receipts: StorefrontBiddingReceipt[];
   loadError: string | null;
+  locale: string;
 }): ReactNode {
-  const { campaigns, receipts, loadError } = props;
+  const { campaigns, receipts, loadError, locale } = props;
+  const t = tForLocale(locale);
   const [campaignPage, setCampaignPage] = useState(0);
   const [campaignPageSize, setCampaignPageSize] = useState<(typeof PAGE_SIZES)[number]>(10);
   const [receiptPage, setReceiptPage] = useState(0);
@@ -36,16 +39,16 @@ export function BiddingDeskClient(props: {
 
   return (
     <>
-      <h2>Bidding campaigns</h2>
-      <p className="muted">Scarce-stock campaigns visible to your organization.</p>
+      <h2>{t('account.bidding.title')}</h2>
+      <p className="muted">{t('account.bidding.intro')}</p>
       {loadError ? <p role="alert">{loadError}</p> : null}
       <table className="b2b-account__table">
         <thead>
           <tr>
-            <th scope="col">Code</th>
-            <th scope="col">Title</th>
-            <th scope="col">Status</th>
-            <th scope="col">Closes</th>
+            <th scope="col">{t('account.bidding.code')}</th>
+            <th scope="col">{t('account.bidding.titleCol')}</th>
+            <th scope="col">{t('account.bidding.status')}</th>
+            <th scope="col">{t('account.bidding.closesCol')}</th>
             <th scope="col" />
           </tr>
         </thead>
@@ -57,10 +60,10 @@ export function BiddingDeskClient(props: {
               </td>
               <td>{c.title}</td>
               <td>{c.status}</td>
-              <td>{new Date(c.closesAt).toLocaleString()}</td>
+              <td>{new Date(c.closesAt).toLocaleString(locale)}</td>
               <td>
                 <Link href={`/account/bidding/${c.id}`} className="btn btn--dark btn--sm">
-                  Open
+                  {t('account.bidding.open')}
                 </Link>
               </td>
             </tr>
@@ -68,7 +71,7 @@ export function BiddingDeskClient(props: {
           {campaigns.length === 0 && !loadError ? (
             <tr>
               <td colSpan={5} className="muted">
-                No open campaigns.
+                {t('account.bidding.emptyCampaigns')}
               </td>
             </tr>
           ) : null}
@@ -76,7 +79,8 @@ export function BiddingDeskClient(props: {
       </table>
       {campaigns.length > 0 ? (
         <LocalPager
-          label="Campaigns"
+          label={t('account.bidding.pagerCampaigns')}
+          locale={locale}
           page={campaignPage}
           pageSize={campaignPageSize}
           total={campaigns.length}
@@ -88,14 +92,14 @@ export function BiddingDeskClient(props: {
         />
       ) : null}
 
-      <h3 className="mt-[24px]">My receipts</h3>
+      <h3 className="mt-[24px]">{t('account.bidding.receiptsHeading')}</h3>
       <table className="b2b-account__table">
         <thead>
           <tr>
-            <th scope="col">Campaign</th>
-            <th scope="col">Status</th>
-            <th scope="col">Bid</th>
-            <th scope="col">Trade id</th>
+            <th scope="col">{t('account.bidding.campaignCol')}</th>
+            <th scope="col">{t('account.bidding.status')}</th>
+            <th scope="col">{t('account.bidding.bid')}</th>
+            <th scope="col">{t('account.bidding.tradeId')}</th>
           </tr>
         </thead>
         <tbody>
@@ -114,7 +118,7 @@ export function BiddingDeskClient(props: {
           {receipts.length === 0 && !loadError ? (
             <tr>
               <td colSpan={4} className="muted">
-                No receipts yet.
+                {t('account.bidding.emptyReceipts')}
               </td>
             </tr>
           ) : null}
@@ -122,7 +126,8 @@ export function BiddingDeskClient(props: {
       </table>
       {receipts.length > 0 ? (
         <LocalPager
-          label="Receipts"
+          label={t('account.bidding.pagerReceipts')}
+          locale={locale}
           page={receiptPage}
           pageSize={receiptPageSize}
           total={receipts.length}
@@ -139,12 +144,14 @@ export function BiddingDeskClient(props: {
 
 function LocalPager(props: {
   label: string;
+  locale: string;
   page: number;
   pageSize: (typeof PAGE_SIZES)[number];
   total: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: (typeof PAGE_SIZES)[number]) => void;
 }): ReactNode {
+  const t = tForLocale(props.locale);
   const totalPages = Math.max(1, Math.ceil(props.total / props.pageSize));
   const safePage = Math.min(props.page, totalPages - 1);
   const start = props.total === 0 ? 0 : safePage * props.pageSize + 1;
@@ -159,10 +166,13 @@ function LocalPager(props: {
     >
       <div className="flex flex-wrap items-center gap-3">
         <span>
-          Showing {start}–{end} of {props.total}
+          {t('account.bidding.showing')
+            .replace('{start}', String(start))
+            .replace('{end}', String(end))
+            .replace('{total}', String(props.total))}
         </span>
         <label className="flex items-center gap-1.5">
-          Rows per page
+          {t('account.bidding.rowsPerPage')}
           <select
             className="b2b-field b2b-field--sm"
             value={props.pageSize}
@@ -180,7 +190,9 @@ function LocalPager(props: {
       </div>
       <div className="flex items-center gap-2">
         <span>
-          Page {safePage + 1} of {totalPages}
+          {t('account.bidding.pageOf')
+            .replace('{page}', String(safePage + 1))
+            .replace('{total}', String(totalPages))}
         </span>
         <button
           type="button"
@@ -188,7 +200,7 @@ function LocalPager(props: {
           disabled={isFirst}
           onClick={() => props.onPageChange(Math.max(0, safePage - 1))}
         >
-          Previous
+          {t('account.bidding.previous')}
         </button>
         <button
           type="button"
@@ -196,7 +208,7 @@ function LocalPager(props: {
           disabled={isLast}
           onClick={() => props.onPageChange(Math.min(totalPages - 1, safePage + 1))}
         >
-          Next
+          {t('account.bidding.next')}
         </button>
       </div>
     </nav>

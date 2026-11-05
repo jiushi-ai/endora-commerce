@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { getSessionCookie } from '../../../lib/session';
+import { getServerContext } from '../../../lib/server-context';
 import {
   createMyAddress,
   deleteMyAddress,
@@ -9,6 +10,8 @@ import {
 } from '../../../lib/api/customers';
 import { StorefrontApiError } from '../../../lib/api/client';
 import { CountryPicker } from '../../../lib/dictionary/pickers/CountryPicker';
+import { tForLocale } from '../../../lib/i18n/messages';
+import { accountAddressKindLabel } from '../../../lib/i18n/account-labels';
 import type { Metadata } from 'next';
 
 /**
@@ -32,52 +35,60 @@ export default async function MyAddressesPage({
   if (!session) redirect('/login');
   const params = await searchParams;
   const book = await listMyAddresses(session);
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
 
   return (
     <>
-      <h2>My addresses</h2>
-      {params.status === 'created' ? <p className="b2b-auth__success">Address added.</p> : null}
-      {params.status === 'removed' ? <p className="b2b-auth__success">Address removed.</p> : null}
-      {params.status === 'default' ? <p className="b2b-auth__success">Default updated.</p> : null}
+      <h2>{t('account.addresses.title')}</h2>
+      {params.status === 'created' ? (
+        <p className="b2b-auth__success">{t('account.addresses.created')}</p>
+      ) : null}
+      {params.status === 'removed' ? (
+        <p className="b2b-auth__success">{t('account.addresses.removed')}</p>
+      ) : null}
+      {params.status === 'default' ? (
+        <p className="b2b-auth__success">{t('account.addresses.defaultUpdated')}</p>
+      ) : null}
       {params.error ? <p className="b2b-auth__error">{params.error}</p> : null}
 
       <table className="b2b-account__table">
         <thead>
           <tr>
-            <th>Kind</th>
-            <th>Recipient</th>
-            <th>Address</th>
-            <th>Default</th>
+            <th>{t('account.addresses.kind')}</th>
+            <th>{t('account.addresses.recipient')}</th>
+            <th>{t('account.addresses.address')}</th>
+            <th>{t('account.addresses.default')}</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           {book.personal.length === 0 ? (
             <tr>
-              <td colSpan={5}>No addresses yet.</td>
+              <td colSpan={5}>{t('account.addresses.empty')}</td>
             </tr>
           ) : (
             book.personal.map((a) => (
               <tr key={a.id}>
-                <td>{a.kind}</td>
+                <td>{accountAddressKindLabel(a.kind, locale)}</td>
                 <td>{a.recipientName}</td>
                 <td>
                   {a.street}, {a.postalCode} {a.city}, {a.country}
                 </td>
                 <td>
                   {a.isDefault ? (
-                    'Default'
+                    t('account.addresses.default')
                   ) : (
                     <form action={setDefaultAction} className="inline">
                       <input type="hidden" name="addressId" value={a.id} />
-                      <button type="submit">Make default</button>
+                      <button type="submit">{t('account.addresses.makeDefault')}</button>
                     </form>
                   )}
                 </td>
                 <td>
                   <form action={removeAction} style={{ display: 'inline' }}>
                     <input type="hidden" name="addressId" value={a.id} />
-                    <button type="submit">Remove</button>
+                    <button type="submit">{t('account.addresses.remove')}</button>
                   </form>
                 </td>
               </tr>
@@ -88,13 +99,13 @@ export default async function MyAddressesPage({
 
       {book.organization.length > 0 ? (
         <>
-          <h3>Organization addresses</h3>
-          <p className="b2b-account__hint">Shared addresses you can use at checkout.</p>
+          <h3>{t('account.addresses.orgHeading')}</h3>
+          <p className="b2b-account__hint">{t('account.addresses.orgHint')}</p>
           <table className="b2b-account__table">
             <tbody>
               {book.organization.map((a) => (
                 <tr key={a.id}>
-                  <td>{a.kind}</td>
+                  <td>{accountAddressKindLabel(a.kind, locale)}</td>
                   <td>{a.recipientName}</td>
                   <td>
                     {a.street}, {a.postalCode} {a.city}, {a.country}
@@ -106,50 +117,51 @@ export default async function MyAddressesPage({
         </>
       ) : null}
 
-      <h3>Add an address</h3>
+      <h3>{t('account.addresses.addHeading')}</h3>
       <form action={createAction} className="b2b-auth__form">
         <div className="b2b-auth__row">
           <div className="b2b-auth__field">
-            <label htmlFor="addr-kind">Kind</label>
+            <label htmlFor="addr-kind">{t('account.addresses.kind')}</label>
             <select id="addr-kind" name="kind" defaultValue="delivery">
-              <option value="delivery">delivery</option>
-              <option value="billing">billing</option>
+              <option value="delivery">{t('account.addresses.kind.delivery')}</option>
+              <option value="billing">{t('account.addresses.kind.billing')}</option>
             </select>
           </div>
           <div className="b2b-auth__field">
-            <label htmlFor="addr-recipient">Recipient</label>
+            <label htmlFor="addr-recipient">{t('account.addresses.recipient')}</label>
             <input id="addr-recipient" name="recipientName" required maxLength={160} placeholder=" " />
           </div>
         </div>
         <div className="b2b-auth__field">
-          <label htmlFor="addr-street">Street</label>
+          <label htmlFor="addr-street">{t('account.addresses.street')}</label>
           <input id="addr-street" name="street" required maxLength={255} placeholder=" " />
         </div>
         <div className="b2b-auth__row">
           <div className="b2b-auth__field">
-            <label htmlFor="addr-city">City</label>
+            <label htmlFor="addr-city">{t('account.addresses.city')}</label>
             <input id="addr-city" name="city" required maxLength={120} placeholder=" " />
           </div>
           <div className="b2b-auth__field">
-            <label htmlFor="addr-postal">Postal code</label>
+            <label htmlFor="addr-postal">{t('account.addresses.postal')}</label>
             <input id="addr-postal" name="postalCode" required maxLength={20} placeholder=" " />
           </div>
         </div>
         <div className="b2b-auth__row">
           <div className="b2b-auth__field">
-            <label htmlFor="addr-country">Country</label>
+            <label htmlFor="addr-country">{t('account.addresses.country')}</label>
             <CountryPicker id="addr-country" name="country" required defaultValue="PL" />
           </div>
           <div className="b2b-auth__field">
-            <label htmlFor="addr-phone">Phone (optional)</label>
+            <label htmlFor="addr-phone">{t('account.addresses.phone')}</label>
             <input id="addr-phone" name="phone" maxLength={32} placeholder=" " />
           </div>
         </div>
         <label>
-          <input type="checkbox" name="isDefault" value="true" /> Make this the default for its kind
+          <input type="checkbox" name="isDefault" value="true" />{' '}
+          {t('account.addresses.makeDefaultCheckbox')}
         </label>
         <div className="b2b-auth__actions">
-          <button type="submit">Add address</button>
+          <button type="submit">{t('account.addresses.addSubmit')}</button>
         </div>
       </form>
     </>
