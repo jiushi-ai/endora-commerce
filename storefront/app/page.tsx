@@ -4,7 +4,12 @@ import type { ReactNode } from 'react';
 import { listProducts, getCategoryTree } from '../lib/api/catalog';
 import { getCmsPageBySlug } from '../lib/api/cms';
 import { getHomepageConfig } from '../lib/api/homepage';
+import {
+  listBiddingCampaigns,
+  type StorefrontBiddingCampaign,
+} from '../lib/api/bidding';
 import { getServerContext } from '../lib/server-context';
+import { getSessionCookie } from '../lib/session';
 import { ProductCard } from '../components/ProductCard';
 import { CmsPageRenderer } from '../components/CmsPageRenderer';
 import { HomeMobileStrip } from '../components/mobile/HomeMobileStrip';
@@ -47,12 +52,16 @@ interface CatTile {
   count: number;
 }
 
+const BIDDING_DESK = '/account/bidding';
+const BIDDING_LOGIN = `/login?next=${encodeURIComponent(BIDDING_DESK)}`;
+
 /**
  * Storefront home page.
  *
  * When an operator has chosen a CMS page as the home page (Settings → General
  * → "Home page CMS page"), that page is rendered here. Otherwise we fall back
- * to the built-in Industria-themed landing page below.
+ * to the built-in Mobii dual-path landing (scarce-lot bidding primary, routine
+ * procurement secondary).
  */
 export default async function HomePage({
   searchParams,
@@ -85,20 +94,24 @@ export default async function HomePage({
     }
   }
 
-  // Fetch real catalog data; if the backend is empty, the home page still
-  // renders the marketing chrome.
-  const [tree, products] = await Promise.all([
+  const session = await getSessionCookie();
+  const biddingPresent = modules.isPresent('bidding');
+  const biddingHref = session ? BIDDING_DESK : BIDDING_LOGIN;
+
+  const [tree, products, campaigns] = await Promise.all([
     getCategoryTree(ctx).catch(() => [] as Awaited<ReturnType<typeof getCategoryTree>>),
     listProducts({ limit: 4 }, ctx).catch(() => ({
       data: [],
       pagination: { limit: 4, cursor: null, hasMore: false },
     })),
+    biddingPresent && session
+      ? listBiddingCampaigns(session).catch(() => [] as StorefrontBiddingCampaign[])
+      : Promise.resolve([] as StorefrontBiddingCampaign[]),
   ]);
 
-  // The bestseller cards' settings-driven prices, so their net/gross
-  // presentation matches the PDP and cart. They come with the listing itself —
-  // `resolvedPrice`, from the resolution that priced `price` (D-287 P0) — where
-  // this page used to fan out one `resolved-price` request per card.
+  const openCampaigns = campaigns
+    .filter((c) => c.status === 'published')
+    .slice(0, 4);
 
   const t = tForLocale(locale);
   const fallbackCategories = FALLBACK_CATEGORY_DEFS.map((c) => ({
@@ -121,14 +134,21 @@ export default async function HomePage({
 
   const mobileChips = [
     { label: t('home.mobile.all'), href: '/catalog', active: true },
-    ...categoryTiles.slice(0, 4).map((c) => ({ label: c.name, href: c.href })),
+    ...(biddingPresent
+      ? [{ label: t('home.mobile.shipToday'), href: biddingHref }]
+      : []),
+    ...categoryTiles.slice(0, 3).map((c) => ({ label: c.name, href: c.href })),
   ];
+
+  const dateFmt = new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
 
   return (
     <>
       <OrganizationJsonLd ctx={ctx} />
       <Hook code="homepage.top" />
-      {/* Feature 044 / US1 — mobile-only benefit strip + category chips. */}
       <HomeMobileStrip
         benefits={[
           { icon: 'truck', label: t('home.mobile.shipToday') },
@@ -137,6 +157,8 @@ export default async function HomePage({
         ]}
         chips={mobileChips}
       />
+
+      {/* Hero — bidding primary CTA, procurement secondary */}
       <section className="border-b border-line bg-surface bg-[radial-gradient(ellipse_at_top_right,rgba(29,78,216,0.04),transparent_60%)] pt-[56px] pb-[72px] max-md:pt-[28px] max-md:pb-[40px]">
         <div className="mx-auto grid max-w-[1360px] grid-cols-[minmax(0,5fr)_minmax(0,4fr)] items-center gap-[56px] px-[24px] max-[920px]:grid-cols-1">
           <div>
@@ -155,19 +177,32 @@ export default async function HomePage({
               {t('home.hero.body')}
             </p>
             <div className="mb-10 flex flex-wrap gap-3">
-              <Link href="/catalog" className="btn btn--dark btn--lg">
-                {t('home.hero.browseCatalog')} <ArrowRightIcon />
-              </Link>
-              <Link href="/quick-order" className="btn btn--outline btn--lg">
-                <LightningIcon /> {t('home.hero.quickOrderCsv')}
+              {biddingPresent ? (
+                <Link href={biddingHref} className="btn btn--dark btn--lg">
+                  {t('home.hero.ctaBidding')} <ArrowRightIcon />
+                </Link>
+              ) : null}
+              <Link
+                href="/catalog"
+                className={
+                  biddingPresent ? 'btn btn--outline btn--lg' : 'btn btn--dark btn--lg'
+                }
+              >
+                {t('home.hero.ctaProcure')}
+                {biddingPresent ? null : (
+                  <>
+                    {' '}
+                    <ArrowRightIcon />
+                  </>
+                )}
               </Link>
             </div>
             <div className="grid grid-cols-4 gap-[24px] max-[720px]:grid-cols-2">
               {[
-                ['120k+', t('home.stat.stock')],
-                ['84', t('home.stat.makers')],
-                ['14:00', t('home.stat.cutoff')],
-                ['98,4%', t('home.stat.availability')],
+                ['—', t('home.stat.stock')],
+                ['—', t('home.stat.makers')],
+                ['48h', t('home.stat.cutoff')],
+                ['—', t('home.stat.availability')],
               ].map(([num, label]) => (
                 <div key={label}>
                   <div className="font-mono text-[22px] font-semibold tracking-[-0.02em] text-fg">
@@ -180,19 +215,26 @@ export default async function HomePage({
               ))}
             </div>
           </div>
+
+          {/* Illustrative scarce-lot card — chrome via messages; not live DB */}
           <div className="relative overflow-hidden rounded-xl bg-[var(--ink-900)] p-[24px] text-[#f4f4f5]">
             <div className="mb-[18px] flex items-baseline justify-between font-mono text-[12px] text-[#a1a1aa]">
-              <span className="font-medium text-white">SKU 6205-2RS · SKF</span>
-              <span>on-stock · 1 280 szt. · WAW-01</span>
+              <span className="font-medium text-white">LOT-A100-200</span>
+              <span>{t('home.demo.lotMeta')}</span>
             </div>
-            <div className="mt-[12px] mb-[16px] font-mono text-[56px] font-semibold leading-none tracking-[-0.03em]">
+            <div className="mt-[12px] mb-[16px] font-mono text-[40px] font-semibold leading-none tracking-[-0.03em]">
               <small className="mb-2 block text-[11px] font-medium uppercase tracking-[0.08em] text-[#a1a1aa]">
                 {t('home.demo.dynamicLoad')}
               </small>
-              14,0 kN
+              {t('home.demo.refPrice')}
             </div>
             <div className="mb-[24px] flex flex-wrap gap-2">
-              {['d 25 mm', 'D 52 mm', 'B 15 mm', '14 000 obr/min', 'ISO 15:2017'].map((tag) => (
+              {[
+                t('home.demo.tagGpu'),
+                t('home.demo.tagQty'),
+                t('home.demo.tagSealed'),
+                t('home.demo.tagWindow'),
+              ].map((tag) => (
                 <span
                   key={tag}
                   className="rounded-full border border-white/12 bg-white/8 px-[10px] py-[4px] font-mono text-[11px] text-[#e5e7eb]"
@@ -203,9 +245,9 @@ export default async function HomePage({
             </div>
             <div className="grid grid-cols-3 gap-2">
               {[
-                [<DocIcon key="d" />, t('home.demo.datasheet'), 'PDF · 1,2 MB'],
-                [<ShieldIcon key="s" />, t('home.demo.certificate'), 'EN 10204'],
-                [<LayersIcon key="l" />, t('home.demo.model3d'), '2,8 MB'],
+                [<DocIcon key="d" />, t('home.demo.intent'), t('home.demo.datasheet')],
+                [<ShieldIcon key="s" />, t('home.demo.verify'), t('home.demo.certificate')],
+                [<LayersIcon key="l" />, t('home.demo.fulfill'), t('home.demo.model3d')],
               ].map(([icon, title, sub]) => (
                 <div
                   key={title as string}
@@ -221,9 +263,127 @@ export default async function HomePage({
                 </div>
               ))}
             </div>
+            {biddingPresent ? (
+              <div className="mt-5">
+                <Link href={biddingHref} className="btn btn--lg w-full justify-center bg-white text-[var(--ink-900)] hover:bg-white/90">
+                  {t('home.hero.ctaBidding')} <ArrowRightIcon />
+                </Link>
+              </div>
+            ) : null}
           </div>
         </div>
       </section>
+
+      {/* Dual paths */}
+      <section className="mx-auto max-w-[1360px] px-[24px] section">
+        <div className="section__head">
+          <div>
+            <span className="section__eyebrow">{t('home.path.eyebrow')}</span>
+            <h2 className="sr-only">{t('home.path.eyebrow')}</h2>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-[16px] max-[800px]:grid-cols-1">
+          {biddingPresent ? (
+            <div className="rounded-lg border border-[var(--ink-700)] bg-surface p-[28px]">
+              <h3 className="m-0 mb-2 text-[20px] font-semibold tracking-[-0.02em] text-fg">
+                {t('home.path.biddingTitle')}
+              </h3>
+              <p className="m-0 mb-5 max-w-[42ch] text-[14px] leading-[1.55] text-muted">
+                {t('home.path.biddingBody')}
+              </p>
+              <ol className="m-0 mb-6 list-decimal space-y-2 pl-5 text-[13px] text-fg">
+                <li>{t('home.path.biddingStep1')}</li>
+                <li>{t('home.path.biddingStep2')}</li>
+                <li>{t('home.path.biddingStep3')}</li>
+              </ol>
+              <Link href={biddingHref} className="btn btn--dark">
+                {t('home.path.biddingCta')} <ArrowRightIcon />
+              </Link>
+            </div>
+          ) : null}
+          <div
+            className={`rounded-lg border border-line bg-surface p-[28px] ${
+              biddingPresent ? '' : 'col-span-full max-w-[640px]'
+            }`}
+          >
+            <h3 className="m-0 mb-2 text-[20px] font-semibold tracking-[-0.02em] text-fg">
+              {t('home.path.procureTitle')}
+            </h3>
+            <p className="m-0 mb-5 max-w-[42ch] text-[14px] leading-[1.55] text-muted">
+              {t('home.path.procureBody')}
+            </p>
+            <ol className="m-0 mb-6 list-decimal space-y-2 pl-5 text-[13px] text-fg">
+              <li>{t('home.path.procureStep1')}</li>
+              <li>{t('home.path.procureStep2')}</li>
+              <li>{t('home.path.procureStep3')}</li>
+            </ol>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/catalog" className="btn btn--outline">
+                {t('home.path.procureCta')}
+              </Link>
+              <Link href="/quick-order" className="btn btn--ghost">
+                <LightningIcon /> {t('home.hero.quickOrderCsv')}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Open campaigns — live titles/qty/dates from API; chrome from messages */}
+      {biddingPresent ? (
+        <section className="mx-auto max-w-[1360px] px-[24px] section pt-0">
+          <div className="section__head">
+            <div>
+              <span className="section__eyebrow">{t('home.campaigns.eyebrow')}</span>
+              <h2>{t('home.campaigns.title')}</h2>
+              <p>{t('home.campaigns.body')}</p>
+            </div>
+            <Link href={biddingHref} className="btn btn--ghost">
+              {t('home.campaigns.viewAll')} <ArrowRightIcon />
+            </Link>
+          </div>
+          {!session ? (
+            <div className="rounded-lg border border-dashed border-line bg-surface-alt px-6 py-10 text-center">
+              <p className="m-0 mb-4 text-[14px] text-muted">{t('home.campaigns.signIn')}</p>
+              <Link href={BIDDING_LOGIN} className="btn btn--dark">
+                {t('home.hero.ctaBidding')} <ArrowRightIcon />
+              </Link>
+            </div>
+          ) : openCampaigns.length === 0 ? (
+            <p className="m-0 rounded-lg border border-line bg-surface-alt px-6 py-8 text-[14px] text-muted">
+              {t('home.campaigns.empty')}
+            </p>
+          ) : (
+            <ul className="m-0 grid list-none grid-cols-2 gap-[16px] p-0 max-[800px]:grid-cols-1">
+              {openCampaigns.map((c) => (
+                <li key={c.id}>
+                  <Link
+                    href={`/account/bidding/${encodeURIComponent(c.id)}`}
+                    className="block rounded-lg border border-line bg-surface p-[22px] transition hover:-translate-y-[2px] hover:border-[var(--ink-700)]"
+                  >
+                    <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
+                      {c.code}
+                    </span>
+                    <h3 className="m-0 mt-1 mb-3 text-[16px] font-semibold text-fg">{c.title}</h3>
+                    <div className="flex flex-wrap gap-4 font-mono text-[12px] text-muted">
+                      <span>
+                        {t('home.campaigns.qty').replace(
+                          '{count}',
+                          c.qty.toLocaleString(locale),
+                        )}
+                      </span>
+                      <span>
+                        {t('home.campaigns.closes')}{' '}
+                        {dateFmt.format(new Date(c.closesAt))}
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ) : null}
 
       <section className="mx-auto max-w-[1360px] px-[24px] section">
         <div className="section__head">

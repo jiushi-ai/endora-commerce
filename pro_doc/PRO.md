@@ -697,3 +697,13 @@ feat-26-11-05 00:07:32 [21.1~21.4]：小b Header与Footer换成Mobii品牌并多
 汇总：Logo 后强调文案改为「竞价批采平台」；en/pl 对应 Bidding Procurement；繁体「競價批採平台」。Admin 需 `i18n:reload` 或重启后可见。
 
 feat-26-11-05 00:16:38 [22.1~22.3]：平台标题改为竞价批采平台并多语系同步
+
+### 23. 小b 首页双业务改造（竞价为主、采购为次）
+
+- [x] 23.1 `home.*` 文案重写 + 新增 `home.hero.cta*` / `home.path.*` / `home.campaigns.*` / `home.demo.*`（en/zh-CN/zh-TW/pl）
+- [x] 23.2 `app/page.tsx`：Hero 主 CTA→竞价（未登录 `/login?next=/account/bidding`）、次 CTA→采购目录；双路径区；开放场次条（登录后拉 `published`）；CMS 首页仍优先
+- [x] 23.3 抽检测试 `test/i18n/home-locale.test.ts`；本 §99
+
+汇总：内置落地页对齐 Mobii 叙事——稀缺竞价批采为主、常规批量采购为次；壳层全走 messages；场次标题/数量/截止等业务字段仍来自 API。若运营配置了 CMS 首页则仍渲染 CMS。需重启/硬刷新 storefront 验证。
+
+feat-26-11-05 01:02:05 [23.1~23.3]：小b首页改为竞价主CTA与采购次路径并多语系
