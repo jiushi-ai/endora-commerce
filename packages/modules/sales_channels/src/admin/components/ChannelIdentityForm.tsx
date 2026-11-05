@@ -122,9 +122,9 @@ export function ChannelIdentityForm({
   const [code, setCode] = useState(initial?.code ?? '');
   const [name, setName] = useState(pickEnglishName(initial?.name));
   const [themeCode, setThemeCode] = useState(initial?.themeCode ?? '');
-  const [languages, setLanguages] = useState<string[]>(initial?.languages ?? ['en-US']);
+  const [languages, setLanguages] = useState<string[]>(initial?.languages ?? ['zh-CN']);
   const [defaultLanguage, setDefaultLanguage] = useState(
-    initial?.defaultLanguage ?? 'en-US',
+    initial?.defaultLanguage ?? 'zh-CN',
   );
   const [currencies, setCurrencies] = useState<string[]>(initial?.currencies ?? ['PLN']);
   const [defaultCurrency, setDefaultCurrency] = useState(

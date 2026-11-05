@@ -3,6 +3,7 @@ import { renderToString } from 'react-dom/server';
 import { listPaymentMethods } from '../../lib/api/methods';
 import CheckoutError from '../../app/(commerce)/checkout/error';
 import { documentLocale, FALLBACK_LOCALE } from '../../lib/i18n/document-locale';
+import { tForLocale } from '../../lib/i18n/messages';
 
 /**
  * The two halves of "checkout does not 500 when payment capability is absent".
@@ -72,28 +73,32 @@ describe('the checkout error boundary', () => {
   };
 
   it('says checkout failed, not that no payment method is available', () => {
+    const t = tForLocale(FALLBACK_LOCALE);
     const html = render();
-    expect(html).toContain('We could not load checkout');
+    expect(html).toContain(t('checkout.error.title'));
     // The distinction this whole change rests on: a genuine bug must not be
     // laundered into the empty state's friendly, actionable-looking sentence.
-    expect(html).not.toContain('No payment method is available');
+    expect(html).not.toContain(t('checkout.payment.none'));
   });
 
   it('offers a retry and a way back rather than a dead end', () => {
+    const t = tForLocale(FALLBACK_LOCALE);
     const html = render();
-    expect(html).toContain('Try again');
+    expect(html).toContain(t('checkout.error.retry'));
     expect(html).toContain('/cart');
   });
 
   it('shows the digest Next attaches, so a report can be joined to the server log', () => {
+    const t = tForLocale(FALLBACK_LOCALE);
     expect(render('9f2c1a')).toContain('9f2c1a');
-    expect(render()).not.toContain('Reference:');
+    expect(render()).not.toContain(t('checkout.error.referencePrefix').trim());
   });
 
   it('renders the fallback language on the server, where there is no document', () => {
     // A hydration match, not a translation gap: the boundary reads `<html lang>`
     // after mount, so the server HTML and the first client render agree here.
+    const t = tForLocale(FALLBACK_LOCALE);
     expect(documentLocale()).toBe(FALLBACK_LOCALE);
-    expect(render()).toContain('We could not load checkout');
+    expect(render()).toContain(t('checkout.error.title'));
   });
 });

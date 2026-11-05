@@ -6,13 +6,13 @@
  * `src/packages/package-runtime.ts` takes `exported['migrations']` and refuses
  * the package outright when it is absent (D-168).
  *
- * **Two classes.** The first creates the `languages` table and the `currencies`
+ * **Three classes.** The first creates the `languages` table and the `currencies`
  * table together — the two shipped as one migration long before either module
  * was a package — so `currencies` owns rows this file creates and ships no
  * migration of its own. The second repairs a sales channel created with a
- * language code this table never held (its own header says which rows). That
- * the first is first is a fact about history, not an ordering rule: a timestamp
- * orders this module's own migrations and nothing else (feature 081), and where
+ * language code this table never held. The third adds `zh-CN` and pins it as
+ * the platform default (Mobii storefront locale ↔ content). A timestamp
+ * orders this module's own migrations and nothing else (feature 081); where
  * this block sits relative to every other module's is decided by the manifest
  * `dependencies` graph.
  *
@@ -26,13 +26,16 @@
 
 import { Migration20260425T161557LanguagesCurrenciesInit } from './20260425T161557_languages_currencies_init.js';
 import { Migration20261003T115043LanguagesRepairDefaultChannelLanguage } from './20261003T115043_languages_repair_default_channel_language.js';
+import { Migration20261105T021036LanguagesAddZhCnDefault } from './20261105T021036_languages_add_zh_cn_default.js';
 
 export const migrations = [
   Migration20260425T161557LanguagesCurrenciesInit,
   Migration20261003T115043LanguagesRepairDefaultChannelLanguage,
+  Migration20261105T021036LanguagesAddZhCnDefault,
 ];
 
 export {
   Migration20260425T161557LanguagesCurrenciesInit,
   Migration20261003T115043LanguagesRepairDefaultChannelLanguage,
+  Migration20261105T021036LanguagesAddZhCnDefault,
 };

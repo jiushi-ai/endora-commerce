@@ -622,3 +622,14 @@ feat-26-11-04 01:12:47 [14.1~14.3]：Admin A0-A2机翻补齐zh-CN/zh-TW（壳层
 汇总：侧栏品牌改为 Mobii 图 + 「Mobii / 竞价平台」分语系展示（en: Bidding；zh-CN: 竞价平台；zh-TW: 競價平台）；Logo 各语系共用。
 
 feat-26-11-04 01:41:10 [15.1~15.3]：大B侧栏换成Mobii logo与多语系平台名
+
+### 16. 小b B0+B1 — 默认 zh-CN，语系与页面内容同码
+
+- [x] 16.1 languages 迁移：新建/启用 `zh-CN` 并设为平台默认；销售渠道写入 `zh-CN` 为 defaultLanguage
+- [x] 16.2 默认渠道 reconciler / 店面 FALLBACK / `resolveLocale` 兜底改为 `zh-CN`；字典 CN 主语言关联
+- [x] 16.3 小b `messages.ts` 补齐 `zh-CN` 壳层文案（354 键）；缺内容仍回退 `en-US`
+- [x] 16.4 更新相关测试；composer:generate；本 §99
+
+汇总：小b 默认语系与内容语言码统一为 `zh-CN`（与大B一致）。无 cookie/Accept 时落到简体；CMS/商品等按同一 locale 读，缺 `zh-CN` 译稿时回退 `en-US`。本地需跑迁移后重启 backend/storefront。
+
+feat-26-11-04 18:25:42 [16.1~16.4]：小b默认zh-CN且语系与页面内容同码

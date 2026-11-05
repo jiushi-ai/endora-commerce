@@ -23,4 +23,7 @@ export const LANGUAGE_COUNTRY_SEED: readonly LanguageCountrySeedRow[] = [
   { languageCode: 'en-US', countryCode: 'CA', isPrimary: true },
   { languageCode: 'en-US', countryCode: 'AU', isPrimary: true },
   { languageCode: 'en-US', countryCode: 'NZ', isPrimary: true },
+
+  // zh-CN is primary for mainland China (storefront content language = Admin zh-CN).
+  { languageCode: 'zh-CN', countryCode: 'CN', isPrimary: true },
 ];

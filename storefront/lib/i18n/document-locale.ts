@@ -10,7 +10,7 @@
  * client render agree on {@link FALLBACK_LOCALE} and hydration matches; the
  * buyer's language replaces it on the next tick.
  */
-export const FALLBACK_LOCALE = 'en-US';
+export const FALLBACK_LOCALE = 'zh-CN';
 
 /** `<html lang>`, or the fallback with no document or an empty attribute. */
 export function documentLocale(): string {

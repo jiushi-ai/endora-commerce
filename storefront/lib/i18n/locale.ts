@@ -7,7 +7,7 @@ import type { I18nConfigResponse } from '@endora-commerce/contracts';
  *   1. explicit `?lang=` query parameter (a language switcher writes this).
  *   2. `Accept-Language` header — q-weighted; first active match wins.
  *   3. configured default from `i18n/config`.
- *   4. hard-coded `en-US` if the API call failed.
+ *   4. hard-coded `zh-CN` if the API call failed (Mobii storefront default).
  */
 export function resolveLocale(input: {
   acceptLanguage?: string | null;
@@ -15,7 +15,7 @@ export function resolveLocale(input: {
   config: I18nConfigResponse;
 }): string {
   const active = input.config.languages.filter((l) => l.isActive).map((l) => l.code);
-  const def = input.config.defaultLanguageCode ?? 'en-US';
+  const def = input.config.defaultLanguageCode ?? 'zh-CN';
 
   if (input.langQuery) {
     const exact = active.find((l) => l.toLowerCase() === input.langQuery!.toLowerCase());
@@ -72,6 +72,7 @@ export function resolveLocaleWithoutConfig(input: {
 export function pickLocalizedString(
   record: Record<string, string> | null | undefined,
   locale: string,
+  /** Missing locale copy falls back to en-US, then any remaining value. */
   defaultLocale = 'en-US',
 ): string {
   if (!record) return '';

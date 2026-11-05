@@ -220,8 +220,9 @@ describe('the retry target', () => {
 });
 
 describe('the language the outage answers in', () => {
-  it('ships both languages the catalogue carries', () => {
+  it('ships every language the catalogue carries', () => {
     expect(CATALOGUE_LOCALES).toContain('en-US');
+    expect(CATALOGUE_LOCALES).toContain('zh-CN');
     expect(CATALOGUE_LOCALES).toContain('pl-PL');
   });
 
@@ -230,14 +231,16 @@ describe('the language the outage answers in', () => {
       resolveLocaleWithoutConfig({
         acceptLanguage,
         available: CATALOGUE_LOCALES,
-        fallback: 'en-US',
+        fallback: 'zh-CN',
       });
     expect(pick('pl')).toBe('pl-PL');
     expect(pick('pl-PL')).toBe('pl-PL');
     expect(pick('pl-PL,pl;q=0.9,en-US;q=0.8')).toBe('pl-PL');
     expect(pick('en-GB,en;q=0.9')).toBe('en-US');
-    expect(pick('de-DE')).toBe('en-US');
-    expect(pick(null)).toBe('en-US');
+    expect(pick('zh')).toBe('zh-CN');
+    expect(pick('zh-CN')).toBe('zh-CN');
+    expect(pick('de-DE')).toBe('zh-CN');
+    expect(pick(null)).toBe('zh-CN');
   });
 
   it('answers even when the catalogue does not carry the fallback', () => {
@@ -324,8 +327,9 @@ describe('the notice itself', () => {
   it('renders with no request header at all', async () => {
     // The notice is directly addressable, and a request that reached it without
     // the gate carries neither the locale hint nor the retry target.
+    // FALLBACK_LOCALE is zh-CN for the Mobii storefront default.
     const html = await renderNotice({});
-    expect(html).toContain('The shop is temporarily unavailable.');
+    expect(html).toContain('商店暂时不可用。');
     expect(html).toContain('href="/"');
   });
 });

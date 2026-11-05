@@ -48,15 +48,14 @@ export interface DefaultChannelReconciliationResult {
 const DEFAULT_CODE_FALLBACK = 'default';
 /**
  * A code the languages dictionary holds on every instance: the `languages`
- * module's init migration seeds `en-US` (as the default language) and `pl-PL`,
+ * module seeds `zh-CN` as the default (with `en-US` / `pl-PL` still active),
  * and every channel write validates each listed code against that table. The
- * fallback was the bare `en` until 2026-10-03, which no dictionary row matched,
- * so a fresh shop's default channel was born unwritable — every PATCH of its
- * languages answered `409 DICTIONARY_ENTRY_NOT_FOUND`, because the unchanged
- * `en` is re-validated with the rest of the list. The `languages` module's
- * `…RepairDefaultChannelLanguage` migration rewrites the rows created before.
+ * fallback was the bare `en` until 2026-10-03, then `en-US`; Mobii storefront
+ * alignment moved the boot-time channel language to `zh-CN` so locale and
+ * page content share one code. The `languages` module's
+ * `…AddZhCnDefault` migration rewrites existing channels.
  */
-const DEFAULT_LANGUAGE_FALLBACK = 'en-US';
+const DEFAULT_LANGUAGE_FALLBACK = 'zh-CN';
 const DEFAULT_CURRENCY_FALLBACK = 'EUR';
 
 export interface DefaultChannelReconcilerOptions {

@@ -33,6 +33,7 @@ An operator switches this module on and off on **/platform/modules**. The choice
 | `delivery_methods` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
 | `orders` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
 | `transactional_emails` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
+| `bidding` | no | degrades-without `biddingFulfilmentGatePort` — Shipment create does not enforce the Mobii bidding checklist. |
 
 ## Permissions
 

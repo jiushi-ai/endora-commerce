@@ -17,7 +17,7 @@ Rendered from the module's own manifest, and from nothing written by hand. What 
 | --- | --- |
 | Module id | `bidding` |
 | Name | Bidding |
-| Version | `0.2.0` |
+| Version | `0.3.0` |
 | Ships from | `@endora-commerce/mod-bidding` |
 | Licence | `MIT` |
 
@@ -30,7 +30,14 @@ An operator switches this module on and off on **/platform/modules**. The choice
 | Module | Binding | What it means |
 | --- | --- | --- |
 | `admin_roles` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
+| `assets_library` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
 | `auth` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
+| `carts` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
+| `catalog` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
+| `customer_accounts` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
+| `orders` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
+| `organizations` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
+| `quick_order` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
 | `settings` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
 
 ## Permissions
