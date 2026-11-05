@@ -18,7 +18,8 @@ const HOME_KEYS: MessageKey[] = [
   'home.assortment.title',
   'home.benefit.shipTitle',
   'home.bestsellers.title',
-  'home.fallback.fasteners',
+  'home.fallback.memory',
+  'home.fallback.greenCompute',
 ];
 
 describe('storefrontLanguageOption (Admin-aligned)', () => {
@@ -61,6 +62,9 @@ describe('home.* shell catalogue', () => {
     expect(tForLocale('pl-PL')('home.hero.titleEm')).toBe('licytacja i zakupy');
     expect(tForLocale('zh-CN')('home.hero.ctaBidding')).toBe('参与竞价');
     expect(tForLocale('en-US')('home.path.biddingTitle')).toBe('Scarce-lot bidding');
+    expect(tForLocale('zh-CN')('home.fallback.memory')).toBe('内存');
+    expect(tForLocale('zh-CN')('home.fallback.greenCompute')).toBe('绿色算力硬件');
+    expect(tForLocale('zh-TW')('home.fallback.miniDevices')).toBe('小型 mini 設備');
   });
 
   it('wires page.tsx shell to messages (not hard-coded Industria Polish)', () => {
@@ -74,5 +78,8 @@ describe('home.* shell catalogue', () => {
     expect(src).toContain('/login?next=');
     expect(src).toContain('/account/bidding');
     expect(src).not.toContain('SKU 6205-2RS');
+    expect(src).toContain('home.fallback.memory');
+    expect(src).not.toContain('home.fallback.screws');
+    expect(src).not.toContain('home.fallback.bolts');
   });
 });

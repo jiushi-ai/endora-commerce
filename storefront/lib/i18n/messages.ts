@@ -517,12 +517,12 @@ export type MessageKey =
   | 'home.bestsellers.title'
   | 'home.bestsellers.body'
   | 'home.bestsellers.seeAll'
-  | 'home.fallback.fasteners'
-  | 'home.fallback.tools'
-  | 'home.fallback.electronics'
-  | 'home.fallback.safety'
-  | 'home.fallback.screws'
-  | 'home.fallback.bolts'
+  | 'home.fallback.memory'
+  | 'home.fallback.miniDevices'
+  | 'home.fallback.components'
+  | 'home.fallback.greenCompute'
+  | 'home.fallback.serverParts'
+  | 'home.fallback.coolingPower'
   | 'chrome.close'
   | 'chrome.categories'
   | 'chrome.seeAll'
@@ -1420,12 +1420,12 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.bestsellers.title': 'Ready for routine orders',
     'home.bestsellers.body': 'On-stock lines for maintenance and production replenishment.',
     'home.bestsellers.seeAll': 'All products',
-    'home.fallback.fasteners': 'Fasteners',
-    'home.fallback.tools': 'Tools',
-    'home.fallback.electronics': 'Electronics',
-    'home.fallback.safety': 'Safety',
-    'home.fallback.screws': 'Screws',
-    'home.fallback.bolts': 'Bolts',
+    'home.fallback.memory': 'Memory',
+    'home.fallback.miniDevices': 'Mini devices',
+    'home.fallback.components': 'Electronic components',
+    'home.fallback.greenCompute': 'Green compute hardware',
+    'home.fallback.serverParts': 'Server parts',
+    'home.fallback.coolingPower': 'Cooling & power',
 },
   'zh-CN': {
     'a11y.skipToContent': '跳到主要内容',
@@ -2075,12 +2075,12 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.bestsellers.title': '适合常规下单',
     'home.bestsellers.body': '现货行，服务维保与产线补货。',
     'home.bestsellers.seeAll': '全部商品',
-    'home.fallback.fasteners': '紧固件',
-    'home.fallback.tools': '工具',
-    'home.fallback.electronics': '电子',
-    'home.fallback.safety': '安全防护',
-    'home.fallback.screws': '螺钉',
-    'home.fallback.bolts': '螺栓',
+    'home.fallback.memory': '内存',
+    'home.fallback.miniDevices': '小型 mini 设备',
+    'home.fallback.components': '电子元器件',
+    'home.fallback.greenCompute': '绿色算力硬件',
+    'home.fallback.serverParts': '服务器配件',
+    'home.fallback.coolingPower': '散热与电源',
 },
 
   'zh-TW': {
@@ -2731,12 +2731,12 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.bestsellers.title': '適合常規下單',
     'home.bestsellers.body': '現貨行，服務維保與產線補貨。',
     'home.bestsellers.seeAll': '全部商品',
-    'home.fallback.fasteners': '緊固件',
-    'home.fallback.tools': '工具',
-    'home.fallback.electronics': '電子',
-    'home.fallback.safety': '安全防護',
-    'home.fallback.screws': '螺釘',
-    'home.fallback.bolts': '螺栓',
+    'home.fallback.memory': '記憶體',
+    'home.fallback.miniDevices': '小型 mini 設備',
+    'home.fallback.components': '電子元器件',
+    'home.fallback.greenCompute': '綠色算力硬體',
+    'home.fallback.serverParts': '伺服器配件',
+    'home.fallback.coolingPower': '散熱與電源',
 },
 
   'pl-PL': {
@@ -3429,12 +3429,12 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.bestsellers.title': 'Gotowe do rutynowych zamówień',
     'home.bestsellers.body': 'Pozycje na stanie do utrzymania ruchu i uzupełnień produkcji.',
     'home.bestsellers.seeAll': 'Wszystkie produkty',
-    'home.fallback.fasteners': 'Łączniki',
-    'home.fallback.tools': 'Narzędzia',
-    'home.fallback.electronics': 'Elektronika',
-    'home.fallback.safety': 'BHP',
-    'home.fallback.screws': 'Wkręty',
-    'home.fallback.bolts': 'Śruby',
+    'home.fallback.memory': 'Pamięć',
+    'home.fallback.miniDevices': 'Urządzenia mini',
+    'home.fallback.components': 'Podzespoły elektroniczne',
+    'home.fallback.greenCompute': 'Zielony sprzęt compute',
+    'home.fallback.serverParts': 'Części serwerowe',
+    'home.fallback.coolingPower': 'Chłodzenie i zasilanie',
 },
 };
 

@@ -501,76 +501,96 @@ const FALLBACK_CATEGORY_DEFS: ReadonlyArray<{
   nameKey: MessageKey;
   count: number;
 }> = [
-  { slug: 'fasteners', nameKey: 'home.fallback.fasteners', count: 4218 },
-  { slug: 'tools', nameKey: 'home.fallback.tools', count: 2851 },
-  { slug: 'electronics', nameKey: 'home.fallback.electronics', count: 6104 },
-  { slug: 'safety', nameKey: 'home.fallback.safety', count: 5293 },
-  { slug: 'screws', nameKey: 'home.fallback.screws', count: 3162 },
-  { slug: 'bolts', nameKey: 'home.fallback.bolts', count: 1947 },
+  { slug: 'memory', nameKey: 'home.fallback.memory', count: 1860 },
+  { slug: 'mini-devices', nameKey: 'home.fallback.miniDevices', count: 942 },
+  { slug: 'electronic-components', nameKey: 'home.fallback.components', count: 6240 },
+  { slug: 'green-compute', nameKey: 'home.fallback.greenCompute', count: 1180 },
+  { slug: 'server-parts', nameKey: 'home.fallback.serverParts', count: 2540 },
+  { slug: 'cooling-power', nameKey: 'home.fallback.coolingPower', count: 1675 },
 ];
 
-const GLYPH_KEYS = ['bearing', 'gear', 'plc', 'spark', 'valve', 'wrench'] as const;
+const GLYPH_KEYS = [
+  'memory',
+  'mini',
+  'components',
+  'green',
+  'server',
+  'cooling',
+] as const;
 
-/* Inline SVG product glyphs — neutral line art consistent with the
- * Industria design language. Used as category iconography on the home
- * page, the product card placeholder, and the gallery placeholder. */
+/* Inline SVG glyphs for compute-supply fallback categories on the home page. */
 const STROKE = '#a8aeb8';
 
 const GLYPHS: Record<string, ReactNode> = {
-  bearing: (
+  memory: (
     <svg viewBox="0 0 100 100" fill="none" stroke={STROKE} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="50" cy="50" r="42" />
-      <circle cx="50" cy="50" r="32" />
-      <circle cx="50" cy="50" r="22" />
-      <circle cx="50" cy="50" r="12" />
+      <rect x="18" y="30" width="64" height="40" rx="3" />
+      {[28, 40, 52, 64, 76].map((x) => (
+        <line key={x} x1={x} y1="30" x2={x} y2="22" />
+      ))}
+      <rect x="28" y="42" width="14" height="16" rx="1" />
+      <rect x="48" y="42" width="14" height="16" rx="1" />
+      <rect x="68" y="42" width="8" height="16" rx="1" />
     </svg>
   ),
-  gear: (
+  mini: (
     <svg viewBox="0 0 100 100" fill="none" stroke={STROKE} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="50" cy="50" r="22" />
-      <circle cx="50" cy="50" r="10" />
-      {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((a) => {
+      <rect x="28" y="34" width="44" height="32" rx="4" />
+      <circle cx="50" cy="50" r="6" />
+      <line x1="36" y1="70" x2="36" y2="78" />
+      <line x1="64" y1="70" x2="64" y2="78" />
+      <line x1="32" y1="78" x2="68" y2="78" />
+    </svg>
+  ),
+  components: (
+    <svg viewBox="0 0 100 100" fill="none" stroke={STROKE} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="30" y="30" width="40" height="40" rx="3" />
+      <rect x="40" y="40" width="20" height="20" rx="1" />
+      {[38, 50, 62].map((y) => (
+        <line key={`l-${y}`} x1="18" y1={y} x2="30" y2={y} />
+      ))}
+      {[38, 50, 62].map((y) => (
+        <line key={`r-${y}`} x1="70" y1={y} x2="82" y2={y} />
+      ))}
+    </svg>
+  ),
+  green: (
+    <svg viewBox="0 0 100 100" fill="none" stroke={STROKE} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M50 78 V42" />
+      <path d="M50 58 C50 42 66 34 78 30 C74 48 62 56 50 58 Z" />
+      <path d="M50 52 C50 40 36 34 22 32 C26 48 38 54 50 52 Z" />
+      <rect x="42" y="70" width="16" height="10" rx="1" />
+    </svg>
+  ),
+  server: (
+    <svg viewBox="0 0 100 100" fill="none" stroke={STROKE} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="22" y="20" width="56" height="18" rx="2" />
+      <rect x="22" y="42" width="56" height="18" rx="2" />
+      <rect x="22" y="64" width="56" height="18" rx="2" />
+      {[29, 51, 73].map((y) => (
+        <circle key={y} cx="32" cy={y} r="2.5" />
+      ))}
+      {[29, 51, 73].map((y) => (
+        <line key={`bar-${y}`} x1="42" y1={y} x2="68" y2={y} />
+      ))}
+    </svg>
+  ),
+  cooling: (
+    <svg viewBox="0 0 100 100" fill="none" stroke={STROKE} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="50" cy="50" r="28" />
+      <circle cx="50" cy="50" r="6" />
+      {[0, 60, 120, 180, 240, 300].map((a) => {
         const rad = (a * Math.PI) / 180;
         return (
           <line
             key={a}
-            x1={50 + 22 * Math.cos(rad)}
-            y1={50 + 22 * Math.sin(rad)}
-            x2={50 + 32 * Math.cos(rad)}
-            y2={50 + 32 * Math.sin(rad)}
+            x1={50 + 8 * Math.cos(rad)}
+            y1={50 + 8 * Math.sin(rad)}
+            x2={50 + 24 * Math.cos(rad)}
+            y2={50 + 24 * Math.sin(rad)}
           />
         );
       })}
-    </svg>
-  ),
-  plc: (
-    <svg viewBox="0 0 100 100" fill="none" stroke={STROKE} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
-      <rect x="22" y="18" width="56" height="64" rx="3" />
-      <rect x="28" y="26" width="44" height="14" />
-      {[32, 40, 48, 56, 64].map((x) => (
-        <circle key={x} cx={x} cy="48" r="2" />
-      ))}
-      <rect x="28" y="56" width="44" height="20" />
-    </svg>
-  ),
-  spark: (
-    <svg viewBox="0 0 100 100" fill="none" stroke={STROKE} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="56 14 30 56 50 56 44 86 70 44 50 44 56 14" />
-    </svg>
-  ),
-  valve: (
-    <svg viewBox="0 0 100 100" fill="none" stroke={STROKE} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
-      <line x1="14" y1="50" x2="38" y2="50" />
-      <line x1="62" y1="50" x2="86" y2="50" />
-      <polygon points="38 36 62 36 62 64 38 64" />
-      <line x1="50" y1="36" x2="50" y2="20" />
-      <circle cx="50" cy="16" r="6" />
-    </svg>
-  ),
-  wrench: (
-    <svg viewBox="0 0 100 100" fill="none" stroke={STROKE} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M70 14 a16 16 0 0 1 14 22 l-44 44 a8 8 0 0 1 -12 -12 l44 -44 a16 16 0 0 1 -2 -10 z" />
-      <circle cx="78" cy="22" r="3" />
     </svg>
   ),
 };
