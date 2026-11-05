@@ -12,6 +12,7 @@ import { Hook } from '../components/Hook';
 import { OrganizationJsonLd } from '../components/seo/OrganizationJsonLd';
 import { cmsSocialMetadata } from '../lib/seo/cms-share-metadata';
 import { cmsRenderLocation, type PageSearchParams } from '../lib/page-builder/render-location';
+import { tForLocale, type MessageKey } from '../lib/i18n/messages';
 import { seo } from './seo';
 
 /**
@@ -99,20 +100,27 @@ export default async function HomePage({
   // `resolvedPrice`, from the resolution that priced `price` (D-287 P0) — where
   // this page used to fan out one `resolved-price` request per card.
 
+  const t = tForLocale(locale);
+  const fallbackCategories = FALLBACK_CATEGORY_DEFS.map((c) => ({
+    slug: c.slug,
+    name: t(c.nameKey),
+    count: c.count,
+  }));
+
   const categoryTiles: CatTile[] = tree.length > 0
     ? tree.slice(0, 6).map((c) => ({
         href: `/c/${c.slug}`,
         name: c.name,
         count: c.productCount,
       }))
-    : FALLBACK_CATEGORIES.map((c) => ({
+    : fallbackCategories.map((c) => ({
         href: `/c/${c.slug}`,
         name: c.name,
         count: c.count,
       }));
 
   const mobileChips = [
-    { label: 'Wszystko', href: '/catalog', active: true },
+    { label: t('home.mobile.all'), href: '/catalog', active: true },
     ...categoryTiles.slice(0, 4).map((c) => ({ label: c.name, href: c.href })),
   ];
 
@@ -123,9 +131,9 @@ export default async function HomePage({
       {/* Feature 044 / US1 — mobile-only benefit strip + category chips. */}
       <HomeMobileStrip
         benefits={[
-          { icon: 'truck', label: 'Wysyłka dziś' },
-          { icon: 'wallet', label: 'Limit kredytowy' },
-          { icon: 'doc', label: 'Faktura VAT' },
+          { icon: 'truck', label: t('home.mobile.shipToday') },
+          { icon: 'wallet', label: t('home.mobile.creditLimit') },
+          { icon: 'doc', label: t('home.mobile.vatInvoice') },
         ]}
         chips={mobileChips}
       />
@@ -133,33 +141,33 @@ export default async function HomePage({
         <div className="mx-auto grid max-w-[1360px] grid-cols-[minmax(0,5fr)_minmax(0,4fr)] items-center gap-[56px] px-[24px] max-[920px]:grid-cols-1">
           <div>
             <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface-alt px-[10px] py-[6px] font-mono text-[11px] tracking-[0.04em] text-muted">
-              <span className="inline-block h-[6px] w-[6px] rounded-full bg-ok" /> 120 000+ SKU · 84
-              producentów · wysyłka dziś
+              <span className="inline-block h-[6px] w-[6px] rounded-full bg-ok" />{' '}
+              {t('home.hero.badge')}
             </span>
             <h1 className="text-[56px] leading-[1.04] tracking-[-0.03em] max-[720px]:text-[38px] [&_em]:not-italic [&_em]:text-accent">
-              Komponenty przemysłowe
+              {t('home.hero.titleLine1')}
               <br />
-              dostępne <em>od ręki</em>.
+              {t('home.hero.titleLine2Before')}
+              <em>{t('home.hero.titleEm')}</em>
+              {t('home.hero.titleLine2After')}
             </h1>
             <p className="mt-6 mb-8 max-w-[540px] text-[16px] leading-[1.6] text-muted">
-              Hurtownia B2B dla utrzymania ruchu, integratorów automatyki i działów produkcji.
-              Ceny netto, limit kredytowy, karty katalogowe, certyfikaty 3.1 — wszystko w jednym
-              miejscu.
+              {t('home.hero.body')}
             </p>
             <div className="mb-10 flex flex-wrap gap-3">
               <Link href="/catalog" className="btn btn--dark btn--lg">
-                Przeglądaj katalog <ArrowRightIcon />
+                {t('home.hero.browseCatalog')} <ArrowRightIcon />
               </Link>
               <Link href="/quick-order" className="btn btn--outline btn--lg">
-                <LightningIcon /> Quick Order z CSV
+                <LightningIcon /> {t('home.hero.quickOrderCsv')}
               </Link>
             </div>
             <div className="grid grid-cols-4 gap-[24px] max-[720px]:grid-cols-2">
               {[
-                ['120k+', 'Pozycji w magazynie'],
-                ['84', 'Producentów'],
-                ['14:00', 'Cut-off wysyłki'],
-                ['98,4%', 'Dostępność on-stock'],
+                ['120k+', t('home.stat.stock')],
+                ['84', t('home.stat.makers')],
+                ['14:00', t('home.stat.cutoff')],
+                ['98,4%', t('home.stat.availability')],
               ].map(([num, label]) => (
                 <div key={label}>
                   <div className="font-mono text-[22px] font-semibold tracking-[-0.02em] text-fg">
@@ -179,7 +187,7 @@ export default async function HomePage({
             </div>
             <div className="mt-[12px] mb-[16px] font-mono text-[56px] font-semibold leading-none tracking-[-0.03em]">
               <small className="mb-2 block text-[11px] font-medium uppercase tracking-[0.08em] text-[#a1a1aa]">
-                NOŚNOŚĆ DYNAMICZNA
+                {t('home.demo.dynamicLoad')}
               </small>
               14,0 kN
             </div>
@@ -195,9 +203,9 @@ export default async function HomePage({
             </div>
             <div className="grid grid-cols-3 gap-2">
               {[
-                [<DocIcon key="d" />, 'Karta katalogowa', 'PDF · 1,2 MB'],
-                [<ShieldIcon key="s" />, 'Certyfikat 3.1', 'EN 10204'],
-                [<LayersIcon key="l" />, 'Model 3D STEP', '2,8 MB'],
+                [<DocIcon key="d" />, t('home.demo.datasheet'), 'PDF · 1,2 MB'],
+                [<ShieldIcon key="s" />, t('home.demo.certificate'), 'EN 10204'],
+                [<LayersIcon key="l" />, t('home.demo.model3d'), '2,8 MB'],
               ].map(([icon, title, sub]) => (
                 <div
                   key={title as string}
@@ -220,15 +228,12 @@ export default async function HomePage({
       <section className="mx-auto max-w-[1360px] px-[24px] section">
         <div className="section__head">
           <div>
-            <span className="section__eyebrow">01 / Asortyment</span>
-            <h2>Sześć kluczowych działów</h2>
-            <p>
-              Drzewo kategorii odzwierciedla katalogi producentów — łatwo trafisz do tego, czego
-              szukasz.
-            </p>
+            <span className="section__eyebrow">{t('home.assortment.eyebrow')}</span>
+            <h2>{t('home.assortment.title')}</h2>
+            <p>{t('home.assortment.body')}</p>
           </div>
           <Link href="/catalog" className="btn btn--ghost">
-            Zobacz wszystkie <ArrowRightIcon />
+            {t('home.assortment.seeAll')} <ArrowRightIcon />
           </Link>
         </div>
         <div className="grid grid-cols-6 gap-[16px] max-[1100px]:grid-cols-3 max-[600px]:grid-cols-2">
@@ -245,7 +250,10 @@ export default async function HomePage({
                 </div>
                 <h3 className="m-0 mb-1 block text-[14px] font-semibold text-fg">{c.name}</h3>
                 <span className="font-mono text-[12px] text-muted">
-                  {c.count.toLocaleString('pl-PL')} produktów
+                  {t('home.assortment.products').replace(
+                    '{count}',
+                    c.count.toLocaleString(locale),
+                  )}
                 </span>
                 <span className="absolute right-[22px] top-[22px] text-line-strong">
                   <ArrowUpRightIcon />
@@ -263,8 +271,8 @@ export default async function HomePage({
               <TruckIcon size={20} />
             </div>
             <div>
-              <h4>Wysyłka tego samego dnia</h4>
-              <p>Cut-off 14:00. 98,4% pozycji on-stock w magazynie centralnym Warszawa-Okęcie.</p>
+              <h4>{t('home.benefit.shipTitle')}</h4>
+              <p>{t('home.benefit.shipBody')}</p>
             </div>
           </div>
           <div className="flex gap-[14px] rounded-lg border border-line bg-surface-alt p-[20px]">
@@ -272,8 +280,8 @@ export default async function HomePage({
               <WalletIcon size={20} />
             </div>
             <div>
-              <h4>Limit kredytowy</h4>
-              <p>Od 5 000 do 500 000 PLN. Faktura z odroczonym terminem 14/30/60 dni.</p>
+              <h4>{t('home.benefit.creditTitle')}</h4>
+              <p>{t('home.benefit.creditBody')}</p>
             </div>
           </div>
           <div className="flex gap-[14px] rounded-lg border border-line bg-surface-alt p-[20px]">
@@ -281,8 +289,8 @@ export default async function HomePage({
               <DocIcon size={20} />
             </div>
             <div>
-              <h4>Karty katalogowe i CAD</h4>
-              <p>Każdy produkt ma kartę PDF, model 3D STEP/DXF, deklarację RoHS.</p>
+              <h4>{t('home.benefit.docsTitle')}</h4>
+              <p>{t('home.benefit.docsBody')}</p>
             </div>
           </div>
           <div className="flex gap-[14px] rounded-lg border border-line bg-surface-alt p-[20px]">
@@ -290,8 +298,8 @@ export default async function HomePage({
               <SettingsIcon size={20} />
             </div>
             <div>
-              <h4>Integracja z ERP</h4>
-              <p>API REST, webhooki, eksport CSV/EDI. Quick Order dla 200+ pozycji.</p>
+              <h4>{t('home.benefit.erpTitle')}</h4>
+              <p>{t('home.benefit.erpBody')}</p>
             </div>
           </div>
         </div>
@@ -301,12 +309,12 @@ export default async function HomePage({
         <section className="mx-auto max-w-[1360px] px-[24px] section">
           <div className="section__head">
             <div>
-              <span className="section__eyebrow">02 / Bestsellery</span>
-              <h2>Najczęściej zamawiane w tym tygodniu</h2>
-              <p>Gotowe do wysyłki, sprawdzone w utrzymaniu ruchu.</p>
+              <span className="section__eyebrow">{t('home.bestsellers.eyebrow')}</span>
+              <h2>{t('home.bestsellers.title')}</h2>
+              <p>{t('home.bestsellers.body')}</p>
             </div>
             <Link href="/catalog" className="btn btn--ghost">
-              Cały bestseller <ArrowRightIcon />
+              {t('home.bestsellers.seeAll')} <ArrowRightIcon />
             </Link>
           </div>
           <ul className="m-0 grid list-none grid-cols-4 gap-[16px] p-0 max-[1100px]:grid-cols-2">
@@ -328,13 +336,17 @@ export default async function HomePage({
   );
 }
 
-const FALLBACK_CATEGORIES = [
-  { slug: 'fasteners', name: 'Łączniki', count: 4218 },
-  { slug: 'tools', name: 'Narzędzia', count: 2851 },
-  { slug: 'electronics', name: 'Elektronika', count: 6104 },
-  { slug: 'safety', name: 'BHP', count: 5293 },
-  { slug: 'screws', name: 'Wkręty', count: 3162 },
-  { slug: 'bolts', name: 'Śruby', count: 1947 },
+const FALLBACK_CATEGORY_DEFS: ReadonlyArray<{
+  slug: string;
+  nameKey: MessageKey;
+  count: number;
+}> = [
+  { slug: 'fasteners', nameKey: 'home.fallback.fasteners', count: 4218 },
+  { slug: 'tools', nameKey: 'home.fallback.tools', count: 2851 },
+  { slug: 'electronics', nameKey: 'home.fallback.electronics', count: 6104 },
+  { slug: 'safety', nameKey: 'home.fallback.safety', count: 5293 },
+  { slug: 'screws', nameKey: 'home.fallback.screws', count: 3162 },
+  { slug: 'bolts', nameKey: 'home.fallback.bolts', count: 1947 },
 ];
 
 const GLYPH_KEYS = ['bearing', 'gear', 'plc', 'spark', 'valve', 'wrench'] as const;

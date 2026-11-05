@@ -7,6 +7,8 @@ import { logoutCustomer } from '../../lib/api/auth';
 import { StorefrontApiError } from '../../lib/api/client';
 import { ImpersonationBanner } from '../../components/ImpersonationBanner';
 import { SignOutButton } from '../../components/account/SignOutButton';
+import { getServerContext } from '../../lib/server-context';
+import { tForLocale } from '../../lib/i18n/messages';
 
 /**
  * Authenticated route-group layout (T154 + T155). Loads `/me` once for the
@@ -21,6 +23,9 @@ export default async function AccountLayout({
 }): Promise<ReactNode> {
   const session = await getSessionCookie();
   if (!session) redirect('/login?next=/account');
+
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
 
   let me;
   try {
@@ -43,32 +48,28 @@ export default async function AccountLayout({
           />
         </div>
       ) : null}
-      <aside className="b2b-account__nav" aria-label="Account">
-        <strong>{me.customerAccount.firstName} {me.customerAccount.lastName}</strong>
+      <aside className="b2b-account__nav" aria-label={t('account.nav.aria')}>
+        <strong>
+          {me.customerAccount.firstName} {me.customerAccount.lastName}
+        </strong>
         {me.organization ? <span className="muted">{me.organization.name}</span> : null}
-        <Link href="/account">Profile</Link>
-        <Link href="/addresses">My addresses</Link>
-        <Link href="/account/password">Change password</Link>
-        {/*
-          Order placement, RFQ submission, shopping lists, and quick order all
-          require an Organization (the backend 422s for org-less callers), so
-          these features — and the Organization pages — are shown only to
-          org-bound customers (feature 040, FR-003).
-        */}
+        <Link href="/account">{t('account.nav.profile')}</Link>
+        <Link href="/addresses">{t('account.nav.addresses')}</Link>
+        <Link href="/account/password">{t('account.nav.password')}</Link>
         {me.organization ? (
           <>
-            <Link href="/orders">Orders</Link>
-            <Link href="/returns">Returns</Link>
-            <Link href="/quote-requests">Quote requests</Link>
-            <Link href="/account/bidding">Bidding</Link>
-            <Link href="/shopping-lists">Shopping lists</Link>
-            <Link href="/quick-order">Quick order</Link>
-            <Link href="/organization">Organization</Link>
-            <Link href="/organization/addresses">Org addresses</Link>
-            {isAdmin ? <Link href="/organization/members">Members</Link> : null}
+            <Link href="/orders">{t('account.nav.orders')}</Link>
+            <Link href="/returns">{t('account.nav.returns')}</Link>
+            <Link href="/quote-requests">{t('account.nav.quoteRequests')}</Link>
+            <Link href="/account/bidding">{t('account.nav.bidding')}</Link>
+            <Link href="/shopping-lists">{t('account.nav.shoppingLists')}</Link>
+            <Link href="/quick-order">{t('account.nav.quickOrder')}</Link>
+            <Link href="/organization">{t('account.nav.organization')}</Link>
+            <Link href="/organization/addresses">{t('account.nav.orgAddresses')}</Link>
+            {isAdmin ? <Link href="/organization/members">{t('account.nav.members')}</Link> : null}
           </>
         ) : null}
-        <SignOutButton signOut={logoutAction} />
+        <SignOutButton signOut={logoutAction} label={t('account.nav.signOut')} />
       </aside>
       <div className="b2b-account__panel">{children}</div>
     </section>

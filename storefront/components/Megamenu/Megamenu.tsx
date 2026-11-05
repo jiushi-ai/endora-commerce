@@ -5,6 +5,7 @@ import { MegamenuPanel } from './MegamenuPanel';
 
 interface MegamenuProps {
   megamenu: ResolvedMegamenu | null;
+  locale?: string;
 }
 
 /**
@@ -16,7 +17,7 @@ interface MegamenuProps {
  * scope), this component renders an empty `<nav>` so layouts can fall
  * back to a stripped-down header without breaking the document tree.
  */
-export function Megamenu({ megamenu }: MegamenuProps): ReactNode {
+export function Megamenu({ megamenu, locale = 'zh-CN' }: MegamenuProps): ReactNode {
   if (!megamenu) {
     return <nav aria-label="Primary navigation" data-state="empty" />;
   }
@@ -24,7 +25,7 @@ export function Megamenu({ megamenu }: MegamenuProps): ReactNode {
     <nav aria-label="Primary navigation" className="border-b border-border bg-white">
       <div className="mx-auto max-w-[1360px] px-[24px] mx-auto flex">
         {/* Mobile (≤ md): burger drawer with stacked drill-down. */}
-        <MegamenuMobileDrawer megamenu={megamenu} />
+        <MegamenuMobileDrawer megamenu={megamenu} locale={locale} />
         {/* Desktop (≥ md): top-level bar with hover-revealed panels. */}
         <ul className="hidden items-stretch md:flex">
           {megamenu.items.map((item) => (

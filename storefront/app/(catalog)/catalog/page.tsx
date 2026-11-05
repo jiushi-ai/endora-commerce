@@ -90,7 +90,12 @@ export default async function CatalogPage({ searchParams }: PageProps): Promise<
           <div className="industria-catalog__title">
             <div>
               <h1>{heading}</h1>
-              <p>{products.data.length.toLocaleString('pl-PL')} produktów</p>
+              <p>
+                {t('catalog.count').replace(
+                  '{count}',
+                  products.data.length.toLocaleString(locale),
+                )}
+              </p>
             </div>
           </div>
           <CatalogToolbar

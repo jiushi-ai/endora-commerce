@@ -7,6 +7,7 @@ import {
   getMyComparison,
   removeProductFromCompare,
 } from '../lib/api/comparisons';
+import { tForLocale } from '../lib/i18n/messages';
 
 /**
  * `<CompareToggle>` — feature 007 / T030.
@@ -24,6 +25,8 @@ export function CompareToggle(props: {
   productId: string;
   /** The active sales channel, sent on the browser-side calls. Supplied by the layout. */
   salesChannelCode: string | undefined;
+  /** Page locale for button labels. */
+  locale?: string;
   /**
    * `'card'` (default) floats a compact icon button over a product-card media
    * block (absolutely positioned). `'inline'` renders a labelled button that
@@ -35,6 +38,7 @@ export function CompareToggle(props: {
   const [active, setActive] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = tForLocale(props.locale ?? 'zh-CN');
 
   useEffect(() => {
     let cancelled = false;
@@ -79,7 +83,7 @@ export function CompareToggle(props: {
     }
   };
 
-  const compareLabel = active ? 'Usuń z porównania' : 'Dodaj do porównania';
+  const compareLabel = active ? t('compare.remove') : t('compare.add');
 
   if (props.variant === 'inline') {
     return (

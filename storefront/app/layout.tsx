@@ -333,6 +333,7 @@ export default async function RootLayout({
               still needs the legal/support links). */}
           <Hook code="footer.before" />
           <Footer
+            locale={locale}
             top={<Hook code="footer.top" />}
             bottom={<Hook code="footer.bottom" />}
             copyright={<Hook code="footer.copyright" />}

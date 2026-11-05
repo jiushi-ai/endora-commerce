@@ -296,7 +296,7 @@ export default async function ProductPage({
 
       <article className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-[24px] max-[720px]:grid-cols-1">
         {product.gallery && product.gallery.length > 0 ? (
-          <GallerySwitcher gallery={product.gallery} alt={product.name} />
+          <GallerySwitcher gallery={product.gallery} alt={product.name} locale={locale} />
         ) : (
           <ProductGallery
             assets={product.assets}
@@ -415,14 +415,23 @@ export default async function ProductPage({
                           apiBase={PDP_API_BASE}
                           productId={product.id}
                           {...(selectedVariantId ? { variantId: selectedVariantId } : {})}
-                          label="Dodaj do listy zakupowej"
-                          removeLabel="Usuń z listy zakupowej"
+                          label={t('card.list.add')}
+                          removeLabel={t('card.list.remove')}
+                          failedLabel={t('card.list.failed')}
+                          addedToLabel={t('card.list.addedTo')}
                           showLabel
                           className="btn btn--outline h-[40px] w-full justify-center md:w-auto"
                         />
                       }
                       // Secondary actions row, alongside the shopping-list + quote.
-                      compareAction={<CompareToggle productId={product.id} variant="inline" salesChannelCode={ctx.salesChannelCode} />}
+                      compareAction={
+                        <CompareToggle
+                          productId={product.id}
+                          variant="inline"
+                          salesChannelCode={ctx.salesChannelCode}
+                          locale={locale}
+                        />
+                      }
                     />
                   ) : (
                     // No buy-actions row (no price and RFQ-on-PDP off): still
@@ -431,8 +440,10 @@ export default async function ProductPage({
                       apiBase={PDP_API_BASE}
                       productId={product.id}
                       {...(selectedVariantId ? { variantId: selectedVariantId } : {})}
-                      label="Dodaj do listy zakupowej"
-                      removeLabel="Usuń z listy zakupowej"
+                      label={t('card.list.add')}
+                      removeLabel={t('card.list.remove')}
+                      failedLabel={t('card.list.failed')}
+                      addedToLabel={t('card.list.addedTo')}
                     />
                   )}
                   {oneClickEnabled && price ? (
@@ -463,7 +474,12 @@ export default async function ProductPage({
           </div>
           {!buyActionsRendered ? (
             <div className="mt-3">
-              <CompareToggle productId={product.id} variant="inline" salesChannelCode={ctx.salesChannelCode} />
+              <CompareToggle
+                productId={product.id}
+                variant="inline"
+                salesChannelCode={ctx.salesChannelCode}
+                locale={locale}
+              />
             </div>
           ) : null}
           <Hook code="product.buttons.after" />

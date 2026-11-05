@@ -633,3 +633,34 @@ feat-26-11-04 01:41:10 [15.1~15.3]：大B侧栏换成Mobii logo与多语系平�
 汇总：小b 默认语系与内容语言码统一为 `zh-CN`（与大B一致）。无 cookie/Accept 时落到简体；CMS/商品等按同一 locale 读，缺 `zh-CN` 译稿时回退 `en-US`。本地需跑迁移后重启 backend/storefront。
 
 feat-26-11-04 18:25:42 [16.1~16.4]：小b默认zh-CN且语系与页面内容同码
+
+### 17. 小b 壳层跟随语系 + zh-TW 下拉对标大B
+
+- [x] 17.1 启用 `zh-TW`；下拉展示对标大B（英语 / 简体中文 / 繁体中文）
+- [x] 17.2 Header/顶栏/分类 Mega/账户侧栏/Footer 硬编码 → `messages`（en/zh-CN/zh-TW/pl）
+- [x] 17.3 迁移落地、相关测试、本 §99（CMS 首页英雄区波兰内容另批）
+
+汇总：小b 语言开关补繁体；选项文案对齐大B。原先写死波兰/英文的壳层随 locale 切换。CMS 营销块仍可能是 PL，下批处理。
+
+feat-26-11-04 19:35:00 [17.1~17.3]：小b壳层i18n与zh-TW下拉对标大B
+
+### 18. 小b 语言下拉对标大B + 首页壳层 i18n
+
+- [x] 18.1 语言下拉：旗帜 + EN/ZH-CN/ZH-TW + 中文名（`LocaleSwitcher` / `language-labels`）
+- [x] 18.2 首页 `page.tsx` Industria 硬编码（英雄区/分区）→ `messages` `home.*`（en/zh-CN/zh-TW/pl）
+- [x] 18.3 抽检测试 `test/i18n/home-locale.test.ts`；本 §99
+
+汇总：小b 下拉视觉对齐大B LanguagePicker；图3红框范围内的代码硬编码波兰文全部改随语系壳层 i18n。真 CMS 首页营销块仍走 CMS 译稿，不在本批。需重启 storefront 后验证。
+
+feat-26-11-04 22:56:11 [18.1~18.3]：小b下拉对标大B且首页壳层随语系
+
+### 19. PDP/Catalog 蓝框壳层 i18n + 语系下拉样式
+
+- [x] 19.1 PDP：放大 / 购物清单 / 对比 → `messages`（`gallery.zoom`、`card.list.*`、`compare.add/remove`）
+- [x] 19.2 Catalog：计数 / 排序 / 每页 / `od·brutto` → `messages`；`ProductCard`/`ProductRow`/`CatalogToolbar`
+- [x] 19.3 小b语系下拉：去掉选项黑边框，选中/悬停灰底对齐大B
+- [x] 19.4 抽检测试；本 §99
+
+汇总：图1/图2蓝框硬编码波兰文改为随 locale；语系菜单 CSS 对齐图5（无项边框 + 选中灰底）。需硬刷新/重启 storefront 验证。
+
+feat-26-11-04 23:20:54 [19.1~19.4]：PDP与Catalog壳层i18n及语系下拉样式对齐

@@ -76,25 +76,33 @@ export function Header(props: {
             </span>
             <span className="industria-topbar__sep" aria-hidden="true" />
             <span className="industria-topbar__item">
-              <TruckIcon /> Wysyłka dziś, jeśli zamówisz do 14:00
+              <TruckIcon /> {t('chrome.shippingCutoff')}
             </span>
             <span className="industria-topbar__sep" aria-hidden="true" />
             <span className="industria-topbar__item">
-              <DocIcon /> Faktura VAT
+              <DocIcon /> {t('chrome.vatInvoice')}
             </span>
           </div>
           <div className="industria-topbar__right">
             <span className="industria-topbar__chip">
               <strong>NIP</strong> 7251234567
             </span>
-            <CurrencySwitcher currency={props.currency} />
+            <CurrencySwitcher currency={props.currency} locale={props.locale} />
             <span className="industria-topbar__sep" aria-hidden="true" />
             <a href="/help" className="industria-topbar__item">
-              <HelpIcon /> Wsparcie B2B
+              <HelpIcon /> {t('chrome.b2bSupport')}
             </a>
-            {props.config.languages.length > 1 ? (
-              <LocaleSwitcher locale={props.locale} />
-            ) : null}
+            {(() => {
+              // Align with Admin UI languages (en / zh-CN / zh-TW); keep pl-PL
+              // available as content locale elsewhere but out of this switcher.
+              const preferred = new Set(['en-US', 'zh-CN', 'zh-TW']);
+              const languageCodes = props.config.languages
+                .filter((l) => l.isActive && preferred.has(l.code))
+                .map((l) => l.code);
+              return languageCodes.length > 1 ? (
+                <LocaleSwitcher locale={props.locale} languageCodes={languageCodes} />
+              ) : null;
+            })()}
           </div>
         </div>
       </div>
@@ -105,7 +113,7 @@ export function Header(props: {
             <span className="industria-header__mark">IN</span>
             <span className="industria-header__brand__name">
               Industria
-              <small>B2B · Komponenty przemysłowe</small>
+              <small>{t('chrome.brandTagline')}</small>
             </span>
           </Link>
           <form
@@ -135,22 +143,22 @@ export function Header(props: {
             <ShoppingListHeartBadge
               apiBase={apiBaseUrl}
               loggedIn={Boolean(props.user)}
-              ariaLabel="Lista zakupowa"
+              ariaLabel={t('chrome.shoppingList')}
             />
             <RfqDraftBadge
-              ariaLabel="Zapytanie ofertowe"
-              itemsAriaLabelTemplate="Zapytanie ofertowe · {count} pozycji"
+              ariaLabel={t('chrome.rfq')}
+              itemsAriaLabelTemplate={t('chrome.rfqCount')}
             />
             <CompareCounterLink
               href="/compare"
-              ariaLabel="Porównaj produkty"
+              ariaLabel={t('chrome.compare')}
               icon={<CompareIcon />}
               salesChannelCode={props.salesChannelCode}
             />
             <CartCounterBadge
               initialCount={props.cartItemCount ?? 0}
-              emptyAriaLabel="Koszyk"
-              itemsAriaLabelTemplate="Koszyk · {count} pozycji"
+              emptyAriaLabel={t('chrome.cart')}
+              itemsAriaLabelTemplate={t('chrome.cartCount')}
             />
             <UserPill user={props.user ?? null} loginLabel={t('nav.login')} />
           </div>
@@ -165,7 +173,11 @@ export function Header(props: {
         <div className="min-[877px]:hidden">
           <div className="flex h-[56px] items-center gap-[6px] px-[16px]">
             {props.megamenu ? (
-              <MegamenuMobileDrawer megamenu={props.megamenu} account={drawerAccount} />
+              <MegamenuMobileDrawer
+                megamenu={props.megamenu}
+                locale={props.locale}
+                account={drawerAccount}
+              />
             ) : (
               <Link href="/catalog" className="icon-btn" aria-label={t('nav.catalog')}>
                 <MenuIcon />
@@ -176,20 +188,20 @@ export function Header(props: {
               <span className="flex flex-col leading-none">
                 <span className="text-[15px] font-bold text-fg">Industria</span>
                 <small className="mt-[2px] text-[9px] font-medium uppercase tracking-[0.12em] text-subtle">
-                  Komponenty B2B
+                  {t('chrome.brandTaglineShort')}
                 </small>
               </span>
             </Link>
             <CompareCounterLink
               href="/compare"
-              ariaLabel="Porównaj produkty"
+              ariaLabel={t('chrome.compare')}
               icon={<CompareIcon />}
               salesChannelCode={props.salesChannelCode}
             />
             <CartCounterBadge
               initialCount={props.cartItemCount ?? 0}
-              emptyAriaLabel="Koszyk"
-              itemsAriaLabelTemplate="Koszyk · {count} pozycji"
+              emptyAriaLabel={t('chrome.cart')}
+              itemsAriaLabelTemplate={t('chrome.cartCount')}
             />
           </div>
           <div className="px-[16px] pb-[10px]">
@@ -210,13 +222,13 @@ export function Header(props: {
           {/* Data-driven "Wszystkie kategorie" trigger + mega panel
               (seeded "Main navigation"). Replaces the old static link and
               the hardcoded per-category links. */}
-          <CategoriesMega megamenu={props.megamenu ?? null} />
+          <CategoriesMega megamenu={props.megamenu ?? null} locale={props.locale} />
           <div className="industria-nav__right">
             <Link
               href="/quick-order"
               className="industria-nav__btn industria-nav__btn--primary"
             >
-              <LightningIcon /> Quick Order
+              <LightningIcon /> {t('nav.quickOrder')}
             </Link>
           </div>
         </div>

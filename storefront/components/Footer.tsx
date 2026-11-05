@@ -1,33 +1,18 @@
 import type { ReactNode } from 'react';
+import { tForLocale } from '../lib/i18n/messages';
 
 /**
  * Industria-themed footer. Five-column dark layout with brand panel,
  * shop, account, support, and a newsletter sign-up.
- *
- * Migrated to Tailwind utilities (feature 041). The footer is dark in both themes,
- * so colours use arbitrary hex/opacity values; only the surface bg flips under the
- * `.is-dark` scope via the `dark:` variant.
  */
+
 const COL_HEADING =
   'mb-[14px] font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-[#fafafa]';
 const COL_LINK = 'block py-[5px] text-[13px] text-[#a1a1aa] hover:text-white';
 
-/**
- * Where the "Built with … Endora Commerce" credit points. The UTM parameters
- * are what lets the product site's analytics tell a click on this footer link
- * from any other referral: `utm_content=footer` names the placement, and the
- * other three name the kind of visit.
- */
 export const BUILT_WITH_URL =
   'https://commerce.endora.software/?utm_source=storefront&utm_medium=referral&utm_campaign=built-with&utm_content=footer';
 
-/**
- * The Endora Commerce mark on its white tile — the artwork of
- * `docs/static/img/logo.svg`, inlined so the footer costs no request for it.
- * The tile is part of the artwork: the footer is dark in both themes, and the
- * mark's purple needs a light ground. Decorative here, since the product name
- * is written beside it.
- */
 function EndoraCommerceMark(props: { className?: string }): ReactNode {
   return (
     <svg
@@ -51,20 +36,23 @@ function EndoraCommerceMark(props: { className?: string }): ReactNode {
 }
 
 export function Footer(props: {
+  locale: string;
   cmsLinks?: Array<{ path: string; title: string }>;
   top?: ReactNode;
   bottom?: ReactNode;
   copyright?: ReactNode;
 }): ReactNode {
-  const supportLinks = props.cmsLinks && props.cmsLinks.length > 0
-    ? props.cmsLinks
-    : [
-        { path: 'kontakt', title: 'Kontakt' },
-        { path: 'reklamacje', title: 'Reklamacje i zwroty' },
-        { path: 'dostawa', title: 'Dostawa i płatności' },
-        { path: 'certyfikaty', title: 'Certyfikaty i zgodność' },
-        { path: 'pomoc', title: 'Centrum pomocy' },
-      ];
+  const t = tForLocale(props.locale);
+  const supportLinks =
+    props.cmsLinks && props.cmsLinks.length > 0
+      ? props.cmsLinks
+      : [
+          { path: 'kontakt', title: t('footer.contact') },
+          { path: 'reklamacje', title: t('footer.complaints') },
+          { path: 'dostawa', title: t('footer.delivery') },
+          { path: 'certyfikaty', title: t('footer.certificates') },
+          { path: 'pomoc', title: t('footer.helpCenter') },
+        ];
 
   return (
     <footer className="mt-[64px] bg-[#18181b] pt-[56px] pb-[28px] text-[#d4d4d8] dark:bg-[#050507]">
@@ -76,35 +64,55 @@ export function Footer(props: {
               <span className="industria-header__mark bg-white text-[var(--ink-900)]">IN</span>
               <strong className="text-[16px] text-white">Industria</strong>
             </div>
-            <p className="mt-[14px] max-w-[280px] leading-[1.5] text-[#a1a1aa]">
-              Hurtownia B2B komponentów przemysłowych. Łożyska, napędy, automatyka, elektryka,
-              pneumatyka i narzędzia. Wysyłka tego samego dnia, faktura z odroczonym terminem
-              płatności i pełna dokumentacja techniczna.
-            </p>
+            <p className="mt-[14px] max-w-[280px] leading-[1.5] text-[#a1a1aa]">{t('footer.blurb')}</p>
           </div>
 
           <div>
-            <h5 className={COL_HEADING}>Sklep</h5>
-            <a className={COL_LINK} href="/catalog">Katalog</a>
-            <a className={COL_LINK} href="/c/fasteners">Łączniki</a>
-            <a className={COL_LINK} href="/c/tools">Narzędzia</a>
-            <a className={COL_LINK} href="/c/electronics">Elektronika</a>
-            <a className={COL_LINK} href="/c/safety">BHP</a>
-            <a className={COL_LINK} href="/quick-order">Quick Order</a>
+            <h5 className={COL_HEADING}>{t('footer.shop')}</h5>
+            <a className={COL_LINK} href="/catalog">
+              {t('footer.catalog')}
+            </a>
+            <a className={COL_LINK} href="/c/fasteners">
+              {t('footer.fasteners')}
+            </a>
+            <a className={COL_LINK} href="/c/tools">
+              {t('footer.tools')}
+            </a>
+            <a className={COL_LINK} href="/c/electronics">
+              {t('footer.electronics')}
+            </a>
+            <a className={COL_LINK} href="/c/safety">
+              {t('footer.safety')}
+            </a>
+            <a className={COL_LINK} href="/quick-order">
+              {t('nav.quickOrder')}
+            </a>
           </div>
 
           <div>
-            <h5 className={COL_HEADING}>Konto B2B</h5>
-            <a className={COL_LINK} href="/account">Moje konto</a>
-            <a className={COL_LINK} href="/orders">Zamówienia</a>
-            <a className={COL_LINK} href="/invoices">Faktury</a>
-            <a className={COL_LINK} href="/quote-requests">RFQ — zapytania ofertowe</a>
-            <a className={COL_LINK} href="/shopping-lists">Listy zakupowe</a>
-            <a className={COL_LINK} href="/credit-limit">Limit kredytowy</a>
+            <h5 className={COL_HEADING}>{t('footer.account')}</h5>
+            <a className={COL_LINK} href="/account">
+              {t('footer.myAccount')}
+            </a>
+            <a className={COL_LINK} href="/orders">
+              {t('footer.orders')}
+            </a>
+            <a className={COL_LINK} href="/invoices">
+              {t('footer.invoices')}
+            </a>
+            <a className={COL_LINK} href="/quote-requests">
+              {t('footer.rfq')}
+            </a>
+            <a className={COL_LINK} href="/shopping-lists">
+              {t('footer.shoppingLists')}
+            </a>
+            <a className={COL_LINK} href="/credit-limit">
+              {t('footer.creditLimit')}
+            </a>
           </div>
 
           <div>
-            <h5 className={COL_HEADING}>Wsparcie</h5>
+            <h5 className={COL_HEADING}>{t('footer.support')}</h5>
             {supportLinks.map((l) => (
               <a key={l.path} className={COL_LINK} href={`/${l.path}`}>
                 {l.title}
@@ -113,20 +121,18 @@ export function Footer(props: {
           </div>
 
           <div>
-            <h5 className={COL_HEADING}>Newsletter techniczny</h5>
-            <p className="mb-3 text-[12px] text-[#a1a1aa]">
-              Nowości katalogowe, promocje cenowe i raporty dostępności.
-            </p>
+            <h5 className={COL_HEADING}>{t('footer.newsletter')}</h5>
+            <p className="mb-3 text-[12px] text-[#a1a1aa]">{t('footer.newsletterHint')}</p>
             <form action="/newsletter" method="POST">
               <input
                 className="mb-2 w-full rounded-md border border-white/12 bg-white/4 px-2.5 py-2 text-[13px] text-white placeholder:text-[#71717a]"
                 type="email"
                 name="email"
-                placeholder="adres@firma.pl"
+                placeholder={t('footer.newsletterPlaceholder')}
                 required
               />
               <button type="submit" className="btn btn--primary btn--block btn--sm">
-                Zapisz się
+                {t('footer.newsletterSubmit')}
               </button>
             </form>
           </div>
@@ -140,11 +146,15 @@ export function Footer(props: {
           </span>
           {props.copyright}
           <span className="inline-flex gap-4">
-            <a className="text-[#a1a1aa] hover:text-white" href="/regulamin">Regulamin</a>
-            <a className="text-[#a1a1aa] hover:text-white" href="/polityka-prywatnosci">
-              Polityka prywatności
+            <a className="text-[#a1a1aa] hover:text-white" href="/regulamin">
+              {t('footer.terms')}
             </a>
-            <a className="text-[#a1a1aa] hover:text-white" href="/cookies">Cookies</a>
+            <a className="text-[#a1a1aa] hover:text-white" href="/polityka-prywatnosci">
+              {t('footer.privacy')}
+            </a>
+            <a className="text-[#a1a1aa] hover:text-white" href="/cookies">
+              {t('footer.cookies')}
+            </a>
           </span>
         </div>
 

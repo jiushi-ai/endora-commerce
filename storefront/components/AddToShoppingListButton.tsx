@@ -34,6 +34,10 @@ export function AddToShoppingListButton(props: {
   label: string;
   /** Optional label shown when the product IS in the list (e.g. "Remove from list"). */
   removeLabel?: string;
+  /** Error tooltip / flash when the list mutation fails. */
+  failedLabel?: string;
+  /** Success flash after picking a named list — must include `{name}`. */
+  addedToLabel?: string;
   className?: string;
   /**
    * Render the label as visible text next to the heart (a full button) instead
@@ -181,12 +185,14 @@ export function AddToShoppingListButton(props: {
     }
   };
 
-  const activeLabel = inList ? (props.removeLabel ?? 'Usuń z listy zakupowej') : props.label;
-  const tooltip = state === 'error' ? 'Nie udało się zmienić listy' : activeLabel;
+  const activeLabel = inList ? (props.removeLabel ?? props.label) : props.label;
+  const tooltip = state === 'error' ? (props.failedLabel ?? props.label) : activeLabel;
 
   if (props.showLabel) {
     const hasPicker = lists.length > 1;
-    const mainLabel = addedTo ? `Dodano do „${addedTo}”` : activeLabel;
+    const mainLabel = addedTo
+      ? (props.addedToLabel ?? 'Added to "{name}"').replace('{name}', addedTo)
+      : activeLabel;
     const baseClass = props.className ?? 'btn btn--outline';
     return (
       <div ref={rootRef} className="relative inline-flex">

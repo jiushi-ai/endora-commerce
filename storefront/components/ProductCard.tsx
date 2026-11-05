@@ -102,7 +102,11 @@ export function ProductCard(props: {
           />
         )}
       </Link>
-      <CompareToggle productId={product.id} salesChannelCode={props.salesChannelCode} />
+      <CompareToggle
+        productId={product.id}
+        salesChannelCode={props.salesChannelCode}
+        locale={props.locale}
+      />
       {resolved && resolved.salePrice ? (
         <span className="industria-badge industria-badge--sale" aria-label={t('product.requestQuote')}>
           Promocja
@@ -161,7 +165,9 @@ function renderPriceSlot(args: {
     }
     return (
       <>
-        <div className="font-mono text-[10px] uppercase tracking-[0.04em] text-subtle">od / szt.</div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.04em] text-subtle">
+          {t('product.fromPerUnit')}
+        </div>
         <BaseSalePriceBlock
           basePrice={resolved.basePrice}
           salePrice={resolved.salePrice}
@@ -220,7 +226,7 @@ function renderPriceSlot(args: {
   return (
     <>
       <div className="industria-product-card__price__from">
-        {product.priceVariesByVariant ? t('product.priceFromVariants') : 'od / szt.'}
+        {product.priceVariesByVariant ? t('product.priceFromVariants') : t('product.fromPerUnit')}
       </div>
       {/* Owner ruling 2026-10-23: beside a list price a charged sale strikes the
           list price, not the buyer's own — two numbers, never three. */}
@@ -248,7 +254,9 @@ function renderPriceSlot(args: {
         <div className="font-mono text-[16px] font-semibold tracking-[-0.01em] text-fg">{priceFmt}</div>
       )}
       {grossFmt ? (
-        <div className="font-mono text-[11px] text-muted">brutto {grossFmt}</div>
+        <div className="font-mono text-[11px] text-muted">
+          {t('product.gross').replace('{amount}', grossFmt)}
+        </div>
       ) : null}
     </>
   );

@@ -107,6 +107,7 @@ describe('GallerySwitcher — SSR contract', () => {
       <GallerySwitcher
         gallery={[video('1', ['base_image'], 0, '/asset/clip.mp4')]}
         alt="Widget"
+        locale="pl-PL"
       />,
     );
     expect(html).toContain('<video');
@@ -115,10 +116,15 @@ describe('GallerySwitcher — SSR contract', () => {
     expect(html).not.toContain('Powiększ');
   });
 
-  it('shows the zoom pill for image main views', () => {
-    const html = renderToString(
-      <GallerySwitcher gallery={[item('1', ['base_image'], 0)]} alt="Widget" />,
+  it('shows the zoom pill for image main views in the page locale', () => {
+    const pl = renderToString(
+      <GallerySwitcher gallery={[item('1', ['base_image'], 0)]} alt="Widget" locale="pl-PL" />,
     );
-    expect(html).toContain('Powiększ');
+    expect(pl).toContain('Powiększ');
+    const zh = renderToString(
+      <GallerySwitcher gallery={[item('1', ['base_image'], 0)]} alt="Widget" locale="zh-CN" />,
+    );
+    expect(zh).toContain('放大');
+    expect(zh).not.toContain('Powiększ');
   });
 });

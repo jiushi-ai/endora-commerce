@@ -13,6 +13,7 @@ import { toAbsoluteAssetUrl } from '../lib/asset-url';
 export function ProductGallery(props: {
   assets: ProductAsset[];
   alt: string;
+  locale?: string;
   /** Fallback image shown when the product has no images of its own
    *  (resolved from the `product_image_placeholder_url` setting). */
   placeholderUrl?: string | null;
@@ -30,7 +31,7 @@ export function ProductGallery(props: {
   return (
     <div>
       {gallery.length > 0 ? (
-        <GallerySwitcher gallery={gallery} alt={props.alt} />
+        <GallerySwitcher gallery={gallery} alt={props.alt} locale={props.locale} />
       ) : props.placeholderUrl ? (
         <img
           src={toAbsoluteAssetUrl(props.placeholderUrl)}

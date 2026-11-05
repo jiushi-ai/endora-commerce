@@ -45,14 +45,14 @@ const fixture: ResolvedMegamenu = {
 
 describe('MegamenuMobileDrawer — SSR initial render', () => {
   it('renders the burger trigger (icon-button) and is marked md:hidden on the wrapper', () => {
-    const html = renderToString(<MegamenuMobileDrawer megamenu={fixture} />);
+    const html = renderToString(<MegamenuMobileDrawer megamenu={fixture} locale="en-US" />);
     expect(html).toContain('aria-label="Menu"');
     expect(html).toContain('icon-btn');
     expect(html).toContain('md:hidden');
   });
 
   it('does not render the drawer body in the closed initial state', () => {
-    const html = renderToString(<MegamenuMobileDrawer megamenu={fixture} />);
+    const html = renderToString(<MegamenuMobileDrawer megamenu={fixture} locale="en-US" />);
     // Top-level item labels appear inside the drawer body; closed initial
     // state hides the body so neither label appears in the SSR output.
     expect(html).not.toContain('Catalog');
@@ -60,10 +60,10 @@ describe('MegamenuMobileDrawer — SSR initial render', () => {
   });
 
   it('gates the feature-044 chrome (Quick Order promo, breadcrumb) behind the open state', () => {
-    const html = renderToString(<MegamenuMobileDrawer megamenu={fixture} />);
+    const html = renderToString(<MegamenuMobileDrawer megamenu={fixture} locale="en-US" />);
     // The root promo + the drill-down breadcrumb only exist once the drawer is
     // opened (client interaction, exercised on device); closed → neither shows.
     expect(html).not.toContain('Quick Order');
-    expect(html).not.toContain('Kategorie ›');
+    expect(html).not.toContain('Categories');
   });
 });

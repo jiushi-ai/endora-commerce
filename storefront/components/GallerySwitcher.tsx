@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { toAbsoluteAssetUrl } from '../lib/asset-url';
+import { tForLocale } from '../lib/i18n/messages';
 
 const SLIDE_EASING = 'transform 420ms cubic-bezier(0.22, 1, 0.36, 1)';
 
@@ -61,6 +62,8 @@ function Chevron({ dir }: { dir: 'left' | 'right' }): ReactNode {
 export function GallerySwitcher(rawProps: {
   gallery: GallerySwitcherItem[];
   alt: string;
+  /** Page locale for the zoom pill (and any future chrome). */
+  locale?: string;
 }): ReactNode {
   // Host-relative asset URLs (e.g. `/assets/file/<id>`) must be rebased onto the
   // public API origin, otherwise the browser resolves them against the
@@ -73,6 +76,7 @@ export function GallerySwitcher(rawProps: {
       asset: { ...g.asset, url: toAbsoluteAssetUrl(g.asset.url) },
     })),
   };
+  const t = tForLocale(rawProps.locale ?? 'zh-CN');
   const baseIndex = Math.max(
     0,
     props.gallery.findIndex((g) => g.labels.includes('base_image')),
@@ -243,7 +247,7 @@ export function GallerySwitcher(rawProps: {
               <circle cx="11" cy="11" r="7" />
               <path d="M21 21l-4-4M11 8v6M8 11h6" strokeLinecap="round" />
             </svg>
-            Powiększ
+            {t('gallery.zoom')}
           </button>
         ) : null}
       </div>

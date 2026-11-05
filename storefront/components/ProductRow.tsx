@@ -68,13 +68,15 @@ export function ProductRow(props: {
         {priceFmt ? (
           <>
             <div className="font-mono text-[10px] uppercase tracking-[0.04em] text-subtle">
-              od / szt.
+              {t('product.fromPerUnit')}
             </div>
             <div className="font-mono text-[16px] font-semibold tracking-[-0.01em] text-fg">
               {priceFmt}
             </div>
             {grossFmt ? (
-              <div className="font-mono text-[11px] text-muted">brutto {grossFmt}</div>
+              <div className="font-mono text-[11px] text-muted">
+                {t('product.gross').replace('{amount}', grossFmt)}
+              </div>
             ) : null}
           </>
         ) : (
