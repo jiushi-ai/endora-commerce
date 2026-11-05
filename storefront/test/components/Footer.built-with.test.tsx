@@ -11,7 +11,7 @@ describe('Footer — Mobii platform brand strip', () => {
     const html = renderToString(<Footer locale="en-US" />);
     expect(html).toContain('src="/brand/mobii.png"');
     expect(html).toContain('Mobii');
-    expect(html).toContain('B2B Bidding');
+    expect(html).toContain('Bidding Procurement');
     expect(html).not.toContain('Built with');
     expect(html).not.toContain('Endora Commerce');
     expect(html).not.toContain('commerce.endora.software');
@@ -19,7 +19,7 @@ describe('Footer — Mobii platform brand strip', () => {
 
   it('localises the accent title for zh-CN', () => {
     const html = renderToString(<Footer locale="zh-CN" />);
-    expect(html).toContain('竞价平台');
+    expect(html).toContain('竞价批采平台');
     expect(html).toContain('src="/brand/mobii.png"');
   });
 

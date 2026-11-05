@@ -687,3 +687,13 @@ feat-26-11-04 23:40:06 [20.1~20.5]：Account侧栏各菜单进入页壳层随语
 汇总：小b 品牌展示与大B一致——Logo 固定、标题随语系；页脚框架署名改为 Mobii 平台条。语系切换性能另批。
 
 feat-26-11-05 00:07:32 [21.1~21.4]：小b Header与Footer换成Mobii品牌并多语系标题
+
+### 22. 平台标题「竞价平台」→「竞价批采平台」
+
+- [x] 22.1 大B `_i18n`：`appShell.brand.text*` / `versionLabel`（及 zh-CN feedback 标题）多语系同步
+- [x] 22.2 小b `chrome.brand.*` 同步；Footer 测试断言更新
+- [x] 22.3 本 §99
+
+汇总：Logo 后强调文案改为「竞价批采平台」；en/pl 对应 Bidding Procurement；繁体「競價批採平台」。Admin 需 `i18n:reload` 或重启后可见。
+
+feat-26-11-05 00:16:38 [22.1~22.3]：平台标题改为竞价批采平台并多语系同步
