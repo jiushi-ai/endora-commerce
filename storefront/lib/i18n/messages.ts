@@ -507,6 +507,9 @@ export type MessageKey =
   | 'chrome.b2bSupport'
   | 'chrome.brandTagline'
   | 'chrome.brandTaglineShort'
+  | 'chrome.brand.text'
+  | 'chrome.brand.textPrimary'
+  | 'chrome.brand.textAccent'
   | 'chrome.allCategories'
   | 'chrome.allCategoriesArrow'
   | 'chrome.allPrefix'
@@ -1118,6 +1121,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'chrome.b2bSupport': 'B2B support',
     'chrome.brandTagline': 'B2B · Industrial components',
     'chrome.brandTaglineShort': 'B2B components',
+    'chrome.brand.text': 'Mobii B2B Bidding Platform',
+    'chrome.brand.textPrimary': 'Mobii',
+    'chrome.brand.textAccent': 'B2B Bidding',
     'chrome.allCategories': 'All categories',
     'chrome.allCategoriesArrow': 'All categories →',
     'chrome.allPrefix': 'All: {label}',
@@ -1738,6 +1744,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'chrome.b2bSupport': 'B2B 支持',
     'chrome.brandTagline': 'B2B · 工业元器件',
     'chrome.brandTaglineShort': 'B2B 元器件',
+    'chrome.brand.text': 'Mobii B2B竞价平台',
+    'chrome.brand.textPrimary': 'Mobii B2B',
+    'chrome.brand.textAccent': '竞价平台',
     'chrome.allCategories': '全部分类',
     'chrome.allCategoriesArrow': '全部分类 →',
     'chrome.allPrefix': '全部：{label}',
@@ -2359,6 +2368,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'chrome.b2bSupport': 'B2B 支援',
     'chrome.brandTagline': 'B2B · 工業元器件',
     'chrome.brandTaglineShort': 'B2B 元器件',
+    'chrome.brand.text': 'Mobii B2B競價平台',
+    'chrome.brand.textPrimary': 'Mobii B2B',
+    'chrome.brand.textAccent': '競價平台',
     'chrome.allCategories': '全部分類',
     'chrome.allCategoriesArrow': '全部分類 →',
     'chrome.allPrefix': '全部：{label}',
@@ -3022,6 +3034,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'chrome.b2bSupport': 'Wsparcie B2B',
     'chrome.brandTagline': 'B2B · Komponenty przemysłowe',
     'chrome.brandTaglineShort': 'Komponenty B2B',
+    'chrome.brand.text': 'Mobii Bidding Platform',
+    'chrome.brand.textPrimary': 'Mobii',
+    'chrome.brand.textAccent': 'Bidding',
     'chrome.allCategories': 'Wszystkie kategorie',
     'chrome.allCategoriesArrow': 'Wszystkie kategorie →',
     'chrome.allPrefix': 'Wszystkie: {label}',

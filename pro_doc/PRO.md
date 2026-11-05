@@ -676,3 +676,14 @@ feat-26-11-04 23:20:54 [19.1~19.4]：PDP与Catalog壳层i18n及语系下拉样�
 汇总：`/account` 侧栏对应列表/表单进入页壳层（标题、列头、按钮、空态、角色/双因素等）随 locale；业务数据与后端原样错误句不翻译。部分详情深页（如退货会话、订单明细内残余英文）可后续再扫。
 
 feat-26-11-04 23:40:06 [20.1~20.5]：Account侧栏各菜单进入页壳层随语系
+
+### 21. 小b Header/Footer 品牌对标大B Mobii
+
+- [x] 21.1 `chrome.brand.text*`（en/zh-CN/zh-TW/pl）对齐 Admin `appShell.brand.*`
+- [x] 21.2 Header：`/brand/mobii.png` 固定 + 平台标题随 locale
+- [x] 21.3 Footer：去掉 Endora「Built with」→ Mobii logo + 多语系标题；页脚左栏品牌同步
+- [x] 21.4 更新 `Footer.built-with.test.tsx`；本 §99
+
+汇总：小b 品牌展示与大B一致——Logo 固定、标题随语系；页脚框架署名改为 Mobii 平台条。语系切换性能另批。
+
+feat-26-11-05 00:07:32 [21.1~21.4]：小b Header与Footer换成Mobii品牌并多语系标题

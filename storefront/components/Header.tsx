@@ -110,9 +110,17 @@ export function Header(props: {
       <header className="industria-header">
         <div className="mx-auto max-w-[1360px] px-[24px] industria-header__inner hidden min-[877px]:grid">
           <Link href="/" className="industria-header__brand">
-            <span className="industria-header__mark">IN</span>
+            <img
+              className="industria-header__mark h-8 w-8 rounded-md object-cover"
+              src="/brand/mobii.png"
+              alt={t('chrome.brand.text')}
+              width={32}
+              height={32}
+              decoding="async"
+            />
             <span className="industria-header__brand__name">
-              Industria
+              {t('chrome.brand.textPrimary')}{' '}
+              <span className="text-accent">{t('chrome.brand.textAccent')}</span>
               <small>{t('chrome.brandTagline')}</small>
             </span>
           </Link>
@@ -184,9 +192,19 @@ export function Header(props: {
               </Link>
             )}
             <Link href="/" className="mr-auto inline-flex items-center gap-[8px]">
-              <span className="industria-header__mark">IN</span>
+              <img
+                className="industria-header__mark h-8 w-8 rounded-md object-cover"
+                src="/brand/mobii.png"
+                alt={t('chrome.brand.text')}
+                width={32}
+                height={32}
+                decoding="async"
+              />
               <span className="flex flex-col leading-none">
-                <span className="text-[15px] font-bold text-fg">Industria</span>
+                <span className="text-[15px] font-bold text-fg">
+                  {t('chrome.brand.textPrimary')}{' '}
+                  <span className="text-accent">{t('chrome.brand.textAccent')}</span>
+                </span>
                 <small className="mt-[2px] text-[9px] font-medium uppercase tracking-[0.12em] text-subtle">
                   {t('chrome.brandTaglineShort')}
                 </small>
