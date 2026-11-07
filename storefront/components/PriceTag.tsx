@@ -25,6 +25,11 @@ export function PriceTag(props: {
   resolved?: PriceDisplay | null;
   locale: string;
   variant?: 'card' | 'pdp';
+  /**
+   * The product's VAT rate for this buyer (`ProductDetail.vatRate`, issue #852).
+   * Absent or `null`: no gross is derived and the net is shown, labelled net.
+   */
+  vatRate?: number | null;
 }): ReactNode {
   const { price, resolved, locale, variant = 'pdp' } = props;
   const t = tForLocale(locale);
@@ -38,6 +43,7 @@ export function PriceTag(props: {
         listPrice={resolved.listPrice ?? null}
         displayMode={resolved.displayMode}
         locale={locale}
+        vatRate={props.vatRate ?? null}
         variant={variant}
         listLabel={t('product.listPrice')}
         yourPriceLabel={t('product.yourPrice')}

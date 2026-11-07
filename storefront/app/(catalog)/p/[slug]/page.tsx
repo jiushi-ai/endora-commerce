@@ -155,6 +155,7 @@ export default async function ProductPage({
    */
   let resolved = product.resolvedPrice ?? null;
   let price = product.price;
+  const vatRate = product.vatRate ?? null;
   const isQuoteOnly = resolved?.displayMode === 'none';
   // Feature 039 (US5) — one-click buy is offered only to a logged-in buyer who
   // is eligible (setting enabled for the channel + all four valid defaults).
@@ -327,7 +328,11 @@ export default async function ProductPage({
               eye on the PDP. In both-mode the net/gross switch pins to the price
               block's top-right and the stock badge drops below; otherwise the
               badge sits directly beside the price. */}
-          {resolved && resolved.displayMode === 'both' ? (
+          {/* Issue #852 — every gross here is derived at the product's own rate
+              for this buyer (`vatRate`; a variant shares its product's tax
+              class). Without one the toggle has nothing to switch to, so the
+              plain price shows the net, labelled net. */}
+          {resolved && resolved.displayMode === 'both' && vatRate !== null ? (
             <div className="my-7">
               <PdpPriceToggle
                 basePrice={resolved.basePrice}
@@ -336,6 +341,7 @@ export default async function ProductPage({
                 listPriceLabel={t('product.listPrice')}
                 yourPriceLabel={t('product.yourPrice')}
                 locale={locale}
+                vatRate={vatRate}
                 labels={{ net: 'NETTO', gross: 'BRUTTO' }}
               />
               <div className="mt-3">
@@ -347,6 +353,7 @@ export default async function ProductPage({
               <PriceTag
                 price={price}
                 resolved={resolved}
+                vatRate={vatRate}
                 locale={locale}
                 variant="pdp"
               />

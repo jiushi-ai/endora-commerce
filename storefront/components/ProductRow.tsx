@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { ProductSummary } from '@endora-commerce/contracts';
 import { tForLocale } from '../lib/i18n/messages';
-import { DEFAULT_VAT_RATE, formatMoney, grossUnitPriceFromNet } from '../lib/i18n/money';
+import { formatMoney, grossUnitPriceFromNet } from '../lib/i18n/money';
 import { LocalizedLink } from '../lib/i18n/localized-link';
 
 /**
@@ -15,15 +15,11 @@ import { LocalizedLink } from '../lib/i18n/localized-link';
 export function ProductRow(props: {
   product: ProductSummary;
   locale: string;
-  /**
-   * Fractional VAT rate used to derive gross from net; defaults to the
-   * deployment assumption in `lib/i18n/money` (issue #132). This row used to
-   * multiply by a literal `1.23`, which is a gross figure no tax authority was
-   * consulted about and no caller could correct.
-   */
-  vatRate?: number;
 }): ReactNode {
-  const { product, locale, vatRate = DEFAULT_VAT_RATE } = props;
+  const { product, locale } = props;
+  // Issue #852 — the product's own rate for this buyer, as the catalogue read
+  // resolved it; none, and the row shows the net, labelled net.
+  const vatRate = product.vatRate ?? null;
   const t = tForLocale(locale);
 
   // A unit price: its significant places, up to four (owner ruling of 2026-10-25).
@@ -73,6 +69,9 @@ export function ProductRow(props: {
             <div className="font-mono text-[16px] font-semibold tracking-[-0.01em] text-fg">
               {priceFmt}
             </div>
+            {grossFmt ? null : (
+              <div className="font-mono text-[11px] text-muted">{t('commerce.common.net')}</div>
+            )}
             {grossFmt ? (
               <div className="font-mono text-[11px] text-muted">
                 {t('product.gross').replace('{amount}', grossFmt)}

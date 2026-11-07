@@ -125,6 +125,7 @@ const surfaces: Record<string, (v: Vector, locale: string) => string> = {
         salePrice={r.salePrice}
         listPrice={r.listPrice ?? null}
         locale={locale}
+        vatRate={0.23}
         listPriceLabel={tForLocale(locale)('product.listPrice')}
         yourPriceLabel={tForLocale(locale)('product.yourPrice')}
       />,

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import type { ProductSummary, StorefrontProductStock } from '@endora-commerce/contracts';
 import { tForLocale } from '../lib/i18n/messages';
 import { cardAddToCartLabel } from '../lib/orderMinimum';
-import { DEFAULT_VAT_RATE, formatMoney, grossUnitPriceFromNet } from '../lib/i18n/money';
+import { formatMoney, grossUnitPriceFromNet } from '../lib/i18n/money';
 import { CompareToggle } from './CompareToggle';
 import { BaseSalePriceBlock } from './pricing/BaseSalePriceBlock';
 import { QuoteRequestCta } from './pricing/QuoteRequestCta';
@@ -50,18 +50,15 @@ export function ProductCard(props: {
    *  the price block, sale treatment, and display-mode handling. */
   resolved?: PriceDisplay | null;
   /**
-   * Fractional VAT rate used to derive gross from net; defaults to the
-   * deployment assumption in `lib/i18n/money` (issue #132). The card used to
-   * bake its own `1.23` literal here.
-   */
-  vatRate?: number;
-  /**
    * The active sales channel. The card's compare toggle and action buttons call
    * the backend from the browser, where no request header carries it.
    */
   salesChannelCode: string | undefined;
 }): ReactNode {
-  const { product, locale, stock, resolved, vatRate = DEFAULT_VAT_RATE } = props;
+  const { product, locale, stock, resolved } = props;
+  // Issue #852 — the product's own rate for this buyer, as the catalogue read
+  // resolved it; none, and the card shows the net, labelled net.
+  const vatRate = product.vatRate ?? null;
   const t = tForLocale(locale);
 
   const stockNode = stock ? renderFromStorefrontStock(stock, locale, t) : stockFor(product, t);
@@ -148,7 +145,7 @@ function renderPriceSlot(args: {
   locale: string;
   resolved: PriceDisplay | null | undefined;
   t: ReturnType<typeof tForLocale>;
-  vatRate: number;
+  vatRate: number | null;
 }): ReactNode {
   const { product, locale, resolved, t, vatRate } = args;
 
@@ -188,10 +185,10 @@ function renderPriceSlot(args: {
   const priceFmt = product.price
     ? formatMoney(product.price.amount, product.price.currency, locale, { unitPrice: true })
     : null;
-  // Derived through the shared seam (issue #132). The previous form multiplied
-  // by a literal `1.23` and then tested the product with `grossAmount &&`, so a
-  // price of zero lost its gross line entirely — the "no price" / "price zero"
-  // collapse, on the render side.
+  // Derived through the shared seam (issue #132), at the product's own rate
+  // (issue #852). The first form multiplied by a literal `1.23` and then tested
+  // the product with `grossAmount &&`, so a price of zero lost its gross line
+  // entirely — the "no price" / "price zero" collapse, on the render side.
   const grossAmount = product.price ? grossUnitPriceFromNet(product.price.amount, vatRate) : null;
   const grossFmt =
     grossAmount !== null && product.price
@@ -247,15 +244,27 @@ function renderPriceSlot(args: {
         <div className="flex items-baseline gap-[6px]">
           <span className="font-mono text-[10px] uppercase tracking-[0.04em] text-subtle">{t('product.yourPrice')}</span>
           <div className="font-mono text-[16px] font-semibold tracking-[-0.01em] text-fg">{priceFmt}</div>
+          {grossFmt ? null : <NetSuffix t={t} />}
         </div>
       ) : (
-        <div className="font-mono text-[16px] font-semibold tracking-[-0.01em] text-fg">{priceFmt}</div>
+        <div className="flex items-baseline gap-[6px]">
+          <div className="font-mono text-[16px] font-semibold tracking-[-0.01em] text-fg">{priceFmt}</div>
+          {grossFmt ? null : <NetSuffix t={t} />}
+        </div>
       )}
       {grossFmt ? (
         <div className="font-mono text-[11px] text-muted">brutto {grossFmt}</div>
       ) : null}
     </>
   );
+}
+
+/**
+ * Issue #852 — with no rate there is no gross line, so the figure says what it
+ * is: the net. Beside a gross line it needs no label, as before.
+ */
+function NetSuffix(props: { t: ReturnType<typeof tForLocale> }): ReactNode {
+  return <span className="font-mono text-[11px] text-muted">{props.t('commerce.common.net')}</span>;
 }
 
 function renderFromStorefrontStock(

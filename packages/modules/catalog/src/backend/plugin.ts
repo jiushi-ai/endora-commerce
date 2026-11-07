@@ -18,6 +18,7 @@ import {
   type CustomFieldDefinitionReadPort,
   type CustomFieldValuePort,
   type OrganizationDetailsPort,
+  type ProductTaxRateResolver,
 } from '@endora-commerce/contracts';
 import type { EventBus } from '@endora-commerce/platform/events';
 import type { StorefrontRevalidator } from '@endora-commerce/platform/http';
@@ -146,6 +147,13 @@ export interface CatalogModuleOptions {
    * group-targeted list is selected by — lives on that row.
    */
   organizations?: OrganizationDetailsPort;
+  /**
+   * Issue #852 — the buyer's VAT rate per product tax class, by the rule the
+   * cart and the order use (`createProductTaxRateResolver`). The public
+   * listing and product page answer it as `vatRate`; without it they answer
+   * none, and the storefront shows the net.
+   */
+  productTaxRates?: ProductTaxRateResolver;
   /**
    * Feature 075 — `admin_users`' read port, for the one row the bulk-operation
    * completion notice reads: the requester's e-mail address.
@@ -395,6 +403,7 @@ export function catalogModule(options: CatalogModuleOptions) {
       // Feature 086 / FR-016 — the route's own refusal reads the page's display
       // mode off the same container the ordering comes from.
       ...(options.pricingService ? { listingPriceOrder: options.pricingService } : {}),
+      ...(options.productTaxRates ? { productTaxRates: options.productTaxRates } : {}),
     });
     const categoryAdminService = new CategoryAdminService(
       options.emFactory,

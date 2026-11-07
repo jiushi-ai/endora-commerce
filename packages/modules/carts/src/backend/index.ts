@@ -2,7 +2,7 @@ import type { EntityManager } from '@mikro-orm/postgresql';
 import type { FastifyRequest } from 'fastify';
 import type { Redis } from 'ioredis';
 import type { AuditPort } from '@endora-commerce/platform/kernel';
-import { ERROR_CODES } from '@endora-commerce/contracts';
+import { ERROR_CODES, createProductTaxRateResolver } from '@endora-commerce/contracts';
 import type {
   CartQueryPort,
   CartReadPort,
@@ -44,7 +44,6 @@ import { CartApprovalService } from './services/cart-approval-service.js';
 import { CartOrganizationVisibilityService } from './services/cart-organization-visibility-service.js';
 import { CartRecomputeCache } from './services/cart-recompute-cache.js';
 import { CartPricingRecompute } from './services/cart-pricing-recompute.js';
-import { createCartTaxRateResolver } from './services/cart-tax-rates.js';
 import { CartAbandonmentWorker } from './services/cart-abandonment-worker.js';
 import { registerCartRoutes, type CartsDeps } from './routes.js';
 import { registerCartsAdminRoutes } from './routes.admin.js';
@@ -377,7 +376,7 @@ export function registerModule(ctx: ModuleContext): void {
       ),
       // Issue #436 — the read answers the cart's VAT per rate, from the rates
       // placement resolves: `organizations`' tax profile and `taxes`' rules.
-      cartTaxRates: createCartTaxRateResolver({
+      cartTaxRates: createProductTaxRateResolver({
         taxProfiles: lazyPort<OrganizationTaxProfilePort>(ctx, 'organizationTaxProfilePort'),
         taxes: lazyPort<TaxServicePort>(ctx, 'taxService'),
       }),
