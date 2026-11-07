@@ -108,6 +108,13 @@ export async function buildServer(options: BuildServerOptions): Promise<FastifyI
     // the hop it trusts.
     trustProxy: options.trustedProxy === undefined ? false : toFastifyTrustProxy(options.trustedProxy),
     disableRequestLogging: false,
+    // `_i18n` reconciles every module's translation_bundles at plugin attach
+    // (not onBoot — pinned by reconcile-timing.test.ts). On a cold Postgres
+    // volume or under `pnpm run dev` with Vite/Next sharing the CPU that pass
+    // regularly exceeds Fastify's default 10s and aborts boot with
+    // AVV_ERR_PLUGIN_EXEC_TIMEOUT, leaving :3001 refused. Sixty seconds is
+    // still a hard ceiling on a wedged plugin; it is not "wait forever".
+    pluginTimeout: 60_000,
   });
 
   // Issue #269 — this is the moment the log the platform actually collects

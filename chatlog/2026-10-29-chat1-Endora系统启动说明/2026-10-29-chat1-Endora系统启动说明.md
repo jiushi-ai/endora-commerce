@@ -30,8 +30,9 @@ pnpm run setup
 
 # 创建管理员（邮箱密码换成你的）
 pnpm --filter backend run admin:create -- --email=you@example.com --password='你的密码' --first-name=Ada --last-name=Lovelace
+pnpm --filter backend run admin:create -- --email=463668442@qq.com --password='111111aaaaaa' --first-name=Ada --last-name=Lovelace
 
-# 启动三端（保持这个终端不要关）
+# 启动三端（保持这个终端不要关
 pnpm run dev
 ```
 

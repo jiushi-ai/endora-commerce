@@ -130,7 +130,7 @@ import {
 } from 'lucide-react';
 
 /** Curated Lucide allowlist for CMS Icons / Feature list (not the full catalog). */
-export const CMS_ICON_CATALOG = {
+const CMS_ICON_CATALOG_MAP = {
   activity: Activity,
   alarmClock: AlarmClock,
   archive: Archive,
@@ -258,9 +258,12 @@ export const CMS_ICON_CATALOG = {
   warehouse: Warehouse,
   wrench: Wrench,
   zap: Zap,
-} as const satisfies Record<string, LucideIcon>;
+} satisfies Record<string, LucideIcon>;
 
-export type CmsIconName = keyof typeof CMS_ICON_CATALOG;
+export type CmsIconName = keyof typeof CMS_ICON_CATALOG_MAP;
+
+/** Annotated so declaration emit does not depend on a non-portable @types/react path (TS2742). */
+export const CMS_ICON_CATALOG: Record<CmsIconName, LucideIcon> = CMS_ICON_CATALOG_MAP;
 
 export const CMS_ICON_OPTIONS = (Object.keys(CMS_ICON_CATALOG) as CmsIconName[]).map((name) => ({
   label: name,

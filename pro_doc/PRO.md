@@ -717,3 +717,13 @@ feat-26-11-05 01:02:05 [23.1~23.3]：小b首页改为竞价主CTA与采购次路
 汇总：无真实分类树时的 03 区展示算力批采相关品类；有后端分类树时仍优先真实数据。硬刷新即可验证。
 
 feat-26-11-05 01:26:32 [24.1~24.3]：首页常规品类fallback改为算力供应链并多语系
+
+### 25. 修复本地 backend 因 _i18n pluginTimeout 起不来
+
+- [x] 25.1 `buildServer` 将 Fastify `pluginTimeout` 从默认 10s 提到 60s（保留 `_i18n` 在 plugin attach 做 reconcile）
+- [x] 25.2 重建 `@endora-commerce/platform`；`reconcile-timing` 单测通过；backend 可 listening :3001
+- [x] 25.3 本 §99
+
+汇总：Docker Reset / 冷库 + `pnpm run dev` 三端并行时，`_i18n` 在 `defineModuleRoutes` 内 reconcile 常超过默认 10s，触发 `AVV_ERR_PLUGIN_EXEC_TIMEOUT`，3001 拒绝连接、Admin 登录失败。未改 reconcile 时序（测试仍钉在 plugin attach）。
+
+feat-26-11-06 19:08:50 [25.1~25.3]：提高 Fastify pluginTimeout 避免 _i18n reconcile 拖垮本地 boot
