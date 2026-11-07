@@ -1,9 +1,9 @@
 ---
-title: carts
+title: Koszyki
 description: Koszyk klienta z łączeniem koszyka anonimowego z koszykiem po zalogowaniu
 ---
 
-# `carts`
+# Koszyki (`carts`)
 
 Koszyki anonimowe i przypisane do klienta. Koszyk anonimowy jest identyfikowany długo ważnym tokenem
 w ciasteczku; po zalogowaniu jest w przewidywalny sposób łączony z koszykiem klienta.
@@ -12,7 +12,7 @@ Porządkowanie koszyków z maja 2026 rozszerzyło podstawowy moduł koszyka o pe
 (`active` / `abandoned` / `completed` / `rejected`), niezależny od niego stan akceptacji, przypisanie
 do kanału sprzedaży, zapis ostatniej aktywności, stosowanie kuponów przez moduł promocji, propozycje
 droższych zamienników, trzy rodzaje zamiany (koszyk ↔ zapytanie ofertowe, lista zakupów → koszyk),
-wgląd administratora organizacji w koszyki i akceptację koszyków, wyszukiwanie porzuconych koszyków
+akceptację koszyków zależną od ról członków organizacji, wyszukiwanie porzuconych koszyków
 oraz ekrany podglądu dla administratora platformy.
 
 ## Jeden koszyk na sklep
@@ -48,13 +48,13 @@ go w sklepie, do którego jego organizacja nie jest przypisana.
         │                                            ▼                 │
         │                                  [ active / pending ]        │
         │                                            │                 │
-        │                                            ├──(org-admin     │
+        │                                            ├──(approver      │
         │                                            │   approve)──▶   │
         │                                            │  [ active /     │
         │                                            │   approved ]    │
         │                                            │     │           │
         │                                            ▼     ▼           │
-        │  (org-admin reject)                  [ rejected / rejected_by_org_admin ]
+        │  (approver reject)                   [ rejected / rejected_by_org_admin ]
         │
         ▼
 [ abandoned ] ◀──(sweep: last_activity_at < threshold)── [ active / * ]
@@ -64,13 +64,146 @@ go w sklepie, do którego jego organizacja nie jest przypisana.
 
 [ active / approved ]    ──(checkout success)──▶ [ completed / approved ]
 [ active / * ]           ──(Cart→QR conversion)─▶ [ completed / *; converted_to_quote_request_id set ]
+
+[ working ]              ──(order placed)───────▶ [ completed; completed_order_id set ]
+[ working ]              ──(placement refused)──▶ (deleted)
 ```
 
-Ponowne wymaganie akceptacji: każda zmiana koszyka przez kupującego (dodanie, usunięcie, ilość,
-kupon) w koszyku `approved` po cichu przywraca `approval_status` do `pending`.
+**Koszyki robocze.** Tworzenie zamówienia przez administratora, zakup jednym kliknięciem i
+zewnętrzne API zamówień składają zamówienie z pozycji żądania, a nie z tego, co zebrał kupujący.
+Zapisują te pozycje w osobnym koszyku o statusie `working` i z niego składają zamówienie; aktywny
+koszyk klienta — także wypełniony z zaakceptowanego zapytania ofertowego — nie jest odczytywany,
+opróżniany ani zamykany. Koszyk roboczy kończy jako `completed` z `completed_order_id` wskazującym
+jego zamówienie albo jest usuwany, gdy złożenie zamówienia zostanie odrzucone. Nie pojawia się na
+żadnej liście koszyków, w panelu koszyków klienta ani w wyszukiwaniu porzuconych koszyków.
 
-Brak akceptowania własnych koszyków: koszyk utworzony przez administratora organizacji powstaje z
-`approval_status='not_required'`, niezależnie od ustawienia akceptacji w organizacji.
+Ponowne wymaganie akceptacji: każda zmiana zawartości koszyka przez kupującego (dodanie lub
+usunięcie pozycji, zmiana ilości, dodanie lub usunięcie kuponu) w koszyku objętym akceptacją cofa
+go o jeden krok — w tej samej transakcji co zmiana i z wpisem audytu
+`approval_resubmission_required`:
+
+- koszyk `approved` wraca do `pending`, więc zmieniony koszyk musi zostać ponownie zaakceptowany,
+  zanim zostanie z niego złożone zamówienie;
+- koszyk `pending` wraca do `not_required` — stanu, z którego został przekazany do akceptacji —
+  więc akceptujący nigdy nie akceptuje innej zawartości niż przekazana. Koszyk znika z listy
+  oczekujących, jego akceptacja lub odrzucenie zwraca `CART_APPROVAL_NOT_PENDING`,
+  a kupujący ponownie widzi **Zgłoś do akceptacji** (`primaryCta: 'submit_for_approval'`).
+
+Odrzucony koszyk jest zamknięty (`status: 'rejected'`) i nie można go ponownie przekazać, więc
+koszyk `pending` zawsze został przekazany ze stanu `not_required`.
+
+### Akceptacja według roli
+
+To, czy koszyk wymaga akceptacji, kto go akceptuje i kto w ogóle może go wypełniać, określają trzy
+uprawnienia roli członka w organizacji (role edytuje w sklepie administrator organizacji;
+*Administrator* ma wszystkie uprawnienia):
+
+| Uprawnienie | Kod | Domyślnie dla roli *Członek* | Co rozstrzyga |
+| --- | --- | --- | --- |
+| Tworzenie i edycja koszyków | `carts.create` | tak | Dodawanie, zmianę i usuwanie pozycji, dodawanie i usuwanie kuponu, tworzenie koszyka z zapytania ofertowego, listy zakupów lub szybkiego zamówienia oraz łączenie koszyka gościa przy logowaniu |
+| Akceptowanie i odrzucanie koszyków współpracowników | `carts.approve` | nie | Wyświetlanie listy i szczegółów koszyków organizacji oraz akceptowanie lub odrzucanie koszyków przekazanych do akceptacji |
+| Składanie zamówień bez akceptacji | `carts.order_without_approval` | tak | Zamawianie koszyka bezpośrednio; członek, którego rola go nie ma, najpierw przekazuje koszyk do akceptacji |
+
+Zastępują one przełącznik *Akceptacja koszyków* organizacji: organizacja, która miała go włączony,
+po aktualizacji zachowuje się tak samo, ponieważ jej rola *Członek* nie dostaje uprawnienia
+*Składanie zamówień bez akceptacji* (ani *Zakupu jednym kliknięciem*). Aby wymagać akceptacji tylko od
+niektórych członków, nadaj im rolę bez *Składania zamówień bez akceptacji*.
+
+- Członek bez uprawnienia *Tworzenie i edycja koszyków* dostaje odmowę każdej zmiany koszyka z kodem
+  `403 ORGANIZATION_PERMISSION_REQUIRED`, wskazującym uprawnienie; odczyt koszyka
+  (`GET /api/v1/cart`) nadal działa, więc nagłówki stron zachowują licznik koszyka. Niezalogowany
+  odwiedzający korzysta z koszyka gościa dokładnie tak jak dotąd. Gdy taki członek się loguje, jego
+  koszyk gościa **nie** jest łączony — pozostaje bez zmian, ze swoimi pozycjami — a samo logowanie
+  się udaje.
+- Członek bez uprawnienia *Składanie zamówień bez akceptacji* widzi `primaryCta:
+  'submit_for_approval'` dla koszyka jeszcze nieprzekazanego, `awaiting_approval` dla przekazanego i
+  `checkout` dla zaakceptowanego; wszyscy pozostali widzą `checkout`. Przekazanie koszyka do akceptacji,
+  gdy rola ma to uprawnienie, jest odrzucane z `422 CART_APPROVAL_NOT_REQUIRED` (także dla
+  administratora).
+- Osoba z uprawnieniem *Akceptowanie i odrzucanie koszyków współpracowników* wyświetla listę,
+  szczegóły, akceptuje i odrzuca koszyki wszystkich członków swojej organizacji, tak jak wcześniej
+  administrator; zamówienie z zaakceptowanego koszyka składa członek, do którego koszyk należy. Koszyk
+  innej organizacji zwraca `404`, tak samo jak nieistniejący; członek bez tego uprawnienia dostaje
+  odmowę `403 ORGANIZATION_PERMISSION_REQUIRED`. Koszyk, który nie oczekuje na akceptację, daje
+  `422 CART_APPROVAL_NOT_PENDING` niezależnie od właściciela, a nikt nie akceptuje ani nie odrzuca
+  własnego oczekującego koszyka: `422 CART_APPROVAL_SELF_APPROVE`.
+- Gdy rola zyskuje uprawnienie *Składanie zamówień bez akceptacji* albo członek przechodzi do roli,
+  która je ma, jego koszyki oczekujące na akceptację wracają do `not_required` (w audycie jako
+  `approval_policy_reset`). Gdy rola traci to uprawnienie, zaakceptowany koszyk pozostaje
+  zaakceptowany.
+
+To, co kupujący widzi w storefroncie, wynika z tych samych trzech uprawnień. Zalogowany członek bez
+uprawnienia *Tworzenie i edycja koszyków* nie widzi dodawania do koszyka na stronie produktu, na
+kartach produktów ani na stronie porównania; jego strona koszyka pokazuje pozycje bez zmiany ilości,
+przycisków usuwania i pola kuponu, i wyjaśnia to w jednym zdaniu: *„Twoja rola nie pozwala zmieniać
+koszyka. Możesz go przeglądać i zamówić.”* Niezalogowany odwiedzający widzi to wszystko jak dotąd.
+*Zapisz na liście* przy pozycji koszyka zależy od `shopping_lists.create`, a *Zamień na zapytanie
+ofertowe* — od `quote_requests.create`. Członek bez uprawnienia *Składanie zamówień bez akceptacji*
+widzi *„Twoja rola wymaga akceptacji koszyka przed realizacją zamówienia.”* i przycisk **Zgłoś do
+akceptacji** zamiast przejścia do kasy; po wysłaniu koszyk informuje, że oczekuje na akceptację w
+organizacji, a po odrzuceniu wskazuje *osobę zatwierdzającą w Twojej organizacji*.
+
+Akceptujący działa w sekcji **Koszyki do akceptacji** w nawigacji konta (widocznej dla osób z
+uprawnieniem *Akceptowanie i odrzucanie koszyków współpracowników*, z liczbą oczekujących koszyków;
+nigdy w organizacji prywatnej), która otwiera `/organization/carts` na koszykach oczekujących na
+akceptację. Listę można zawęzić do koszyków oczekujących na akceptację, a każdy koszyk otwiera się na własnej stronie
+(`/organization/carts/<id>`) z właścicielem, pozycjami, sumą i czasem przesłania. Oczekujący koszyk
+oferuje **Zaakceptuj koszyk** oraz — za rozwijanym przełącznikiem — **Odrzuć koszyk**, które wymaga
+podania powodu o długości do 2000 znaków. Strona potwierdza decyzję albo nazywa odmowę — na
+przykład koszyk, w sprawie którego decyzja już zapadła (`CART_APPROVAL_NOT_PENDING`).
+
+Co kupujący dowiaduje się po odrzuceniu: odrzucenie zamyka koszyk (`status = 'rejected'`), więc przy
+następnym odczycie kupujący dostaje nowy, pusty koszyk, którego własny `approvalStatus` nie może
+powiedzieć, że został odrzucony. Dlatego odpowiedź koszyka zawiera `previousRejection` —
+`{ cartId, rejectedAt, reason }` ostatniego odrzuconego koszyka kupującego w danym kanale sprzedaży
+— a strona koszyka w sklepie pokazuje tę informację wraz z powodem. Pole jest wypełnione, dopóki
+bieżący koszyk nie zostanie przesłany do akceptacji i dopóki od odrzucenia żaden koszyk kupującego
+w tym kanale nie zostanie zamówiony (ani zamieniony na zapytanie ofertowe); w przeciwnym razie, a
+także dla koszyka anonimowego, ma wartość `null`.
+
+Nowy koszyk zaczyna się od pozycji odrzuconego koszyka (zgłoszenie #755): produktu, wariantu,
+jednostki opakowania i ilości — każda pozycja jest dodawana tak, jak członek dodałby ją teraz, czyli
+ze sprawdzeniem dostępności w kanale i z ceną ustaloną na nowo. Pozycja, której nie można już kupić,
+jest pomijana. `previousRejection` mówi, co się stało: `restoredLineCount` to liczba przywróconych
+pozycji, a `skippedLines` wymienia pominięte wraz z powodem; komunikat w sklepie informuje, że
+pozycje zostały przywrócone, i wylicza pominięte. Przywrócenie następuje raz, do koszyka otwartego
+po odrzuceniu, i jest zapisywane w jego audycie (`lines_restored_from_rejection`, obok zwykłych
+wpisów `line_added`). Nigdy nie zmienia koszyka, który już istnieje, nie powtarza się, gdy członek
+opróżni przywrócony koszyk, i nie przenosi kodu rabatowego — członek stosuje go ponownie. Członek,
+którego rola nie ma już uprawnienia *Tworzenie i edycja koszyków* (`carts.create`), nie dostaje
+przywróconych pozycji, ale nadal widzi informację o odrzuceniu. Sam odrzucony koszyk pozostaje bez
+zmian.
+
+Składanie zamówienia egzekwuje akceptację: koszyk członka, który nie jest `approved` — nigdy
+nieprzekazany, czekający na akceptującego albo odrzucony — zostaje odrzucony przy składaniu
+zamówienia z kodem `409 ORDER_CART_APPROVAL_REQUIRED`, zanim cokolwiek zostanie zarezerwowane lub
+zapisane; koszyk pozostaje bez zmian. Reguła jest ta sama, którą stosuje przekazanie do akceptacji,
+sprawdzana w chwili składania zamówienia: właściciel koszyka nie ma uprawnienia *Składanie zamówień
+bez akceptacji*. Obowiązuje
+niezależnie od tego, co pokazuje storefront — zarówno dla `POST /api/v1/orders`, jak i dla strony
+kasy. Strona modułu zamówień, w części *Akceptacja koszyka przy składaniu zamówienia*, wymienia
+komunikaty.
+
+### E-maile o akceptacji
+
+Każdy krok akceptacji wysyła e-mail, gdy krok zostanie już zapisany:
+
+| E-mail (kod szablonu) | Kiedy | Do kogo |
+| --- | --- | --- |
+| Koszyk przekazany do akceptacji (`cart_approval_requested`) | Członek przekazuje koszyk do akceptacji | Każdy członek organizacji, którego rola ma uprawnienie *Akceptowanie i odrzucanie koszyków współpracowników* (także administratorzy) — osobna wiadomość dla każdego, nigdy dla nadawcy. Członek zablokowany, usunięty lub zanonimizowany nie dostaje wiadomości. |
+| Koszyk zaakceptowany (`cart_approved`) | Akceptujący akceptuje koszyk | Członek, do którego koszyk należy, z informacją, kto go zaakceptował |
+| Koszyk odrzucony (`cart_rejected`) | Akceptujący odrzuca koszyk | Członek, do którego koszyk należy, z powodem podanym przez akceptującego |
+
+- Wiadomości są pisane w domyślnym języku sklepu (kanału sprzedaży), do którego należy koszyk, a po
+  angielsku, gdy sklep nie ma języka domyślnego. Konto klienta nie zapisuje własnego języka, więc
+  język sklepu jest jedynym, jaki platforma zna dla odbiorcy.
+- Temat i treść każdej wiadomości są dostarczane po angielsku i po polsku; można je edytować dla
+  każdego języka i sklepu albo wyłączyć na ekranie szablonów e-maili (grupa *carts*). Wiadomości nie
+  zawierają linku: odbiorca loguje się na swoje konto, aby działać — akceptujący w sekcji
+  **Koszyki do akceptacji** (`/organization/carts`), kupujący na stronie swojego koszyka.
+- Wiadomość, której nie da się wysłać — brak serwera poczty, wyłączony szablon, serwer poczty odbiorcy
+  ją odrzuca — nigdy nie cofa ani nie przerywa kroku akceptacji. Trafia do logu serwera jako
+  *„the cart approval e-mail was not sent”*, z koszykiem, kodem szablonu i powodem.
 
 ## API publiczne
 
@@ -78,32 +211,38 @@ Brak akceptowania własnych koszyków: koszyk utworzony przez administratora org
 
 | Metoda i ścieżka | Przeznaczenie |
 | --- | --- |
-| `GET /api/v1/cart` | Aktywny koszyk kanału sprzedaży żądania (tworzony przy pierwszym odczycie); odpowiedź zawiera `status`, `approvalStatus`, `salesChannelId`, `grandTotal`, `discount`, `primaryCta`, `droppedLines`, `couponDroppedThisRead`, `lastActivityAt` |
-| `POST /api/v1/cart/items` | Dodanie pozycji (limit 200 pozycji) |
-| `PATCH /api/v1/cart/items/:itemId` | Zmiana ilości (`0` usuwa pozycję) |
-| `DELETE /api/v1/cart/items/:itemId` | Usunięcie pozycji |
-| `POST /api/v1/cart/items/:itemId/save-to-shopping-list` | Przeniesienie pozycji na listę zakupów |
+| `GET /api/v1/cart` | Aktywny koszyk kanału sprzedaży żądania (tworzony przy pierwszym odczycie); odpowiedź zawiera `status`, `approvalStatus`, `salesChannelId`, `grandTotal`, `discount`, `primaryCta`, `droppedLines`, `couponDroppedThisRead`, `lastActivityAt`, `previousRejection`, `vat` (zobacz *Ceny pozycji*). Nie wymaga żadnego uprawnienia |
+| `POST /api/v1/cart/items` | Dodanie pozycji (limit 200 pozycji) — `carts.create` dla zalogowanego członka; gość nie jest sprawdzany |
+| `PATCH /api/v1/cart/items/:itemId` | Zmiana ilości (`0` usuwa pozycję) — jak wyżej |
+| `DELETE /api/v1/cart/items/:itemId` | Usunięcie pozycji — jak wyżej |
+| `POST /api/v1/cart/items/:itemId/save-to-shopping-list` | Przeniesienie pozycji na listę zakupów — `shopping_lists.create` |
 | `POST /api/v1/cart/touch` | Jawny sygnał otwarcia strony; aktualizuje `last_activity_at` i przywraca porzucony koszyk |
 | `GET /api/v1/cart/upsells?limit=N` | Pasek droższych zamienników z `product_links` katalogu (kind = `up_sell`) |
-| `POST /api/v1/cart/coupon` | Zastosowanie (albo zamiana, albo usunięcie) aktywnego kodu kuponu; przy odrzuceniu 422 `CART_COUPON_REJECTED` z powodem |
-| `DELETE /api/v1/cart/coupon` | To samo co `POST {code: null}` |
-| `POST /api/v1/cart/convert-to-quote-request` | Koszyk → zapytanie ofertowe; koszyk źródłowy przechodzi w stan `completed` z ustawionym `converted_to_quote_request_id` |
-| `POST /api/v1/cart/from-quote-request/:qrId` | Zapytanie ofertowe → koszyk; ceny pozycji są wyznaczane ponownie według bieżących cen klienta |
-| `POST /api/v1/cart/from-shopping-list/:listId` | Lista zakupów → koszyk; ceny są wyznaczane ponownie |
+| `POST /api/v1/cart/coupon` | Zastosowanie (albo zamiana, albo usunięcie) aktywnego kodu kuponu; przy odrzuceniu 422 `CART_COUPON_REJECTED` z powodem — `carts.create` dla zalogowanego członka; gość nie jest sprawdzany |
+| `DELETE /api/v1/cart/coupon` | To samo co `POST {code: null}` — jak wyżej |
+| `POST /api/v1/cart/convert-to-quote-request` | Koszyk → zapytanie ofertowe; koszyk źródłowy przechodzi w stan `completed` z ustawionym `converted_to_quote_request_id` — `quote_requests.create` |
+| `POST /api/v1/cart/from-quote-request/:qrId` | Zapytanie ofertowe → koszyk; ceny pozycji są wyznaczane ponownie według bieżących cen klienta — `carts.create` |
+| `POST /api/v1/cart/from-shopping-list/:listId` | Lista zakupów → koszyk; ceny są wyznaczane ponownie — `shopping_lists.convert`, sprawdzane najpierw, oraz `carts.create` |
+| `POST /api/v1/cart/submit-for-approval` | Kupujący przekazuje koszyk do akceptacji. Odrzucane z `422 CART_APPROVAL_NOT_REQUIRED`, gdy rola kupującego ma `carts.order_without_approval`, z `422 CART_APPROVAL_ALREADY_SUBMITTED` dla koszyka już przekazanego oraz dla koszyka poniżej minimum — zob. *Minimalne ilości zamówienia* |
 
-### Storefront (administrator organizacji)
+Odmowa z powodu brakującego uprawnienia to `403 ORGANIZATION_PERMISSION_REQUIRED` z kodem uprawnienia
+w `details.permission` i jego przetłumaczoną nazwą w `details.permissionLabel`.
+
+### Storefront (akceptujący)
 
 | Metoda i ścieżka | Przeznaczenie |
 | --- | --- |
 | `GET /api/v1/organization/carts` | Lista wszystkich koszyków w organizacji wywołującego |
-| `GET /api/v1/organization/carts/:id` | Szczegóły koszyka członka organizacji |
-| `PATCH /api/v1/organization/policies/cart-approval` | Włączenie lub wyłączenie `requires_cart_approval` dla organizacji |
-| `POST /api/v1/cart/submit-for-approval` | Kupujący przekazuje koszyk do akceptacji administratorowi organizacji (nic nie robi, gdy akceptacja jest wyłączona; odrzucane dla samych administratorów organizacji oraz dla koszyka poniżej minimum — zob. *Minimalne ilości zamówienia*) |
-| `POST /api/v1/organization/carts/:id/approve` | Akceptacja oczekującego koszyka |
-| `POST /api/v1/organization/carts/:id/reject` | Odrzucenie oczekującego koszyka z wymaganym powodem |
+| `GET /api/v1/organization/carts/:id` | Szczegóły koszyka członka organizacji wraz z pozycjami (`items`: nazwa, SKU, ilość, cena jednostkowa i wartość pozycji w zapisanej wysokości) |
+| `POST /api/v1/organization/carts/:id/approve` | Akceptacja oczekującego koszyka; koszyk, który nie oczekuje na akceptację, daje `422 CART_APPROVAL_NOT_PENDING`, własny oczekujący koszyk — `422 CART_APPROVAL_SELF_APPROVE` |
+| `POST /api/v1/organization/carts/:id/reject` | Odrzucenie oczekującego koszyka z wymaganym powodem; odmowy jak przy akceptacji |
 
-Dostęp do każdej trasy `organization/*` wymaga `CustomerAccount.role === 'organization_admin'`.
-Koszyki innej organizacji zwracają 404 (tak samo jak nieistniejące, by nie ujawniać ich istnienia).
+Dostęp do każdej trasy `organization/*` wymaga uprawnienia organizacji `carts.approve`. Koszyki innej
+organizacji zwracają 404 (tak samo jak nieistniejące, by nie ujawniać ich istnienia). Przełącznik
+*Akceptacja koszyków* organizacji (`PATCH /api/v1/organization/policies/cart-approval`) i jego
+odpowiednik dla operatora (`GET`/`PATCH /api/v1/admin/organizations/:id/cart-approval-policy`, wraz z
+panelem w szczegółach organizacji w panelu administracyjnym) zostały usunięte: o akceptacji decydują
+role.
 
 ### Panel administracyjny
 
@@ -112,7 +251,7 @@ Koszyki innej organizacji zwracają 404 (tak samo jak nieistniejące, by nie uja
 | `GET /api/v1/admin/carts` | `carts:read` | Stronicowana lista koszyków w całej platformie (filtry: status, approvalStatus, organizacja, klient, kanał, data) |
 | `GET /api/v1/admin/carts/:id` | `carts:read` | Szczegóły koszyka tylko do odczytu |
 | `GET /api/v1/admin/carts/:id/audit` | `carts:read` | Historia zmian koszyka |
-| `POST /api/v1/admin/carts/:id/reject` | `carts:reject` | Awaryjne, ostateczne odrzucenie (wymaga powodu) |
+| `POST /api/v1/admin/carts/:id/reject` | `carts:reject` | Awaryjne, ostateczne odrzucenie (wymaga powodu); koszyk zrealizowany lub odrzucony daje `422 CART_ALREADY_TERMINAL` |
 
 ## Encje
 
@@ -154,6 +293,18 @@ Pozycja koszyka jest zamawiana po zapisanej cenie `unit_price`, dlatego ta cena 
   kopiuje je na pozycję zamówienia.
 - `GET /api/v1/cart` pokazuje każdą pozycję w cenie, którą teraz naliczyłoby złożenie zamówienia,
   tym samym łańcuchem, a pozycję, którą złożenie zamówienia by odrzuciło, pokazuje jako niedostępną.
+- `GET /api/v1/cart` podaje też **VAT** koszyka, wyliczony tak, jak wylicza go zamówienie: stawkę
+  każdej pozycji ustalają reguły podatkowe (moduł `taxes`) dla klasy podatkowej produktu, statusu
+  VAT organizacji i kraju jej siedziby — 0 % dla organizacji zwolnionej z VAT albo rozliczającej
+  odwrotne obciążenie — a VAT liczony jest **od sumy wartości netto pozycji w danej stawce,
+  zaokrąglany raz, w górę od połowy**; brutto = netto + VAT. Rabat odejmowany jest od kwoty brutto.
+  `vat` zawiera jeden wiersz na stawkę (`taxRate`, `net`, `vat`, `gross`), `vatTotal`,
+  `subtotalGross` i `grandTotalGross`; każda pozycja podaje swoją `taxRate` i `lineGross` — własne
+  zaokrąglenie swojej kwoty brutto, które ma charakter informacyjny: kwoty brutto pozycji mogą
+  w sumie różnić się od łącznej o grosz. Sklep pokazuje te kwoty i sam nie liczy VAT; gdy odczyt ich
+  nie zawiera (`vat: null`), pokazuje kwoty netto. Przy składaniu zamówienia dochodzą koszt dostawy
+  i dopłata za płatność, a pozycje są opodatkowane według kraju adresu rozliczeniowego, jeśli różni
+  się on od kraju siedziby.
 - Przy składaniu zamówienia moduł zamówień pyta ten moduł, czy każda zapisana cena jest nadal
   aktualna. Jeśli któraś nie jest — zwykle dlatego, że cennik zmienił się po dodaniu pozycji —
   złożenie zamówienia jest odrzucane z kodem
@@ -168,6 +319,11 @@ wszystkich pozycji koszyka (z `variantId` każdej pozycji) — a w przeciwnym ra
 dodawanie, łączenie, zmiana ilości, odczyt koszyka (`CartPricingRecompute`) i kontrola przy
 składaniu zamówienia, więc cena, którą kupujący widzi w koszyku, jest ceną, którą nalicza złożenie
 zamówienia — pilnuje tego `backend/test/integration/carts/cart-read-equals-placement.test.ts`.
+VAT liczy `cartVatMoney` (`src/backend/services/cart-money.ts`), wywołując `vatByRate` z kontraktów
+— tę samą funkcję, której używają sumy zamówienia — ze stawkami ustalonymi przez
+`createCartTaxRateResolver` (`cart-tax-rates.ts`); zgodność kwot koszyka z kwotami zamówienia
+utrzymują `backend/test/unit/carts/cart-vat-equals-order.test.ts` i
+`backend/test/integration/carts/cart-vat-equals-placement.test.ts`.
 
 ## Ustawienia
 
@@ -186,6 +342,11 @@ Ustawienia tworzy przy starcie backendu ManifestReconciler cyklu życia modułó
 otrzymują cenę, po której klient może je zamówić; ciasteczko koszyka anonimowego jest unieważniane w
 tej samej operacji. Anonimowy koszyk źródłowy dostaje `status` `'completed'` (a nie
 `'abandoned'`), aby wyszukiwanie porzuconych koszyków nie wysłało później zbędnego powiadomienia.
+
+Członek, którego rola nie ma uprawnienia *Tworzenie i edycja koszyków* (`carts.create`), nie jest
+łączony: wynik to `skipped_permission`, żadna pozycja nie jest przenoszona, nic nie trafia do audytu, a
+koszyk gościa pozostaje `active` ze swoim tokenem i pozycjami. Logowanie się udaje i nie zgłasza
+łączenia.
 
 ## Wyszukiwanie porzuconych koszyków
 
@@ -232,8 +393,9 @@ porzucenia mógł ponownie wysłać powiadomienie.
   którego został wypełniony. Każda pozycja pamięta ilość, dla której uzgodniono jej cenę, i zachowuje
   uzgodnioną cenę tylko przy tej ilości (zobacz *Ceny pozycji*). Dodanie pozycji, usunięcie jednej z
   nich albo zmiana ilości zachowuje oznaczenie; usunięcie ostatniej pozycji albo
-  ponowne wypełnienie koszyka z innego źródła (ponowne zamówienie) usuwa oznaczenie, a zamówienie
-  tworzone dla klienta przez administratora zaczyna nowy koszyk bez niego. Moduł zamówień odczytuje je przy składaniu zamówienia i
+  ponowne wypełnienie koszyka z innego źródła (ponowne zamówienie) usuwa oznaczenie. Zamówienie
+  tworzone dla klienta przez administratora zostawia koszyk i jego oznaczenie bez zmian (zobacz
+  *Koszyki robocze*). Moduł zamówień odczytuje je przy składaniu zamówienia i
   rozstrzyga, czy zamówienie może zapisać to zapytanie. Opisana wyżej kopia z ponowną wyceną nie
   ustawia oznaczenia.
 - **Lista zakupów → koszyk**: przekazywane do istniejącego `ShoppingListService.convertToCart`; moduł
@@ -258,7 +420,11 @@ definiuje strona modułu Catalog).
   packagingUnitName? }`, gdy pozycja jest poniżej minimum i nie jest z niego zwolniona, w
   przeciwnym razie `null`); storefront oznacza taką pozycję i blokuje checkout. Pozycja, której
   rekord produktu zniknął, jest zgłaszana jako `unavailable: true` z
-  `unavailableReason: 'not_purchasable'`. **Jeśli katalogu nie da się odczytać, widok kończy się
+  `unavailableReason: 'not_purchasable'`. Tak samo zgłaszana jest pozycja, której produkt nie jest już
+  dostępny w kanale sprzedaży i języku koszyka (wyłączony tam, poza oknem publikacji albo poza
+  odbiorcami kanału); taka pozycja zachowuje `productName` i `productSku`, by kupujący wiedział,
+  o którą pozycję chodzi, i ma `productSlug: null` — storefront pokazuje ją bez odnośnika, bo strona
+  produktu odpowiada tam `404`. Złożenie zamówienia nadal ją odrzuca. **Jeśli katalogu nie da się odczytać, widok kończy się
   błędem `5xx`**, zamiast zwrócić koszyk bez tych oznaczeń. Widok skrócony (`?view=mini`) się nie
   zmienia.
 - **Dodawanie partiami** — zapytanie ofertowe → koszyk, lista zakupów → koszyk, szybkie zamówienie
@@ -272,12 +438,13 @@ definiuje strona modułu Catalog).
   `throw`, dostaje teraz błąd **zanim cokolwiek zostanie dodane**, gdy pozycji nie da się
   rozstrzygnąć; ten, który prosi o `report`, dostaje każdą porażkę jako wynik. Wywołujący może też
   poprosić, by pozycja poniżej minimum odrzucała całą partię, zanim cokolwiek zostanie zapisane, a —
-  dla klienta — by partia zastąpiła koszyk, który jest wtedy czyszczony dopiero po pozytywnej ocenie
-  partii: w ten sposób tworzenie zamówienia przez administratora i zewnętrzne API zamówień zostawiają
-  koszyk klienta nienaruszony, gdy odrzucają żądanie. Przed tym wyczyszczeniem partia, która ma
-  zgłaszać błąd przy nieudanej pozycji, wycenia też każdą pozycję, którą zamierza zapisać, więc
-  produkt bez ceny albo sprzedawany wyłącznie na zapytanie odrzuca żądanie, a koszyk pozostaje
-  nienaruszony. Najwyżej 200 pozycji na wywołanie.
+  dla klienta — by partia trafiła do nowego koszyka roboczego zamiast do aktywnego (zobacz *Koszyki
+  robocze*), który powstaje dopiero po pozytywnej ocenie partii i jest ponownie usuwany, gdy zapis
+  pozycji się nie powiedzie: w ten sposób tworzenie zamówienia przez administratora, zakup jednym
+  kliknięciem i zewnętrzne API zamówień składają zamówienie, nie dotykając koszyka klienta. Zanim
+  koszyk roboczy powstanie, partia wycenia też każdą pozycję, którą zamierza zapisać, więc produkt
+  bez ceny albo sprzedawany wyłącznie na zapytanie odrzuca żądanie i nic nie zostaje zapisane.
+  Najwyżej 200 pozycji na wywołanie.
 - **Koszyk wypełniony z zaakceptowanego zapytania ofertowego** zachowuje wynegocjowane ilości
   zapytania: każda pozycja wypełniona z zapytania jest zwolniona z minimów, **dopóki jej ilość
   równa się ilości z zapytania** dla tej pozycji — ilości, przy której obowiązuje uzgodniona cena
@@ -329,11 +496,15 @@ odczytu to zmiana na później.
   `CartPricingRecompute`, który wywołuje `CartLinePricing.orderablePrices`; wynik jest przechowywany
   w `CartRecomputeCache` (TTL 30 s w Redis), unieważnianym przy każdym zapisie koszyka. Odpowiedzi
   operacji zmieniających koszyk zwracają zapisaną wartość `unitPrice`.
-- **Wysyłka e-maili** — e-maile o przekazaniu do akceptacji, akceptacji, odrzuceniu i porzuceniu są
-  przygotowane w usługach jako szkielet; osobne szablony to zmiana na później.
+- **Wysyłka e-maili** — e-maile o przekazaniu do akceptacji, akceptacji i odrzuceniu są wysyłane przez
+  `transactional_emails` (zobacz *E-maile o akceptacji*). E-mail o porzuceniu koszyka to punkt
+  rozszerzenia `cartAbandonmentNotifier`, który dostarcza wdrożenie; bez niego wyszukiwanie zmienia
+  status i niczego nie wysyła.
 - **Harmonogram wyszukiwania porzuconych koszyków** — worker jest tworzony w produkcyjnej kompozycji,
   ale nie jest jeszcze podłączony do crona ani harmonogramu BullMQ. Polecenie
-  `pnpm --filter backend run cart:abandonment-sweep` uruchamia jeden przebieg ręcznie. To polecenie
+  `pnpm run cli carts abandonment-sweep`, uruchomione w katalogu głównym instancji, wykonuje jeden
+  przebieg ręcznie; w klonie repozytorium Endora Commerce ma postać
+  `pnpm --filter backend run cart:abandonment-sweep`. To polecenie
   zadeklarowane w manifeście, które uruchamia host, więc przebieg korzysta z `cartAbandonmentWorker`
   z kompozycji — implementacja jest w
   `packages/modules/carts/src/backend/cli/abandonment-sweep.ts`, a deklaracja w eksporcie

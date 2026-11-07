@@ -172,8 +172,59 @@ export const cartViewLineSchema = z.object({
     })
     .nullable()
     .optional(),
+  /**
+   * Issue #436 — the line's VAT rate as a fraction (`0.23`), resolved the way
+   * placement resolves it: the product's tax class against the Organization's
+   * VAT status and country. Answered by `GET /api/v1/cart`; absent on the
+   * line-mutation replies, and `null` when the read could not resolve it.
+   */
+  taxRate: z.number().finite().nonnegative().nullable().optional(),
+  /**
+   * Issue #436 — the line's own gross, `round_half_up(lineTotal × (1 + taxRate))`
+   * (owner ruling of 2026-10-24). Informational: the line grosses may add up to
+   * a cent more or less than the cart's gross, which is the per-rate figure in
+   * {@link cartVatSchema}. Present and absent with `taxRate`.
+   */
+  lineGross: moneySchema.nullable().optional(),
 });
 export type CartViewLine = z.infer<typeof cartViewLineSchema>;
+
+/** Issue #436 — one rate's row of the cart's VAT: two-place amounts in the cart's currency. */
+export const cartVatRowSchema = z.object({
+  /** The rate as a fraction, `0.23`. */
+  taxRate: z.number().finite().nonnegative(),
+  /** The sum of the line nets at this rate. */
+  net: z.number().finite(),
+  /** `round_half_up(net × taxRate)`, once per rate. */
+  vat: z.number().finite(),
+  /** `net + vat`. */
+  gross: z.number().finite(),
+});
+export type CartVatRow = z.infer<typeof cartVatRowSchema>;
+
+/**
+ * Issue #436 — the cart's VAT under the one VAT method (owner ruling of
+ * 2026-10-24): per rate, on the sum of the line nets at that rate, rounded
+ * half-up once; gross = net + VAT. The same computation the order makes at
+ * placement, for the same lines and rates, so the cart's gross is the order's
+ * before the checkout's delivery and payment charges, which the order adds
+ * untaxed. A client renders these figures and does not compute VAT itself.
+ */
+export const cartVatSchema = z.object({
+  currency: z.string().length(3),
+  /** One row per rate, ascending. */
+  rows: z.array(cartVatRowSchema),
+  /** The sum of the rows' VAT. */
+  vatTotal: z.number().finite(),
+  /** `subtotal + vatTotal`. */
+  subtotalGross: z.number().finite(),
+  /**
+   * `subtotalGross − discount`, never below zero: the discount comes off the
+   * gross, untaxed, as it does on the order.
+   */
+  grandTotalGross: z.number().finite(),
+});
+export type CartVat = z.infer<typeof cartVatSchema>;
 
 export const cartMiniLineSchema = z.object({
   id: uuidSchema,
@@ -218,6 +269,40 @@ const couponDroppedThisReadSchema = z
   })
   .nullable();
 
+/**
+ * Issue #650 — the rejection of the buyer's previous basket on this channel.
+ *
+ * A rejection closes the basket it rejects (`status = 'rejected'`), so the
+ * buyer's next cart read is a new active basket whose own `approvalStatus` is
+ * `not_required` and can never say `rejected_by_org_admin`. Without this the
+ * buyer was never told. It is answered while (a) the buyer has a rejected
+ * basket on the channel — the most recent one is answered — and
+ * (b) the current basket has not been sent for approval since. A basket
+ * ordered or converted to a quote request after the rejection ends it too.
+ * `null` otherwise, and always `null` for an anonymous basket.
+ */
+export const cartPreviousRejectionSchema = z.object({
+  /** The rejected basket. */
+  cartId: uuidSchema,
+  rejectedAt: isoDateTimeSchema,
+  /** The reason the administrator gave; `null` only for a row stored without one. */
+  reason: z.string().nullable(),
+  /**
+   * Issue #755 — how many of the rejected basket's lines were restored into
+   * the basket answered. The basket opened after a rejection starts with them,
+   * once; `0` when nothing was restored into this basket (it already existed,
+   * the buyer may not create baskets, or nothing could be added).
+   */
+  restoredLineCount: z.number().int().nonnegative().default(0),
+  /**
+   * Issue #755 — the rejected basket's lines the restore skipped, because they
+   * can no longer be bought here, with the reason. `[]` when none was skipped
+   * or nothing was restored.
+   */
+  skippedLines: z.array(cartDroppedLineSchema).default([]),
+});
+export type CartPreviousRejection = z.infer<typeof cartPreviousRejectionSchema>;
+
 export const cartFullPayloadSchema = z.object({
   id: uuidSchema.nullable(),
   customerAccountId: uuidSchema.nullable(),
@@ -236,9 +321,25 @@ export const cartFullPayloadSchema = z.object({
   primaryCta: cartPrimaryCtaSchema,
   droppedLines: z.array(cartDroppedLineSchema),
   couponDroppedThisRead: couponDroppedThisReadSchema,
-  createdAt: isoDateTimeSchema,
-  updatedAt: isoDateTimeSchema,
-  lastActivityAt: isoDateTimeSchema,
+  /**
+   * `null` on the empty basket — the reply for a caller who has no basket yet,
+   * whose `id` is `null` too (issue #128). A basket that exists always carries
+   * all three.
+   */
+  createdAt: isoDateTimeSchema.nullable(),
+  updatedAt: isoDateTimeSchema.nullable(),
+  lastActivityAt: isoDateTimeSchema.nullable(),
+  /**
+   * Issue #650 — see {@link cartPreviousRejectionSchema}. Additive: a reply
+   * without the key parses as `null`.
+   */
+  previousRejection: cartPreviousRejectionSchema.nullable().default(null),
+  /**
+   * Issue #436 — see {@link cartVatSchema}. Answered by `GET /api/v1/cart`;
+   * `null` on the empty basket, on the line-mutation replies and when the read
+   * could not resolve a rate. Additive: a reply without the key parses as `null`.
+   */
+  vat: cartVatSchema.nullable().default(null),
 });
 export type CartFullPayload = z.infer<typeof cartFullPayloadSchema>;
 

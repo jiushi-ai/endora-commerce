@@ -96,6 +96,11 @@ export const manifest = defineModuleManifest({
     'quote_requests',
     'sales_channels',
     'settings',
+    // Issue #436 — the cart read answers its VAT per rate from the rates
+    // placement resolves, through `taxService`. `taxes` is `nonDeactivatable`
+    // and depends on neither this module nor anything that reaches it, so the
+    // edge closes no cycle.
+    'taxes',
   ],
   // Feature 073, Amendment A1 — a real port edge whose `dependencies` entry
   // would close a cycle. Read by the flip-time refusals and by
