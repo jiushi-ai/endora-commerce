@@ -1,17 +1,20 @@
 'use client';
 
 import { useState, type FormEvent, type ReactNode } from 'react';
-import { publicApiBaseUrl } from '../../lib/env.mjs';
 
 /**
  * Sealed bid form: download intent template, upload signed PDF, submit.
+ *
+ * Browser calls stay same-origin (`/api/bidding/…`). Those Route Handlers
+ * forward `b2b_session` to the backend — required when the API host differs
+ * from the storefront (production `b2b.*` vs `api.*`).
  */
 export function SubmitBidForm(props: {
   campaignId: string;
   hasIntentTemplate: boolean;
 }): ReactNode {
   const { campaignId, hasIntentTemplate } = props;
-  const apiBase = publicApiBaseUrl().replace(/\/+$/, '');
+  const biddingBase = `/api/bidding/campaigns/${encodeURIComponent(campaignId)}`;
   const [unitPrice, setUnitPrice] = useState('');
   const [qty, setQty] = useState('1');
   const [attachmentId, setAttachmentId] = useState<string | null>(null);
@@ -24,10 +27,10 @@ export function SubmitBidForm(props: {
   async function downloadTemplate(): Promise<void> {
     setError(null);
     try {
-      const res = await fetch(
-        `${apiBase}/api/v1/bidding/campaigns/${encodeURIComponent(campaignId)}/intent-template`,
-        { credentials: 'include', headers: { Accept: 'application/json' } },
-      );
+      const res = await fetch(`${biddingBase}/intent-template`, {
+        credentials: 'same-origin',
+        headers: { Accept: 'application/json' },
+      });
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as {
           error?: { message?: string };
@@ -57,10 +60,11 @@ export function SubmitBidForm(props: {
     try {
       const fd = new FormData();
       fd.append('file', file, file.name);
-      const res = await fetch(
-        `${apiBase}/api/v1/bidding/campaigns/${encodeURIComponent(campaignId)}/intent-attachments`,
-        { method: 'POST', credentials: 'include', body: fd },
-      );
+      const res = await fetch(`${biddingBase}/intent-attachments`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: fd,
+      });
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as {
           error?: { message?: string };
@@ -89,19 +93,16 @@ export function SubmitBidForm(props: {
     setError(null);
     setOk(false);
     try {
-      const res = await fetch(
-        `${apiBase}/api/v1/bidding/campaigns/${encodeURIComponent(campaignId)}/receipts`,
-        {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'content-type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({
-            bidUnitPrice: unitPrice.trim(),
-            bidQty: Number(qty),
-            attachmentAssetIds: [attachmentId],
-          }),
-        },
-      );
+      const res = await fetch(`${biddingBase}/receipts`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'content-type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          bidUnitPrice: unitPrice.trim(),
+          bidQty: Number(qty),
+          attachmentAssetIds: [attachmentId],
+        }),
+      });
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as {
           error?: { message?: string };

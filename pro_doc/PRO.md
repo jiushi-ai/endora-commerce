@@ -727,3 +727,13 @@ feat-26-11-05 01:26:32 [24.1~24.3]：首页常规品类fallback改为算力供�
 汇总：Docker Reset / 冷库 + `pnpm run dev` 三端并行时，`_i18n` 在 `defineModuleRoutes` 内 reconcile 常超过默认 10s，触发 `AVV_ERR_PLUGIN_EXEC_TIMEOUT`，3001 拒绝连接、Admin 登录失败。未改 reconcile 时序（测试仍钉在 plugin attach）。
 
 feat-26-11-06 19:08:50 [25.1~25.3]：提高 Fastify pluginTimeout 避免 _i18n reconcile 拖垮本地 boot
+
+### 26. 生产竞价 PDF 上传 401 — storefront 同源 BFF
+
+- [x] 26.1 新增 `/api/bidding/campaigns/[id]/{intent-template,intent-attachments,receipts}`，转发 `b2b_session` 至 backend
+- [x] 26.2 `SubmitBidForm` 改为 same-origin `/api/bidding/…`（不再直连 `NEXT_PUBLIC_API_BASE_URL`）
+- [x] 26.3 同源约束单测 + channel-header-coverage；更新部署 chatlog；本 §99
+
+汇总：生产 `b2b.*` / `api.*` 分主机时浏览器无法把店面 scoped 的 `b2b_session` 带到 API，intent PDF 上传 401；本地 localhost 因 Cookie 不按端口隔离而掩盖。修复后需 rebuild/push storefront 镜像。
+
+feat-26-11-06 23:16:16 [26.1~26.3]：竞价回执 PDF 走 storefront 同源 BFF 修复生产 401
