@@ -7,7 +7,6 @@ import { ProductRow } from '../../components/ProductRow';
 import { BaseSalePriceBlock } from '../../components/pricing/BaseSalePriceBlock';
 import { PdpPriceToggle } from '../../components/pricing/PdpPriceToggle';
 import { PriceTag } from '../../components/PriceTag';
-import { moduleActionPresence } from '../../lib/module-action-presence';
 import { findElement } from './element-tree';
 
 /**
@@ -33,8 +32,6 @@ vi.mock('react', async () => {
   };
 });
 
-const ALL_PRESENT = moduleActionPresence({ isPresent: () => true });
-
 function summary(vatRate?: number | null): ProductSummary {
   return {
     id: '00000000-0000-4000-8000-000000000852',
@@ -56,7 +53,7 @@ const plain = (html: string): string => html.replace(/<[^>]+>/g, ' ').replace(/�
 describe('ProductCard — the product’s own rate', () => {
   it('derives the gross of an 8 % product as net × 1.08', () => {
     const html = plain(
-      renderToString(<ProductCard presence={ALL_PRESENT} product={summary(0.08)} locale="pl-PL" salesChannelCode="retail" />),
+      renderToString(<ProductCard product={summary(0.08)} locale="pl-PL" salesChannelCode="retail" />),
     );
     expect(html).toContain('brutto 108,00 zł');
     expect(html).not.toContain('123,00');
@@ -64,7 +61,7 @@ describe('ProductCard — the product’s own rate', () => {
 
   it('shows an exempt buyer a gross equal to the net (0 %)', () => {
     const html = plain(
-      renderToString(<ProductCard presence={ALL_PRESENT} product={summary(0)} locale="pl-PL" salesChannelCode="retail" />),
+      renderToString(<ProductCard product={summary(0)} locale="pl-PL" salesChannelCode="retail" />),
     );
     expect(html).toContain('brutto 100,00 zł');
   });
@@ -72,7 +69,7 @@ describe('ProductCard — the product’s own rate', () => {
   it('shows the net, labelled net, when the read carries no rate', () => {
     for (const rate of [undefined, null]) {
       const html = plain(
-        renderToString(<ProductCard presence={ALL_PRESENT} product={summary(rate)} locale="pl-PL" salesChannelCode="retail" />),
+        renderToString(<ProductCard product={summary(rate)} locale="pl-PL" salesChannelCode="retail" />),
       );
       expect(html).toContain('100,00 zł');
       expect(html).toContain('netto');
@@ -85,7 +82,7 @@ describe('ProductCard — the product’s own rate', () => {
     const html = plain(
       renderToString(
         <ProductCard
-          presence={ALL_PRESENT}
+         
           product={summary(0.08)}
           resolved={{ basePrice: { amount: '100.00', currency: 'PLN' }, salePrice: null, displayMode: 'gross_only' }}
           locale="pl-PL"
@@ -100,16 +97,33 @@ describe('ProductCard — the product’s own rate', () => {
 
 describe('ProductRow — the product’s own rate', () => {
   it('derives the gross of an 8 % product as net × 1.08', () => {
-    const html = plain(renderToString(<ProductRow presence={ALL_PRESENT} product={summary(0.08)} locale="pl-PL" />));
+    const html = plain(renderToString(<ProductRow product={summary(0.08)} locale="pl-PL" />));
     expect(html).toContain('brutto 108,00 zł');
     expect(html).not.toContain('123,00');
   });
 
   it('shows the net, labelled net, when the read carries no rate', () => {
-    const html = plain(renderToString(<ProductRow presence={ALL_PRESENT} product={summary()} locale="pl-PL" />));
+    const html = plain(renderToString(<ProductRow product={summary()} locale="pl-PL" />));
     expect(html).toContain('100,00 zł');
     expect(html).toContain('netto');
     expect(html).not.toContain('brutto');
+  });
+});
+
+describe('the deprecated `vatRate` prop (issue #852)', () => {
+  it('still overrides the product’s rate on the card', () => {
+    const html = plain(
+      renderToString(
+        <ProductCard product={summary(0.23)} vatRate={0.05} locale="pl-PL" salesChannelCode="retail" />,
+      ),
+    );
+    expect(html).toContain('brutto 105,00 zł');
+    expect(html).not.toContain('123,00');
+  });
+
+  it('still overrides the product’s rate on the row', () => {
+    const html = plain(renderToString(<ProductRow product={summary()} vatRate={0.05} locale="pl-PL" />));
+    expect(html).toContain('brutto 105,00 zł');
   });
 });
 
