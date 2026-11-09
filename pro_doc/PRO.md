@@ -737,3 +737,21 @@ feat-26-11-06 19:08:50 [25.1~25.3]：提高 Fastify pluginTimeout 避免 _i18n r
 汇总：生产 `b2b.*` / `api.*` 分主机时浏览器无法把店面 scoped 的 `b2b_session` 带到 API，intent PDF 上传 401；本地 localhost 因 Cookie 不按端口隔离而掩盖。修复后需 rebuild/push storefront 镜像。
 
 feat-26-11-06 23:16:16 [26.1~26.3]：竞价回执 PDF 走 storefront 同源 BFF 修复生产 401
+
+### 27. Endora Commerce 总体功能介绍（偏业务文档）
+
+- [x] 27.1 撰写偏业务的总体功能介绍，落盘 `pro_doc/endora-commerce-功能介绍.md`
+- [x] 27.2 本 §99
+
+汇总：系统已上线后，按产品/业务视角整理 Endora Commerce 能力全景（三端角色、目录价格、直购+询价、组织信用、履约发票、内容营销、治理扩展与开源边界），并注明与本仓库竞价扩展的关系；未改业务代码。
+
+feat-26-11-08 22:18:20 [27.1~27.2]：新增 pro_doc Endora Commerce 偏业务总体功能介绍
+
+### 28. Mobii-by-Endora 总体功能介绍（基座 + 竞价批采）
+
+- [x] 28.1 新建 `pro_doc/mobii-by-endora-功能介绍.md`：Endora 复用能力 + Mobii 竞价批采新增能力
+- [x] 28.2 本 §99
+
+汇总：按确认口径重写偏业务总览——主体为 Mobii-by-Endora，文档同时覆盖 Endora 基座（组织/货品/订单履约等）与 bidding 活动/回执/签核/预付/转单/发货门禁；与上一份纯 Endora 介绍文档并列，互不覆盖。
+
+feat-26-11-08 22:24:10 [28.1~28.2]：新增 Mobii-by-Endora 偏业务功能介绍（Endora 基座+竞价批采）
