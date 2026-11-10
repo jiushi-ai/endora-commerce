@@ -1,0 +1,58 @@
+
+  @font-face {
+    font-family: 'RelayIcon';
+    src: url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397I83FDOSpRnhi.eot?t=1780567796164'); /* IE9 */
+    src: url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397I83FDOSpRnhi.eot?t=1780567796164#iefix') format('embedded-opentype') /* IE6-IE8 */,
+		url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397I83FDOSpRnhi.woff2?t=1780567796164') format('woff2') /* chrome、firefox */,
+		url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397I83FDOSpRnhi.woff?t=1780567796164') format('woff') /* chrome、firefox */,
+		url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397I83FDOSpRnhi.ttf?t=1780567796164') format('truetype') /* chrome、firefox、opera、Safari, Android, iOS 4.2+ */,
+		url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397I83FDOSpRnhi.svg?t=1780567796164#RelayIcon') format('svg') /* iOS 4.1- */;
+  }
+
+  .common{
+    font-family: 'RelayIcon';
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .icon-commondianpu::before {
+    content: "\e833";
+  }
+
+  .icon-commonguanbi::before {
+    content: "\f25c";
+  }
+
+  .icon-commonguanzhu::before {
+    content: "\f4cc";
+  }
+
+  .icon-commonshoucang::before {
+    content: "\e733";
+  }
+
+  .icon-commonshuaxin::before {
+    content: "\f181";
+  }
+
+  .icon-commontongzhi::before {
+    content: "\e7bc";
+  }
+
+  .icon-commonxinxi::before {
+    content: "\e0a5";
+  }
+
+  .icon-commonjingyin::before {
+    content: "\ef92";
+  }
+
+  .icon-commonyinliang::before {
+    content: "\e2f6";
+  }
+
+  .icon-commonlianxikefu::before {
+    content: "\f11e";
+  }

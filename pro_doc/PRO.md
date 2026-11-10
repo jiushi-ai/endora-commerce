@@ -782,3 +782,15 @@ feat-26-11-08 22:40:41 [30.1~30.2]：功能介绍文档产品名改为 Mobii_竞
 汇总：按 §3 + S1，写入 admin.justgoai.com / b2b.justgoai.com 及对应邮箱；明文密码不进文档。
 
 feat-26-11-08 22:46:59 [31.1~31.2]：功能介绍 §3 补充生产环境入口（无口令）
+
+### 32. 生产 ECS 常规采购 4 品类上架脚本（API）
+
+- [x] 32.1 `seed-kingston-fury-on-ecs.sh`：分类「内存」/SKU `KINGSTON-FURY-16GB-DDR4-3200` / CNY 299
+- [x] 32.2 `seed-z11-on-ecs.sh`：分类「小型 mini 设备」/SKU `LIVA-Z11-PLUS` / CNY 3999
+- [x] 32.3 `seed-adlink-pci7230-on-ecs.sh`：分类「电子元器件」/SKU `ADLINK-PCI-7230` / CNY 899
+- [x] 32.4 `seed-etfe-300w-on-ecs.sh`：分类「绿色算力硬件」/SKU `GHGN-ETFE-36V-300W` / CNY 1299
+- [x] 32.5 本 §99
+
+汇总：对齐 H200 方案 1（admin login → ensure/create category by slug → active product → CNY net 基价）；4 独立脚本可单跑；分类创建失败回退 `categoryIds:[]`；服务器配件/散热与电源暂不上架。
+
+feat-26-11-09 22:45:25 [32.1~32.5]：生产 ECS 常规采购四品类商品上架 API 脚本

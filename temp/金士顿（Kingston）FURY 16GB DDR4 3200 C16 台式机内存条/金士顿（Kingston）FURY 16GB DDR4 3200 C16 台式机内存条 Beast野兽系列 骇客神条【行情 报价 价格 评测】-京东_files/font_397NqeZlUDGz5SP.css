@@ -1,0 +1,178 @@
+
+  @font-face {
+    font-family: 'pdp';
+    src: url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397NqeZlUDGz5SP.eot?t=1793003628329'); /* IE9 */
+    src: url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397NqeZlUDGz5SP.eot?t=1793003628329#iefix') format('embedded-opentype') /* IE6-IE8 */,
+		url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397NqeZlUDGz5SP.woff2?t=1793003628329') format('woff2') /* chrome、firefox */,
+		url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397NqeZlUDGz5SP.woff?t=1793003628329') format('woff') /* chrome、firefox */,
+		url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397NqeZlUDGz5SP.ttf?t=1793003628329') format('truetype') /* chrome、firefox、opera、Safari, Android, iOS 4.2+ */,
+		url('//s1-relay.360buyimg.com/relay/c/iconfont/8/font_397NqeZlUDGz5SP.svg?t=1793003628329#pdp') format('svg') /* iOS 4.1- */;
+  }
+
+  .pdp{
+    font-family: 'pdp';
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .icon-pdp-shouqi-xiaochicun::before {
+    content: "\e5b3";
+  }
+
+  .icon-pdp-unchosen::before {
+    content: "\f45c";
+  }
+
+  .icon-pdp-tuichuquanping::before {
+    content: "\ec94";
+  }
+
+  .icon-pdp-1-1::before {
+    content: "\ee8c";
+  }
+
+  .icon-pdp-xuanzhuan::before {
+    content: "\e59b";
+  }
+
+  .icon-pdp-jiahao-xiaochicun::before {
+    content: "\e0de";
+  }
+
+  .icon-pdp-yaodai-tiaozhuan-xin-filled::before {
+    content: "\eff1";
+  }
+
+  .icon-pdp-3-4::before {
+    content: "\e895";
+  }
+
+  .icon-pdp-refresh::before {
+    content: "\f27c";
+  }
+
+  .icon-pdp-yaodai-tiaozhuan-filled::before {
+    content: "\f168";
+  }
+
+  .icon-pdp-addimage::before {
+    content: "\e2e1";
+  }
+
+  .icon-pdp-warning::before {
+    content: "\e3fd";
+  }
+
+  .icon-pdp-upload::before {
+    content: "\f172";
+  }
+
+  .icon-pdp-jinruquanping::before {
+    content: "\e218";
+  }
+
+  .icon-pdp-clock::before {
+    content: "\e7b6";
+  }
+
+  .icon-pdp-image-i::before {
+    content: "\f2e9";
+  }
+
+  .icon-pdp-fanhui-xiaochicun::before {
+    content: "\e023";
+  }
+
+  .icon-pdp-close::before {
+    content: "\ec50";
+  }
+
+  .icon-pdp-liebiaomoshi::before {
+    content: "\ef4f";
+  }
+
+  .icon-pdp-zhankai-xiaochicun::before {
+    content: "\e48f";
+  }
+
+  .icon-pdp-chosen-only::before {
+    content: "\f453";
+  }
+
+  .icon-pdp-2222::before {
+    content: "\e0e3";
+  }
+
+  .icon-pdp-jianhao-xiaochicun::before {
+    content: "\e489";
+  }
+
+  .icon-pdp-success::before {
+    content: "\e4b0";
+  }
+
+  .icon-pdp-furniture::before {
+    content: "\ef10";
+  }
+
+  .icon-pdp-jisuanqi::before {
+    content: "\e797";
+  }
+
+  .icon-pdp-confirm::before {
+    content: "\e456";
+  }
+
+  .icon-pdp-tips::before {
+    content: "\e37f";
+  }
+
+  .icon-pdp-contrast::before {
+    content: "\f00d";
+  }
+
+  .icon-pdp-close1::before {
+    content: "\e7ba";
+  }
+
+  .icon-pdp-home::before {
+    content: "\e940";
+  }
+
+  .icon-pdp-failure::before {
+    content: "\e1fe";
+  }
+
+  .icon-pdp-add::before {
+    content: "\e617";
+  }
+
+  .icon-pdp-share-i::before {
+    content: "\e1f0";
+  }
+
+  .icon-pdp-4-3::before {
+    content: "\f166";
+  }
+
+  .icon-pdp-ai-shop-i::before {
+    content: "\e9b3";
+  }
+
+  .icon-pdp-save::before {
+    content: "\f225";
+  }
+
+  .icon-pdp-yishoucang-filled::before {
+    content: "\ed07";
+  }
+
+  .icon-pdp-tiaozhuan-xiaochicun::before {
+    content: "\e248";
+  }
+
+  .icon-pdp-datumoshi::before {
+    content: "\f28f";
+  }
