@@ -10,6 +10,7 @@ import { useTranslation } from '@endora-commerce/admin-kit/i18n';
 import { apiClient } from '@endora-commerce/admin-kit/lib';
 
 import { megamenuClient } from '../api/megamenu-client.js';
+import { languagesFromChannelDetail } from './channel-detail-languages.js';
 
 interface BindingsPanelProps {
   menuId: string;
@@ -47,11 +48,15 @@ export function BindingsPanel({ menuId, bindings, onChanged }: BindingsPanelProp
     }
     const channel = channels.find((c) => c.id === pickedChannelId);
     if (!channel) return;
+    // Detail GET returns the channel object itself (see sales_channels
+    // routes.admin `serializeDetail`), not `{ data: … }`. Reading
+    // `res.data.languages` threw "Cannot read properties of undefined
+    // (reading 'languages')" and blocked Add binding on every instance.
     apiClient
-      .get<{ data: SalesChannelDetail }>(
+      .get<SalesChannelDetail>(
         `/api/v1/admin/sales-channels/${encodeURIComponent(channel.code)}`,
       )
-      .then((res) => setPickedChannelLanguages(res.data.languages))
+      .then((res) => setPickedChannelLanguages(languagesFromChannelDetail(res)))
       .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)));
   }, [channels, pickedChannelId]);
 

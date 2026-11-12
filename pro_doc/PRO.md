@@ -794,3 +794,13 @@ feat-26-11-08 22:46:59 [31.1~31.2]：功能介绍 §3 补充生产环境入口�
 汇总：对齐 H200 方案 1（admin login → ensure/create category by slug → active product → CNY net 基价）；4 独立脚本可单跑；分类创建失败回退 `categoryIds:[]`；服务器配件/散热与电源暂不上架。
 
 feat-26-11-09 22:45:25 [32.1~32.5]：生产 ECS 常规采购四品类商品上架 API 脚本
+
+### 33. Megamenu Bindings 选渠道 languages 报错修复
+
+- [x] 33.1 修复 `BindingsPanel`：渠道详情按顶层 `languages` 读取（`languagesFromChannelDetail`）
+- [x] 33.2 单元测试 + `mod-megamenu` typecheck 通过（本地 Admin UI 验证待 WSL+Docker）
+- [x] 33.3 本 §99
+
+汇总：根因是 Admin 将 `GET /admin/sales-channels/:code` 误读为 `{ data.languages }`；开源 master/release 与 demo 同源。生产不跑 demo seed；先本地验证再发 ECS。会话归档见 `chatlog/2026-11-11-chat1-Megamenu绑定语言报错分析/`。
+
+feat-26-11-11 19:20:28 [33.1~33.3]：修复 Megamenu Bindings 选渠道 reading languages 报错
