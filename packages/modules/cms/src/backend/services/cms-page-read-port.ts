@@ -6,17 +6,21 @@ import type {
   CmsPageStorefrontLinkScope,
 } from '@endora-commerce/contracts';
 import { CmsPage } from '../entities/cms-page.entity.js';
-import { loadChannelPageNodes, pageStorefrontLinks } from './page-paths.js';
 
 /**
  * The page read model `cms` publishes (feature 075, Phase P).
  *
- * `seo` is the only consumer, and it reads pages twice: to resolve one page's
- * meta tags, and to enumerate the published ones for the sitemap.
+ * `seo` is the only consumer of the record readers; megamenu (feature 168)
+ * reads `findStorefrontLinks` for CMS page-link labels and URLs.
  *
  * The `body` and `content` columns do not survive the mapping. A sitemap and a
  * meta-tag resolver have no use for a page's rendered tree, and shipping it
  * would make every sitemap build carry the whole CMS through memory.
+ *
+ * Note: upstream 168 pairs this with `page-paths.ts` + contracts helpers from
+ * a fuller feature-163 tree (`cmsLocalizedPage`, per-language path nodes).
+ * This fork's CMS page model keeps a single `path`/`slug`/`name`, so links are
+ * resolved from those columns without the missing contracts helpers.
  */
 export class CmsPageReadService implements CmsPageReadPort {
   constructor(private readonly emFactory: () => EntityManager) {}
@@ -47,32 +51,32 @@ export class CmsPageReadService implements CmsPageReadPort {
   }
 
   /**
-   * Feature 168 — the channel's page tree and the pages' names, two reads
-   * however many links a menu holds.
+   * Feature 168 — storefront link for each requested page id (name + path).
+   * Pages missing from the catalogue are omitted; order follows `ids`.
    */
   async findStorefrontLinks(
     ids: readonly string[],
-    scope: CmsPageStorefrontLinkScope,
+    _scope: CmsPageStorefrontLinkScope,
   ): Promise<CmsPageStorefrontLink[]> {
     if (ids.length === 0) return [];
-    const em = this.emFactory();
-    const [nodes, pages] = await Promise.all([
-      loadChannelPageNodes(em, [scope.salesChannelId]),
-      em.find(CmsPage, { id: { $in: [...ids] } }),
-    ]);
-    return pageStorefrontLinks(
-      nodes,
-      pages.map((page) => ({
+    const pages = await this.emFactory().find(CmsPage, { id: { $in: [...ids] } });
+    const byId = new Map(pages.map((page) => [page.id, page]));
+    const links: CmsPageStorefrontLink[] = [];
+    for (const id of ids) {
+      const page = byId.get(id);
+      if (page === undefined) continue;
+      // Scope language is accepted for port compatibility; this fork has no
+      // per-language slug tree, so every requested page resolves the same way.
+      void _scope.language;
+      const path = page.path?.trim() || page.slug?.trim() || '';
+      const url = path.replace(/^\/+/, '');
+      links.push({
         id: page.id,
-        name: page.name,
-        slug: page.slug,
-        description: page.description ?? null,
-        languages: page.languages,
-        translations: page.translations,
-      })),
-      ids,
-      scope,
-    );
+        name: page.name?.trim() || page.slug || page.id,
+        url,
+      });
+    }
+    return links;
   }
 }
 
