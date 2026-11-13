@@ -202,6 +202,26 @@ function renderRow(
           <MenuCmsBlockEmbed item={item} />
         </div>
       );
+    case 'group':
+      if (hasChildren) {
+        return (
+          <button type="button" className="mm__row" onClick={() => drillInto(item)}>
+            <span className="mm__row__ic">
+              <RowIcon item={item} />
+            </span>
+            <span className="mm__row__main">
+              <b>{item.label}</b>
+              {item.description ? <span>{item.description}</span> : null}
+            </span>
+            <span className="mm__row__chev">
+              <ChevRightIcon />
+            </span>
+          </button>
+        );
+      }
+      return null;
+    default:
+      return null;
   }
 }
 

@@ -804,3 +804,14 @@ feat-26-11-09 22:45:25 [32.1~32.5]：生产 ECS 常规采购四品类商品上�
 汇总：根因是 Admin 将 `GET /admin/sales-channels/:code` 误读为 `{ data.languages }`；开源 master/release 与 demo 同源。生产不跑 demo seed；先本地验证再发 ECS。会话归档见 `chatlog/2026-11-11-chat1-Megamenu绑定语言报错分析/`。
 
 feat-26-11-11 19:20:28 [33.1~33.3]：修复 Megamenu Bindings 选渠道 reading languages 报错
+
+### 34. Storefront 切换 NavigationBar（去硬编码 Quick Order）
+
+- [x] 34.1 `Header.tsx` 改挂 `NavigationBar`，去掉 `CategoriesMega` 与硬编码 Quick Order
+- [x] 34.2 删除 `CategoriesMega` / `Megamenu` / `MegamenuPanel`；补 `localized-link` 兼容层与 zh megamenu 文案
+- [x] 34.3 storefront typecheck + NavigationBar/MobileDrawer/HeaderBreakpoint 测试通过（27）
+- [x] 34.4 本 §99
+
+汇总：对齐 Feature 168 方案 A——导航行仅由 Admin Megamenu 驱动；本批仅本地 storefront，ECS 待确认效果后再发。切换后需在 Admin 为「快速下单」加顶层 Button + Position=Right + `/quick-order`，否则右侧暂无 CTA。`localized-link` 为 167 未合入前的透传兼容，非完整 locale-in-path。
+
+feat-26-11-12 19:46:41 [34.1~34.4]：Storefront 改挂 NavigationBar 并去掉硬编码 Quick Order

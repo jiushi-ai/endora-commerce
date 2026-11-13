@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { I18nConfigResponse, ResolvedMegamenu } from '@endora-commerce/contracts';
 import type { MeResult } from '../lib/api/account';
 import { tForLocale } from '../lib/i18n/messages';
-import { CategoriesMega } from './Megamenu/CategoriesMega';
+import { NavigationBar } from './Megamenu/NavigationBar';
 import { MegamenuMobileDrawer } from './Megamenu/MegamenuMobileDrawer';
 import { MobileSearchOverlay } from './mobile/MobileSearchOverlay';
 import { CompareCounterLink } from './CompareToggle';
@@ -19,7 +19,7 @@ import { publicApiBaseUrl } from '../lib/env.mjs';
  *   1) top utility strip (phone, shipping cutoff, Faktura VAT chip,
  *      NIP chip, currency/locale, B2B support),
  *   2) main header (brand mark + search + icon buttons + user pill),
- *   3) main nav (categories + Quick Order CTA).
+ *   3) main nav (Feature 168 NavigationBar tabs from the active megamenu).
  *
  * The component is server-rendered; only the search autocomplete and
  * compare counter hydrate on the client.
@@ -36,7 +36,7 @@ export function Header(props: {
   salesChannelCode: string | undefined;
   /** Feature 027 — buyer's cart line count for the icon-btn badge. */
   cartItemCount?: number;
-  /** Feature 015 — resolved megamenu powering the "Wszystkie kategorie" panel. */
+  /** Feature 015 / 168 — resolved megamenu: the navigation bar's tabs. */
   megamenu?: ResolvedMegamenu | null;
   /** Logged-in customer + organization, or null when signed out. */
   user?: MeResult | null;
@@ -49,8 +49,11 @@ export function Header(props: {
   // triggers a Mixed Content block over HTTPS.
   const apiBaseUrl = publicApiBaseUrl();
 
-  // Category/brand shortcut pills for the mobile search overlay (top departments).
-  const mobileSearchQuickLinks = (props.megamenu?.items ?? [])
+  // Category/brand shortcut pills for the mobile search overlay: the catalogue
+  // tab's departments when the menu has one (feature 168), else the tabs.
+  const tabs = props.megamenu?.items ?? [];
+  const departments = tabs.find((tab) => tab.presentation === 'catalog')?.children ?? tabs;
+  const mobileSearchQuickLinks = departments
     .filter((i): i is typeof i & { url: string } => typeof i.url === 'string' && i.url.length > 0)
     .slice(0, 6)
     .map((i) => ({ label: i.label, href: i.url }));
@@ -235,22 +238,18 @@ export function Header(props: {
         </div>
       </header>
 
-      <nav className="industria-nav hidden min-[877px]:block" aria-label="Primary">
-        <div className="mx-auto max-w-[1360px] px-[24px] industria-nav__inner">
-          {/* Data-driven "Wszystkie kategorie" trigger + mega panel
-              (seeded "Main navigation"). Replaces the old static link and
-              the hardcoded per-category links. */}
-          <CategoriesMega megamenu={props.megamenu ?? null} locale={props.locale} />
-          <div className="industria-nav__right">
-            <Link
-              href="/quick-order"
-              className="industria-nav__btn industria-nav__btn--primary"
-            >
-              <LightningIcon /> {t('nav.quickOrder')}
-            </Link>
-          </div>
-        </div>
-      </nav>
+      {/* Feature 168 — tabs from the menu only (FR-004, FR-011). Hard-coded
+          "全部分类" / Quick Order chrome is gone; operators configure them. */}
+      <NavigationBar
+        className="industria-nav hidden min-[877px]:block"
+        megamenu={props.megamenu ?? null}
+        labels={{
+          navigation: t('nav.megamenu.label'),
+          more: t('nav.megamenu.more'),
+          allIn: t('nav.megamenu.allIn'),
+          expand: t('nav.megamenu.expand'),
+        }}
+      />
     </>
   );
 }
@@ -398,9 +397,6 @@ function UserIcon(): ReactNode {
     </>,
     17,
   );
-}
-function LightningIcon(): ReactNode {
-  return svg(<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />, 13);
 }
 function MenuIcon(): ReactNode {
   return svg(
