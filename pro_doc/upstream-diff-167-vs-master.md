@@ -81,28 +81,31 @@ git rev-list --left-right --count feat/storefront-167-from-upstream...upstream/m
 
 ## 5. 类型 A — 开源有、我方无（specs 目录级）
 
-下列为 **仅存在于 `upstream/master:specs/`**、我方工作树没有的 feature 目录（**18** 个）。名称来自目录名，合入价值需对照你们 B2B/竞价优先级再定。
+下列为 **仅存在于 `upstream/master:specs/`**、我方工作树没有的 feature 目录（**18** 个）。
 
-| Spec 目录 | 粗读用途（供排队，非完整规格） | 与 Mobii 关系（初判） |
-| --- | --- | --- |
-| `163-product-data-scopes` | 产品数据范围 / URL 等 | 高耦合平台；你们合 167 时**主动裁掉** → 慎整包合 |
-| `165-task-management` | 任务管理（与 mobii-bidding **同号不同规格**） | 非竞价；按需 |
-| `166-asset-reference-visibility` | 资产引用可见性 | 按需 |
-| `166-mfa-totp-hardening` | MFA 加固 | 安全向；可评估 |
-| `169-page-builder-contact-form` | 页面构建联系表单 | 营销向；按需 |
-| `170-forms-module` | 表单模块（对应 modules：`forms`） | 新模块；按需 |
-| `170-organization-roles` | 组织角色 | B2B 相关；可评估 |
-| `171-blog-i18n-authors` | 博客作者 i18n | 低优先（若不用 blog） |
-| `172-product-content-attributes` | 产品内容属性 | 目录向；可评估 |
-| `173-b2c-address-book-merge` | B2C 地址簿 | 偏 B2C；可后置 |
-| `173-registration-registry-lookup` | 注册登记查询 | 按需 |
-| `174-product-editor-scope-switcher` | 产品编辑 scope 切换 | 依赖 scopes 生态；慎 |
-| `175-buyer-input-custom-fields` | 买家输入自定义字段 | 可评估 |
-| `175-sales-rep-reach-rule` | 销售代表触达规则 | 可评估 |
-| `176-command-hooks-outbox` | Command hooks / outbox | 平台基础设施；评估后有利于稳定性 |
-| `177-tax-id-scope` | 税号 scope | 按需 |
-| `178-extensible-columns` | 可扩展列 | 平台；按需 |
-| `179-rfq-and-customer-notifications` | RFQ + 客户通知（模块 `customer_notifications` 等） | 与询价/通知体验相关；**较值得排队** |
+- **行序**：按 **spec 编号从小到大**（同号按 slug 字母序）。  
+- **优先合并**列：Mobii B2B/竞价场景建议的挑合顺序（**1 = 越先评估/挑合**），**不是** spec 编号，也不是开源开发日历。
+
+| Spec 目录 | 粗读用途（供排队，非完整规格） | 与 Mobii 关系（初判） | 优先合并 |
+| --- | --- | --- | ---: |
+| `163-product-data-scopes` | 产品数据范围 / URL 等 | 合 167 时**主动裁掉**；整包合成本最高 → 默认不做，除非单独立项 | **18** |
+| `165-task-management` | 任务管理（≠ mobii-bidding） | 内部任务；与竞价无关，按需 | **13** |
+| `166-asset-reference-visibility` | 资产引用可见性 | Admin/媒体治理；按痛点 | **8** |
+| `166-mfa-totp-hardening` | MFA 加固 | 安全；面相对独立 | **2** |
+| `169-page-builder-contact-form` | 页面构建联系表单 | 营销落地页；非核心批采可后 | **11** |
+| `170-forms-module` | 表单模块（`forms`） | 新模块；有表单/问卷需求再合 | **10** |
+| `170-organization-roles` | 组织角色 | B2B 组织模型；与买家机构场景契合 | **3** |
+| `171-blog-i18n-authors` | 博客作者 i18n | 不用 blog 可长期不做 | **16** |
+| `172-product-content-attributes` | 产品内容属性 | 目录/PDP；竞价+常规采购可用 | **5** |
+| `173-b2c-address-book-merge` | B2C 地址簿 | 偏 B2C；主路径是 B2B org | **15** |
+| `173-registration-registry-lookup` | 注册登记查询 | 视注册合规是否需要 | **12** |
+| `174-product-editor-scope-switcher` | 产品编辑 scope 切换 | **依赖 scopes**；未合 163 前不要单独硬合 | **17** |
+| `175-buyer-input-custom-fields` | 买家输入自定义字段 | B2B 下单/资料扩展；按产品需求 | **6** |
+| `175-sales-rep-reach-rule` | 销售代表触达规则 | 有销售跟进再合；否则可后移 | **7** |
+| `176-command-hooks-outbox` | Command hooks / outbox | 平台可靠投递；利长期稳定 | **4** |
+| `177-tax-id-scope` | 税号 scope | 易沾 scopes；未上 163 前慎 | **14** |
+| `178-extensible-columns` | 可扩展列 | 平台扩展；有列表定制需求再合 | **9** |
+| `179-rfq-and-customer-notifications` | RFQ + 客户通知（`customer_notifications` 等） | 询价/通知与现网接近；**建议最先评估** | **1** |
 
 ### 5.1 开源多出的 modules（目录级）
 
@@ -131,7 +134,7 @@ git rev-list --left-right --count feat/storefront-167-from-upstream...upstream/m
 1. **基线保持** `feat/storefront-167-from-upstream`（或合入自有 `master` 后锁定生产 tag）。  
 2. **不要** Sync fork / 一次 merge 2371。  
 3. **对照** GitHub Compare 或本地 `git log merge-base..upstream/master`，结合上表 **A 排队**。  
-4. **优先评估**（示例，可改）：客户通知 / RFQ（179）、组织角色（170）、MFA（166）、outbox（176）；**后置/慎合** product-data-scopes（163）及强依赖它的 174 等。  
+4. **挑合顺序**看上表「优先合并」列（**1→2→3…**），行本身仍按 spec 号排列；**17–18**（174、163）默认不做，除非单独立项。  
 5. **每合一项**：独立分支 → 冲突时 B1/B2 优先 → storefront/admin 冒烟 → 再进生产。  
 6. **可选中期目标**：对齐某一 upstream **release tag**（如 v0.110.0）做「有界升级」，仍保留 bidding overlay，而不是追每日 tip。
 
