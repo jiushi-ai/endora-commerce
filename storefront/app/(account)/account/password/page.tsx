@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { getSessionCookie } from '../../../../lib/session';
+import { getServerContext } from '../../../../lib/server-context';
 import { changePassword } from '../../../../lib/api/account';
 import { StorefrontApiError } from '../../../../lib/api/client';
+import { tForLocale } from '../../../../lib/i18n/messages';
 import type { Metadata } from 'next';
 import { localeRedirect } from '../../../../lib/i18n/navigation';
 
@@ -25,17 +27,19 @@ export default async function ChangePasswordPage({
   const session = await getSessionCookie();
   if (!session) return await localeRedirect('/login');
   const params = await searchParams;
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
 
   return (
     <>
-      <h2>Change password</h2>
+      <h2>{t('account.password.title')}</h2>
       {params.status === 'updated' ? (
-        <p className="b2b-auth__success">Your password is updated.</p>
+        <p className="b2b-auth__success">{t('account.password.updated')}</p>
       ) : null}
       {params.error ? <p className="b2b-auth__error">{params.error}</p> : null}
       <form action={changePasswordAction} className="b2b-auth__form">
         <div className="b2b-auth__field">
-          <label htmlFor="current-pw">Current password</label>
+          <label htmlFor="current-pw">{t('account.password.current')}</label>
           <input
             id="current-pw"
             name="currentPassword"
@@ -46,7 +50,7 @@ export default async function ChangePasswordPage({
           />
         </div>
         <div className="b2b-auth__field">
-          <label htmlFor="new-pw">New password (min 12 characters)</label>
+          <label htmlFor="new-pw">{t('account.password.new')}</label>
           <input
             id="new-pw"
             name="newPassword"
@@ -59,7 +63,7 @@ export default async function ChangePasswordPage({
           />
         </div>
         <div className="b2b-auth__actions">
-          <button type="submit">Update password</button>
+          <button type="submit">{t('account.password.submit')}</button>
         </div>
       </form>
     </>
@@ -70,13 +74,15 @@ async function changePasswordAction(formData: FormData): Promise<void> {
   'use server';
   const session = await getSessionCookie();
   if (!session) return await localeRedirect('/login');
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
   const currentPassword = (formData.get('currentPassword') as string) ?? '';
   const newPassword = (formData.get('newPassword') as string) ?? '';
   try {
     await changePassword(session, currentPassword, newPassword);
   } catch (err) {
     const message =
-      err instanceof StorefrontApiError ? err.detail : 'Could not update your password.';
+      err instanceof StorefrontApiError ? err.detail : t('account.password.failed');
     return await localeRedirect(`/account/password?error=${encodeURIComponent(message)}`);
   }
   return await localeRedirect(`/account/password?status=updated`);

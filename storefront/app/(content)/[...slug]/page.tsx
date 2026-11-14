@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { notFound, permanentRedirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import type { CmsResolvedPage } from '@endora-commerce/contracts';
 import { Breadcrumbs, type BreadcrumbCrumb } from '../../../components/Breadcrumbs';
 import { CmsPageRenderer } from '../../../components/CmsPageRenderer';
@@ -13,7 +13,7 @@ import { cmsSocialMetadata } from '../../../lib/seo/cms-share-metadata';
 import { canonicalPath } from '../../../lib/seo/route-seo';
 import { cmsRenderLocation, type PageSearchParams } from '../../../lib/page-builder/render-location';
 import { seo } from './seo';
-import { localizedAlternates } from '../../../lib/i18n/navigation';
+import { localePermanentRedirect, localizedAlternates } from '../../../lib/i18n/navigation';
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -87,7 +87,9 @@ export default async function CmsContentPage({ params, searchParams }: PageProps
   // could have been written differently to fix; the boundary is gone, and it
   // may not come back above a page that decides a status
   // (`check:storefront-indexability`'s `status-decision-under-a-boundary`).
-  if (cmsPageSlug !== null && normalizeCmsUrlPath(cmsPageSlug) === path) permanentRedirect('/');
+  if (cmsPageSlug !== null && normalizeCmsUrlPath(cmsPageSlug) === path) {
+    return await localePermanentRedirect('/');
+  }
 
   // Feature 163 (FR-030, FR-031): Home › the ancestors the backend resolved for
   // this channel › the page. An ancestor this channel does not serve arrives

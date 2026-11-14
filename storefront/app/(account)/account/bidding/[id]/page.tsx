@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react';
-import Link from 'next/link';
-import { redirect, notFound } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getSessionCookie } from '../../../../../lib/session';
 import { getServerContext } from '../../../../../lib/server-context';
 import { getBiddingCampaign } from '../../../../../lib/api/bidding';
 import { SubmitBidForm } from '../../../../../components/bidding/SubmitBidForm';
 import { tForLocale } from '../../../../../lib/i18n/messages';
+import { localeRedirect } from '../../../../../lib/i18n/navigation';
+import { LocalizedLink } from '../../../../../lib/i18n/localized-link';
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -19,7 +20,7 @@ export default async function AccountBiddingDetailPage({
   params: Promise<{ id: string }>;
 }): Promise<ReactNode> {
   const session = await getSessionCookie();
-  if (!session) redirect('/login');
+  if (!session) return await localeRedirect('/login');
   const { id } = await params;
   const { locale } = await getServerContext();
   const t = tForLocale(locale);
@@ -37,7 +38,7 @@ export default async function AccountBiddingDetailPage({
   return (
     <>
       <p>
-        <Link href="/account/bidding">{t('account.bidding.back')}</Link>
+        <LocalizedLink href="/account/bidding">{t('account.bidding.back')}</LocalizedLink>
       </p>
       <h2>{campaign.title}</h2>
       <p className="muted">

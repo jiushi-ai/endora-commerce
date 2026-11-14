@@ -826,3 +826,12 @@ feat-26-11-12 19:46:41 [34.1~34.4]：Storefront 改挂 NavigationBar 并去掉�
 汇总：在 168 NavigationBar 线上合入 Feature 167（URL 语言前缀、LocaleSwitcher、Prefix Default Language、sitemap/hreflang、CMS 语言前缀保留、后端 emitter 链接前缀）。本分支无 product-scopes / R19D nested path，已裁掉对 `CatalogProductUrlKeyReadPort`、`product.paths`、`page.path` 等依赖；sitemap/feed/PDP 用全局 slug + `productPath`/`storefrontPagePath`/`localizedAlternates`。工作区尚有未提交的兼容修复（contracts `accept-language`、cms/seo/feeds/storefront 裁剪），需与 cherry-pick 一并提交。本地已应用 migration；ECS 待本地验收后再发。
 
 feat-26-11-13 17:14:56 [35.1~35.4]：合入 Feature 167 locale-in-path（基于 168，裁掉 product-scopes 依赖）
+
+### 36. 恢复 pick 167 冲掉的小b account 侧栏 Bidding 与 i18n
+
+- [x] 36.1 恢复 account layout：nav t() + Bidding 入口 + LocalizedLink
+- [x] 36.2 恢复被 167 冲掉的 account 页面 t()/locale 接线（password/orders/returns/quote-requests/organization/members）
+- [x] 36.3 跑 account-locale 测试验证（12 tests passed）
+
+汇总：根因是 8ccb90d81 把 Mobii 的 t() 与 /account/bidding 入口覆盖成英文硬编码；本批在保留 localeRedirect/LocalizedLink 前提下从 c6d327 口径恢复。
+feat-26-11-13 22:24:00 [36.1~36.3]：恢复小b account 侧栏 Bidding 与被 167 冲掉的 i18n

@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
-import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getSessionCookie } from '../../../../lib/session';
 import { getServerContext } from '../../../../lib/server-context';
 import { listBiddingCampaigns, listMyBidReceipts } from '../../../../lib/api/bidding';
 import { BiddingDeskClient } from '../../../../components/bidding/BiddingDeskClient';
 import { tForLocale } from '../../../../lib/i18n/messages';
+import { localeRedirect } from '../../../../lib/i18n/navigation';
 
 /**
  * Not indexed — authenticated bidding desk for the buying organization.
@@ -17,7 +17,7 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
  */
 export default async function AccountBiddingPage(): Promise<ReactNode> {
   const session = await getSessionCookie();
-  if (!session) redirect('/login');
+  if (!session) return await localeRedirect('/login');
   const { locale } = await getServerContext();
   const t = tForLocale(locale);
 

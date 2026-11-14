@@ -1,12 +1,12 @@
 'use client';
 
 import { useMemo, useState, type ReactNode } from 'react';
-import Link from 'next/link';
 import type {
   StorefrontBiddingCampaign,
   StorefrontBiddingReceipt,
 } from '../../lib/api/bidding';
 import { tForLocale } from '../../lib/i18n/messages';
+import { LocalizedLink } from '../../lib/i18n/localized-link';
 
 const PAGE_SIZES = [5, 10, 20] as const;
 
@@ -62,9 +62,9 @@ export function BiddingDeskClient(props: {
               <td>{c.status}</td>
               <td>{new Date(c.closesAt).toLocaleString(locale)}</td>
               <td>
-                <Link href={`/account/bidding/${c.id}`} className="btn btn--dark btn--sm">
+                <LocalizedLink href={`/account/bidding/${c.id}`} className="btn btn--dark btn--sm">
                   {t('account.bidding.open')}
-                </Link>
+                </LocalizedLink>
               </td>
             </tr>
           ))}

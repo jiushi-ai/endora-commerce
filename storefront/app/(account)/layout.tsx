@@ -5,6 +5,8 @@ import { logoutCustomer } from '../../lib/api/auth';
 import { StorefrontApiError } from '../../lib/api/client';
 import { ImpersonationBanner } from '../../components/ImpersonationBanner';
 import { SignOutButton } from '../../components/account/SignOutButton';
+import { getServerContext } from '../../lib/server-context';
+import { tForLocale } from '../../lib/i18n/messages';
 import { localeRedirect } from '../../lib/i18n/navigation';
 import { LocalizedLink } from '../../lib/i18n/localized-link';
 
@@ -21,6 +23,9 @@ export default async function AccountLayout({
 }): Promise<ReactNode> {
   const session = await getSessionCookie();
   if (!session) return await localeRedirect('/login?next=/account');
+
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
 
   let me;
   try {
@@ -43,31 +48,36 @@ export default async function AccountLayout({
           />
         </div>
       ) : null}
-      <aside className="b2b-account__nav" aria-label="Account">
-        <strong>{me.customerAccount.firstName} {me.customerAccount.lastName}</strong>
+      <aside className="b2b-account__nav" aria-label={t('account.nav.aria')}>
+        <strong>
+          {me.customerAccount.firstName} {me.customerAccount.lastName}
+        </strong>
         {me.organization ? <span className="muted">{me.organization.name}</span> : null}
-        <LocalizedLink href="/account">Profile</LocalizedLink>
-        <LocalizedLink href="/addresses">My addresses</LocalizedLink>
-        <LocalizedLink href="/account/password">Change password</LocalizedLink>
+        <LocalizedLink href="/account">{t('account.nav.profile')}</LocalizedLink>
+        <LocalizedLink href="/addresses">{t('account.nav.addresses')}</LocalizedLink>
+        <LocalizedLink href="/account/password">{t('account.nav.password')}</LocalizedLink>
         {/*
-          Order placement, RFQ submission, shopping lists, and quick order all
+          Order placement, RFQ submission, shopping lists, quick order and bidding
           require an Organization (the backend 422s for org-less callers), so
           these features — and the Organization pages — are shown only to
           org-bound customers (feature 040, FR-003).
         */}
         {me.organization ? (
           <>
-            <LocalizedLink href="/orders">Orders</LocalizedLink>
-            <LocalizedLink href="/returns">Returns</LocalizedLink>
-            <LocalizedLink href="/quote-requests">Quote requests</LocalizedLink>
-            <LocalizedLink href="/shopping-lists">Shopping lists</LocalizedLink>
-            <LocalizedLink href="/quick-order">Quick order</LocalizedLink>
-            <LocalizedLink href="/organization">Organization</LocalizedLink>
-            <LocalizedLink href="/organization/addresses">Org addresses</LocalizedLink>
-            {isAdmin ? <LocalizedLink href="/organization/members">Members</LocalizedLink> : null}
+            <LocalizedLink href="/orders">{t('account.nav.orders')}</LocalizedLink>
+            <LocalizedLink href="/returns">{t('account.nav.returns')}</LocalizedLink>
+            <LocalizedLink href="/quote-requests">{t('account.nav.quoteRequests')}</LocalizedLink>
+            <LocalizedLink href="/account/bidding">{t('account.nav.bidding')}</LocalizedLink>
+            <LocalizedLink href="/shopping-lists">{t('account.nav.shoppingLists')}</LocalizedLink>
+            <LocalizedLink href="/quick-order">{t('account.nav.quickOrder')}</LocalizedLink>
+            <LocalizedLink href="/organization">{t('account.nav.organization')}</LocalizedLink>
+            <LocalizedLink href="/organization/addresses">{t('account.nav.orgAddresses')}</LocalizedLink>
+            {isAdmin ? (
+              <LocalizedLink href="/organization/members">{t('account.nav.members')}</LocalizedLink>
+            ) : null}
           </>
         ) : null}
-        <SignOutButton signOut={logoutAction} />
+        <SignOutButton signOut={logoutAction} label={t('account.nav.signOut')} />
       </aside>
       <div className="b2b-account__panel">{children}</div>
     </section>
