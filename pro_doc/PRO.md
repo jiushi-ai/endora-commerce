@@ -835,3 +835,11 @@ feat-26-11-13 17:14:56 [35.1~35.4]：合入 Feature 167 locale-in-path（基于 
 
 汇总：根因是 8ccb90d81 把 Mobii 的 t() 与 /account/bidding 入口覆盖成英文硬编码；本批在保留 localeRedirect/LocalizedLink 前提下从 c6d327 口径恢复。
 feat-26-11-13 22:24:00 [36.1~36.3]：恢复小b account 侧栏 Bidding 与被 167 冲掉的 i18n
+
+### 37. 上游差异清单（167 分支 vs upstream/master）
+
+- [x] 37.1 统计 ahead/behind 与 specs/模块级差异（57 ahead / 2371 behind）
+- [x] 37.2 归类 A/B1/B2 并写入差异报告 `pro_doc/upstream-diff-167-vs-master.md`
+
+汇总：仅分析不 merge；报告见 `pro_doc/upstream-diff-167-vs-master.md`。结论仍不建议一次合 2371；按 A 排队 cherry-pick，永久保留 B1（bidding 等），合上游时保住 B2（Bindings / account i18n 等）。
+feat-26-11-14 00:17:00 [37.1~37.2]：产出 feat/167 与 upstream/master 差异清单（A/B1/B2）
