@@ -2,13 +2,15 @@
 
 import { Fragment, useState, type ReactNode } from 'react';
 import type { ResolvedMegamenu, ResolvedMenuItem } from '@endora-commerce/contracts';
+import { tForLocale } from '../../lib/i18n/messages';
+import { LocalizedLink, LocalizedAnchor } from '../../lib/i18n/localized-link';
 import { MenuAsset } from './MenuAsset';
 import { MenuButton } from './MenuButton';
 import { MenuCmsBlockEmbed } from './MenuCmsBlockEmbed';
-import { LocalizedLink, LocalizedAnchor } from '../../lib/i18n/localized-link';
 
 interface MegamenuMobileDrawerProps {
   megamenu: ResolvedMegamenu;
+  locale: string;
   /** Logged-in buyer summary for the footer (null when signed out). */
   account?: { initials: string; name: string; subtitle: string } | null;
 }
@@ -21,7 +23,12 @@ interface MegamenuMobileDrawerProps {
  * and an account footer; a drilled-in level shows a breadcrumb and a featured
  * "All <department>" shortcut.
  */
-export function MegamenuMobileDrawer({ megamenu, account }: MegamenuMobileDrawerProps): ReactNode {
+export function MegamenuMobileDrawer({
+  megamenu,
+  locale,
+  account,
+}: MegamenuMobileDrawerProps): ReactNode {
+  const t = tForLocale(locale);
   const [open, setOpen] = useState(false);
   const [stack, setStack] = useState<ResolvedMenuItem[]>([]);
 
@@ -41,7 +48,7 @@ export function MegamenuMobileDrawer({ megamenu, account }: MegamenuMobileDrawer
 
   return (
     <div className="md:hidden">
-      <button type="button" className="icon-btn" onClick={() => setOpen(true)} aria-label="Menu">
+      <button type="button" className="icon-btn" onClick={() => setOpen(true)} aria-label={t('chrome.menu')}>
         <MenuIcon />
       </button>
       {open ? (
@@ -52,16 +59,16 @@ export function MegamenuMobileDrawer({ megamenu, account }: MegamenuMobileDrawer
                 <ChevLeftIcon /> {currentLevel.label}
               </button>
             ) : (
-              <span className="mm__title">{megamenu.name || 'Wszystkie kategorie'}</span>
+              <span className="mm__title">{megamenu.name || t('chrome.allCategories')}</span>
             )}
-            <button type="button" className="mm__close" onClick={reset} aria-label="Zamknij">
+            <button type="button" className="mm__close" onClick={reset} aria-label={t('chrome.close')}>
               <XIcon />
             </button>
           </div>
 
           {currentLevel ? (
             <div className="mm__crumb">
-              Kategorie
+              {t('chrome.categories')}
               {stack.map((s) => (
                 <Fragment key={s.id}>
                   <ChevRightIcon size={11} /> {s.label}
@@ -79,8 +86,8 @@ export function MegamenuMobileDrawer({ megamenu, account }: MegamenuMobileDrawer
                       <LayersIcon />
                     </span>
                     <span className="mm__row__main">
-                      <b>Wszystkie: {currentLevel.label}</b>
-                      <span>Zobacz wszystko →</span>
+                      <b>{t('chrome.allPrefix').replace('{label}', currentLevel.label)}</b>
+                      <span>{t('chrome.seeAll')}</span>
                     </span>
                   </LocalizedLink>
                 </li>
@@ -94,11 +101,11 @@ export function MegamenuMobileDrawer({ megamenu, account }: MegamenuMobileDrawer
               <div className="mm__promo">
                 <span className="mm__promo__head">
                   <LightningIcon />
-                  <b>Quick Order</b>
+                  <b>{t('nav.quickOrder')}</b>
                 </span>
-                <p>Wklej listę SKU + ilości z ERP/CSV i utwórz zamówienie w 30 sekund.</p>
+                <p>{t('chrome.megaQuickOrderBody')}</p>
                 <LocalizedLink href="/quick-order" className="mm__promo__cta" onClick={reset}>
-                  Otwórz Quick Order <ArrowRightIcon />
+                  {t('chrome.megaQuickOrderCta')} <ArrowRightIcon />
                 </LocalizedLink>
               </div>
             ) : null}
@@ -116,7 +123,7 @@ export function MegamenuMobileDrawer({ megamenu, account }: MegamenuMobileDrawer
                     </span>
                   </LocalizedLink>
                   <LocalizedLink href="/account" className="btn btn--ghost btn--sm" onClick={reset}>
-                    <UserIcon /> Konto
+                    <UserIcon /> {t('nav.account')}
                   </LocalizedLink>
                 </>
               ) : (
@@ -195,6 +202,26 @@ function renderRow(
           <MenuCmsBlockEmbed item={item} />
         </div>
       );
+    case 'group':
+      if (hasChildren) {
+        return (
+          <button type="button" className="mm__row" onClick={() => drillInto(item)}>
+            <span className="mm__row__ic">
+              <RowIcon item={item} />
+            </span>
+            <span className="mm__row__main">
+              <b>{item.label}</b>
+              {item.description ? <span>{item.description}</span> : null}
+            </span>
+            <span className="mm__row__chev">
+              <ChevRightIcon />
+            </span>
+          </button>
+        );
+      }
+      return null;
+    default:
+      return null;
   }
 }
 

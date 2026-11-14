@@ -11,7 +11,6 @@ import type {
   AssetReadPort,
   CatalogCategoryReadPort,
   CatalogGalleryPort,
-  CatalogProductUrlKeyReadPort,
   CatalogProductFilterPort,
   CatalogProductReadPort,
   ConfigurationTypeRegistryPort,
@@ -234,7 +233,6 @@ export function registerModule(ctx: ModuleContext): void {
             // business in a feed, and over the port the read stops with the
             // rest of the run instead of publishing them.
             catalogGallery: lazyPort<CatalogGalleryPort>(ctx, 'galleryService'),
-            catalogUrlKeys: lazyPort<CatalogProductUrlKeyReadPort>(ctx, 'catalogProductUrlKeyReadPort'),
             // The last of the seventeen, and the one Phase P escalated rather
             // than guessed at: the criteria scan. The rule compiles to
             // `CatalogProductFilter` — `catalog`'s published grammar — and the

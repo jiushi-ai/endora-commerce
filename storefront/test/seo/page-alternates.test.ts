@@ -8,12 +8,12 @@ import type { UrlLanguageState } from '../../lib/i18n/locale-path';
  * Feature 167 (US5, FR-030, url-shape §8) — every indexable page declares its canonical
  * under the current language's prefix, one `hreflang` alternate per channel language
  * and `x-default` → the unprefixed URL. Pages whose path is the same in every language
- * do it through `localizedAlternates`; the product page through the backend's `paths`
- * (`pdp-redirect.test.ts`). Cart, checkout and account pages declare none.
+ * do it through `localizedAlternates` (including the product page on this branch,
+ * which has no per-language URL-key `paths`). Cart, checkout and account pages
+ * declare none.
  *
  * Rendering each page's metadata would stand up every read it makes; the helper is
- * held here by behaviour, and the pages by their source (as `pdp-redirect.test.ts`
- * holds the product page).
+ * held here by behaviour, and the pages by their source.
  */
 
 const server: { urlState: UrlLanguageState } = { urlState: { languages: [], aliases: [], current: 'pl-PL' } };
@@ -65,6 +65,7 @@ describe('which pages declare localized alternates', () => {
     'page.tsx',
     '(catalog)/catalog/page.tsx',
     '(catalog)/c/[slug]/page.tsx',
+    '(catalog)/p/[slug]/page.tsx',
     '(catalog)/search/page.tsx',
     '(content)/[...slug]/page.tsx',
     'blog/[[...slug]]/page.tsx',
@@ -74,10 +75,6 @@ describe('which pages declare localized alternates', () => {
     expect(text).toContain('localizedAlternates(');
     // Every canonical it declares is the localized one.
     expect(text).not.toMatch(/alternates: \{ canonical: (?!alternates\.canonical)/);
-  });
-
-  it('the product page publishes the backend x-default with its alternates', () => {
-    expect(readFileSync(resolve(app, '(catalog)/p/[slug]/resolution.ts'), 'utf8')).toContain("'x-default': paths.xDefault");
   });
 
   it.each(['(commerce)/cart/page.tsx', '(commerce)/checkout/page.tsx', '(account)/account/page.tsx'])(

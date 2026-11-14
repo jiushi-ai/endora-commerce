@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import type { ChannelUrlLanguage } from '@endora-commerce/contracts';
-import { MESSAGES } from '../../lib/i18n/messages';
+import { tForLocale } from '../../lib/i18n/messages';
 
 /**
  * Feature 167 (US4, FR-023, OR-6, OR-11) — the header language switcher is a list of
@@ -110,7 +110,7 @@ describe('alternatePath — the switcher stays on the visitor\'s origin', () => 
 
 describe('header.language', () => {
   it('names the switcher in English and Polish', () => {
-    expect(MESSAGES['en-US']!['header.language']).toBe('Language');
-    expect(MESSAGES['pl-PL']!['header.language']).toBe('Język');
+    expect(tForLocale('en-US')('header.language')).toBe('Language');
+    expect(tForLocale('pl-PL')('header.language')).toBe('Język');
   });
 });

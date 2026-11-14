@@ -251,12 +251,12 @@ async function cmsPageEntries(ctx: Ctx): Promise<CmsSitemapEntry[]> {
     // does above: the module is absent, so the shop advertises no CMS URL.
     if (index === null) return [];
     const homeSlug = normalizeCmsUrlPath(homepage.cmsPageSlug ?? '');
-    // R19D: a page's address is its public path; `?? page.slug` covers a
-    // backend that predates the field.
+    // This branch keeps flat CMS slugs (no R19D nested `path`); Feature 167
+    // still lists each page under every channel language prefix via `inLanguage`.
     return index.pages
       .filter((page) => homeSlug === '' || normalizeCmsUrlPath(page.slug) !== homeSlug)
       .map((page) => ({
-        path: `/${normalizeCmsUrlPath(page.path ?? page.slug)}`,
+        path: `/${normalizeCmsUrlPath(page.slug)}`,
         lastModified: new Date(page.updatedAt),
         ...(page.languages !== undefined ? { languages: page.languages } : {}),
       }));

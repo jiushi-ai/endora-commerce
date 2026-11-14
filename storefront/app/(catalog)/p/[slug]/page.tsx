@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { notFound, redirect } from 'next/navigation';
 import {
   type AddToCartResult,
   nextAddToCartToken,
@@ -34,7 +35,7 @@ import { Hook } from '../../../../components/Hook';
 import { JsonLd } from '../../../../lib/seo/JsonLd';
 import { ViewItemTracker } from '../../../../components/analytics/EcommerceTrackers';
 import { getStorefrontQuoteRequestSettings } from '../../../../lib/api/rfq';
-import { getProductBySlug, resolveProductKey } from '../../../../lib/api/catalog';
+import { getProductBySlug } from '../../../../lib/api/catalog';
 import { getResolvedPrice, PRICING_UNAVAILABLE } from '../../../../lib/api/pricing';
 import { getStorefrontProductStock } from '../../../../lib/api/inventory';
 import { getMe } from '../../../../lib/api/account';
@@ -50,19 +51,16 @@ import {
   placeOneClickOrder,
 } from '../../../../lib/api/quick-order';
 import { getServerContext } from '../../../../lib/server-context';
-import { alternateLanguages, productById, productIdForKey } from './resolution';
+import { canonicalPath } from '../../../../lib/seo/route-seo';
+import { localizedAlternates } from '../../../../lib/i18n/navigation';
+import { seo } from './seo';
 import { tForLocale } from '../../../../lib/i18n/messages';
 import { cartActionFailure } from '../../../../lib/cart-action-failure';
-import { withoutViewer } from '../../../../lib/api/client';
+import { StorefrontApiError, withoutViewer } from '../../../../lib/api/client';
 import { publicApiBaseUrl } from '../../../../lib/env.mjs';
-import { localeRedirect } from '../../../../lib/i18n/navigation';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
-  /**
-   * `variant` — a preselected variant SKU. The page language is the path's
-   * (feature 167, OR-4); 163's interim `?lang=` is no longer read.
-   */
   searchParams?: Promise<{ variant?: string | string[] }>;
 }
 
@@ -81,18 +79,12 @@ export async function generateMetadata({
   const search = searchParams ? await searchParams : {};
   const variantSku = typeof search.variant === 'string' ? search.variant : null;
   const { ctx } = await getServerContext();
-  // Deliberately the anonymous answer, even for a signed-in buyer (issue
-  // #265): this output is the crawler's and the social card's, it carries no
-  // price to personalise, and asking it as the buyer would cost the shared
-  // Data Cache entry every visitor to this page reuses.
-  const anonymous = withoutViewer(ctx);
   try {
-    // Feature 163 — the key first (K1). A redirect key has no metadata of its
-    // own: the page answers the permanent redirect, so nothing here is indexed.
-    const resolution = await resolveProductKey(slug, anonymous);
-    if (resolution.kind === 'redirect') return { robots: { index: false, follow: true } };
-    const product = await getProductBySlug(resolution.productId, anonymous);
-    const languages = alternateLanguages(product.paths);
+    // Deliberately the anonymous answer, even for a signed-in buyer (issue
+    // #265): this output is the crawler's and the social card's, it carries no
+    // price to personalise, and asking it as the buyer would cost the shared
+    // Data Cache entry every visitor to this page reuses.
+    const product = await getProductBySlug(slug, withoutViewer(ctx));
     // Feature 002 (T052) — if `?variant=<sku>` is present and the
     // SKU is a known variant, surface the variant's identity in the
     // social card title so different variants get distinct previews
@@ -111,14 +103,9 @@ export async function generateMetadata({
       // Indexable (FR-010/FR-012), and the canonical is the product's own path
       // **without** `?variant=`: every variant URL is the same product page
       // with a different preselection, so one of them is the page a crawler
-      // should hold and the rest point at it. Feature 163 (FR-074) — both the
-      // canonical and the `hreflang` alternates are the backend's paths, built
-      // for the effective key per language; alternates only where the product
-      // is available to anonymous visitors.
-      alternates: {
-        canonical: product.paths.canonical,
-        ...(languages ? { languages } : {}),
-      },
+      // should hold and the rest point at it.
+      // Feature 167 — canonical under the language prefix, hreflang alternates, x-default.
+      alternates: await localizedAlternates(canonicalPath(seo.route, { slug })),
       openGraph: {
         title: `${product.seo.openGraph.title}${titleSuffix}`,
         description: product.seo.openGraph.description,
@@ -140,10 +127,13 @@ export default async function ProductPage({
   const { ctx, locale } = await getServerContext();
   const t = tForLocale(locale);
 
-  // Feature 163 — which product the key names here, or the permanent redirect to
-  // where it moved (FR-071, FR-072); then the product, read by id.
-  const productId = await productIdForKey(slug, ctx);
-  const product = await productById(productId, ctx);
+  let product;
+  try {
+    product = await getProductBySlug(slug, ctx);
+  } catch (err) {
+    if (err instanceof StorefrontApiError && err.status === 404) notFound();
+    throw err;
+  }
 
   const primaryCategory = product.categories[0];
   const rfqSettings = await getStorefrontQuoteRequestSettings();
@@ -282,8 +272,6 @@ export default async function ProductPage({
     });
   }
 
-  // Feature 167 — `<html lang>` is the path language, which is this page's, so
-  // T155 (B3)'s own `lang` mark on this element is gone.
   return (
     <div className="mx-auto max-w-[1360px] px-[24px] pt-[18px] pb-[64px] max-md:pb-[96px]">
       {/* Feature 049 — GA4 view_item (no-op unless Enhanced Ecommerce is on). */}
@@ -303,15 +291,14 @@ export default async function ProductPage({
           ...(primaryCategory
             ? [{ href: `/c/${primaryCategory.slug}`, label: primaryCategory.name }]
             : []),
-          // Feature 163 — the page's own URL as the backend built it (`productPath()`).
-          { href: product.paths.canonical, label: product.name },
+          { href: `/p/${product.slug}`, label: product.name },
         ]}
       />
       <Hook code="product.top" />
 
       <article className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-[24px] max-[720px]:grid-cols-1">
         {product.gallery && product.gallery.length > 0 ? (
-          <GallerySwitcher gallery={product.gallery} alt={product.name} />
+          <GallerySwitcher gallery={product.gallery} alt={product.name} locale={locale} />
         ) : (
           <ProductGallery
             assets={product.assets}
@@ -430,14 +417,22 @@ export default async function ProductPage({
                           apiBase={PDP_API_BASE}
                           productId={product.id}
                           {...(selectedVariantId ? { variantId: selectedVariantId } : {})}
-                          label="Dodaj do listy zakupowej"
-                          removeLabel="Usuń z listy zakupowej"
+                          label={t('card.list.add')}
+                          removeLabel={t('card.list.remove')}
+                          failedLabel={t('card.list.failed')}
+                          addedToLabel={t('card.list.addedTo')}
                           showLabel
                           className="btn btn--outline h-[40px] w-full justify-center md:w-auto"
                         />
                       }
                       // Secondary actions row, alongside the shopping-list + quote.
-                      compareAction={<CompareToggle productId={product.id} variant="inline" salesChannelCode={ctx.salesChannelCode} />}
+                      compareAction={
+                        <CompareToggle
+                          productId={product.id}
+                          variant="inline"
+                          salesChannelCode={ctx.salesChannelCode}
+                        />
+                      }
                     />
                   ) : (
                     // No buy-actions row (no price and RFQ-on-PDP off): still
@@ -446,8 +441,10 @@ export default async function ProductPage({
                       apiBase={PDP_API_BASE}
                       productId={product.id}
                       {...(selectedVariantId ? { variantId: selectedVariantId } : {})}
-                      label="Dodaj do listy zakupowej"
-                      removeLabel="Usuń z listy zakupowej"
+                      label={t('card.list.add')}
+                      removeLabel={t('card.list.remove')}
+                      failedLabel={t('card.list.failed')}
+                      addedToLabel={t('card.list.addedTo')}
                     />
                   )}
                   {oneClickEnabled && price ? (
@@ -478,7 +475,11 @@ export default async function ProductPage({
           </div>
           {!buyActionsRendered ? (
             <div className="mt-3">
-              <CompareToggle productId={product.id} variant="inline" salesChannelCode={ctx.salesChannelCode} />
+              <CompareToggle
+                productId={product.id}
+                variant="inline"
+                salesChannelCode={ctx.salesChannelCode}
+              />
             </div>
           ) : null}
           <Hook code="product.buttons.after" />
@@ -599,10 +600,10 @@ async function failureLocale(): Promise<string | undefined> {
 async function oneClickAction(formData: FormData): Promise<void> {
   'use server';
   const session = await getSessionCookie();
-  if (!session) return await localeRedirect('/login');
+  if (!session) redirect('/login');
   const productId = ((formData.get('productId') as string) ?? '').trim();
   const variantId = ((formData.get('variantId') as string) ?? '').trim();
-  if (!productId) return await localeRedirect('/cart?error=missing-product');
+  if (!productId) redirect('/cart?error=missing-product');
 
   let result;
   try {
@@ -617,12 +618,12 @@ async function oneClickAction(formData: FormData): Promise<void> {
     );
   } catch (err) {
     const message = cartActionFailure(err, await failureLocale(), 'product.oneClickFailed');
-    return await localeRedirect(`/cart?error=${encodeURIComponent(message)}`);
+    redirect(`/cart?error=${encodeURIComponent(message)}`);
   }
   if (result!.nextAction?.kind === 'redirect_to_gateway' && result!.nextAction.url) {
-    return await localeRedirect(result!.nextAction.url);
+    redirect(result!.nextAction.url);
   }
-  return await localeRedirect(`/orders/${result!.order.id}`);
+  redirect(`/orders/${result!.order.id}`);
 }
 
 async function addGroupedToCartAction(formData: FormData): Promise<void> {
@@ -633,7 +634,7 @@ async function addGroupedToCartAction(formData: FormData): Promise<void> {
   const entries = (formData.getAll('item') as string[])
     .map((e) => e.trim())
     .filter(Boolean);
-  if (entries.length === 0) return await localeRedirect('/cart?error=missing-product');
+  if (entries.length === 0) redirect('/cart?error=missing-product');
   const jar = await readCartJar();
   let anon: string | null = jar.anon ?? null;
   // `ctx` carries the storefront's language and channel, so a refusal reads in the page's language.
@@ -656,9 +657,9 @@ async function addGroupedToCartAction(formData: FormData): Promise<void> {
     if (anon && anon !== (jar.anon ?? null)) await setAnonCartCookie(anon);
   } catch (err) {
     const message = cartActionFailure(err, await failureLocale(), 'product.addToCartFailed');
-    return await localeRedirect(`/cart?error=${encodeURIComponent(message)}`);
+    redirect(`/cart?error=${encodeURIComponent(message)}`);
   }
-  return await localeRedirect('/cart');
+  redirect('/cart');
 }
 
 async function addBundleToCartAction(formData: FormData): Promise<void> {
@@ -678,7 +679,7 @@ async function addBundleToCartAction(formData: FormData): Promise<void> {
     const qty = Number.isFinite(quantity) && quantity >= 1 ? Math.floor(quantity) : 1;
     selections.push({ productId, quantity: qty });
   }
-  if (selections.length === 0) return await localeRedirect('/cart?error=missing-product');
+  if (selections.length === 0) redirect('/cart?error=missing-product');
   const jar = await readCartJar();
   let anon: string | null = jar.anon ?? null;
   const { ctx } = await getServerContext();
@@ -696,9 +697,9 @@ async function addBundleToCartAction(formData: FormData): Promise<void> {
     if (anon && anon !== (jar.anon ?? null)) await setAnonCartCookie(anon);
   } catch (err) {
     const message = cartActionFailure(err, await failureLocale(), 'product.addToCartFailed');
-    return await localeRedirect(`/cart?error=${encodeURIComponent(message)}`);
+    redirect(`/cart?error=${encodeURIComponent(message)}`);
   }
-  return await localeRedirect('/cart');
+  redirect('/cart');
 }
 
 // PDP add-to-cart. Returns a result state (consumed by `useActionState` in the

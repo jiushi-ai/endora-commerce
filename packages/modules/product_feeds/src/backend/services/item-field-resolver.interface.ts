@@ -70,9 +70,8 @@ export interface FeedItemSource {
   /** The variant's SKU when this is a variant item, else the product's. */
   readonly sku: string;
   /**
-   * The product's URL key in the feed's language — its effective key at (channel,
-   * language) from `catalogProductUrlKeyReadPort`, else the global slug (feature 167,
-   * FR-033).
+   * The product's storefront slug. Feature 167 prefixes the feed link via
+   * `productPath`; per-language URL keys are not on this branch.
    */
   readonly slug: string;
   /** `products.type` — simple / configurable / grouped / bundle / virtual (FR-003). */

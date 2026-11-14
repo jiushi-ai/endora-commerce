@@ -360,7 +360,7 @@ export default async function HomePage({
             <ul className="m-0 grid list-none grid-cols-2 gap-[16px] p-0 max-[800px]:grid-cols-1">
               {openCampaigns.map((c) => (
                 <li key={c.id}>
-                  <Link
+                  <LocalizedLink
                     href={`/account/bidding/${encodeURIComponent(c.id)}`}
                     className="block rounded-lg border border-line bg-surface p-[22px] transition hover:-translate-y-[2px] hover:border-[var(--ink-700)]"
                   >

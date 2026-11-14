@@ -815,3 +815,14 @@ feat-26-11-11 19:20:28 [33.1~33.3]：修复 Megamenu Bindings 选渠道 reading 
 汇总：对齐 Feature 168 方案 A——导航行仅由 Admin Megamenu 驱动；本批仅本地 storefront，ECS 待确认效果后再发。切换后需在 Admin 为「快速下单」加顶层 Button + Position=Right + `/quick-order`，否则右侧暂无 CTA。`localized-link` 为 167 未合入前的透传兼容，非完整 locale-in-path。
 
 feat-26-11-12 19:46:41 [34.1~34.4]：Storefront 改挂 NavigationBar 并去掉硬编码 Quick Order
+
+### 35. Feature 167 locale-in-path 合入（基于 168 分支）
+
+- [x] 35.1 从 `feat/megamenu-168-from-upstream` 创建 `feat/storefront-167-from-upstream`
+- [x] 35.2 按序 cherry-pick 167 核心提交并解决冲突（保留 Mobii / NavigationBar；去掉 CategoriesMega）
+- [x] 35.3 `build:packages` + `prefix_default_language` migration + storefront typecheck + 关键 167 测试
+- [x] 35.4 本 §99
+
+汇总：在 168 NavigationBar 线上合入 Feature 167（URL 语言前缀、LocaleSwitcher、Prefix Default Language、sitemap/hreflang、CMS 语言前缀保留、后端 emitter 链接前缀）。本分支无 product-scopes / R19D nested path，已裁掉对 `CatalogProductUrlKeyReadPort`、`product.paths`、`page.path` 等依赖；sitemap/feed/PDP 用全局 slug + `productPath`/`storefrontPagePath`/`localizedAlternates`。工作区尚有未提交的兼容修复（contracts `accept-language`、cms/seo/feeds/storefront 裁剪），需与 cherry-pick 一并提交。本地已应用 migration；ECS 待本地验收后再发。
+
+feat-26-11-13 17:14:56 [35.1~35.4]：合入 Feature 167 locale-in-path（基于 168，裁掉 product-scopes 依赖）
