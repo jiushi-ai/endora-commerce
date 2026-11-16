@@ -302,7 +302,7 @@ export default async function RootLayout({
             slowLabel={t('a11y.navigatingSlow')}
           />
           <HeaderSwitch
-            minimal={<CheckoutHeader />}
+            minimal={<CheckoutHeader locale={locale} />}
             full={
               <>
                 <Hook code="header.top" />

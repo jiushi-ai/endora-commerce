@@ -55,7 +55,7 @@ export function PaymentMethods({
 
   return (
     <fieldset className="b2b-auth__form border-0 p-0">
-      <legend className="font-semibold">Payment method</legend>
+      <legend className="font-semibold">{t('checkout.payment.title')}</legend>
       {visibleMethods.length === 0 ? (
         <p className="muted">{t('checkout.payment.none')}</p>
       ) : (

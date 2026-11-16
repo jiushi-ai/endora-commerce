@@ -42,9 +42,10 @@ describe('PaymentMethods empty state', () => {
     expect(html).toContain('Brak dostępnych metod płatności');
   });
 
-  it('falls back to English for a locale that ships no catalogue', () => {
+  it('falls back to zh-CN for a locale that ships no catalogue', () => {
+    // Mobii storefront default catalogue is zh-CN (not en-US).
     const html = renderToString(<PaymentMethods methods={[]} locale="de-DE" />);
-    expect(html).toContain('No payment method is available');
+    expect(html).toContain('没有可用的支付方式');
   });
 
   it('still renders the methods it is given', () => {

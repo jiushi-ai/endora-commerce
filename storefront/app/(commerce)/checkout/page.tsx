@@ -170,10 +170,10 @@ export default async function CheckoutPage({
   if (cart.items.length === 0) {
     return (
       <div className="b2b-auth">
-        <h1>Checkout</h1>
-        <p>Your cart is empty — add a product before checking out.</p>
+        <h1>{tr('checkout.title')}</h1>
+        <p>{tr('checkout.empty.body')}</p>
         <p>
-          <LocalizedLink href="/catalog">Browse the catalog</LocalizedLink>
+          <LocalizedLink href="/catalog">{tr('checkout.empty.browseCatalog')}</LocalizedLink>
         </p>
       </div>
     );
@@ -218,7 +218,7 @@ export default async function CheckoutPage({
           currency: it.unitPrice.currency,
         }))}
       />
-      <h1>Checkout</h1>
+      <h1>{tr('checkout.title')}</h1>
       <OrganizationModerationBanner
         status={me?.organization?.status}
         message={me?.organization?.moderationMessage ?? null}
@@ -259,7 +259,7 @@ export default async function CheckoutPage({
           locale={locale}
         />
         <div className="b2b-auth__field">
-          <label htmlFor="note">Note for the seller (optional)</label>
+          <label htmlFor="note">{tr('checkout.note.label')}</label>
           <textarea id="note" name="customerNote" rows={3} maxLength={4000} placeholder=" " />
         </div>
 
@@ -268,15 +268,16 @@ export default async function CheckoutPage({
             <CreditLimitWidget limit={creditLimit} locale={locale} />
             {creditAvailable < cartTotal ? (
               <p className="b2b-auth__hint">
-                Your cart total ({formatMoney(cartTotal, cart.subtotal.currency, locale)}) exceeds the
-                available credit. The credit-limit payment option is hidden until you reduce
-                the cart or contact support to raise your limit.
+                {tr('checkout.creditExceeded').replace(
+                  '{total}',
+                  formatMoney(cartTotal, cart.subtotal.currency, locale),
+                )}
               </p>
             ) : null}
           </div>
         ) : null}
 
-        <h3>Review</h3>
+        <h3>{tr('checkout.review.title')}</h3>
         <table className="b2b-account__table">
           <tbody>
             {cart.items.map((it) => (
@@ -301,7 +302,7 @@ export default async function CheckoutPage({
             ))}
             <tr>
               <th colSpan={2} scope="row" className="text-right">
-                Subtotal
+                {tr('checkout.review.subtotal')}
               </th>
               <th className="text-right">
                 {formatMoney(cart.subtotal.amount, cart.subtotal.currency, locale)}
@@ -310,7 +311,7 @@ export default async function CheckoutPage({
             {cart.discount ? (
               <tr>
                 <th colSpan={2} scope="row" className="text-right">
-                  Discount ({cart.discount.code})
+                  {tr('checkout.review.discount')} ({cart.discount.code})
                 </th>
                 <th className="text-right">
                   −{formatMoney(cart.discount.amount, cart.discount.currency, locale)}
@@ -320,7 +321,7 @@ export default async function CheckoutPage({
             {cart.grandTotal ? (
               <tr>
                 <th colSpan={2} scope="row" className="text-right">
-                  <strong>Total</strong>
+                  <strong>{tr('checkout.review.total')}</strong>
                 </th>
                 <th className="text-right">
                   <strong>
@@ -337,12 +338,12 @@ export default async function CheckoutPage({
             href="/cart"
             className="inline-flex items-center gap-2 rounded-sm border border-line bg-surface px-[16px] py-[10px] font-medium text-fg-soft transition-[background-color,border-color,color] duration-150 hover:border-line-strong hover:bg-surface-alt hover:text-[color:var(--ink-900)]"
           >
-            ← Back to cart
+            {tr('checkout.backToCart')}
           </LocalizedLink>
           <PlaceOrderButton
             blocked={placeOrderBlockReason}
-            label="Place order"
-            pendingLabel="Placing order…"
+            label={tr('checkout.placeOrder')}
+            pendingLabel={tr('checkout.placingOrder')}
             title={blockTitle(placeOrderBlockReason, tr, me?.organization?.moderationMessage ?? null)}
             describedBy={placeOrderBlockReason === 'below-minimum' ? BELOW_MINIMUM_SUMMARY_ID : undefined}
           />

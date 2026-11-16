@@ -843,3 +843,16 @@ feat-26-11-13 22:24:00 [36.1~36.3]：恢复小b account 侧栏 Bidding 与被 16
 
 汇总：仅分析不 merge；报告见 `pro_doc/upstream-diff-167-vs-master.md`。结论仍不建议一次合 2371；按 A 排队 cherry-pick，永久保留 B1（bidding 等），合上游时保住 B2（Bindings / account i18n 等）。
 feat-26-11-14 00:17:00 [37.1~37.2]：产出 feat/167 与 upstream/master 差异清单（A/B1/B2）
+
+### 38. 小b 结算页 — i18n 漏翻 + Mobii 品牌 + 配送/支付/下单门禁说明
+
+- [x] 38.1 结算页硬编码英文改走 messages（`checkout.title` / payment / note / review / placeOrder 等），补齐 en-US / zh-CN / zh-TW / pl-PL
+- [x] 38.2 排查配送/支付「此销售渠道没有可用方式」：非前端 bug；`GET /delivery-methods` 与 `/payment-methods` 按销售渠道绑定 + 组织 allow-list + adapter 资格过滤；Admin 需在 `/delivery-methods`、`/payment-methods` 为当前渠道分配方式（或清空渠道=全渠道），并确认模块启用、adapter 有效、组织 allow-list 未排除
+- [x] 38.3 确认 Place order 门禁：`placeOrderBlock` — moderation → below-minimum → no-delivery → no-payment；当前灰是因配送/支付列表为空
+- [x] 38.4 `CheckoutHeader` 从 Industria 占位改为 Mobii logo + `chrome.brand.*` 多语（与 Header/Footer 一致）
+- [x] 38.5 更新 checkout-header / payment-methods / delivery-catalogue-absence 测试（34 passed）
+- [x] 38.6 本 §99
+
+汇总：结算页漏翻与 Checkout 顶栏品牌已修；配送/支付空列表与 Place order 灰属运营配置（渠道绑定等），代码侧门禁行为符合预期。部署 storefront 后 i18n/品牌生效；要可下单需在 Admin 为当前销售渠道配置可用配送与支付方式。
+
+feat-26-11-15 18:54:53 [38.1~38.6]：结算页 i18n（四语）+ Mobii CheckoutHeader；记录配送/支付/下单门禁结论

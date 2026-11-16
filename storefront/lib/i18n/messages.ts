@@ -314,6 +314,20 @@ export type MessageKey =
   | 'checkout.shipping.title'
   | 'checkout.shipping.empty'
   | 'checkout.shipping.free'
+  // Batch 38 — main checkout form chrome that was still hard-coded English.
+  | 'checkout.title'
+  | 'checkout.empty.body'
+  | 'checkout.empty.browseCatalog'
+  | 'checkout.payment.title'
+  | 'checkout.note.label'
+  | 'checkout.review.title'
+  | 'checkout.review.subtotal'
+  | 'checkout.review.discount'
+  | 'checkout.review.total'
+  | 'checkout.backToCart'
+  | 'checkout.placeOrder'
+  | 'checkout.placingOrder'
+  | 'checkout.creditExceeded'
   // Feature 008 — Quote Request success page (parallel to checkout success).
   | 'quoteRequest.success.title'
   | 'quoteRequest.success.numberPrefix'
@@ -1041,6 +1055,20 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'checkout.shipping.empty':
       'No delivery method is available for your account on this sales channel.',
     'checkout.shipping.free': 'free',
+    'checkout.title': 'Checkout',
+    'checkout.empty.body': 'Your cart is empty — add a product before checking out.',
+    'checkout.empty.browseCatalog': 'Browse the catalog',
+    'checkout.payment.title': 'Payment method',
+    'checkout.note.label': 'Note for the seller (optional)',
+    'checkout.review.title': 'Review',
+    'checkout.review.subtotal': 'Subtotal',
+    'checkout.review.discount': 'Discount',
+    'checkout.review.total': 'Total',
+    'checkout.backToCart': '← Back to cart',
+    'checkout.placeOrder': 'Place order',
+    'checkout.placingOrder': 'Placing order…',
+    'checkout.creditExceeded':
+      'Your cart total ({total}) exceeds the available credit. The credit-limit payment option is hidden until you reduce the cart or contact support to raise your limit.',
     // Feature 008 — Quote Request success page.
     'quoteRequest.success.title': 'Thank you — your quote request is submitted',
     'quoteRequest.success.numberPrefix': 'Your quote request number is ',
@@ -1725,6 +1753,20 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'checkout.shipping.title': '配送方式',
     'checkout.shipping.empty': '您的账户在此销售渠道没有可用的配送方式。',
     'checkout.shipping.free': '免费',
+    'checkout.title': '结算',
+    'checkout.empty.body': '购物车为空 — 请先添加商品再结算。',
+    'checkout.empty.browseCatalog': '浏览商品目录',
+    'checkout.payment.title': '支付方式',
+    'checkout.note.label': '给卖家的备注（可选）',
+    'checkout.review.title': '订单确认',
+    'checkout.review.subtotal': '小计',
+    'checkout.review.discount': '折扣',
+    'checkout.review.total': '合计',
+    'checkout.backToCart': '← 返回购物车',
+    'checkout.placeOrder': '提交订单',
+    'checkout.placingOrder': '正在提交订单…',
+    'checkout.creditExceeded':
+      '购物车合计（{total}）已超过可用信用额度。请减少购物车金额或联系支持提高额度后，信用额度支付选项才会显示。',
     'quoteRequest.success.title': '感谢您 — 询价请求已提交',
     'quoteRequest.success.numberPrefix': '您的询价请求编号是 ',
     'quoteRequest.success.confirmationSent': '我们已收到请求，并发送了确认邮件。',
@@ -2391,6 +2433,20 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'checkout.shipping.title': '配送方式',
     'checkout.shipping.empty': '您的账户在此销售渠道没有可用的配送方式。',
     'checkout.shipping.free': '免费',
+    'checkout.title': '結算',
+    'checkout.empty.body': '購物車為空 — 請先加入商品再結算。',
+    'checkout.empty.browseCatalog': '瀏覽商品目錄',
+    'checkout.payment.title': '付款方式',
+    'checkout.note.label': '給賣家的備註（選填）',
+    'checkout.review.title': '訂單確認',
+    'checkout.review.subtotal': '小計',
+    'checkout.review.discount': '折扣',
+    'checkout.review.total': '合計',
+    'checkout.backToCart': '← 返回購物車',
+    'checkout.placeOrder': '提交訂單',
+    'checkout.placingOrder': '正在提交訂單…',
+    'checkout.creditExceeded':
+      '購物車合計（{total}）已超過可用信用額度。請減少購物車金額或聯絡支援提高額度後，信用額度付款選項才會顯示。',
     'quoteRequest.success.title': '感谢您 — 询价请求已提交',
     'quoteRequest.success.numberPrefix': '您的询价请求编号是 ',
     'quoteRequest.success.confirmationSent': '我们已收到请求，并发送了确认邮件。',
@@ -3079,6 +3135,20 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'checkout.shipping.empty':
       'Brak metody dostawy dostępnej dla Twojego konta w tym kanale sprzedaży.',
     'checkout.shipping.free': 'bezpłatnie',
+    'checkout.title': 'Kasa',
+    'checkout.empty.body': 'Twój koszyk jest pusty — dodaj produkt przed złożeniem zamówienia.',
+    'checkout.empty.browseCatalog': 'Przeglądaj katalog',
+    'checkout.payment.title': 'Metoda płatności',
+    'checkout.note.label': 'Notatka dla sprzedawcy (opcjonalnie)',
+    'checkout.review.title': 'Podsumowanie',
+    'checkout.review.subtotal': 'Suma częściowa',
+    'checkout.review.discount': 'Rabat',
+    'checkout.review.total': 'Razem',
+    'checkout.backToCart': '← Wróć do koszyka',
+    'checkout.placeOrder': 'Złóż zamówienie',
+    'checkout.placingOrder': 'Składanie zamówienia…',
+    'checkout.creditExceeded':
+      'Suma koszyka ({total}) przekracza dostępny limit kredytowy. Opcja płatności limitem kredytowym jest ukryta, dopóki nie zmniejszysz koszyka lub nie poprosisz o podniesienie limitu.',
     // Feature 008 — Quote Request success page.
     'quoteRequest.success.title': 'Dziekujemy — Twoje zapytanie ofertowe zostalo zlozone',
     'quoteRequest.success.numberPrefix': 'Numer Twojego zapytania ofertowego: ',

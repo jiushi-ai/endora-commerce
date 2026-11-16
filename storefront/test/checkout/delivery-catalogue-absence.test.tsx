@@ -86,9 +86,10 @@ describe('ShippingMethods empty state', () => {
     expect(html).toContain('Brak dostępnych metod dostawy');
   });
 
-  it('falls back to English for a locale that ships no catalogue', () => {
+  it('falls back to zh-CN for a locale that ships no catalogue', () => {
+    // Mobii storefront default catalogue is zh-CN (not en-US).
     const html = renderToString(<ShippingMethods methods={[]} locale="de-DE" />);
-    expect(html).toContain('No delivery method is available');
+    expect(html).toContain('没有可用的配送方式');
   });
 });
 
@@ -193,10 +194,12 @@ describe('the checkout error boundary, for the delivery case', () => {
     // The negative half. What reaches the boundary is a genuine failure, and
     // telling that buyer "no delivery method is available" would launder a bug
     // into a product state — the same reason the payment sentence is kept out.
+    // First paint uses FALLBACK_LOCALE (zh-CN on Mobii).
+    const t = tForLocale('zh-CN');
     const html = renderToString(
       <CheckoutError error={new Error('kaboom')} reset={(): void => {}} />,
     );
-    expect(html).not.toContain('No delivery method is available');
-    expect(html).toContain('We could not load checkout');
+    expect(html).not.toContain(t('checkout.delivery.none'));
+    expect(html).toContain(t('checkout.error.title'));
   });
 });
