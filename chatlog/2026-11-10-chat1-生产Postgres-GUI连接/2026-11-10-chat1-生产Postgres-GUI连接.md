@@ -1,3 +1,5 @@
+l
+
 # 2026-11-10-chat1-生产Postgres-GUI连接 会话沟通记录
 
 用途：归档「用数据库 GUI 连接阿里云 ECS Docker 中生产 PostgreSQL」的 ask/rep，并补充已验证的 DBeaver SSH 连法，便于后续改库对照。
@@ -79,23 +81,25 @@ ssh -N -L 15432:127.0.0.1:5432 root@8.138.24.251
 若已用 Cursor Remote-SSH / 密钥，把 `root@IP` 换成你平时登录用的即可。
 
 验证是否开启成功：
+
 ```bash
 Test-NetConnection 127.0.0.1 -Port 15432
 
 netstat -an | findstr 15432
 ```
+
 ---
 
 ## 步骤 C：GUI 软件连接参数
 
-| 项 | 值 |
-|---|---|
-| Host | `127.0.0.1` |
-| Port | `15432` |
-| Database | `.env` 里的 `POSTGRES_DB`（一般是 `b2b`） |
-| User | `.env` 里的 `POSTGRES_USER`（一般是 `b2b`） |
-| Password | `.env` 里的 `POSTGRES_PASSWORD` |
-| SSL | 一般关（隧道内已加密） |
+| 项       | 值                                                |
+| -------- | ------------------------------------------------- |
+| Host     | `127.0.0.1`                                     |
+| Port     | `15432`                                         |
+| Database | `.env` 里的 `POSTGRES_DB`（一般是 `b2b`）   |
+| User     | `.env` 里的 `POSTGRES_USER`（一般是 `b2b`） |
+| Password | `.env` 里的 `POSTGRES_PASSWORD`               |
+| SSL      | 一般关（隧道内已加密）                            |
 
 DBeaver：新建 PostgreSQL 连接，填上表即可测连。
 
@@ -107,40 +111,40 @@ DBeaver：新建 PostgreSQL 连接，填上表即可测连。
 
 **两种方式不要混用：**
 
-| 方式 | DBeaver SSH 页 | 主要页 Host/Port | PowerShell `ssh -N -L 15432` |
-|---|---|---|---|
-| A. 仅 DBeaver SSH（本节约） | ✓ 开启 | `127.0.0.1` / **`5432`** | 可关闭 |
-| B. 仅 PowerShell 隧道（步骤 B+C） | ✗ 关闭 | `127.0.0.1` / **`15432`** | 必须开着 |
+| 方式                              | DBeaver SSH 页 | 主要页 Host/Port                    | PowerShell `ssh -N -L 15432` |
+| --------------------------------- | -------------- | ----------------------------------- | ------------------------------ |
+| A. 仅 DBeaver SSH（本节约）       | ✓ 开启        | `127.0.0.1` / **`5432`**  | 可关闭                         |
+| B. 仅 PowerShell 隧道（步骤 B+C） | ✗ 关闭        | `127.0.0.1` / **`15432`** | 必须开着                       |
 
 ### 主要（General）页
 
-| 项 | 值 |
-|---|---|
-| Host | `127.0.0.1`（相对 **ECS 本机** 上的 Postgres） |
-| Port | **`5432`**（不是 15432） |
-| Database | `b2b` |
-| Username | `b2b` |
-| Password | `/opt/b2b/.env` 的 `POSTGRES_PASSWORD` |
-| URL 示例 | `jdbc:postgresql://127.0.0.1:5432/b2b` |
+| 项       | 值                                                     |
+| -------- | ------------------------------------------------------ |
+| Host     | `127.0.0.1`（相对 **ECS 本机** 上的 Postgres） |
+| Port     | **`5432`**（不是 15432）                       |
+| Database | `b2b`                                                |
+| Username | `b2b`                                                |
+| Password | `/opt/b2b/.env` 的 `POSTGRES_PASSWORD`             |
+| URL 示例 | `jdbc:postgresql://127.0.0.1:5432/b2b`               |
 
 - **图1** DBeaver 主要页：Host `127.0.0.1`、Port `5432`、库/用户 `b2b`
-![图1 DBeaver主要页5432](fig1-dbeaver-main-5432.png)
+  ![图1 DBeaver主要页5432](fig1-dbeaver-main-5432.png)
 
 ### SSH 页
 
-| 项 | 值 |
-|---|---|
-| 使用 SSH 隧道 | ✓ 开启 |
-| Host / IP | ECS 公网 IP（例：`8.138.24.251`） |
-| Port | `22` |
-| Username | `root`（或你平时 SSH 账号） |
-| 身份验证 | 密码（或密钥） |
-| Password | **ECS 登录密码**（不是数据库 `b2b` 密码） |
+| 项            | 值                                                |
+| ------------- | ------------------------------------------------- |
+| 使用 SSH 隧道 | ✓ 开启                                           |
+| Host / IP     | ECS 公网 IP（例：`8.138.24.251`）               |
+| Port          | `22`                                            |
+| Username      | `root`（或你平时 SSH 账号）                     |
+| 身份验证      | 密码（或密钥）                                    |
+| Password      | **ECS 登录密码**（不是数据库 `b2b` 密码） |
 
 可先点「测试隧道配置」，成功后再点「测试连接」。
 
 - **图2** DBeaver SSH 页：ECS IP、端口 22、用户 root、密码认证
-![图2 DBeaver SSH页](fig2-dbeaver-ssh.png)
+  ![图2 DBeaver SSH页](fig2-dbeaver-ssh.png)
 
 ### 前置（步骤 A 仍需要）
 
@@ -169,8 +173,8 @@ rm -f /opt/b2b/compose.postgres-local.yml
 
 ## 注意
 
-- **不要**写成 `0.0.0.0:5432:5432` 或安全组放行 5432。  
-- 生产直接改表有风险，改前在 ECS 做一次 `pg_dump` 备份。  
+- **不要**写成 `0.0.0.0:5432:5432` 或安全组放行 5432。
+- 生产直接改表有风险，改前在 ECS 做一次 `pg_dump` 备份。
 - 改 megamenu 等业务表后，小b 可能有约 1 分钟缓存，硬刷新即可。
 
 如果你说用的是 **DBeaver / Navicat / DataGrip** 哪一个，我可以按那个软件把截图级字段对一下。
