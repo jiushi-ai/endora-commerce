@@ -27,7 +27,7 @@
   "settings.vapid.unset": "未配置 VAPID 密鑰。",
   "settings.channel.global": "全球（所有渠道）",
   "settings.channel.override": "通道覆蓋",
-  "settings.save": "節省",
+  "settings.save": "保存",
   "settings.saved": "設置已保存。",
   "push.title": "發送推送通知",
   "push.field.title": "標題",

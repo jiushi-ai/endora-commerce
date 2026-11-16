@@ -856,3 +856,15 @@ feat-26-11-14 00:17:00 [37.1~37.2]：产出 feat/167 与 upstream/master 差异�
 汇总：结算页漏翻与 Checkout 顶栏品牌已修；配送/支付空列表与 Place order 灰属运营配置（渠道绑定等），代码侧门禁行为符合预期。部署 storefront 后 i18n/品牌生效；要可下单需在 Admin 为当前销售渠道配置可用配送与支付方式。
 
 feat-26-11-15 18:54:53 [38.1~38.6]：结算页 i18n（四语）+ Mobii CheckoutHeader；记录配送/支付/下单门禁结论
+
+### 39. 小b compare / 采购清单详情 / PDP 对比 — 漏翻与 PL 硬编码
+
+- [x] 39.1 compare 页 + share 页 + ComparisonTable/SharedComparisonTable：波兰语硬编码改走 messages（en/zh-CN/zh-TW/pl）
+- [x] 39.2 采购清单详情 + ClearListButton：英文硬编码改走 messages（四语）
+- [x] 39.3 PDP/卡片 CompareToggle 使用 `compare.add`/`compare.remove` 并传入 locale
+- [x] 39.4 新增 `test/i18n/compare-shopping-list-locale.test.ts`（4 passed）
+- [x] 39.5 本 §99
+
+汇总：方案 B — 你点名的三处 + compare/shopping-list 同模块邻近漏翻。大 B「Save→节省」按约定由人工改 Admin JSON（例：`packages/modules/_i18n/i18n/zh-CN.json` 的 `taxes.success.save`）。发 storefront 后生产验证 compare / shopping-lists / PDP。
+
+feat-26-11-15 23:17:05 [39.1~39.5]：小b compare/采购清单/PDP 对比 i18n（四语）补齐

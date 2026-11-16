@@ -28,7 +28,7 @@
   "errors.ASSET_PERMALINK_INVALID.uuid_shaped": "永久链接不能看起来像资产 ID。",
   "common.search": "搜索",
   "common.loading": "加载中…",
-  "common.save": "节省",
+  "common.save": "保存",
   "common.optional": "（可选）",
   "common.ok": "好的",
   "common.cancel": "取消",

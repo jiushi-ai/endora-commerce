@@ -42,6 +42,53 @@ export type MessageKey =
   | 'gallery.zoom'
   | 'compare.add'
   | 'compare.remove'
+  // Batch 39 — compare page / share / table chrome + shopping-list detail.
+  | 'compare.crumb'
+  | 'compare.title'
+  | 'compare.subtitle'
+  | 'compare.loading'
+  | 'compare.empty.minTwo'
+  | 'compare.share.crumb'
+  | 'compare.share.title'
+  | 'compare.share.subtitle'
+  | 'compare.removeAria'
+  | 'compare.shareLink'
+  | 'compare.shareCopied'
+  | 'compare.updateFailed'
+  | 'compare.clear'
+  | 'compare.share.loadFailed'
+  | 'compare.share.gone'
+  | 'compare.share.empty'
+  | 'compare.showDifferences'
+  | 'compare.hideEmpty'
+  | 'compare.allRowsEmpty'
+  | 'compare.noMatchingRows'
+  | 'compare.share.readonly'
+  | 'shoppingList.backToAll'
+  | 'shoppingList.notFound.title'
+  | 'shoppingList.notFound.body'
+  | 'shoppingList.rename.label'
+  | 'shoppingList.rename.submit'
+  | 'shoppingList.items.heading'
+  | 'shoppingList.items.empty'
+  | 'shoppingList.col.product'
+  | 'shoppingList.col.qty'
+  | 'shoppingList.col.note'
+  | 'shoppingList.remove'
+  | 'shoppingList.convertAllCart'
+  | 'shoppingList.convertSelectedCart'
+  | 'shoppingList.convertAllRfq'
+  | 'shoppingList.convertSelectedRfq'
+  | 'shoppingList.cartAdded'
+  | 'shoppingList.cartAddedSkipped'
+  | 'shoppingList.rfqAdded'
+  | 'shoppingList.rfqAddedSkipped'
+  | 'shoppingList.openRfq'
+  | 'shoppingList.clear'
+  | 'shoppingList.clear.confirmTitle'
+  | 'shoppingList.clear.confirmBody'
+  | 'shoppingList.clear.cancel'
+  | 'shoppingList.clear.clearing'
   | 'card.list.addedTo'
   | 'catalog.count'
   | 'catalog.showing'
@@ -786,6 +833,53 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'gallery.zoom': 'Enlarge',
     'compare.add': 'Add to comparison',
     'compare.remove': 'Remove from comparison',
+    'compare.crumb': 'Compare',
+    'compare.title': 'Technical specification comparison',
+    'compare.subtitle': 'Side-by-side view of selected products. Differences are highlighted.',
+    'compare.loading': 'Loading…',
+    'compare.empty.minTwo': 'Add at least two products from the catalog to compare them side by side.',
+    'compare.share.crumb': 'Shared',
+    'compare.share.title': 'Shared comparison',
+    'compare.share.subtitle': 'Read-only — the author shared this product set with you. Display-mode changes stay local and do not affect the author’s view.',
+    'compare.removeAria': 'Remove {name} from comparison',
+    'compare.shareLink': 'Share link',
+    'compare.shareCopied': 'Copied',
+    'compare.updateFailed': 'Could not update compare set.',
+    'compare.clear': 'Clear comparison',
+    'compare.share.loadFailed': 'Could not load the comparison.',
+    'compare.share.gone': 'This comparison no longer exists — the author may have deleted it.',
+    'compare.share.empty': 'This comparison is empty.',
+    'compare.showDifferences': 'Show only differences',
+    'compare.hideEmpty': 'Hide empty rows',
+    'compare.allRowsEmpty': 'All rows are empty for the selected products — turn off “Hide empty rows” to see attributes with missing values.',
+    'compare.noMatchingRows': 'No attributes match the current filters.',
+    'compare.share.readonly': 'Shared view · read-only',
+    'shoppingList.backToAll': '← All lists',
+    'shoppingList.notFound.title': 'Shopping list not found',
+    'shoppingList.notFound.body': "We couldn't find that list.",
+    'shoppingList.rename.label': 'Rename list',
+    'shoppingList.rename.submit': 'Rename',
+    'shoppingList.items.heading': 'Items',
+    'shoppingList.items.empty': 'No items yet. Find a product on the catalog and add it from its detail page.',
+    'shoppingList.col.product': 'Product',
+    'shoppingList.col.qty': 'Qty',
+    'shoppingList.col.note': 'Note',
+    'shoppingList.remove': 'Remove',
+    'shoppingList.convertAllCart': 'Convert all to cart',
+    'shoppingList.convertSelectedCart': 'Convert selected to cart',
+    'shoppingList.convertAllRfq': 'Convert all to RFQ',
+    'shoppingList.convertSelectedRfq': 'Convert selected to RFQ',
+    'shoppingList.cartAdded': 'Added {count} item(s) to your cart.',
+    'shoppingList.cartAddedSkipped': 'Added {count} item(s) to your cart, skipped {skipped} row(s).',
+    'shoppingList.rfqAdded': 'Added {count} item(s) to your draft RFQ.',
+    'shoppingList.rfqAddedSkipped': 'Added {count} item(s) to your draft RFQ, skipped {skipped} archived row(s).',
+    'shoppingList.openRfq': 'Open the RFQ',
+    'shoppingList.clear': 'Clear list',
+    'shoppingList.clear.confirmTitle': 'Clear this list?',
+    'shoppingList.clear.confirmBody': 'This removes all items from the list. This action cannot be undone.',
+    'shoppingList.clear.cancel': 'Cancel',
+    'shoppingList.clear.clearing': 'Clearing…',
+
     'card.list.addedTo': 'Added to "{name}"',
     'catalog.count': '{count} products',
     'catalog.showing': 'Showing',
@@ -1507,6 +1601,53 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'gallery.zoom': '放大',
     'compare.add': '加入对比',
     'compare.remove': '从对比移除',
+    'compare.crumb': '对比',
+    'compare.title': '技术规格对比',
+    'compare.subtitle': '并排查看所选商品。差异已高亮显示。',
+    'compare.loading': '加载中…',
+    'compare.empty.minTwo': '请从商品目录至少添加两件商品，以便并排对比。',
+    'compare.share.crumb': '分享',
+    'compare.share.title': '分享的对比',
+    'compare.share.subtitle': '只读 — 对方与你分享了此商品组合。显示模式的更改仅在本地生效，不影响分享者的视图。',
+    'compare.removeAria': '将 {name} 从对比中移除',
+    'compare.shareLink': '分享链接',
+    'compare.shareCopied': '已复制',
+    'compare.updateFailed': '无法更新对比列表。',
+    'compare.clear': '清空对比',
+    'compare.share.loadFailed': '无法加载对比。',
+    'compare.share.gone': '此对比已不存在 — 分享者可能已删除。',
+    'compare.share.empty': '此对比为空。',
+    'compare.showDifferences': '仅显示差异',
+    'compare.hideEmpty': '隐藏空行',
+    'compare.allRowsEmpty': '所选商品的所有行均为空 — 关闭“隐藏空行”以查看含缺失值的属性。',
+    'compare.noMatchingRows': '没有符合当前筛选条件的属性。',
+    'compare.share.readonly': '分享视图 · 只读',
+    'shoppingList.backToAll': '← 全部清单',
+    'shoppingList.notFound.title': '未找到采购清单',
+    'shoppingList.notFound.body': '找不到该清单。',
+    'shoppingList.rename.label': '重命名清单',
+    'shoppingList.rename.submit': '重命名',
+    'shoppingList.items.heading': '商品',
+    'shoppingList.items.empty': '暂无商品。请在商品目录中找到商品，并在详情页加入清单。',
+    'shoppingList.col.product': '商品',
+    'shoppingList.col.qty': '数量',
+    'shoppingList.col.note': '备注',
+    'shoppingList.remove': '移除',
+    'shoppingList.convertAllCart': '全部加入购物车',
+    'shoppingList.convertSelectedCart': '将所选加入购物车',
+    'shoppingList.convertAllRfq': '全部加入询价',
+    'shoppingList.convertSelectedRfq': '将所选加入询价',
+    'shoppingList.cartAdded': '已将 {count} 件商品加入购物车。',
+    'shoppingList.cartAddedSkipped': '已将 {count} 件商品加入购物车，跳过 {skipped} 行。',
+    'shoppingList.rfqAdded': '已将 {count} 件商品加入询价草稿。',
+    'shoppingList.rfqAddedSkipped': '已将 {count} 件商品加入询价草稿，跳过 {skipped} 行已归档商品。',
+    'shoppingList.openRfq': '打开询价',
+    'shoppingList.clear': '清空清单',
+    'shoppingList.clear.confirmTitle': '清空此清单？',
+    'shoppingList.clear.confirmBody': '将移除清单中的全部商品。此操作无法撤销。',
+    'shoppingList.clear.cancel': '取消',
+    'shoppingList.clear.clearing': '正在清空…',
+
     'card.list.addedTo': '已加入「{name}」',
     'catalog.count': '{count} 件商品',
     'catalog.showing': '显示',
@@ -2187,6 +2328,53 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'gallery.zoom': '放大',
     'compare.add': '加入對比',
     'compare.remove': '從對比移除',
+    'compare.crumb': '對比',
+    'compare.title': '技術規格對比',
+    'compare.subtitle': '並排查看所選商品。差異已高亮顯示。',
+    'compare.loading': '載入中…',
+    'compare.empty.minTwo': '請從商品目錄至少加入兩件商品，以便並排對比。',
+    'compare.share.crumb': '分享',
+    'compare.share.title': '分享的對比',
+    'compare.share.subtitle': '唯讀 — 對方與你分享了此商品組合。顯示模式的變更僅在本機生效，不影響分享者的檢視。',
+    'compare.removeAria': '將 {name} 從對比中移除',
+    'compare.shareLink': '分享連結',
+    'compare.shareCopied': '已複製',
+    'compare.updateFailed': '無法更新對比清單。',
+    'compare.clear': '清空對比',
+    'compare.share.loadFailed': '無法載入對比。',
+    'compare.share.gone': '此對比已不存在 — 分享者可能已刪除。',
+    'compare.share.empty': '此對比為空。',
+    'compare.showDifferences': '僅顯示差異',
+    'compare.hideEmpty': '隱藏空列',
+    'compare.allRowsEmpty': '所選商品的所有列均為空 — 關閉「隱藏空列」以查看含缺失值的屬性。',
+    'compare.noMatchingRows': '沒有符合目前篩選條件的屬性。',
+    'compare.share.readonly': '分享檢視 · 唯讀',
+    'shoppingList.backToAll': '← 全部清單',
+    'shoppingList.notFound.title': '找不到採購清單',
+    'shoppingList.notFound.body': '找不到該清單。',
+    'shoppingList.rename.label': '重新命名清單',
+    'shoppingList.rename.submit': '重新命名',
+    'shoppingList.items.heading': '商品',
+    'shoppingList.items.empty': '尚無商品。請在商品目錄中找到商品，並在詳情頁加入清單。',
+    'shoppingList.col.product': '商品',
+    'shoppingList.col.qty': '數量',
+    'shoppingList.col.note': '備註',
+    'shoppingList.remove': '移除',
+    'shoppingList.convertAllCart': '全部加入購物車',
+    'shoppingList.convertSelectedCart': '將所選加入購物車',
+    'shoppingList.convertAllRfq': '全部加入詢價',
+    'shoppingList.convertSelectedRfq': '將所選加入詢價',
+    'shoppingList.cartAdded': '已將 {count} 件商品加入購物車。',
+    'shoppingList.cartAddedSkipped': '已將 {count} 件商品加入購物車，略過 {skipped} 列。',
+    'shoppingList.rfqAdded': '已將 {count} 件商品加入詢價草稿。',
+    'shoppingList.rfqAddedSkipped': '已將 {count} 件商品加入詢價草稿，略過 {skipped} 列已封存商品。',
+    'shoppingList.openRfq': '開啟詢價',
+    'shoppingList.clear': '清空清單',
+    'shoppingList.clear.confirmTitle': '清空此清單？',
+    'shoppingList.clear.confirmBody': '將移除清單中的全部商品。此操作無法復原。',
+    'shoppingList.clear.cancel': '取消',
+    'shoppingList.clear.clearing': '正在清空…',
+
     'card.list.addedTo': '已加入「{name}」',
     'catalog.count': '{count} 件商品',
     'catalog.showing': '顯示',
@@ -2867,6 +3055,53 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'gallery.zoom': 'Powiększ',
     'compare.add': 'Dodaj do porównania',
     'compare.remove': 'Usuń z porównania',
+    'compare.crumb': 'Porównywarka',
+    'compare.title': 'Porównywarka parametrów technicznych',
+    'compare.subtitle': 'Zestawienie wybranych produktów. Różnice są podświetlone.',
+    'compare.loading': 'Ładowanie…',
+    'compare.empty.minTwo': 'Dodaj co najmniej dwa produkty z katalogu, aby porównać je obok siebie.',
+    'compare.share.crumb': 'Udostępniona',
+    'compare.share.title': 'Udostępniona porównywarka',
+    'compare.share.subtitle': 'Tylko do odczytu — autor porównywarki udostępnił ci ten zestaw produktów. Zmiany trybu wyświetlania są lokalne i nie wpływają na widok autora.',
+    'compare.removeAria': 'Usuń {name} z porównania',
+    'compare.shareLink': 'Udostępnij link',
+    'compare.shareCopied': 'Skopiowano',
+    'compare.updateFailed': 'Nie udało się zaktualizować porównania.',
+    'compare.clear': 'Wyczyść porównanie',
+    'compare.share.loadFailed': 'Nie udało się załadować porównania.',
+    'compare.share.gone': 'Ta porównywarka już nie istnieje — autor mógł ją usunąć.',
+    'compare.share.empty': 'Porównywarka jest pusta.',
+    'compare.showDifferences': 'Pokaż tylko różnice',
+    'compare.hideEmpty': 'Ukryj puste',
+    'compare.allRowsEmpty': 'Wszystkie wiersze są puste dla wybranych produktów — wyłącz „Ukryj puste”, aby zobaczyć atrybuty z brakującymi wartościami.',
+    'compare.noMatchingRows': 'Brak atrybutów spełniających aktualne filtry.',
+    'compare.share.readonly': 'Widok udostępniony · tylko do odczytu',
+    'shoppingList.backToAll': '← Wszystkie listy',
+    'shoppingList.notFound.title': 'Nie znaleziono listy zakupowej',
+    'shoppingList.notFound.body': 'Nie mogliśmy znaleźć tej listy.',
+    'shoppingList.rename.label': 'Zmień nazwę listy',
+    'shoppingList.rename.submit': 'Zmień nazwę',
+    'shoppingList.items.heading': 'Pozycje',
+    'shoppingList.items.empty': 'Brak pozycji. Znajdź produkt w katalogu i dodaj go ze strony produktu.',
+    'shoppingList.col.product': 'Produkt',
+    'shoppingList.col.qty': 'Ilość',
+    'shoppingList.col.note': 'Notatka',
+    'shoppingList.remove': 'Usuń',
+    'shoppingList.convertAllCart': 'Dodaj wszystko do koszyka',
+    'shoppingList.convertSelectedCart': 'Dodaj wybrane do koszyka',
+    'shoppingList.convertAllRfq': 'Dodaj wszystko do RFQ',
+    'shoppingList.convertSelectedRfq': 'Dodaj wybrane do RFQ',
+    'shoppingList.cartAdded': 'Dodano {count} pozycji do koszyka.',
+    'shoppingList.cartAddedSkipped': 'Dodano {count} pozycji do koszyka, pominięto {skipped} wierszy.',
+    'shoppingList.rfqAdded': 'Dodano {count} pozycji do szkicu RFQ.',
+    'shoppingList.rfqAddedSkipped': 'Dodano {count} pozycji do szkicu RFQ, pominięto {skipped} zarchiwizowanych wierszy.',
+    'shoppingList.openRfq': 'Otwórz RFQ',
+    'shoppingList.clear': 'Wyczyść listę',
+    'shoppingList.clear.confirmTitle': 'Wyczyścić tę listę?',
+    'shoppingList.clear.confirmBody': 'Spowoduje to usunięcie wszystkich pozycji z listy. Tej operacji nie można cofnąć.',
+    'shoppingList.clear.cancel': 'Anuluj',
+    'shoppingList.clear.clearing': 'Czyszczenie…',
+
     'card.list.addedTo': 'Dodano do „{name}”',
     'catalog.count': '{count} produktów',
     'catalog.showing': 'Pokazuję',

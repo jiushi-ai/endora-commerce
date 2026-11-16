@@ -23,13 +23,13 @@ export default async function ComparePage(): Promise<ReactNode> {
       <Breadcrumbs
         crumbs={[
           { href: '/', label: t('nav.home') },
-          { href: '/compare', label: 'Porównywarka' },
+          { href: '/compare', label: t('compare.crumb') },
         ]}
       />
       <div className="industria-catalog__title">
         <div>
-          <h1>Porównywarka parametrów technicznych</h1>
-          <p>Zestawienie wybranych produktów. Różnice są podświetlone.</p>
+          <h1>{t('compare.title')}</h1>
+          <p>{t('compare.subtitle')}</p>
         </div>
       </div>
       <ComparisonTable locale={locale} salesChannelCode={ctx.salesChannelCode} />

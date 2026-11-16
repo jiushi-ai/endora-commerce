@@ -60,7 +60,7 @@
   "customFields.editor.labelDefault": "默認標籤",
   "customFields.editor.labelDefaultRequired": "輸入默認標籤。",
   "customFields.editor.requiredNotice": "現有記錄不斷加載。任何沒有值的記錄在下次編輯其自定義字段時都需要一個值。",
-  "customFields.editor.save": "節省",
+  "customFields.editor.save": "保存",
   "customFields.editor.cancel": "取消",
   "customFields.editor.saveFailed": "無法保存該字段。",
   "customFields.editor.option.value": "儲值",

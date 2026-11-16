@@ -17,7 +17,7 @@
   "mappings.salesChannel": "销售渠道",
   "mappings.allChannels": "所有频道",
   "mappings.enabled": "启用",
-  "mappings.save": "节省",
+  "mappings.save": "保存",
   "mappings.delete": "删除",
   "mappings.deleteConfirm": "删除此转换映射吗？",
   "error.generic": "出了点问题。",

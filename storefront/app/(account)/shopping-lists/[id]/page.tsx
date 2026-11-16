@@ -75,10 +75,12 @@ export default async function ShoppingListDetailPage({
     list = await getShoppingList(session, id);
   } catch (err) {
     if (err instanceof StorefrontApiError && err.status === 404) {
+      const { locale: notFoundLocale } = await getServerContext();
+      const tn = tForLocale(notFoundLocale);
       return (
         <div>
-          <h2>Shopping list not found</h2>
-          <p className="b2b-auth__error">We couldn&apos;t find that list.</p>
+          <h2>{tn('shoppingList.notFound.title')}</h2>
+          <p className="b2b-auth__error">{tn('shoppingList.notFound.body')}</p>
         </div>
       );
     }
@@ -112,16 +114,16 @@ export default async function ShoppingListDetailPage({
     <>
       <h2>{list.name}</h2>
       <p>
-        <LocalizedLink href="/shopping-lists">← All lists</LocalizedLink>
+        <LocalizedLink href="/shopping-lists">{t('shoppingList.backToAll')}</LocalizedLink>
       </p>
       {sp.error ? <p className="b2b-auth__error">{sp.error}</p> : null}
       {sp.cartAdded ? (
         <p className="b2b-auth__success">
-          Added {sp.cartAdded} item(s) to your cart
           {sp.cartSkipped && Number(sp.cartSkipped) > 0
-            ? `, skipped ${sp.cartSkipped} row(s)`
-            : ''}
-          .
+            ? t('shoppingList.cartAddedSkipped')
+                .replace('{count}', sp.cartAdded)
+                .replace('{skipped}', sp.cartSkipped)
+            : t('shoppingList.cartAdded').replace('{count}', sp.cartAdded)}
         </p>
       ) : null}
       {cartSkips.length > 0 ? (
@@ -146,11 +148,12 @@ export default async function ShoppingListDetailPage({
       ) : null}
       {sp.rfqAdded ? (
         <p className="b2b-auth__success">
-          Added {sp.rfqAdded} item(s) to your draft RFQ
           {sp.rfqSkipped && Number(sp.rfqSkipped) > 0
-            ? `, skipped ${sp.rfqSkipped} archived row(s)`
-            : ''}
-          . <LocalizedLink href={`/quote-requests/${sp.rfqId}`}>Open the RFQ</LocalizedLink>.
+            ? t('shoppingList.rfqAddedSkipped')
+                .replace('{count}', sp.rfqAdded)
+                .replace('{skipped}', sp.rfqSkipped)
+            : t('shoppingList.rfqAdded').replace('{count}', sp.rfqAdded)}{' '}
+          <LocalizedLink href={`/quote-requests/${sp.rfqId}`}>{t('shoppingList.openRfq')}</LocalizedLink>
         </p>
       ) : null}
 
@@ -158,7 +161,7 @@ export default async function ShoppingListDetailPage({
         <input type="hidden" name="listId" value={list.id} />
         <div className="flex flex-1 flex-col gap-1">
           <label htmlFor="rename" className="text-sm text-fg-soft">
-            Rename list
+            {t('shoppingList.rename.label')}
           </label>
           <input
             id="rename"
@@ -170,15 +173,15 @@ export default async function ShoppingListDetailPage({
           />
         </div>
         <button type="submit" className="btn btn--outline">
-          Rename
+          {t('shoppingList.rename.submit')}
         </button>
       </form>
 
-      <h3 className="mt-10 mb-4">Items</h3>
+      <h3 className="mt-10 mb-4">{t('shoppingList.items.heading')}</h3>
       {list.items.length === 0 ? (
         <p className="muted">
-          No items yet. Find a product on the <LocalizedLink href="/catalog">catalog</LocalizedLink> and add it from
-          its detail page (coming next).
+          {t('shoppingList.items.empty')}{' '}
+          <LocalizedLink href="/catalog">{t('nav.catalog')}</LocalizedLink>
         </p>
       ) : (
         <>
@@ -210,9 +213,9 @@ export default async function ShoppingListDetailPage({
             <thead>
               <tr>
                 <th></th>
-                <th>Product</th>
-                <th>Qty</th>
-                <th>Note</th>
+                <th>{t('shoppingList.col.product')}</th>
+                <th>{t('shoppingList.col.qty')}</th>
+                <th>{t('shoppingList.col.note')}</th>
                 <th></th>
               </tr>
             </thead>
@@ -254,7 +257,7 @@ export default async function ShoppingListDetailPage({
                   </td>
                   <td>{it.note ?? ''}</td>
                   <td>
-                    <RemoveItemForm itemId={it.id} />
+                    <RemoveItemForm itemId={it.id} label={t('shoppingList.remove')} />
                   </td>
                 </tr>
               ))}
@@ -262,20 +265,30 @@ export default async function ShoppingListDetailPage({
           </table>
           <div className="mt-6 mb-10 flex flex-wrap gap-2">
             <button type="submit" form="sl-convert" formAction={convertAllToCartAction} className="btn btn--primary">
-              Convert all to cart
+              {t('shoppingList.convertAllCart')}
             </button>
             <button type="submit" form="sl-convert" className="btn btn--outline">
-              Convert selected to cart
+              {t('shoppingList.convertSelectedCart')}
             </button>
             <button type="submit" form="sl-convert" formAction={convertAllToRfqAction} className="btn btn--outline">
-              Convert all to RFQ
+              {t('shoppingList.convertAllRfq')}
             </button>
             <button type="submit" form="sl-convert" formAction={convertSelectedToRfqAction} className="btn btn--outline">
-              Convert selected to RFQ
+              {t('shoppingList.convertSelectedRfq')}
             </button>
           </div>
         <div className="mb-10 flex flex-wrap gap-2 border-t border-line pt-6">
-          <ClearListButton listId={list.id} clearAction={clearListAction} />
+          <ClearListButton
+            listId={list.id}
+            clearAction={clearListAction}
+            labels={{
+              clear: t('shoppingList.clear'),
+              confirmTitle: t('shoppingList.clear.confirmTitle'),
+              confirmBody: t('shoppingList.clear.confirmBody'),
+              cancel: t('shoppingList.clear.cancel'),
+              clearing: t('shoppingList.clear.clearing'),
+            }}
+          />
         </div>
         </>
       )}
@@ -334,10 +347,10 @@ function UpdateQtyForm({
 }
 
 /** Per-row remove button, wired to the standalone `sl-remove-<itemId>` form. */
-function RemoveItemForm({ itemId }: { itemId: string }): ReactNode {
+function RemoveItemForm({ itemId, label }: { itemId: string; label: string }): ReactNode {
   return (
     <button type="submit" form={`sl-remove-${itemId}`} className="btn btn--outline btn--sm">
-      Remove
+      {label}
     </button>
   );
 }

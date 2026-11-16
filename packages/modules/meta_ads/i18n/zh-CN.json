@@ -17,7 +17,7 @@
   "customEvents.salesChannel": "销售渠道",
   "customEvents.allChannels": "所有频道",
   "customEvents.enabled": "启用",
-  "customEvents.save": "节省",
+  "customEvents.save": "保存",
   "customEvents.delete": "删除",
   "customEvents.deleteConfirm": "删除这个自定义事件吗？",
   "customEvents.action.product_viewed": "浏览过的产品",

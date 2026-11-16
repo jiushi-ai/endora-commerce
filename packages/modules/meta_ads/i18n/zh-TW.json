@@ -17,7 +17,7 @@
   "customEvents.salesChannel": "銷售渠道",
   "customEvents.allChannels": "所有頻道",
   "customEvents.enabled": "啟用",
-  "customEvents.save": "節省",
+  "customEvents.save": "保存",
   "customEvents.delete": "刪除",
   "customEvents.deleteConfirm": "刪除這個自定義事件嗎？",
   "customEvents.action.product_viewed": "瀏覽過的產品",

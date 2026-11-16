@@ -34,7 +34,7 @@
   "salesChannels.loading": "正在加载销售渠道...",
   "salesChannels.loadError": "无法加载销售渠道。",
   "salesChannels.retry": "重试",
-  "salesChannels.save": "节省销售渠道",
+  "salesChannels.save": "保存销售渠道",
   "salesChannels.saving": "保存…",
   "salesChannels.saved": "销售渠道已保存。",
   "salesChannels.saveError": "无法保存销售渠道。",

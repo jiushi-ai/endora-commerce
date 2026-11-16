@@ -34,7 +34,7 @@
   "salesChannels.loading": "正在加載銷售渠道...",
   "salesChannels.loadError": "無法加載銷售渠道。",
   "salesChannels.retry": "重試",
-  "salesChannels.save": "節省銷售渠道",
+  "salesChannels.save": "保存銷售渠道",
   "salesChannels.saving": "保存…",
   "salesChannels.saved": "銷售渠道已保存。",
   "salesChannels.saveError": "無法保存銷售渠道。",

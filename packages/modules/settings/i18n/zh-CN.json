@@ -54,7 +54,7 @@
   "groups.action.delete": "删除",
   "quoteRequestsTab.title": "报价请求",
   "quoteRequestsTab.saved": "已保存。",
-  "quoteRequestsTab.save": "节省",
+  "quoteRequestsTab.save": "保存",
   "quoteRequestsTab.error.load": "无法加载设置。",
   "quoteRequestsTab.error.save": "保存失败。",
   "quoteRequestsTab.error.invalidExpiry": "到期时间必须是 ≥ 0 的整数。",

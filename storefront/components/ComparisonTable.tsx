@@ -78,9 +78,10 @@ export function ComparisonTable(props: {
     return rows;
   }, [view, hideEmpty]);
 
+  const t = tForLocale(locale);
   if (error) return <div className="alert alert--error">{error}</div>;
-  if (view === 'loading') return <p className="muted">Ładowanie…</p>;
-  if (!view || view.products.length === 0) return <EmptyState />;
+  if (view === 'loading') return <p className="muted">{t('compare.loading')}</p>;
+  if (!view || view.products.length === 0) return <EmptyState locale={locale} />;
 
   const showOnlyDifferences = view.displayMode === 'differences';
 
@@ -120,12 +121,12 @@ export function ComparisonTable(props: {
           <Switch
             checked={showOnlyDifferences}
             onChange={(next): void => void onToggleDifferences(next)}
-            label="Pokaż tylko różnice"
+            label={t('compare.showDifferences')}
           />
           <Switch
             checked={hideEmpty}
             onChange={setHideEmpty}
-            label="Ukryj puste"
+            label={t('compare.hideEmpty')}
           />
         </div>
         <div className="industria-compare-toolbar__right">
@@ -135,13 +136,13 @@ export function ComparisonTable(props: {
             hideEmptyRows={hideEmpty}
             salesChannelCode={props.salesChannelCode}
           />
-          <CopyShareLinkButton shareToken={view.shareToken} />
+          <CopyShareLinkButton shareToken={view.shareToken} locale={locale} />
           <button
             type="button"
             className="btn btn--ghost btn--sm"
             onClick={(): void => void onDelete()}
           >
-            <TrashIcon /> Wyczyść porównanie
+            <TrashIcon /> {t('compare.clear')}
           </button>
         </div>
       </div>
@@ -177,8 +178,8 @@ export function ComparisonTable(props: {
                       type="button"
                       className="industria-cmp-card__remove"
                       onClick={(): void => void onRemove(p.id)}
-                      aria-label={`Usuń ${localised(p.name)} z porównania`}
-                      title="Usuń z porównania"
+                      aria-label={t('compare.removeAria').replace('{name}', localised(p.name))}
+                      title={t('compare.remove')}
                     >
                       <XIcon />
                     </button>
@@ -191,9 +192,7 @@ export function ComparisonTable(props: {
             {visibleRows.length === 0 ? (
               <tr>
                 <td colSpan={view.products.length + 1} className="muted">
-                  {hideEmpty
-                    ? 'Wszystkie wiersze są puste dla wybranych produktów — wyłącz „Ukryj puste”, aby zobaczyć atrybuty z brakującymi wartościami.'
-                    : 'Brak atrybutów spełniających aktualne filtry.'}
+                  {hideEmpty ? t('compare.allRowsEmpty') : t('compare.noMatchingRows')}
                 </td>
               </tr>
             ) : (
@@ -296,8 +295,9 @@ function ExportPdfButton(props: {
   );
 }
 
-function CopyShareLinkButton(props: { shareToken: string }): ReactNode {
+function CopyShareLinkButton(props: { shareToken: string; locale: string }): ReactNode {
   const [copied, setCopied] = useState(false);
+  const t = tForLocale(props.locale);
   const onCopy = async (): Promise<void> => {
     const url =
       typeof window !== 'undefined'
@@ -317,17 +317,16 @@ function CopyShareLinkButton(props: { shareToken: string }): ReactNode {
       className="btn btn--ghost btn--sm"
       onClick={(): void => void onCopy()}
     >
-      <LinkIcon /> {copied ? 'Skopiowano' : 'Udostępnij link'}
+      <LinkIcon /> {copied ? t('compare.shareCopied') : t('compare.shareLink')}
     </button>
   );
 }
 
-function EmptyState(): ReactNode {
+function EmptyState(props: { locale: string }): ReactNode {
+  const t = tForLocale(props.locale);
   return (
     <div className="industria-compare-page">
-      <p className="muted">
-        Dodaj co najmniej dwa produkty z katalogu, aby porównać je obok siebie.
-      </p>
+      <p className="muted">{t('compare.empty.minTwo')}</p>
     </div>
   );
 }

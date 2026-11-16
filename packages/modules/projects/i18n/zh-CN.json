@@ -348,7 +348,7 @@
   "dictionary.field.name": "{language} 中的姓名",
   "dictionary.field.fallbackHint": "必需的。以每种没有自己名称的语言显示。",
   "dictionary.field.required": "在 {language} 中输入名称。",
-  "dictionary.save": "节省",
+  "dictionary.save": "保存",
   "dictionary.saveError": "无法保存更改。",
   "dictionary.actionError": "无法进行更改。",
   "field.organizationsRemove": "删除 {name}",

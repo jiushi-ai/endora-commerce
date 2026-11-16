@@ -30,17 +30,14 @@ export default async function SharedComparePage(props: {
       <Breadcrumbs
         crumbs={[
           { href: '/', label: t('nav.home') },
-          { href: '/compare', label: 'Porównywarka' },
-          { href: `/compare/share/${token}`, label: 'Udostępniona' },
+          { href: '/compare', label: t('compare.crumb') },
+          { href: `/compare/share/${token}`, label: t('compare.share.crumb') },
         ]}
       />
       <div className="industria-catalog__title">
         <div>
-          <h1>Udostępniona porównywarka</h1>
-          <p>
-            Tylko do odczytu — autor porównywarki udostępnił ci ten zestaw produktów. Zmiany trybu
-            wyświetlania są lokalne i nie wpływają na widok autora.
-          </p>
+          <h1>{t('compare.share.title')}</h1>
+          <p>{t('compare.share.subtitle')}</p>
         </div>
       </div>
       <SharedComparisonTable token={token} locale={locale} salesChannelCode={ctx.salesChannelCode} />

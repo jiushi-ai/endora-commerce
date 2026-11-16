@@ -431,6 +431,7 @@ export default async function ProductPage({
                           productId={product.id}
                           variant="inline"
                           salesChannelCode={ctx.salesChannelCode}
+                          locale={locale}
                         />
                       }
                     />
@@ -479,6 +480,7 @@ export default async function ProductPage({
                 productId={product.id}
                 variant="inline"
                 salesChannelCode={ctx.salesChannelCode}
+                locale={locale}
               />
             </div>
           ) : null}

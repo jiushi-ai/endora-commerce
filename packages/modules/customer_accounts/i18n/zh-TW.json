@@ -23,7 +23,7 @@
   "groups.field.description": "描述",
   "groups.action.edit": "編輯",
   "groups.action.delete": "刪除",
-  "groups.action.save": "節省",
+  "groups.action.save": "保存",
   "groups.action.cancel": "取消",
   "groups.action.delete.confirm": "刪除客戶組“{code}”？分配給它的客戶和組織保留他們的記錄並丟失分配。",
   "groups.message.saved": "客戶組“{code}”已保存。",

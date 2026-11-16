@@ -14,7 +14,7 @@
   "page.configuration.default": "默認",
   "page.configuration.atLeastOneField": "至少選擇一個字段，或從全局搜索中排除此記錄類型。",
   "page.configuration.restoreDefaults": "恢復默認設置",
-  "page.configuration.save": "節省",
+  "page.configuration.save": "保存",
   "page.configuration.saving": "保存…",
   "page.configuration.discard": "放棄更改",
   "page.configuration.saved": "全局搜索配置已保存。下一個搜索將使用它。",

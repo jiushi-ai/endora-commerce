@@ -263,7 +263,7 @@
   "builder.search": "搜索字段",
   "builder.addField": "添加字段",
   "builder.newFieldName": "新字段",
-  "builder.save": "节省",
+  "builder.save": "保存",
   "builder.saving": "保存…",
   "builder.saved": "已保存",
   "builder.summary": "发送 {format} · 每 {granularity} 一行",

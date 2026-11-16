@@ -8,6 +8,8 @@ import {
   removeProductFromCompare,
 } from '../lib/api/comparisons';
 import { LocalizedAnchor } from '../lib/i18n/localized-link';
+import { tForLocale } from '../lib/i18n/messages';
+import { documentLocale } from '../lib/i18n/document-locale';
 
 /**
  * `<CompareToggle>` — feature 007 / T030.
@@ -31,11 +33,22 @@ export function CompareToggle(props: {
    * sits in a normal flow row — used in the PDP action zone.
    */
   variant?: 'card' | 'inline';
+  /** Storefront language; falls back to `<html lang>` after mount when omitted. */
+  locale?: string | undefined;
 }): ReactNode {
   const [hydrated, setHydrated] = useState(false);
   const [active, setActive] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [locale, setLocale] = useState(props.locale ?? 'zh-CN');
+
+  useEffect(() => {
+    if (props.locale) {
+      setLocale(props.locale);
+      return;
+    }
+    setLocale(documentLocale());
+  }, [props.locale]);
 
   useEffect(() => {
     let cancelled = false;
@@ -72,15 +85,17 @@ export function CompareToggle(props: {
       // Notify any listening counter pill to refresh.
       window.dispatchEvent(new CustomEvent('b2b:compare:changed'));
     } catch (err) {
+      const t = tForLocale(locale);
       setError(
-        err instanceof ComparisonApiError ? err.message : 'Could not update compare set.',
+        err instanceof ComparisonApiError ? err.message : t('compare.updateFailed'),
       );
     } finally {
       setBusy(false);
     }
   };
 
-  const compareLabel = active ? 'Usuń z porównania' : 'Dodaj do porównania';
+  const t = tForLocale(locale);
+  const compareLabel = active ? t('compare.remove') : t('compare.add');
 
   if (props.variant === 'inline') {
     return (

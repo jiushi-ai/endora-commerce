@@ -68,13 +68,16 @@ export function SharedComparisonTable(props: {
         if (cancelled) return;
         setState({
           kind: 'error',
-          message: err instanceof ComparisonApiError ? err.message : 'Nie udało się załadować porównania.',
+          message:
+            err instanceof ComparisonApiError
+              ? err.message
+              : tForLocale(props.locale)('compare.share.loadFailed'),
         });
       });
     return () => {
       cancelled = true;
     };
-  }, [props.token, props.salesChannelCode]);
+  }, [props.token, props.salesChannelCode, props.locale]);
 
   const activeMode: ComparisonDisplayMode =
     state.kind === 'ready' ? (localMode ?? state.view.displayMode) : 'all';
@@ -88,14 +91,12 @@ export function SharedComparisonTable(props: {
     return rows;
   }, [state, activeMode, hideEmpty]);
 
-  if (state.kind === 'loading') return <p className="muted">Ładowanie…</p>;
+  if (state.kind === 'loading') return <p className="muted">{t('compare.loading')}</p>;
   if (state.kind === 'error') return <div className="alert alert--error">{state.message}</div>;
   if (state.kind === 'gone') {
     return (
       <div className="industria-compare-page">
-        <p className="muted">
-          Ta porównywarka już nie istnieje — autor mógł ją usunąć.
-        </p>
+        <p className="muted">{t('compare.share.gone')}</p>
       </div>
     );
   }
@@ -109,7 +110,7 @@ export function SharedComparisonTable(props: {
             ? // Every product in the sender's set is one this reader may not
               // see. "Empty" would be a lie about the sender's comparison.
               t('compare.shared.hiddenProducts')
-            : 'Porównywarka jest pusta.'}
+            : t('compare.share.empty')}
         </p>
       </div>
     );
@@ -124,17 +125,17 @@ export function SharedComparisonTable(props: {
           <Switch
             checked={showOnlyDifferences}
             onChange={(next): void => setLocalMode(next ? 'differences' : 'all')}
-            label="Pokaż tylko różnice"
+            label={t('compare.showDifferences')}
           />
           <Switch
             checked={hideEmpty}
             onChange={setHideEmpty}
-            label="Ukryj puste"
+            label={t('compare.hideEmpty')}
           />
         </div>
         <div className="industria-compare-toolbar__right">
           <span className="industria-compare-toolbar__readonly" role="status">
-            Widok udostępniony · tylko do odczytu
+            {t('compare.share.readonly')}
           </span>
         </div>
       </div>
@@ -181,9 +182,7 @@ export function SharedComparisonTable(props: {
             {visibleRows.length === 0 ? (
               <tr>
                 <td colSpan={view.products.length + 1} className="muted">
-                  {hideEmpty
-                    ? 'Wszystkie wiersze są puste dla wybranych produktów — wyłącz „Ukryj puste”, aby zobaczyć atrybuty z brakującymi wartościami.'
-                    : 'Brak atrybutów spełniających aktualne filtry.'}
+                  {hideEmpty ? t('compare.allRowsEmpty') : t('compare.noMatchingRows')}
                 </td>
               </tr>
             ) : (

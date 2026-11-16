@@ -102,7 +102,11 @@ export function ProductCard(props: {
           />
         )}
       </LocalizedLink>
-      <CompareToggle productId={product.id} salesChannelCode={props.salesChannelCode} />
+      <CompareToggle
+        productId={product.id}
+        salesChannelCode={props.salesChannelCode}
+        locale={locale}
+      />
       {resolved && resolved.salePrice ? (
         <span className="industria-badge industria-badge--sale" aria-label={t('product.requestQuote')}>
           Promocja

@@ -54,7 +54,7 @@
   "groups.action.delete": "刪除",
   "quoteRequestsTab.title": "報價請求",
   "quoteRequestsTab.saved": "已保存。",
-  "quoteRequestsTab.save": "節省",
+  "quoteRequestsTab.save": "保存",
   "quoteRequestsTab.error.load": "無法加載設置。",
   "quoteRequestsTab.error.save": "保存失敗。",
   "quoteRequestsTab.error.invalidExpiry": "到期時間必須是 ≥ 0 的整數。",

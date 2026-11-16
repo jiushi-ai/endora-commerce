@@ -10,7 +10,7 @@
   "badge.translationsPartial": "翻譯部分",
   "translations.title": "翻譯",
   "translations.inactive": "（不活動）",
-  "translations.save": "節省",
+  "translations.save": "保存",
   "translations.remove": "消除",
   "translations.noLanguages": "沒有註冊任何語言。",
   "translations.confirmRemove": "刪除 {languageCode} 翻譯嗎？",

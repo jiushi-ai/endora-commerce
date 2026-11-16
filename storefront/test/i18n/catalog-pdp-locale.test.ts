@@ -45,6 +45,7 @@ describe('batch 19 call sites drop Polish hardcoding', () => {
     expect(pdp).not.toContain('Dodaj do listy zakupowej');
     expect(pdp).toContain('locale={locale}');
     expect(pdp).toMatch(/GallerySwitcher[\s\S]*locale=\{locale\}/);
+    expect(pdp).toMatch(/CompareToggle[\s\S]*locale=\{locale\}/);
   });
 
   it('CatalogToolbar sort / per-page / showing use messages', () => {

@@ -22,7 +22,7 @@
   "customEvents.payloadKey": "發送為",
   "customEvents.sentAs": "發送為",
   "customEvents.payloadKeyHint": "（與字段相同）",
-  "customEvents.save": "節省",
+  "customEvents.save": "保存",
   "customEvents.delete": "刪除",
   "customEvents.actions.contact_form_submitted": "已提交聯繫表格",
   "customEvents.actions.place_order_clicked": "單擊下訂單",

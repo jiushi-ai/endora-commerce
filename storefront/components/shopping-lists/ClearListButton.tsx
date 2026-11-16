@@ -8,6 +8,9 @@ import { createPortal } from 'react-dom';
  * that opens a confirmation dialog before emptying the whole list — clearing
  * every item is destructive and irreversible, so it must be confirmed.
  *
+ * Labels are passed in already translated so this client component stays free
+ * of a locale boundary (batch 39).
+ *
  * The dialog is rendered through a portal to `document.body` so its
  * `position: fixed` backdrop covers the whole viewport: rendered inline it was
  * trapped inside the account-panel container (an ancestor establishes a
@@ -22,9 +25,17 @@ import { createPortal } from 'react-dom';
 export function ClearListButton({
   listId,
   clearAction,
+  labels,
 }: {
   listId: string;
   clearAction: (formData: FormData) => void | Promise<void>;
+  labels: {
+    clear: string;
+    confirmTitle: string;
+    confirmBody: string;
+    cancel: string;
+    clearing: string;
+  };
 }): ReactNode {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -45,7 +56,7 @@ export function ClearListButton({
   return (
     <>
       <button type="button" className="btn btn--outline" onClick={(): void => setOpen(true)}>
-        Clear list
+        {labels.clear}
       </button>
 
       {open && typeof document !== 'undefined'
@@ -79,11 +90,9 @@ export function ClearListButton({
                 }}
               >
                 <h2 id="clear-list-title" style={{ marginTop: 0, fontSize: 18 }}>
-                  Clear this list?
+                  {labels.confirmTitle}
                 </h2>
-                <p style={{ marginTop: 8, fontSize: 14 }}>
-                  This removes all items from the list. This action cannot be undone.
-                </p>
+                <p style={{ marginTop: 8, fontSize: 14 }}>{labels.confirmBody}</p>
                 <div
                   style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 20 }}
                 >
@@ -93,7 +102,7 @@ export function ClearListButton({
                     disabled={pending}
                     onClick={(): void => setOpen(false)}
                   >
-                    Cancel
+                    {labels.cancel}
                   </button>
                   <button
                     type="button"
@@ -102,7 +111,7 @@ export function ClearListButton({
                     style={{ background: '#b91c1c', borderColor: '#b91c1c', color: '#fff' }}
                     onClick={confirmClear}
                   >
-                    {pending ? 'Clearing…' : 'Clear list'}
+                    {pending ? labels.clearing : labels.clear}
                   </button>
                 </div>
               </div>
