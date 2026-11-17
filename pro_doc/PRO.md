@@ -878,3 +878,14 @@ feat-26-11-15 23:17:05 [39.1~39.5]：小b compare/采购清单/PDP 对比 i18n�
 汇总：`/cart` 在 zh-CN / zh-TW 不再落英文默认；en/pl 仍走同一 messages 目录。发 storefront 后生产验收。
 
 feat-26-11-16 17:55:00 [40.1~40.3]：小b 购物车页 i18n 改接 messages（en/zh-CN/zh-TW/pl）
+
+### 41. 小b not-found i18n + 税/库存问题分析（Help 暂不建页）
+
+- [x] 41.1 `not-found.tsx` 改接 `tForLocale` + `messages.ts`（en/zh-CN/zh-TW/pl）；`/help` 仍走 404（暂不新建 help 页）
+- [x] 41.2 对照上游 demo：税展示逻辑分析与中长期方案（本批不改税代码）
+- [x] 41.3 H200 下单失败 → `STOCK_UNAVAILABLE` 大 B 排查步骤（本批不改库存代码）
+- [x] 41.4 本 §99 + 测试 `test/i18n/not-found-locale.test.ts`
+
+汇总：404 页跟 URL 语系走；Help 链接仍 404 待 AI 客服 URL。税：本地仍 `DEFAULT_VAT_RATE=0.23`，上游已 #436/#852 由后端下发真实税率。下单失败优先查产品 Inventory 与渠道仓。
+
+feat-26-11-16 23:08:33 [41.1~41.4]：小b not-found 四语 i18n；税/库存仅分析

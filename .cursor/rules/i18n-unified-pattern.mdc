@@ -1,0 +1,33 @@
+---
+description: 大B/小b 多语系优化统一模式——只用 t() + Admin JSON / storefront messages.ts，禁止另起写法
+alwaysApply: true
+---
+
+# i18n 统一落地模式（大 B Admin + 小 b storefront）
+
+背景见 `chatlog/2026-11-16-chat1-大B与小b多语系对照/`：历史页面组织文案方式不同，会导致「同为补 i18n」时 diff 落点不同。**以后优化语系时，最终实现模式必须统一**，避免 demo/多人或多 AI 留下多套取词写法。
+
+## 强制约定
+
+1. **页面/组件取文案：一律 `t('…')`（或等价的 `useTranslation` → `t`）**  
+   - 禁止靠硬编码字面量「碰巧」跟语系走。  
+   - 禁止再引入第三套模式（例如另起 locale map、组件内自建字典、只靠 DOM/自动替换、与现有 catalogue 平行的第二套 key 体系等）。
+
+2. **词条存放（配套，二选一对号入座）**  
+   - **大 B Admin**：模块 `i18n/<locale>.json`（及既有 `_i18n` 惯例）——修译文/补语系优先改 JSON。  
+   - **小 b storefront**：`storefront/lib/i18n/messages.ts` + `tForLocale`——修译文/补语系优先改 `messages.ts`。  
+   - 已配置的语系（如 en / zh-CN / zh-TW / pl）**一次补齐**，不要只改当前测试语。
+
+3. **结构差异只影响「第一次接线手术」，不影响最终模式**  
+   - 若页面已有集中 `STRINGS(locale)`：在 `STRINGS` **内部**统一改为 `t('…')` 查 catalogue，对外仍可传 `strings`——**最终仍是 t + messages**。  
+   - 若文案散落 JSX：在调用处改为 `t('…')` 并补词条——**最终仍是 t + messages/JSON**。  
+   - 不得为了省事再发明与上列不一致的取词路径。
+
+4. **漏翻/错译**  
+   - key **已接线**：只改对应语系 JSON / `messages.ts` 的 value。  
+   - key **未接线**（硬编码）：先改代码接上 `t('key')`，再补词条。
+
+## 不要做的事
+
+- 不要为单个页面引入与 Admin JSON / storefront `messages.ts` 平行的新 i18n 库或新文件约定（除非产品明确立项并写进 conventions）。  
+- 不要在同一页面混用「部分 t、部分自建 pl/en if」等旧写法；碰到就收到统一模式。

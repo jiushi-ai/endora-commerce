@@ -678,6 +678,20 @@ export type MessageKey =
   | 'chrome.shippingCutoff'
   | 'chrome.vatInvoice'
   | 'chrome.b2bSupport'
+  | 'notFound.metaTitle'
+  | 'notFound.badge'
+  | 'notFound.title'
+  | 'notFound.body'
+  | 'notFound.searchLabel'
+  | 'notFound.searchPlaceholder'
+  | 'notFound.searchSubmit'
+  | 'notFound.home'
+  | 'notFound.catalog'
+  | 'notFound.rfq'
+  | 'notFound.popularHeading'
+  | 'notFound.productsCount'
+  | 'notFound.helpHeading'
+  | 'notFound.asideAria'
   | 'chrome.brandTagline'
   | 'chrome.brandTaglineShort'
   | 'chrome.brand.text'
@@ -1432,6 +1446,20 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'chrome.shippingCutoff': 'Ships today if you order by 14:00',
     'chrome.vatInvoice': 'VAT invoice',
     'chrome.b2bSupport': 'B2B support',
+    'notFound.metaTitle': '404 — page not found · B2B Platform',
+    'notFound.badge': 'Error 404 · page does not exist',
+    'notFound.title': 'We couldn\'t find this page.',
+    'notFound.body': 'The address you tried to open may have been moved or never existed. Check the spelling in the address bar or use the shortcuts below — usually one click is enough to get where you want.',
+    'notFound.searchLabel': 'Search the catalog',
+    'notFound.searchPlaceholder': 'Find the product you are looking for…',
+    'notFound.searchSubmit': 'Search',
+    'notFound.home': 'Back to home',
+    'notFound.catalog': 'Browse catalog',
+    'notFound.rfq': 'Send a quote request',
+    'notFound.popularHeading': 'Most popular sections',
+    'notFound.productsCount': '{count} products',
+    'notFound.helpHeading': 'Need help?',
+    'notFound.asideAria': 'Frequently chosen',
     'chrome.brandTagline': 'B2B · Industrial components',
     'chrome.brandTaglineShort': 'B2B components',
     'chrome.brand.text': 'Mobii B2B Bidding Procurement Platform',
@@ -2227,6 +2255,20 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'chrome.shippingCutoff': '今日 14:00 前下单可当日发货',
     'chrome.vatInvoice': '增值税发票',
     'chrome.b2bSupport': 'B2B 支持',
+    'notFound.metaTitle': '404 — 页面未找到 · B2B 平台',
+    'notFound.badge': '错误 404 · 页面不存在',
+    'notFound.title': '我们找不到这个页面。',
+    'notFound.body': '您尝试打开的地址可能已移动，或从未存在。请检查地址栏拼写，或使用下方快捷入口——通常点一下即可到达目标页面。',
+    'notFound.searchLabel': '在目录中搜索',
+    'notFound.searchPlaceholder': '查找您需要的商品…',
+    'notFound.searchSubmit': '搜索',
+    'notFound.home': '返回首页',
+    'notFound.catalog': '浏览产品目录',
+    'notFound.rfq': '发送询价请求',
+    'notFound.popularHeading': '最受欢迎的版块',
+    'notFound.productsCount': '{count} 种产品',
+    'notFound.helpHeading': '需要帮助？',
+    'notFound.asideAria': '常用入口',
     'chrome.brandTagline': 'B2B · 工业元器件',
     'chrome.brandTaglineShort': 'B2B 元器件',
     'chrome.brand.text': 'Mobii B2B竞价批采平台',
@@ -3023,6 +3065,20 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'chrome.shippingCutoff': '今日 14:00 前下單可當日發貨',
     'chrome.vatInvoice': '增值稅發票',
     'chrome.b2bSupport': 'B2B 支援',
+    'notFound.metaTitle': '404 — 頁面未找到 · B2B 平台',
+    'notFound.badge': '錯誤 404 · 頁面不存在',
+    'notFound.title': '我們找不到這個頁面。',
+    'notFound.body': '您嘗試開啟的位址可能已移動，或從未存在。請檢查位址列拼寫，或使用下方快捷入口——通常點一下即可到達目標頁面。',
+    'notFound.searchLabel': '在目錄中搜尋',
+    'notFound.searchPlaceholder': '尋找您需要的商品…',
+    'notFound.searchSubmit': '搜尋',
+    'notFound.home': '返回首頁',
+    'notFound.catalog': '瀏覽產品目錄',
+    'notFound.rfq': '傳送詢價請求',
+    'notFound.popularHeading': '最受歡迎的版塊',
+    'notFound.productsCount': '{count} 種產品',
+    'notFound.helpHeading': '需要協助？',
+    'notFound.asideAria': '常用入口',
     'chrome.brandTagline': 'B2B · 工業元器件',
     'chrome.brandTaglineShort': 'B2B 元器件',
     'chrome.brand.text': 'Mobii B2B競價批採平台',
@@ -3861,6 +3917,20 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'chrome.shippingCutoff': 'Wysyłka dziś, jeśli zamówisz do 14:00',
     'chrome.vatInvoice': 'Faktura VAT',
     'chrome.b2bSupport': 'Wsparcie B2B',
+    'notFound.metaTitle': '404 — strona nie została znaleziona · B2B Platform',
+    'notFound.badge': 'Błąd 404 · strona nie istnieje',
+    'notFound.title': 'Nie znaleźliśmy tej strony.',
+    'notFound.body': 'Adres, który próbujesz otworzyć, mógł zostać przeniesiony albo nigdy nie istniał. Sprawdź pisownię w pasku adresu lub skorzystaj z poniższych skrótów — z reguły wystarczy jedno kliknięcie, żeby trafić tam, gdzie chcesz.',
+    'notFound.searchLabel': 'Wyszukaj w katalogu',
+    'notFound.searchPlaceholder': 'Znajdź produkt, którego szukasz…',
+    'notFound.searchSubmit': 'Szukaj',
+    'notFound.home': 'Wróć na stronę główną',
+    'notFound.catalog': 'Przeglądaj katalog',
+    'notFound.rfq': 'Wyślij zapytanie ofertowe',
+    'notFound.popularHeading': 'Najpopularniejsze działy',
+    'notFound.productsCount': '{count} produktów',
+    'notFound.helpHeading': 'Potrzebujesz pomocy?',
+    'notFound.asideAria': 'Najczęściej wybierane',
     'chrome.brandTagline': 'B2B · Komponenty przemysłowe',
     'chrome.brandTaglineShort': 'Komponenty B2B',
     'chrome.brand.text': 'Mobii Bidding Procurement Platform',

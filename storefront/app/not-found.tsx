@@ -1,13 +1,10 @@
+import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { getCategoryTree } from '../lib/api/catalog';
 import { getShopInfo } from '../lib/api/shop';
 import { getServerContext } from '../lib/server-context';
 import { LocalizedLink, LocalizedForm } from '../lib/i18n/localized-link';
-
-export const metadata = {
-  title: '404 — strona nie została znaleziona · B2B Platform',
-  robots: { index: false, follow: false },
-};
+import { tForLocale } from '../lib/i18n/messages';
 
 interface PopularCategory {
   slug: string;
@@ -24,8 +21,17 @@ const FALLBACK_CATEGORIES: PopularCategory[] = [
   { slug: 'bolts', name: 'Śruby', count: 1947 },
 ];
 
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale } = await getServerContext();
+  return {
+    title: tForLocale(locale)('notFound.metaTitle'),
+    robots: { index: false, follow: false },
+  };
+}
+
 export default async function NotFound(): Promise<ReactNode> {
-  const { ctx } = await getServerContext();
+  const { ctx, locale } = await getServerContext();
+  const t = tForLocale(locale);
   const [tree, shop] = await Promise.all([
     getCategoryTree(ctx).catch(
       () => [] as Awaited<ReturnType<typeof getCategoryTree>>,
@@ -49,7 +55,7 @@ export default async function NotFound(): Promise<ReactNode> {
         <div className="max-w-[720px]">
           <span className="inline-flex items-center gap-[8px] rounded-full border border-line bg-surface-alt px-[10px] py-[6px] font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
             <span className="inline-block h-[6px] w-[6px] rounded-full bg-bad shadow-[0_0_0_3px_rgba(185,28,28,0.12)]" />{' '}
-            Błąd 404 · strona nie istnieje
+            {t('notFound.badge')}
           </span>
           <div
             className="mb-[12px] mt-[20px] bg-linear-to-b from-fg to-muted bg-clip-text font-mono text-[clamp(96px,18vw,192px)] font-semibold leading-[0.92] tracking-[-0.04em] text-transparent"
@@ -58,12 +64,10 @@ export default async function NotFound(): Promise<ReactNode> {
             404
           </div>
           <h1 className="mb-[12px] text-[clamp(28px,4vw,40px)] leading-[1.1] tracking-[-0.02em]">
-            Nie znaleźliśmy tej strony.
+            {t('notFound.title')}
           </h1>
           <p className="mb-[28px] max-w-[56ch] text-[15px] leading-[1.55] text-muted">
-            Adres, który próbujesz otworzyć, mógł zostać przeniesiony albo nigdy nie istniał.
-            Sprawdź pisownię w pasku adresu lub skorzystaj z poniższych skrótów — z reguły
-            wystarczy jedno kliknięcie, żeby trafić tam, gdzie chcesz.
+            {t('notFound.body')}
           </p>
 
           <LocalizedForm
@@ -73,40 +77,40 @@ export default async function NotFound(): Promise<ReactNode> {
             role="search"
           >
             <label htmlFor="not-found-q" className="sr-only">
-              Wyszukaj w katalogu
+              {t('notFound.searchLabel')}
             </label>
             <input
               id="not-found-q"
               name="q"
               type="search"
-              placeholder="Znajdź produkt, którego szukasz…"
+              placeholder={t('notFound.searchPlaceholder')}
               autoComplete="off"
               className="min-w-0 flex-1 rounded-md border border-line bg-surface px-[14px] py-[12px] text-fg placeholder:text-subtle"
             />
             <button type="submit" className="btn btn--primary btn--lg">
-              Szukaj
+              {t('notFound.searchSubmit')}
             </button>
           </LocalizedForm>
 
           <div className="flex flex-wrap gap-[10px]">
             <LocalizedLink href="/" className="btn btn--dark btn--lg">
-              Wróć na stronę główną
+              {t('notFound.home')}
             </LocalizedLink>
             <LocalizedLink href="/catalog" className="btn btn--outline btn--lg">
-              Przeglądaj katalog
+              {t('notFound.catalog')}
             </LocalizedLink>
             <LocalizedLink href="/quote-request" className="btn btn--ghost btn--lg">
-              Wyślij zapytanie ofertowe
+              {t('notFound.rfq')}
             </LocalizedLink>
           </div>
         </div>
 
         <aside
           className="rounded-lg border border-line bg-surface p-[20px] shadow-sm"
-          aria-label="Najczęściej wybierane"
+          aria-label={t('notFound.asideAria')}
         >
           <h2 className="mb-[14px] font-mono text-[14px] uppercase tracking-[0.06em] text-muted">
-            Najpopularniejsze działy
+            {t('notFound.popularHeading')}
           </h2>
           <ul className="m-0 mb-[20px] flex list-none flex-col gap-[2px] p-0">
             {popular.map((c) => (
@@ -117,7 +121,10 @@ export default async function NotFound(): Promise<ReactNode> {
                 >
                   <span className="font-medium">{c.name}</span>
                   <em className="whitespace-nowrap font-mono text-[11px] not-italic text-muted">
-                    {c.count.toLocaleString('pl-PL')} produktów
+                    {t('notFound.productsCount').replace(
+                      '{count}',
+                      c.count.toLocaleString(locale),
+                    )}
                   </em>
                 </LocalizedLink>
               </li>
@@ -127,7 +134,7 @@ export default async function NotFound(): Promise<ReactNode> {
           {hasHelpContact ? (
             <div className="border-t border-line pt-[16px]">
               <h3 className="mb-[10px] font-mono text-[14px] uppercase tracking-[0.06em] text-muted">
-                Potrzebujesz pomocy?
+                {t('notFound.helpHeading')}
               </h3>
               {supportEmail !== '' ? (
                 <p className="my-[4px] text-[13px]">
