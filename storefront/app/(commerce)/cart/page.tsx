@@ -540,7 +540,7 @@ async function submitForApprovalAction(): Promise<void> {
   return await localeRedirect('/cart');
 }
 
-/* === Inline locale string catalogue =================================== */
+/* === Locale string catalogue (batch 40 — via messages.ts) ============= */
 
 function STRINGS(locale: string): {
   heading: string;
@@ -570,212 +570,127 @@ function STRINGS(locale: string): {
     blockedByOrganization: string;
   };
 } {
-  const pl = locale.startsWith('pl');
-  if (pl) {
-    return {
-      heading: 'Twój koszyk',
-      subheading: (n: number) =>
-        n === 1 ? '1 pozycja gotowa do kasy.' : `${n} pozycji gotowych do kasy.`,
-      empty: 'Twój koszyk jest pusty.',
-      unavailable: {
-        heading: 'Koszyk jest niedostępny',
-        body: 'Zakupy online są w tej chwili wyłączone w tym sklepie. Katalog produktów pozostaje dostępny.',
-      },
-      browseCatalog: 'Przejdź do katalogu',
-      cardHeading: 'Koszyk',
-      itemCount: (n: number) => (n === 1 ? '1 pozycja' : `${n} pozycji`),
-      continueShopping: 'Kontynuuj zakupy',
-      taxesNote: 'Podatki i koszty dostawy zostaną naliczone w następnym kroku.',
-      breadcrumbs: { home: 'Strona główna', cart: 'Koszyk' },
-      summary: { heading: 'Podsumowanie' },
-      line: {
-        qtyLabel: 'Ilość',
-        unitPriceLabel: 'Cena jednostkowa',
-        lineTotalLabel: 'Wartość pozycji',
-        removeLabel: 'Usuń',
-        saveToListLabel: 'Zapisz na listę',
-        updateLabel: 'Zaktualizuj',
-        netSuffix: 'netto',
-        grossSuffix: 'brutto',
-        unavailable: {
-          out_of_stock: 'Brak na stanie.',
-          not_purchasable: 'Produkt nie jest już dostępny.',
-          no_price_in_customer_list: 'Brak ceny dla Twojego konta.',
-        },
-      },
-      totals: {
-        subtotalLabel: (n: number) =>
-          n === 1 ? 'Suma (1 pozycja)' : `Suma (${n} pozycji)`,
-        discountLabel: (code: string | null) => (code ? `Rabat (${code})` : 'Rabat'),
-        grandTotalLabel: 'Razem',
-        deliveryLabel: 'Dostawa',
-        deliveryValue: 'naliczana w kasie',
-        netSuffix: 'netto',
-        grossSuffix: 'brutto',
-      },
-      coupon: {
-        label: 'Kupon rabatowy',
-        placeholder: 'KOD-KUPONU',
-        applyButton: 'Zastosuj',
-        clearButton: 'Usuń',
-        activeCode: () => 'aktywny',
-        autoDropped: (code: string) =>
-          `Kupon ${code} nie obowiązuje już dla tego koszyka i został usunięty.`,
-        rejectedReason: (reason: string, shortfall?: { amount: number; currency: string }) => {
-          const labels: Record<string, string> = {
-            invalid_code: 'Nieprawidłowy kod kuponu.',
-            expired: 'Kod kuponu wygasł.',
-            below_min_spend: shortfall
-              ? `Dodaj jeszcze ${shortfall.amount.toFixed(2)} ${shortfall.currency}, aby odblokować ten kupon.`
-              : 'Dodaj więcej produktów, aby odblokować ten kupon.',
-            wrong_channel: 'Ten kupon nie obowiązuje w tym kanale sprzedaży.',
-            wrong_customer_group: 'Ten kupon nie jest dostępny dla Twojej grupy klientów.',
-            wrong_organization: 'Ten kupon nie jest dostępny dla Twojej organizacji.',
-            coupon_format_invalid: "Kupony mogą zawierać tylko duże litery, cyfry, '-' i '_'.",
-          };
-          return labels[reason] ?? 'Nie udało się zastosować kuponu.';
-        },
-      },
-      convertButtons: {
-        convertToQrLabel: 'Zamień na zapytanie ofertowe',
-        convertToQrHint: 'Wyślij ten koszyk do działu sprzedaży jako zapytanie ofertowe.',
-      },
-      dropped: {
-        heading: 'Niektóre pozycje zostały pominięte',
-        intro: 'Następujące produkty nie zostały dodane, ponieważ:',
-        reasonNotPurchasable: 'produkt jest niedostępny',
-        reasonOutOfStock: 'brak na stanie',
-        reasonNoPriceInCustomerList: 'brak ceny dla Twojego konta',
-        reasonRemovedByConversion: 'pominięto podczas konwersji',
-        reasonBelowMinimum: (minimum: number | undefined) => droppedBelowMinimumReason(minimum, locale),
-      },
-      approvalBanner: {
-        pending: 'Twój koszyk oczekuje na akceptację administratora organizacji.',
-        approved: 'Twój koszyk został zaakceptowany i jest gotowy do realizacji.',
-        rejected: (reason: string | null) =>
-          reason
-            ? `Twój koszyk został odrzucony przez administratora organizacji. Powód: ${reason}`
-            : 'Twój koszyk został odrzucony przez administratora organizacji.',
-        policyOn: 'Twoja organizacja wymaga akceptacji koszyka przed realizacją.',
-        submitButton: 'Zgłoś do akceptacji',
-      },
-      upsells: {
-        heading: 'Możesz też potrzebować',
-        noPriceLabel: 'Cena na zapytanie',
-      },
-      banner: {
-        qrCreated: 'Twój koszyk został wysłany do działu sprzedaży jako nowe zapytanie ofertowe.',
-        listAdded: (listName: string) =>
-          `Pozycja została zapisana na liście „${listName}".`,
-      },
-      cta: {
-        checkout: 'Przejdź do kasy',
-        submitForApproval: 'Zgłoś do akceptacji',
-        awaitingApproval: 'Oczekuje na akceptację',
-        blockedByOrganization: 'Kasa niedostępna',
-      },
-    };
-  }
+  const t = tForLocale(locale);
   return {
-    heading: 'Your cart',
+    heading: t('cart.heading'),
     subheading: (n: number) =>
-      n === 1 ? '1 item ready for checkout.' : `${n} items ready for checkout.`,
-    empty: 'Your cart is empty.',
+      n === 1
+        ? t('cart.subheading.one')
+        : t('cart.subheading.many').replace('{count}', String(n)),
+    empty: t('cart.empty'),
     unavailable: {
-      heading: 'The cart is unavailable',
-      body: 'Online ordering is switched off in this shop right now. The product catalogue is still available.',
+      heading: t('cart.unavailable.heading'),
+      body: t('cart.unavailable.body'),
     },
-    browseCatalog: 'Browse the catalog',
-    cardHeading: 'Cart',
-    itemCount: (n: number) => (n === 1 ? '1 item' : `${n} items`),
-    continueShopping: 'Continue shopping',
-    taxesNote: 'Taxes and delivery are calculated at checkout.',
-    breadcrumbs: { home: 'Home', cart: 'Cart' },
-    summary: { heading: 'Summary' },
+    browseCatalog: t('cart.browseCatalog'),
+    cardHeading: t('cart.cardHeading'),
+    itemCount: (n: number) =>
+      n === 1
+        ? t('cart.itemCount.one')
+        : t('cart.itemCount.many').replace('{count}', String(n)),
+    continueShopping: t('cart.continueShopping'),
+    taxesNote: t('cart.taxesNote'),
+    breadcrumbs: { home: t('nav.home'), cart: t('cart.breadcrumb') },
+    summary: { heading: t('cart.summary.heading') },
     line: {
-      qtyLabel: 'Quantity',
-      unitPriceLabel: 'Unit price',
-      lineTotalLabel: 'Line total',
-      removeLabel: 'Remove',
-      saveToListLabel: 'Save to list',
-      updateLabel: 'Update',
-      netSuffix: 'net',
-      grossSuffix: 'gross',
+      qtyLabel: t('cart.line.qtyLabel'),
+      unitPriceLabel: t('cart.line.unitPriceLabel'),
+      lineTotalLabel: t('cart.line.lineTotalLabel'),
+      removeLabel: t('cart.line.removeLabel'),
+      saveToListLabel: t('cart.line.saveToListLabel'),
+      updateLabel: t('cart.line.updateLabel'),
+      netSuffix: t('cart.line.netSuffix'),
+      grossSuffix: t('cart.line.grossSuffix'),
       unavailable: {
-        out_of_stock: 'Out of stock.',
-        not_purchasable: 'No longer available.',
-        no_price_in_customer_list: 'Pricing unavailable for your account.',
+        out_of_stock: t('cart.line.unavailable.outOfStock'),
+        not_purchasable: t('cart.line.unavailable.notPurchasable'),
+        no_price_in_customer_list: t('cart.line.unavailable.noPrice'),
       },
     },
     totals: {
       subtotalLabel: (n: number) =>
-        n === 1 ? 'Subtotal (1 item)' : `Subtotal (${n} items)`,
-      discountLabel: (code: string | null) => (code ? `Discount (${code})` : 'Discount'),
-      grandTotalLabel: 'Total',
-      deliveryLabel: 'Delivery',
-      deliveryValue: 'calculated at checkout',
-      netSuffix: 'net',
-      grossSuffix: 'gross',
+        n === 1
+          ? t('cart.totals.subtotal.one')
+          : t('cart.totals.subtotal.many').replace('{count}', String(n)),
+      discountLabel: (code: string | null) =>
+        code
+          ? t('cart.totals.discountCoded').replace('{code}', code)
+          : t('cart.totals.discount'),
+      grandTotalLabel: t('cart.totals.grandTotal'),
+      deliveryLabel: t('cart.totals.delivery'),
+      deliveryValue: t('cart.totals.deliveryValue'),
+      netSuffix: t('cart.line.netSuffix'),
+      grossSuffix: t('cart.line.grossSuffix'),
     },
     coupon: {
-      label: 'Coupon code',
-      placeholder: 'COUPON-CODE',
-      applyButton: 'Apply',
-      clearButton: 'Remove',
-      activeCode: () => 'active',
-      autoDropped: (code: string) =>
-        `The coupon ${code} is no longer valid for this cart and has been removed.`,
+      label: t('cart.coupon.label'),
+      placeholder: t('cart.coupon.placeholder'),
+      applyButton: t('cart.coupon.apply'),
+      clearButton: t('cart.coupon.clear'),
+      activeCode: (_code: string) => t('cart.coupon.active'),
+      autoDropped: (code: string, _reason: string) =>
+        t('cart.coupon.autoDropped').replace('{code}', code),
       rejectedReason: (reason: string, shortfall?: { amount: number; currency: string }) => {
-        const labels: Record<string, string> = {
-          invalid_code: 'This coupon code is invalid.',
-          expired: 'This coupon code has expired.',
-          below_min_spend: shortfall
-            ? `Add ${shortfall.amount.toFixed(2)} ${shortfall.currency} more to unlock this coupon.`
-            : 'Add more to your cart to unlock this coupon.',
-          wrong_channel: 'This coupon does not apply in this sales channel.',
-          wrong_customer_group: 'This coupon is not available for your customer group.',
-          wrong_organization: 'This coupon is not available for your organization.',
-          coupon_format_invalid: "Coupon codes use only uppercase letters, digits, '-' and '_'.",
-        };
-        return labels[reason] ?? 'This coupon code could not be applied.';
+        switch (reason) {
+          case 'invalid_code':
+            return t('cart.coupon.rejected.invalid');
+          case 'expired':
+            return t('cart.coupon.rejected.expired');
+          case 'below_min_spend':
+            return shortfall
+              ? t('cart.coupon.rejected.belowMin')
+                  .replace('{amount}', shortfall.amount.toFixed(2))
+                  .replace('{currency}', shortfall.currency)
+              : t('cart.coupon.rejected.belowMinBare');
+          case 'wrong_channel':
+            return t('cart.coupon.rejected.wrongChannel');
+          case 'wrong_customer_group':
+            return t('cart.coupon.rejected.wrongGroup');
+          case 'wrong_organization':
+            return t('cart.coupon.rejected.wrongOrg');
+          case 'coupon_format_invalid':
+            return t('cart.coupon.rejected.format');
+          default:
+            return t('cart.coupon.rejected.generic');
+        }
       },
     },
     convertButtons: {
-      convertToQrLabel: 'Convert to quote request',
-      convertToQrHint: 'Send this cart to sales as a quote request.',
+      convertToQrLabel: t('cart.convert.toQr'),
+      convertToQrHint: t('cart.convert.toQrHint'),
     },
     dropped: {
-      heading: 'Some lines were skipped',
-      intro: 'These products were not added because:',
-      reasonNotPurchasable: 'no longer available',
-      reasonOutOfStock: 'out of stock',
-      reasonNoPriceInCustomerList: 'no price available',
-      reasonRemovedByConversion: 'skipped during conversion',
+      heading: t('cart.dropped.heading'),
+      intro: t('cart.dropped.intro'),
+      reasonNotPurchasable: t('cart.dropped.notPurchasable'),
+      reasonOutOfStock: t('cart.dropped.outOfStock'),
+      reasonNoPriceInCustomerList: t('cart.dropped.noPrice'),
+      reasonRemovedByConversion: t('cart.dropped.removedByConversion'),
       reasonBelowMinimum: (minimum: number | undefined) => droppedBelowMinimumReason(minimum, locale),
     },
     approvalBanner: {
-      pending: 'Your cart is awaiting approval by an organization administrator.',
-      approved: 'Your cart has been approved and is ready for checkout.',
+      pending: t('cart.approval.pending'),
+      approved: t('cart.approval.approved'),
       rejected: (reason: string | null) =>
         reason
-          ? `Your cart was rejected by an organization administrator. Reason: ${reason}`
-          : 'Your cart was rejected by an organization administrator.',
-      policyOn: 'Your organization requires cart approval before checkout.',
-      submitButton: 'Submit for approval',
+          ? t('cart.approval.rejectedReason').replace('{reason}', reason)
+          : t('cart.approval.rejected'),
+      policyOn: t('cart.approval.policyOn'),
+      submitButton: t('cart.approval.submit'),
     },
     upsells: {
-      heading: 'You might also need',
-      noPriceLabel: 'Price on request',
+      heading: t('cart.upsells.heading'),
+      noPriceLabel: t('cart.upsells.noPrice'),
     },
     banner: {
-      qrCreated: "We've sent your cart to sales as a new quote request.",
-      listAdded: (listName: string) => `Saved line to your "${listName}" list.`,
+      qrCreated: t('cart.banner.qrCreated'),
+      listAdded: (listName: string) => t('cart.banner.listAdded').replace('{name}', listName),
     },
     cta: {
-      checkout: 'Proceed to checkout',
-      submitForApproval: 'Submit for approval',
-      awaitingApproval: 'Awaiting approval',
-      blockedByOrganization: 'Checkout unavailable',
+      checkout: t('cart.cta.checkout'),
+      submitForApproval: t('cart.cta.submitForApproval'),
+      awaitingApproval: t('cart.cta.awaitingApproval'),
+      blockedByOrganization: t('cart.cta.blockedByOrganization'),
     },
   };
 }

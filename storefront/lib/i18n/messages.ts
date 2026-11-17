@@ -210,6 +210,76 @@ export type MessageKey =
   | 'cart.submitForApprovalFailed'
   | 'cart.dropped.belowMinimum'
   | 'cart.dropped.belowMinimumBare'
+  // Batch 40 — cart page chrome (was pl/en-only inline STRINGS).
+  | 'cart.heading'
+  | 'cart.subheading.one'
+  | 'cart.subheading.many'
+  | 'cart.empty'
+  | 'cart.unavailable.heading'
+  | 'cart.unavailable.body'
+  | 'cart.browseCatalog'
+  | 'cart.cardHeading'
+  | 'cart.itemCount.one'
+  | 'cart.itemCount.many'
+  | 'cart.continueShopping'
+  | 'cart.taxesNote'
+  | 'cart.breadcrumb'
+  | 'cart.summary.heading'
+  | 'cart.line.qtyLabel'
+  | 'cart.line.unitPriceLabel'
+  | 'cart.line.lineTotalLabel'
+  | 'cart.line.removeLabel'
+  | 'cart.line.saveToListLabel'
+  | 'cart.line.updateLabel'
+  | 'cart.line.netSuffix'
+  | 'cart.line.grossSuffix'
+  | 'cart.line.unavailable.outOfStock'
+  | 'cart.line.unavailable.notPurchasable'
+  | 'cart.line.unavailable.noPrice'
+  | 'cart.totals.subtotal.one'
+  | 'cart.totals.subtotal.many'
+  | 'cart.totals.discount'
+  | 'cart.totals.discountCoded'
+  | 'cart.totals.grandTotal'
+  | 'cart.totals.delivery'
+  | 'cart.totals.deliveryValue'
+  | 'cart.coupon.label'
+  | 'cart.coupon.placeholder'
+  | 'cart.coupon.apply'
+  | 'cart.coupon.clear'
+  | 'cart.coupon.active'
+  | 'cart.coupon.autoDropped'
+  | 'cart.coupon.rejected.invalid'
+  | 'cart.coupon.rejected.expired'
+  | 'cart.coupon.rejected.belowMin'
+  | 'cart.coupon.rejected.belowMinBare'
+  | 'cart.coupon.rejected.wrongChannel'
+  | 'cart.coupon.rejected.wrongGroup'
+  | 'cart.coupon.rejected.wrongOrg'
+  | 'cart.coupon.rejected.format'
+  | 'cart.coupon.rejected.generic'
+  | 'cart.convert.toQr'
+  | 'cart.convert.toQrHint'
+  | 'cart.dropped.heading'
+  | 'cart.dropped.intro'
+  | 'cart.dropped.notPurchasable'
+  | 'cart.dropped.outOfStock'
+  | 'cart.dropped.noPrice'
+  | 'cart.dropped.removedByConversion'
+  | 'cart.approval.pending'
+  | 'cart.approval.approved'
+  | 'cart.approval.rejected'
+  | 'cart.approval.rejectedReason'
+  | 'cart.approval.policyOn'
+  | 'cart.approval.submit'
+  | 'cart.upsells.heading'
+  | 'cart.upsells.noPrice'
+  | 'cart.banner.qrCreated'
+  | 'cart.banner.listAdded'
+  | 'cart.cta.checkout'
+  | 'cart.cta.submitForApproval'
+  | 'cart.cta.awaitingApproval'
+  | 'cart.cta.blockedByOrganization'
   | 'checkout.belowMinimum.heading'
   | 'checkout.belowMinimum.intro'
   | 'checkout.belowMinimum.backToCart'
@@ -1002,6 +1072,75 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'cart.submitForApprovalFailed': 'Could not submit the cart for approval.',
     'cart.dropped.belowMinimum': 'below the minimum order quantity (minimum {minimum})',
     'cart.dropped.belowMinimumBare': 'below the minimum order quantity',
+    'cart.heading': 'Your cart',
+    'cart.subheading.one': '1 item ready for checkout.',
+    'cart.subheading.many': '{count} items ready for checkout.',
+    'cart.empty': 'Your cart is empty.',
+    'cart.unavailable.heading': 'The cart is unavailable',
+    'cart.unavailable.body': 'Online ordering is switched off in this shop right now. The product catalogue is still available.',
+    'cart.browseCatalog': 'Browse the catalog',
+    'cart.cardHeading': 'Cart',
+    'cart.itemCount.one': '1 item',
+    'cart.itemCount.many': '{count} items',
+    'cart.continueShopping': 'Continue shopping',
+    'cart.taxesNote': 'Taxes and delivery are calculated at checkout.',
+    'cart.breadcrumb': 'Cart',
+    'cart.summary.heading': 'Summary',
+    'cart.line.qtyLabel': 'Quantity',
+    'cart.line.unitPriceLabel': 'Unit price',
+    'cart.line.lineTotalLabel': 'Line total',
+    'cart.line.removeLabel': 'Remove',
+    'cart.line.saveToListLabel': 'Save to list',
+    'cart.line.updateLabel': 'Update',
+    'cart.line.netSuffix': 'net',
+    'cart.line.grossSuffix': 'gross',
+    'cart.line.unavailable.outOfStock': 'Out of stock.',
+    'cart.line.unavailable.notPurchasable': 'No longer available.',
+    'cart.line.unavailable.noPrice': 'Pricing unavailable for your account.',
+    'cart.totals.subtotal.one': 'Subtotal (1 item)',
+    'cart.totals.subtotal.many': 'Subtotal ({count} items)',
+    'cart.totals.discount': 'Discount',
+    'cart.totals.discountCoded': 'Discount ({code})',
+    'cart.totals.grandTotal': 'Total',
+    'cart.totals.delivery': 'Delivery',
+    'cart.totals.deliveryValue': 'calculated at checkout',
+    'cart.coupon.label': 'Coupon code',
+    'cart.coupon.placeholder': 'COUPON-CODE',
+    'cart.coupon.apply': 'Apply',
+    'cart.coupon.clear': 'Remove',
+    'cart.coupon.active': 'active',
+    'cart.coupon.autoDropped': 'The coupon {code} is no longer valid for this cart and has been removed.',
+    'cart.coupon.rejected.invalid': 'This coupon code is invalid.',
+    'cart.coupon.rejected.expired': 'This coupon code has expired.',
+    'cart.coupon.rejected.belowMin': 'Add {amount} {currency} more to unlock this coupon.',
+    'cart.coupon.rejected.belowMinBare': 'Add more to your cart to unlock this coupon.',
+    'cart.coupon.rejected.wrongChannel': 'This coupon does not apply in this sales channel.',
+    'cart.coupon.rejected.wrongGroup': 'This coupon is not available for your customer group.',
+    'cart.coupon.rejected.wrongOrg': 'This coupon is not available for your organization.',
+    'cart.coupon.rejected.format': 'Coupon codes use only uppercase letters, digits, \'-\' and \'_\'.',
+    'cart.coupon.rejected.generic': 'This coupon code could not be applied.',
+    'cart.convert.toQr': 'Convert to quote request',
+    'cart.convert.toQrHint': 'Send this cart to sales as a quote request.',
+    'cart.dropped.heading': 'Some lines were skipped',
+    'cart.dropped.intro': 'These products were not added because:',
+    'cart.dropped.notPurchasable': 'no longer available',
+    'cart.dropped.outOfStock': 'out of stock',
+    'cart.dropped.noPrice': 'no price available',
+    'cart.dropped.removedByConversion': 'skipped during conversion',
+    'cart.approval.pending': 'Your cart is awaiting approval by an organization administrator.',
+    'cart.approval.approved': 'Your cart has been approved and is ready for checkout.',
+    'cart.approval.rejected': 'Your cart was rejected by an organization administrator.',
+    'cart.approval.rejectedReason': 'Your cart was rejected by an organization administrator. Reason: {reason}',
+    'cart.approval.policyOn': 'Your organization requires cart approval before checkout.',
+    'cart.approval.submit': 'Submit for approval',
+    'cart.upsells.heading': 'You might also need',
+    'cart.upsells.noPrice': 'Price on request',
+    'cart.banner.qrCreated': 'We\'ve sent your cart to sales as a new quote request.',
+    'cart.banner.listAdded': 'Saved line to your "{name}" list.',
+    'cart.cta.checkout': 'Proceed to checkout',
+    'cart.cta.submitForApproval': 'Submit for approval',
+    'cart.cta.awaitingApproval': 'Awaiting approval',
+    'cart.cta.blockedByOrganization': 'Checkout unavailable',
     'checkout.belowMinimum.heading': 'These lines cannot be ordered yet',
     'checkout.belowMinimum.intro': 'Change the quantity or remove the line in your cart, then come back to place the order.',
     'checkout.belowMinimum.backToCart': 'Fix in cart',
@@ -1768,6 +1907,75 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'cart.submitForApprovalFailed': '无法提交购物车审批。',
     'cart.dropped.belowMinimum': '低于最低起订量（最低 {minimum}）',
     'cart.dropped.belowMinimumBare': '低于最低起订量',
+    'cart.heading': '您的购物车',
+    'cart.subheading.one': '1 件商品可结算。',
+    'cart.subheading.many': '{count} 件商品可结算。',
+    'cart.empty': '购物车为空。',
+    'cart.unavailable.heading': '购物车不可用',
+    'cart.unavailable.body': '本店当前已关闭在线下单。商品目录仍可浏览。',
+    'cart.browseCatalog': '浏览商品目录',
+    'cart.cardHeading': '购物车',
+    'cart.itemCount.one': '1 件',
+    'cart.itemCount.many': '{count} 件',
+    'cart.continueShopping': '继续购物',
+    'cart.taxesNote': '税费与运费将在结算时计算。',
+    'cart.breadcrumb': '购物车',
+    'cart.summary.heading': '汇总',
+    'cart.line.qtyLabel': '数量',
+    'cart.line.unitPriceLabel': '单价',
+    'cart.line.lineTotalLabel': '小计',
+    'cart.line.removeLabel': '移除',
+    'cart.line.saveToListLabel': '保存到清单',
+    'cart.line.updateLabel': '更新',
+    'cart.line.netSuffix': '未税',
+    'cart.line.grossSuffix': '含税',
+    'cart.line.unavailable.outOfStock': '缺货。',
+    'cart.line.unavailable.notPurchasable': '已不可用。',
+    'cart.line.unavailable.noPrice': '您的账户暂无定价。',
+    'cart.totals.subtotal.one': '小计（1 件）',
+    'cart.totals.subtotal.many': '小计（{count} 件）',
+    'cart.totals.discount': '折扣',
+    'cart.totals.discountCoded': '折扣（{code}）',
+    'cart.totals.grandTotal': '合计',
+    'cart.totals.delivery': '配送',
+    'cart.totals.deliveryValue': '结算时计算',
+    'cart.coupon.label': '优惠码',
+    'cart.coupon.placeholder': '优惠码',
+    'cart.coupon.apply': '应用',
+    'cart.coupon.clear': '移除',
+    'cart.coupon.active': '已应用',
+    'cart.coupon.autoDropped': '优惠码 {code} 已不再适用于此购物车，已自动移除。',
+    'cart.coupon.rejected.invalid': '优惠码无效。',
+    'cart.coupon.rejected.expired': '优惠码已过期。',
+    'cart.coupon.rejected.belowMin': '再购买 {amount} {currency} 即可使用此优惠码。',
+    'cart.coupon.rejected.belowMinBare': '请增加购物车金额以使用此优惠码。',
+    'cart.coupon.rejected.wrongChannel': '此优惠码不适用于本销售渠道。',
+    'cart.coupon.rejected.wrongGroup': '此优惠码不适用于您的客户组。',
+    'cart.coupon.rejected.wrongOrg': '此优惠码不适用于您的组织。',
+    'cart.coupon.rejected.format': '优惠码仅可使用大写字母、数字、“-”和“_”。',
+    'cart.coupon.rejected.generic': '无法应用此优惠码。',
+    'cart.convert.toQr': '转为询价',
+    'cart.convert.toQrHint': '将此购物车作为询价发送给销售。',
+    'cart.dropped.heading': '部分商品行已跳过',
+    'cart.dropped.intro': '以下商品未加入，原因：',
+    'cart.dropped.notPurchasable': '已不可用',
+    'cart.dropped.outOfStock': '缺货',
+    'cart.dropped.noPrice': '无可用价格',
+    'cart.dropped.removedByConversion': '转换时已跳过',
+    'cart.approval.pending': '您的购物车正在等待组织管理员审批。',
+    'cart.approval.approved': '您的购物车已获批准，可以结算。',
+    'cart.approval.rejected': '您的购物车已被组织管理员拒绝。',
+    'cart.approval.rejectedReason': '您的购物车已被组织管理员拒绝。原因：{reason}',
+    'cart.approval.policyOn': '您的组织要求结算前先审批购物车。',
+    'cart.approval.submit': '提交审批',
+    'cart.upsells.heading': '您可能还需要',
+    'cart.upsells.noPrice': '询价获取价格',
+    'cart.banner.qrCreated': '我们已将您的购物车作为新询价发送给销售。',
+    'cart.banner.listAdded': '已将商品行保存到清单「{name}」。',
+    'cart.cta.checkout': '去结算',
+    'cart.cta.submitForApproval': '提交审批',
+    'cart.cta.awaitingApproval': '等待审批中',
+    'cart.cta.blockedByOrganization': '暂不可结算',
     'checkout.belowMinimum.heading': '这些商品行尚不能下单',
     'checkout.belowMinimum.intro': '请在购物车中修改数量或移除该行，然后再回来下单。',
     'checkout.belowMinimum.backToCart': '在购物车中修正',
@@ -2495,6 +2703,75 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'cart.submitForApprovalFailed': '无法提交购物车审批。',
     'cart.dropped.belowMinimum': '低于最低起订量（最低 {minimum}）',
     'cart.dropped.belowMinimumBare': '低于最低起订量',
+    'cart.heading': '您的購物車',
+    'cart.subheading.one': '1 件商品可結算。',
+    'cart.subheading.many': '{count} 件商品可結算。',
+    'cart.empty': '購物車為空。',
+    'cart.unavailable.heading': '購物車不可用',
+    'cart.unavailable.body': '本店目前已關閉線下單。商品目錄仍可瀏覽。',
+    'cart.browseCatalog': '瀏覽商品目錄',
+    'cart.cardHeading': '購物車',
+    'cart.itemCount.one': '1 件',
+    'cart.itemCount.many': '{count} 件',
+    'cart.continueShopping': '繼續購物',
+    'cart.taxesNote': '稅費與運費將在結算時計算。',
+    'cart.breadcrumb': '購物車',
+    'cart.summary.heading': '彙總',
+    'cart.line.qtyLabel': '數量',
+    'cart.line.unitPriceLabel': '單價',
+    'cart.line.lineTotalLabel': '小計',
+    'cart.line.removeLabel': '移除',
+    'cart.line.saveToListLabel': '儲存到清單',
+    'cart.line.updateLabel': '更新',
+    'cart.line.netSuffix': '未稅',
+    'cart.line.grossSuffix': '含稅',
+    'cart.line.unavailable.outOfStock': '缺貨。',
+    'cart.line.unavailable.notPurchasable': '已不可用。',
+    'cart.line.unavailable.noPrice': '您的帳戶暫無定價。',
+    'cart.totals.subtotal.one': '小計（1 件）',
+    'cart.totals.subtotal.many': '小計（{count} 件）',
+    'cart.totals.discount': '折扣',
+    'cart.totals.discountCoded': '折扣（{code}）',
+    'cart.totals.grandTotal': '合計',
+    'cart.totals.delivery': '配送',
+    'cart.totals.deliveryValue': '結算時計算',
+    'cart.coupon.label': '優惠碼',
+    'cart.coupon.placeholder': '優惠碼',
+    'cart.coupon.apply': '套用',
+    'cart.coupon.clear': '移除',
+    'cart.coupon.active': '已套用',
+    'cart.coupon.autoDropped': '優惠碼 {code} 已不再適用於此購物車，已自動移除。',
+    'cart.coupon.rejected.invalid': '優惠碼無效。',
+    'cart.coupon.rejected.expired': '優惠碼已過期。',
+    'cart.coupon.rejected.belowMin': '再購買 {amount} {currency} 即可使用此優惠碼。',
+    'cart.coupon.rejected.belowMinBare': '請增加購物車金額以使用此優惠碼。',
+    'cart.coupon.rejected.wrongChannel': '此優惠碼不適用於本銷售渠道。',
+    'cart.coupon.rejected.wrongGroup': '此優惠碼不適用於您的客戶組。',
+    'cart.coupon.rejected.wrongOrg': '此優惠碼不適用於您的組織。',
+    'cart.coupon.rejected.format': '優惠碼僅可使用大寫字母、數字、「-」和「_」。',
+    'cart.coupon.rejected.generic': '無法套用此優惠碼。',
+    'cart.convert.toQr': '轉為詢價',
+    'cart.convert.toQrHint': '將此購物車作為詢價發送給銷售。',
+    'cart.dropped.heading': '部分商品列已略過',
+    'cart.dropped.intro': '以下商品未加入，原因：',
+    'cart.dropped.notPurchasable': '已不可用',
+    'cart.dropped.outOfStock': '缺貨',
+    'cart.dropped.noPrice': '無可用價格',
+    'cart.dropped.removedByConversion': '轉換時已略過',
+    'cart.approval.pending': '您的購物車正在等待組織管理員審批。',
+    'cart.approval.approved': '您的購物車已獲批准，可以結算。',
+    'cart.approval.rejected': '您的購物車已被組織管理員拒絕。',
+    'cart.approval.rejectedReason': '您的購物車已被組織管理員拒絕。原因：{reason}',
+    'cart.approval.policyOn': '您的組織要求結算前先審批購物車。',
+    'cart.approval.submit': '提交審批',
+    'cart.upsells.heading': '您可能還需要',
+    'cart.upsells.noPrice': '詢價取得價格',
+    'cart.banner.qrCreated': '我們已將您的購物車作為新詢價發送給銷售。',
+    'cart.banner.listAdded': '已將商品列儲存到清單「{name}」。',
+    'cart.cta.checkout': '去結算',
+    'cart.cta.submitForApproval': '提交審批',
+    'cart.cta.awaitingApproval': '等待審批中',
+    'cart.cta.blockedByOrganization': '暫不可結算',
     'checkout.belowMinimum.heading': '这些商品行尚不能下单',
     'checkout.belowMinimum.intro': '请在购物车中修改数量或移除该行，然后再回来下单。',
     'checkout.belowMinimum.backToCart': '在购物车中修正',
@@ -3223,6 +3500,75 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'cart.submitForApprovalFailed': 'Nie udało się wysłać koszyka do akceptacji.',
     'cart.dropped.belowMinimum': 'poniżej minimalnej ilości zamówienia (minimum {minimum})',
     'cart.dropped.belowMinimumBare': 'poniżej minimalnej ilości zamówienia',
+    'cart.heading': 'Twój koszyk',
+    'cart.subheading.one': '1 pozycja gotowa do kasy.',
+    'cart.subheading.many': '{count} pozycji gotowych do kasy.',
+    'cart.empty': 'Twój koszyk jest pusty.',
+    'cart.unavailable.heading': 'Koszyk jest niedostępny',
+    'cart.unavailable.body': 'Zakupy online są w tej chwili wyłączone w tym sklepie. Katalog produktów pozostaje dostępny.',
+    'cart.browseCatalog': 'Przejdź do katalogu',
+    'cart.cardHeading': 'Koszyk',
+    'cart.itemCount.one': '1 pozycja',
+    'cart.itemCount.many': '{count} pozycji',
+    'cart.continueShopping': 'Kontynuuj zakupy',
+    'cart.taxesNote': 'Podatki i koszty dostawy zostaną naliczone w następnym kroku.',
+    'cart.breadcrumb': 'Koszyk',
+    'cart.summary.heading': 'Podsumowanie',
+    'cart.line.qtyLabel': 'Ilość',
+    'cart.line.unitPriceLabel': 'Cena jednostkowa',
+    'cart.line.lineTotalLabel': 'Wartość pozycji',
+    'cart.line.removeLabel': 'Usuń',
+    'cart.line.saveToListLabel': 'Zapisz na listę',
+    'cart.line.updateLabel': 'Zaktualizuj',
+    'cart.line.netSuffix': 'netto',
+    'cart.line.grossSuffix': 'brutto',
+    'cart.line.unavailable.outOfStock': 'Brak na stanie.',
+    'cart.line.unavailable.notPurchasable': 'Produkt nie jest już dostępny.',
+    'cart.line.unavailable.noPrice': 'Brak ceny dla Twojego konta.',
+    'cart.totals.subtotal.one': 'Suma (1 pozycja)',
+    'cart.totals.subtotal.many': 'Suma ({count} pozycji)',
+    'cart.totals.discount': 'Rabat',
+    'cart.totals.discountCoded': 'Rabat ({code})',
+    'cart.totals.grandTotal': 'Razem',
+    'cart.totals.delivery': 'Dostawa',
+    'cart.totals.deliveryValue': 'obliczana przy kasie',
+    'cart.coupon.label': 'Kod rabatowy',
+    'cart.coupon.placeholder': 'KOD-RABATOWY',
+    'cart.coupon.apply': 'Zastosuj',
+    'cart.coupon.clear': 'Usuń',
+    'cart.coupon.active': 'aktywny',
+    'cart.coupon.autoDropped': 'Kod {code} nie obowiązuje już dla tego koszyka i został usunięty.',
+    'cart.coupon.rejected.invalid': 'Ten kod rabatowy jest nieprawidłowy.',
+    'cart.coupon.rejected.expired': 'Ten kod rabatowy wygasł.',
+    'cart.coupon.rejected.belowMin': 'Dodaj jeszcze {amount} {currency}, aby odblokować ten kod.',
+    'cart.coupon.rejected.belowMinBare': 'Dodaj więcej do koszyka, aby odblokować ten kod.',
+    'cart.coupon.rejected.wrongChannel': 'Ten kod nie obowiązuje w tym kanale sprzedaży.',
+    'cart.coupon.rejected.wrongGroup': 'Ten kod nie jest dostępny dla Twojej grupy klientów.',
+    'cart.coupon.rejected.wrongOrg': 'Ten kod nie jest dostępny dla Twojej organizacji.',
+    'cart.coupon.rejected.format': 'Kody rabatowe używają tylko wielkich liter, cyfr, \'-\' i \'_\'.',
+    'cart.coupon.rejected.generic': 'Nie udało się zastosować tego kodu.',
+    'cart.convert.toQr': 'Przekształć w zapytanie ofertowe',
+    'cart.convert.toQrHint': 'Wyślij ten koszyk do działu sprzedaży jako zapytanie ofertowe.',
+    'cart.dropped.heading': 'Niektóre pozycje zostały pominięte',
+    'cart.dropped.intro': 'Te produkty nie zostały dodane, ponieważ:',
+    'cart.dropped.notPurchasable': 'nie jest już dostępny',
+    'cart.dropped.outOfStock': 'brak na stanie',
+    'cart.dropped.noPrice': 'brak ceny',
+    'cart.dropped.removedByConversion': 'pominięty podczas konwersji',
+    'cart.approval.pending': 'Twój koszyk oczekuje na akceptację administratora organizacji.',
+    'cart.approval.approved': 'Twój koszyk został zaakceptowany i jest gotowy do realizacji.',
+    'cart.approval.rejected': 'Twój koszyk został odrzucony przez administratora organizacji.',
+    'cart.approval.rejectedReason': 'Twój koszyk został odrzucony przez administratora organizacji. Powód: {reason}',
+    'cart.approval.policyOn': 'Twoja organizacja wymaga akceptacji koszyka przed realizacją.',
+    'cart.approval.submit': 'Zgłoś do akceptacji',
+    'cart.upsells.heading': 'Możesz też potrzebować',
+    'cart.upsells.noPrice': 'Cena na zapytanie',
+    'cart.banner.qrCreated': 'Twój koszyk został wysłany do działu sprzedaży jako nowe zapytanie ofertowe.',
+    'cart.banner.listAdded': 'Pozycja została zapisana na liście „{name}".',
+    'cart.cta.checkout': 'Przejdź do kasy',
+    'cart.cta.submitForApproval': 'Zgłoś do akceptacji',
+    'cart.cta.awaitingApproval': 'Oczekuje na akceptację',
+    'cart.cta.blockedByOrganization': 'Kasa niedostępna',
     'checkout.belowMinimum.heading': 'Tych pozycji nie można jeszcze zamówić',
     'checkout.belowMinimum.intro': 'Zmień ilość lub usuń pozycję w koszyku, a następnie wróć, aby złożyć zamówienie.',
     'checkout.belowMinimum.backToCart': 'Popraw w koszyku',

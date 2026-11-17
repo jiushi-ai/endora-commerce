@@ -868,3 +868,13 @@ feat-26-11-15 18:54:53 [38.1~38.6]：结算页 i18n（四语）+ Mobii CheckoutH
 汇总：方案 B — 你点名的三处 + compare/shopping-list 同模块邻近漏翻。大 B「Save→节省」按约定由人工改 Admin JSON（例：`packages/modules/_i18n/i18n/zh-CN.json` 的 `taxes.success.save`）。发 storefront 后生产验证 compare / shopping-lists / PDP。
 
 feat-26-11-15 23:17:05 [39.1~39.5]：小b compare/采购清单/PDP 对比 i18n（四语）补齐
+
+### 40. 小b 购物车页 — cartCopy 改接 messages（四语）
+
+- [x] 40.1 `cart/page.tsx` 的 `STRINGS` 去掉 pl/en 硬编码分支，改为 `tForLocale` + `cart.*` keys
+- [x] 40.2 检查 Cart* 组件：文案均吃 `strings`，无额外买家可见硬编码需改
+- [x] 40.3 新增 `test/i18n/cart-locale.test.ts` + Cart* 组件测试（16 passed）；本 §99
+
+汇总：`/cart` 在 zh-CN / zh-TW 不再落英文默认；en/pl 仍走同一 messages 目录。发 storefront 后生产验收。
+
+feat-26-11-16 17:55:00 [40.1~40.3]：小b 购物车页 i18n 改接 messages（en/zh-CN/zh-TW/pl）
