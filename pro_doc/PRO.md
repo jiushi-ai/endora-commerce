@@ -889,3 +889,13 @@ feat-26-11-16 17:55:00 [40.1~40.3]：小b 购物车页 i18n 改接 messages（en
 汇总：404 页跟 URL 语系走；Help 链接仍 404 待 AI 客服 URL。税：本地仍 `DEFAULT_VAT_RATE=0.23`，上游已 #436/#852 由后端下发真实税率。下单失败优先查产品 Inventory 与渠道仓。
 
 feat-26-11-16 23:08:33 [41.1~41.4]：小b not-found 四语 i18n；税/库存仅分析
+
+### 42. 小b 税 A+B — cherry-pick 上游 #436 + #852
+
+- [x] 42.1 从 `feat/storefront-167-from-upstream` 拉 `feat/vat-436-852-from-upstream`；cherry-pick #436（`4bb4bc5af`/`bf1cc2d89`/`59fb29225`）+ Mobii merge 修 `routes.ts`
+- [x] 42.2 cherry-pick #852（`1278970a7`/`14fe4fb88`/`b05479503`）+ Mobii 适配（messages net/gross、composition regenerate）
+- [x] 42.3 定向测试通过（CartLine/CartTotals/money；product-vat-rate/gross-derivation）；本 §99
+
+汇总：购物车/目录含税改为后端真实 `taxRate`/`vatRate`，去掉假 23%；结算页仍净价、下单入账按地址国家（与 demo 一致）。分支：`feat/vat-436-852-from-upstream`。发版需 backend+storefront。
+
+feat-26-11-17 00:56:07 [42.1~42.3]：cherry-pick 上游 #436+#852 税展示对齐 demo
