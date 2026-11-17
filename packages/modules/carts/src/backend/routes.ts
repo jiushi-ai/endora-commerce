@@ -21,6 +21,7 @@ import {
   type CartFullPayload,
   type CatalogProductReadPort,
   type CatalogProductRecord,
+  type CouponDropReason,
   type PromotionApplication,
 } from '@endora-commerce/contracts';
 import type { CartActor, CartService } from './services/cart-service.js';
@@ -370,13 +371,17 @@ export async function registerCartRoutes(app: FastifyInstance, deps: CartsDeps):
     let taxRates: Map<string, number> | null = null;
     if (items.length > 0) {
       try {
-        const typeOf = new Map(records.map((p) => [p.id, p.type]));
-        const lineTypes = new Map(items.map((it) => [it.id, typeOf.get(it.productId) ?? ('simple' as const)]));
+        const typeOf = new Map(products.map((p) => [p.id, p.type]));
+        const lineTypes = new Map(
+          items.map((it) => [it.id, typeOf.get(it.productId) ?? ('simple' as const)]),
+        );
         const byType = await deps.cartTaxRates({
           organizationId: cart.organizationId ?? null,
           productTypes: [...lineTypes.values()],
         });
-        taxRates = new Map([...lineTypes].map(([itemId, type]) => [itemId, byType.get(type) ?? 0]));
+        taxRates = new Map(
+          [...lineTypes].map(([itemId, type]) => [itemId, byType.get(type) ?? 0]),
+        );
       } catch (err) {
         rethrowIfModuleDisabled(err);
         request.log.warn({ err, cartId: cart.id }, 'cart VAT resolution failed; answering no VAT');
@@ -888,8 +893,9 @@ function serializeCart(
       ...(minimum
         ? { minOrderQuantity: minimum.minOrderQuantity, belowMinimum: minimum.belowMinimum }
         : {}),
-      productName: baseName,
-      productSlug: meta?.slug ?? null,
+      productName: baseName ?? '',
+      productSlug: meta?.slug ?? undefined,
+      productThumbnailUrl: null,
       productSku: meta?.sku ?? null,
       packagingUnitName,
       packagingUnitBaseQuantity: it.packagingUnitBaseQuantity ?? null,
@@ -934,7 +940,12 @@ function serializeCart(
     },
     primaryCta: resolvePrimaryCta(cart),
     droppedLines: [],
-    couponDroppedThisRead,
+    couponDroppedThisRead: couponDroppedThisRead
+      ? {
+          code: couponDroppedThisRead.code,
+          reason: couponDroppedThisRead.reason as CouponDropReason,
+        }
+      : null,
     createdAt: cart.createdAt.toISOString(),
     updatedAt: cart.updatedAt.toISOString(),
     lastActivityAt: cart.lastActivityAt.toISOString(),
