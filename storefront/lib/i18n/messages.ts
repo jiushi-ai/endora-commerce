@@ -105,6 +105,9 @@ export type MessageKey =
   | 'catalog.view.list'
   | 'product.fromPerUnit'
   | 'product.gross'
+  /** Net label when a product carries no resolvable VAT rate (issue #852). */
+  | 'commerce.common.net'
+  | 'commerce.common.gross'
   | 'catalog.price.heading'
   | 'catalog.price.min'
   | 'catalog.price.max'
@@ -980,6 +983,8 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'catalog.view.list': 'List',
     'product.fromPerUnit': 'from / pc.',
     'product.gross': 'gross {amount}',
+    'commerce.common.net': 'net',
+    'commerce.common.gross': 'gross',
     'catalog.price.heading': 'Price',
     'catalog.price.min': 'From',
     'catalog.price.max': 'To',
@@ -1831,6 +1836,8 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'catalog.view.list': '列表',
     'product.fromPerUnit': '起 / 件',
     'product.gross': '含税 {amount}',
+    'commerce.common.net': '未税',
+    'commerce.common.gross': '含税',
     'catalog.price.heading': '价格',
     'catalog.price.min': '最低',
     'catalog.price.max': '最高',
@@ -2641,6 +2648,8 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'catalog.view.list': '列表',
     'product.fromPerUnit': '起 / 件',
     'product.gross': '含稅 {amount}',
+    'commerce.common.net': '未稅',
+    'commerce.common.gross': '含稅',
     'catalog.price.heading': '价格',
     'catalog.price.min': '最低',
     'catalog.price.max': '最高',
@@ -3451,6 +3460,8 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'catalog.view.list': 'Lista',
     'product.fromPerUnit': 'od / szt.',
     'product.gross': 'brutto {amount}',
+    'commerce.common.net': 'netto',
+    'commerce.common.gross': 'brutto',
     'catalog.price.heading': 'Cena',
     'catalog.price.min': 'Od',
     'catalog.price.max': 'Do',

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { DisplayMode } from '@endora-commerce/contracts';
 import type { PricingMoney } from '../../lib/api/pricing';
 import { formatMoney, grossUnitPriceFromNet } from '../../lib/i18n/money';
+import { tForLocale } from '../../lib/i18n/messages';
 
 /**
  * Renders the customer-facing price block from a resolver-provided
@@ -59,6 +60,7 @@ export function BaseSalePriceBlock(props: {
   /** Optional copy for the net-tax tag. */
   netSuffix?: string;
 }): ReactNode {
+  const t = tForLocale(props.locale);
   const {
     basePrice,
     salePrice = null,
@@ -71,8 +73,8 @@ export function BaseSalePriceBlock(props: {
     saleLabel = 'Special price',
     listLabel = 'List price',
     yourPriceLabel = 'Your price',
-    grossSuffix = 'gross',
-    netSuffix = 'net',
+    grossSuffix = t('commerce.common.gross'),
+    netSuffix = t('commerce.common.net'),
   } = props;
 
   if (displayMode === 'none') return null;

@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { ReactElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import type { ProductSummary } from '@endora-commerce/contracts';
 import { ProductCard } from '../../components/ProductCard';
@@ -7,7 +6,6 @@ import { ProductRow } from '../../components/ProductRow';
 import { BaseSalePriceBlock } from '../../components/pricing/BaseSalePriceBlock';
 import { PdpPriceToggle } from '../../components/pricing/PdpPriceToggle';
 import { PriceTag } from '../../components/PriceTag';
-import { findElement } from './element-tree';
 
 /**
  * Issue #852 — a product's gross price is derived at **that product's** VAT
@@ -48,7 +46,12 @@ function summary(vatRate?: number | null): ProductSummary {
   };
 }
 
-const plain = (html: string): string => html.replace(/<[^>]+>/g, ' ').replace(/ /g, ' ');
+const plain = (html: string): string =>
+  html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/ /g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 
 describe('ProductCard — the product’s own rate', () => {
   it('derives the gross of an 8 % product as net × 1.08', () => {
@@ -167,7 +170,6 @@ describe('PriceTag — the product page price', () => {
           resolved={{ basePrice: { amount: '100.00', currency: 'PLN' }, salePrice: null, displayMode: 'gross_only' }}
           vatRate={0.08}
           locale="pl-PL"
-          quoteRequests
         />,
       ),
     );
@@ -178,13 +180,11 @@ describe('PriceTag — the product page price', () => {
 describe('PdpPriceToggle — the gross side', () => {
   it('derives the gross of an 8 % product as net × 1.08', () => {
     toggleMode = 'gross';
-    const tree = PdpPriceToggle({
-      basePrice: { amount: '100.00', currency: 'PLN' },
-      locale: 'pl-PL',
-      vatRate: 0.08,
-    });
-    const block = findElement(tree, (el) => el.type === BaseSalePriceBlock);
-    const html = plain(renderToString(block as ReactElement));
+    const html = plain(
+      renderToString(
+        <PdpPriceToggle basePrice={{ amount: '100.00', currency: 'PLN' }} locale="pl-PL" vatRate={0.08} />,
+      ),
+    );
     expect(html).toContain('108,00 zł');
     expect(html).not.toContain('123,00');
     toggleMode = 'net';
