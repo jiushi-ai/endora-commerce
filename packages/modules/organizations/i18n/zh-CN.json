@@ -49,7 +49,7 @@
   "create.field.city": "城市",
   "create.field.country": "国家",
   "create.field.countryHelp": "两个字母的 ISO 代码，例如 PL。",
-  "create.field.status": "地位",
+  "create.field.status": "状态",
   "create.status.active": "积极的",
   "create.status.pending_verification": "待验证",
   "create.submit": "创建组织",

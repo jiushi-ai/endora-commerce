@@ -57,7 +57,7 @@
   "documentTypes.quoteRequest.variables.quoteNumber": "报价数量",
   "documentTypes.quoteRequest.variables.validUntil": "有效期",
   "documentTypes.quoteRequest.variables.revisionNumber": "修订号",
-  "documentTypes.quoteRequest.variables.status": "地位",
+  "documentTypes.quoteRequest.variables.status": "状态",
   "documentTypes.quoteRequest.variables.currency": "货币",
   "documentTypes.quoteRequest.variables.organizationName": "买方组织",
   "documentTypes.quoteRequest.variables.organizationTaxId": "买家的税号",

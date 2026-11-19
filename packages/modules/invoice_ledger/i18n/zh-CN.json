@@ -25,7 +25,7 @@
   "error.retry": "无法重试此交付。",
   "deliveries.column.invoice": "发票",
   "deliveries.column.adapter": "适配器",
-  "deliveries.column.status": "地位",
+  "deliveries.column.status": "状态",
   "deliveries.column.lastError": "原因",
   "deliveries.column.environment": "环境",
   "deliveries.column.updated": "已更新",

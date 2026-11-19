@@ -14,7 +14,7 @@
   "list.column.code": "代码",
   "list.column.name": "姓名",
   "list.column.defaultLangCurrency": "默认语言/货币",
-  "list.column.status": "地位",
+  "list.column.status": "状态",
   "list.column.version": "版本",
   "list.column.systemDefault": "系统默认",
   "list.action.makeDefault": "设为默认",

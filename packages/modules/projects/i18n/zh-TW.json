@@ -329,7 +329,7 @@
   "dictionary.language.en": "英語",
   "dictionary.language.pl": "波蘭語",
   "dictionary.col.name": "{language} 中的姓名",
-  "dictionary.col.status": "地位",
+  "dictionary.col.status": "状态",
   "roles.builtIn": "內置",
   "lossReasons.builtIn": "內置",
   "roles.archived": "已存檔",

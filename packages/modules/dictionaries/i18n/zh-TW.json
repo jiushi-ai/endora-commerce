@@ -75,7 +75,7 @@
   "languages.column.label": "標籤",
   "languages.column.fallback": "回退",
   "languages.column.countries": "國家",
-  "languages.column.status": "地位",
+  "languages.column.status": "状态",
   "languages.column.sort": "排序",
   "languages.column.actions": "行動",
   "languages.countries.none": "沒有鏈接",

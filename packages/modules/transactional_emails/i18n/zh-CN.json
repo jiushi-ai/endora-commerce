@@ -12,7 +12,7 @@
   "list.title": "电子邮件模板",
   "list.empty": "未找到交易电子邮件。",
   "list.search": "按名称或代码搜索...",
-  "activation.column": "地位",
+  "activation.column": "激活",
   "activation.on": "开",
   "activation.off": "关闭",
   "activation.locked": "始终开启",

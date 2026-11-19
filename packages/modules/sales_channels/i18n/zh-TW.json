@@ -14,7 +14,7 @@
   "list.column.code": "代碼",
   "list.column.name": "姓名",
   "list.column.defaultLangCurrency": "默認語言/貨幣",
-  "list.column.status": "地位",
+  "list.column.status": "状态",
   "list.column.version": "版本",
   "list.column.systemDefault": "系統默認",
   "list.action.makeDefault": "設為默認",

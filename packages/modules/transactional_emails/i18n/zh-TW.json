@@ -12,7 +12,7 @@
   "list.title": "電子郵件模板",
   "list.empty": "未找到交易電子郵件。",
   "list.search": "按名稱或代碼搜索...",
-  "activation.column": "地位",
+  "activation.column": "激活",
   "activation.on": "開",
   "activation.off": "關閉",
   "activation.locked": "始終開啟",
