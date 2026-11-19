@@ -129,3 +129,6 @@ backend/var/assets/
 # rules apply to a base's descendants relative to that base
 # (`admin-stylesheet-composition.md` §1).
 /admin/.instance-theme-fixture/
+
+# Local SSL material for ops cutovers (private keys — never commit)
+/temp/SSL/

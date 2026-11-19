@@ -899,3 +899,13 @@ feat-26-11-16 23:08:33 [41.1~41.4]：小b not-found 四语 i18n；税/库存仅�
 汇总：购物车/目录含税改为后端真实 `taxRate`/`vatRate`，去掉假 23%；结算页仍净价、下单入账按地址国家（与 demo 一致）。分支：`feat/vat-436-852-from-upstream`。发版需 backend+storefront。
 
 feat-26-11-17 00:56:07 [42.1~42.3]：cherry-pick 上游 #436+#852 税展示对齐 demo
+
+### 43. mobiib2b.com CNAME 切入生产 — 操作手册与证书就绪包
+
+- [x] 43.1 撰写操作手册 `pro_doc/mobiib2b-cname-cutover-runbook.md`（DNS / 证书上传 / nginx / .env / 重建镜像 / 验收 / 回滚 / 台湾 DNS 说明）
+- [x] 43.2 本机拼装 `temp/SSL/ready-for-ecs/mobiib2b.com.pem` + `.key`（与私钥指纹一致）+ 可覆盖用 `mobii-b2b.conf`
+- [x] 43.3 `.gitignore` 增加 `/temp/SSL/`，避免私钥入库；更新本 §99
+
+汇总：不并行 + 方案 A（含 api）；Agent 交付手册与就绪包，ECS/台湾 DNS/镜像发版由人工按手册执行（Agent 不直连 ECS）。
+
+feat-26-11-17 22:27:56 [43.1~43.3]：mobiib2b 切入手册与 ready-for-ecs 证书/nginx 包
