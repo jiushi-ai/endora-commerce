@@ -390,6 +390,84 @@ export type MessageKey =
   | 'order.cancel.cta'
   | 'order.cancel.hint'
   | 'order.cancel.failed'
+  // Batch 47 — order detail + quote-request detail chrome (was EN/PL hard-coded).
+  | 'order.detail.title'
+  | 'order.detail.received'
+  | 'order.detail.notFound.title'
+  | 'order.detail.notFound.body'
+  | 'order.detail.transferHint'
+  | 'order.detail.reorderCart'
+  | 'order.detail.reorderQuote'
+  | 'order.detail.downloadInvoice'
+  | 'order.detail.seeAll'
+  | 'order.detail.statusHeading'
+  | 'order.detail.orderStatus'
+  | 'order.detail.paymentStatus'
+  | 'order.detail.placed'
+  | 'order.detail.itemsHeading'
+  | 'order.detail.col.product'
+  | 'order.detail.col.qty'
+  | 'order.detail.col.unit'
+  | 'order.detail.col.line'
+  | 'order.detail.subtotal'
+  | 'order.detail.tax'
+  | 'order.detail.discount'
+  | 'order.detail.delivery'
+  | 'order.detail.total'
+  | 'order.detail.awaitingPayment'
+  | 'order.detail.awaitingPaymentTransfer'
+  | 'order.detail.awaitingPaymentComplete'
+  | 'order.detail.commentsHeading'
+  | 'order.detail.commentsEmpty'
+  | 'order.detail.commentsClosed'
+  | 'order.detail.commentAria'
+  | 'order.detail.commentPlaceholder'
+  | 'order.detail.commentSubmit'
+  | 'order.detail.error.reorder'
+  | 'order.detail.error.cloneToQuote'
+  | 'order.detail.error.comment'
+  | 'order.detail.paymentStatus.awaiting_payment'
+  | 'order.detail.paymentStatus.paid'
+  | 'order.detail.paymentStatus.failed'
+  | 'order.detail.paymentStatus.deferred'
+  | 'order.detail.paymentStatus.refunded'
+  | 'quoteRequest.detail.back'
+  | 'quoteRequest.detail.notFound'
+  | 'quoteRequest.detail.title'
+  | 'quoteRequest.detail.created'
+  | 'quoteRequest.detail.submitted'
+  | 'quoteRequest.detail.cancelReason'
+  | 'quoteRequest.detail.notes'
+  | 'quoteRequest.detail.col.product'
+  | 'quoteRequest.detail.col.qty'
+  | 'quoteRequest.detail.col.desired'
+  | 'quoteRequest.detail.col.agreed'
+  | 'quoteRequest.detail.col.total'
+  | 'quoteRequest.detail.net'
+  | 'quoteRequest.detail.vat'
+  | 'quoteRequest.detail.gross'
+  | 'quoteRequest.detail.sum'
+  | 'quoteRequest.detail.comparisonIntro'
+  | 'quoteRequest.detail.history'
+  | 'quoteRequest.detail.event.created'
+  | 'quoteRequest.detail.event.submitted'
+  | 'quoteRequest.detail.event.modified'
+  | 'quoteRequest.detail.event.approved'
+  | 'quoteRequest.detail.event.canceled'
+  | 'quoteRequest.detail.event.expired'
+  | 'quoteRequest.detail.event.completed'
+  | 'quoteRequest.detail.event.customer-accepted-revision'
+  | 'quoteRequest.detail.event.customer-rejected-revision'
+  | 'quoteRequest.detail.event.re-submitted'
+  | 'quoteRequest.detail.event.note-added'
+  | 'quoteRequest.detail.accept'
+  | 'quoteRequest.detail.reject'
+  | 'quoteRequest.detail.rejectReasonPlaceholder'
+  | 'quoteRequest.detail.convert'
+  | 'quoteRequest.detail.error.accept'
+  | 'quoteRequest.detail.error.reject'
+  | 'quoteRequest.detail.error.resubmit'
+
   // What the buyer is told when checkout can offer no delivery method at all.
   // One sentence for two causes — a shop that has configured none, and a
   // platform whose `delivery_methods` module an operator switched off — for the
@@ -1278,6 +1356,83 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.cancel.hint':
       'You have not paid for this order yet and we have not started on it, so you can still cancel it. The goods it reserves go straight back on the shelf.',
     'order.cancel.failed': 'We could not cancel this order. Please contact us and we will help.',
+
+    'order.detail.title': 'Thank you — order placed',
+    'order.detail.received': 'Order {id} has been received.',
+    'order.detail.notFound.title': 'Order not found',
+    'order.detail.notFound.body': "We couldn't find that order.",
+    'order.detail.transferHint': "Pay by bank transfer using the reference printed on the proforma invoice we'll email shortly. We'll update the order once the payment clears.",
+    'order.detail.reorderCart': 'Order again → cart',
+    'order.detail.reorderQuote': 'Start a quote from this order',
+    'order.detail.downloadInvoice': 'Download invoice {number}',
+    'order.detail.seeAll': 'See all orders',
+    'order.detail.statusHeading': 'Status',
+    'order.detail.orderStatus': 'Order status',
+    'order.detail.paymentStatus': 'Payment status',
+    'order.detail.placed': 'Placed',
+    'order.detail.itemsHeading': 'Items',
+    'order.detail.col.product': 'Product',
+    'order.detail.col.qty': 'Qty',
+    'order.detail.col.unit': 'Unit',
+    'order.detail.col.line': 'Line',
+    'order.detail.subtotal': 'Subtotal',
+    'order.detail.tax': 'Tax',
+    'order.detail.discount': 'Discount',
+    'order.detail.delivery': 'Delivery',
+    'order.detail.total': 'Total',
+    'order.detail.awaitingPayment': 'This order is awaiting payment.',
+    'order.detail.awaitingPaymentTransfer': 'Use the bank-transfer details above to pay.',
+    'order.detail.awaitingPaymentComplete': 'Complete payment to proceed.',
+    'order.detail.commentsHeading': 'Comments',
+    'order.detail.commentsEmpty': 'No comments yet.',
+    'order.detail.commentsClosed': 'Commenting is closed for this order.',
+    'order.detail.commentAria': 'Add a comment',
+    'order.detail.commentPlaceholder': 'Write a message to our team…',
+    'order.detail.commentSubmit': 'Add comment',
+    'order.detail.error.reorder': 'Could not reorder.',
+    'order.detail.error.cloneToQuote': 'Could not create quote request.',
+    'order.detail.error.comment': 'Could not add comment.',
+    'order.detail.paymentStatus.awaiting_payment': 'Awaiting payment',
+    'order.detail.paymentStatus.paid': 'Paid',
+    'order.detail.paymentStatus.failed': 'Failed',
+    'order.detail.paymentStatus.deferred': 'Deferred',
+    'order.detail.paymentStatus.refunded': 'Refunded',
+    'quoteRequest.detail.back': '← Quote requests',
+    'quoteRequest.detail.notFound': 'Quote request not found.',
+    'quoteRequest.detail.title': 'Quote request #{id}',
+    'quoteRequest.detail.created': 'Created {date}',
+    'quoteRequest.detail.submitted': ' · submitted {date}',
+    'quoteRequest.detail.cancelReason': 'Cancellation reason: ',
+    'quoteRequest.detail.notes': 'Notes: ',
+    'quoteRequest.detail.col.product': 'Product',
+    'quoteRequest.detail.col.qty': 'Qty',
+    'quoteRequest.detail.col.desired': 'Desired price',
+    'quoteRequest.detail.col.agreed': 'Agreed price',
+    'quoteRequest.detail.col.total': 'Total',
+    'quoteRequest.detail.net': 'Net total',
+    'quoteRequest.detail.vat': 'VAT ({rate}%)',
+    'quoteRequest.detail.gross': 'Gross total',
+    'quoteRequest.detail.sum': 'Total',
+    'quoteRequest.detail.comparisonIntro': 'What changed since your last visit:',
+    'quoteRequest.detail.history': 'Change history',
+    'quoteRequest.detail.event.created': 'Quote request created',
+    'quoteRequest.detail.event.submitted': 'Submitted for processing',
+    'quoteRequest.detail.event.modified': 'Modified',
+    'quoteRequest.detail.event.approved': 'Approved',
+    'quoteRequest.detail.event.canceled': 'Canceled',
+    'quoteRequest.detail.event.expired': 'Expired',
+    'quoteRequest.detail.event.completed': 'Completed',
+    'quoteRequest.detail.event.customer-accepted-revision': 'Customer accepted the changes',
+    'quoteRequest.detail.event.customer-rejected-revision': 'Customer rejected the changes',
+    'quoteRequest.detail.event.re-submitted': 'Submitted again',
+    'quoteRequest.detail.event.note-added': 'Note added',
+    'quoteRequest.detail.accept': 'Accept revision',
+    'quoteRequest.detail.reject': 'Reject',
+    'quoteRequest.detail.rejectReasonPlaceholder': 'Rejection reason (optional)',
+    'quoteRequest.detail.convert': 'Place order from this quote',
+    'quoteRequest.detail.error.accept': 'Could not accept the changes.',
+    'quoteRequest.detail.error.reject': 'Could not reject the changes.',
+    'quoteRequest.detail.error.resubmit': 'Could not submit again.',
     'checkout.delivery.none':
       'No delivery method is available for your account on this sales channel.',
     'checkout.payment.none':
@@ -2121,6 +2276,83 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.cancel.cta': '取消此订单',
     'order.cancel.hint': '您尚未付款，我们也尚未开始处理，因此仍可取消。预留的商品会立即恢复可售。',
     'order.cancel.failed': '无法取消此订单。请联系我们，我们会协助处理。',
+
+    'order.detail.title': '谢谢 — 订单已提交',
+    'order.detail.received': '已收到订单 {id}。',
+    'order.detail.notFound.title': '未找到订单',
+    'order.detail.notFound.body': '找不到该订单。',
+    'order.detail.transferHint': '请按我们稍后邮件发送的形式发票上的汇款备注进行银行转账。款项到账后我们会更新订单状态。',
+    'order.detail.reorderCart': '再次下单 → 购物车',
+    'order.detail.reorderQuote': '按此单发起询价',
+    'order.detail.downloadInvoice': '下载发票 {number}',
+    'order.detail.seeAll': '查看全部订单',
+    'order.detail.statusHeading': '状态',
+    'order.detail.orderStatus': '订单状态',
+    'order.detail.paymentStatus': '付款状态',
+    'order.detail.placed': '下单时间',
+    'order.detail.itemsHeading': '商品',
+    'order.detail.col.product': '商品',
+    'order.detail.col.qty': '数量',
+    'order.detail.col.unit': '单价',
+    'order.detail.col.line': '小计',
+    'order.detail.subtotal': '小计',
+    'order.detail.tax': '税费',
+    'order.detail.discount': '折扣',
+    'order.detail.delivery': '运费',
+    'order.detail.total': '合计',
+    'order.detail.awaitingPayment': '此订单等待付款。',
+    'order.detail.awaitingPaymentTransfer': '请使用上方银行转账信息完成付款。',
+    'order.detail.awaitingPaymentComplete': '请完成付款以继续。',
+    'order.detail.commentsHeading': '留言',
+    'order.detail.commentsEmpty': '暂无留言。',
+    'order.detail.commentsClosed': '此订单已关闭留言。',
+    'order.detail.commentAria': '添加留言',
+    'order.detail.commentPlaceholder': '给团队留言…',
+    'order.detail.commentSubmit': '添加留言',
+    'order.detail.error.reorder': '无法再次下单。',
+    'order.detail.error.cloneToQuote': '无法创建询价单。',
+    'order.detail.error.comment': '无法添加留言。',
+    'order.detail.paymentStatus.awaiting_payment': '等待付款',
+    'order.detail.paymentStatus.paid': '已付款',
+    'order.detail.paymentStatus.failed': '付款失败',
+    'order.detail.paymentStatus.deferred': '延期付款',
+    'order.detail.paymentStatus.refunded': '已退款',
+    'quoteRequest.detail.back': '← 询价单列表',
+    'quoteRequest.detail.notFound': '未找到询价单。',
+    'quoteRequest.detail.title': '询价单 #{id}',
+    'quoteRequest.detail.created': '创建于 {date}',
+    'quoteRequest.detail.submitted': ' · 提交于 {date}',
+    'quoteRequest.detail.cancelReason': '取消原因：',
+    'quoteRequest.detail.notes': '备注：',
+    'quoteRequest.detail.col.product': '商品',
+    'quoteRequest.detail.col.qty': '数量',
+    'quoteRequest.detail.col.desired': '期望价',
+    'quoteRequest.detail.col.agreed': '约定价',
+    'quoteRequest.detail.col.total': '合计',
+    'quoteRequest.detail.net': '净额合计',
+    'quoteRequest.detail.vat': '增值税（{rate}%）',
+    'quoteRequest.detail.gross': '含税合计',
+    'quoteRequest.detail.sum': '合计',
+    'quoteRequest.detail.comparisonIntro': '自您上次查看以来的变更：',
+    'quoteRequest.detail.history': '变更历史',
+    'quoteRequest.detail.event.created': '已创建询价单',
+    'quoteRequest.detail.event.submitted': '已提交处理',
+    'quoteRequest.detail.event.modified': '已修改',
+    'quoteRequest.detail.event.approved': '已批准',
+    'quoteRequest.detail.event.canceled': '已取消',
+    'quoteRequest.detail.event.expired': '已过期',
+    'quoteRequest.detail.event.completed': '已完成',
+    'quoteRequest.detail.event.customer-accepted-revision': '客户已接受变更',
+    'quoteRequest.detail.event.customer-rejected-revision': '客户已拒绝变更',
+    'quoteRequest.detail.event.re-submitted': '已重新提交',
+    'quoteRequest.detail.event.note-added': '已添加备注',
+    'quoteRequest.detail.accept': '接受修订',
+    'quoteRequest.detail.reject': '拒绝',
+    'quoteRequest.detail.rejectReasonPlaceholder': '拒绝原因（可选）',
+    'quoteRequest.detail.convert': '按此报价下单',
+    'quoteRequest.detail.error.accept': '无法接受变更。',
+    'quoteRequest.detail.error.reject': '无法拒绝变更。',
+    'quoteRequest.detail.error.resubmit': '无法重新提交。',
     'checkout.delivery.none': '您的账户在此销售渠道没有可用的配送方式。',
     'checkout.payment.none': '您的账户在此销售渠道没有可用的支付方式。',
     'checkout.error.title': '无法加载结账页',
@@ -2940,6 +3172,83 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.cancel.cta': '取消此订单',
     'order.cancel.hint': '您尚未付款，我们也尚未开始处理，因此仍可取消。预留的商品会立即恢复可售。',
     'order.cancel.failed': '无法取消此订单。请联系我们，我们会协助处理。',
+
+    'order.detail.title': '謝謝 — 訂單已提交',
+    'order.detail.received': '已收到訂單 {id}。',
+    'order.detail.notFound.title': '找不到訂單',
+    'order.detail.notFound.body': '找不到該訂單。',
+    'order.detail.transferHint': '請依我們稍後郵件發送的形式發票上的匯款備註進行銀行轉帳。款項入帳後我們會更新訂單狀態。',
+    'order.detail.reorderCart': '再次下單 → 購物車',
+    'order.detail.reorderQuote': '按此單發起詢價',
+    'order.detail.downloadInvoice': '下載發票 {number}',
+    'order.detail.seeAll': '查看全部訂單',
+    'order.detail.statusHeading': '狀態',
+    'order.detail.orderStatus': '訂單狀態',
+    'order.detail.paymentStatus': '付款狀態',
+    'order.detail.placed': '下單時間',
+    'order.detail.itemsHeading': '商品',
+    'order.detail.col.product': '商品',
+    'order.detail.col.qty': '數量',
+    'order.detail.col.unit': '單價',
+    'order.detail.col.line': '小計',
+    'order.detail.subtotal': '小計',
+    'order.detail.tax': '稅費',
+    'order.detail.discount': '折扣',
+    'order.detail.delivery': '運費',
+    'order.detail.total': '合計',
+    'order.detail.awaitingPayment': '此訂單等待付款。',
+    'order.detail.awaitingPaymentTransfer': '請使用上方銀行轉帳資訊完成付款。',
+    'order.detail.awaitingPaymentComplete': '請完成付款以繼續。',
+    'order.detail.commentsHeading': '留言',
+    'order.detail.commentsEmpty': '尚無留言。',
+    'order.detail.commentsClosed': '此訂單已關閉留言。',
+    'order.detail.commentAria': '新增留言',
+    'order.detail.commentPlaceholder': '給團隊留言…',
+    'order.detail.commentSubmit': '新增留言',
+    'order.detail.error.reorder': '無法再次下單。',
+    'order.detail.error.cloneToQuote': '無法建立詢價單。',
+    'order.detail.error.comment': '無法新增留言。',
+    'order.detail.paymentStatus.awaiting_payment': '等待付款',
+    'order.detail.paymentStatus.paid': '已付款',
+    'order.detail.paymentStatus.failed': '付款失敗',
+    'order.detail.paymentStatus.deferred': '延期付款',
+    'order.detail.paymentStatus.refunded': '已退款',
+    'quoteRequest.detail.back': '← 詢價單列表',
+    'quoteRequest.detail.notFound': '找不到詢價單。',
+    'quoteRequest.detail.title': '詢價單 #{id}',
+    'quoteRequest.detail.created': '建立於 {date}',
+    'quoteRequest.detail.submitted': ' · 提交於 {date}',
+    'quoteRequest.detail.cancelReason': '取消原因：',
+    'quoteRequest.detail.notes': '備註：',
+    'quoteRequest.detail.col.product': '商品',
+    'quoteRequest.detail.col.qty': '數量',
+    'quoteRequest.detail.col.desired': '期望價',
+    'quoteRequest.detail.col.agreed': '約定價',
+    'quoteRequest.detail.col.total': '合計',
+    'quoteRequest.detail.net': '淨額合計',
+    'quoteRequest.detail.vat': '增值稅（{rate}%）',
+    'quoteRequest.detail.gross': '含稅合計',
+    'quoteRequest.detail.sum': '合計',
+    'quoteRequest.detail.comparisonIntro': '自您上次查看以來的變更：',
+    'quoteRequest.detail.history': '變更歷史',
+    'quoteRequest.detail.event.created': '已建立詢價單',
+    'quoteRequest.detail.event.submitted': '已提交處理',
+    'quoteRequest.detail.event.modified': '已修改',
+    'quoteRequest.detail.event.approved': '已核准',
+    'quoteRequest.detail.event.canceled': '已取消',
+    'quoteRequest.detail.event.expired': '已過期',
+    'quoteRequest.detail.event.completed': '已完成',
+    'quoteRequest.detail.event.customer-accepted-revision': '客戶已接受變更',
+    'quoteRequest.detail.event.customer-rejected-revision': '客戶已拒絕變更',
+    'quoteRequest.detail.event.re-submitted': '已重新提交',
+    'quoteRequest.detail.event.note-added': '已新增備註',
+    'quoteRequest.detail.accept': '接受修訂',
+    'quoteRequest.detail.reject': '拒絕',
+    'quoteRequest.detail.rejectReasonPlaceholder': '拒絕原因（選填）',
+    'quoteRequest.detail.convert': '按此報價下單',
+    'quoteRequest.detail.error.accept': '無法接受變更。',
+    'quoteRequest.detail.error.reject': '無法拒絕變更。',
+    'quoteRequest.detail.error.resubmit': '無法重新提交。',
     'checkout.delivery.none': '您的账户在此销售渠道没有可用的配送方式。',
     'checkout.payment.none': '您的账户在此销售渠道没有可用的支付方式。',
     'checkout.error.title': '无法加载结账页',
@@ -3776,6 +4085,83 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.cancel.hint':
       'To zamowienie nie zostalo jeszcze oplacone i nie zaczelismy go realizowac, wiec mozesz je anulowac. Zarezerwowany towar wroci od razu na stan.',
     'order.cancel.failed': 'Nie udalo sie anulowac tego zamowienia. Skontaktuj sie z nami, pomozemy.',
+
+    'order.detail.title': 'Dziękujemy — zamówienie złożone',
+    'order.detail.received': 'Zamówienie {id} zostało przyjęte.',
+    'order.detail.notFound.title': 'Nie znaleziono zamówienia',
+    'order.detail.notFound.body': 'Nie mogliśmy znaleźć tego zamówienia.',
+    'order.detail.transferHint': 'Opłać przelewem, używając numeru referencyjnego z proformy, którą wkrótce wyślemy e-mailem. Zaktualizujemy zamówienie po zaksięgowaniu płatności.',
+    'order.detail.reorderCart': 'Zamów ponownie → koszyk',
+    'order.detail.reorderQuote': 'Utwórz zapytanie z tego zamówienia',
+    'order.detail.downloadInvoice': 'Pobierz fakturę {number}',
+    'order.detail.seeAll': 'Wszystkie zamówienia',
+    'order.detail.statusHeading': 'Status',
+    'order.detail.orderStatus': 'Status zamówienia',
+    'order.detail.paymentStatus': 'Status płatności',
+    'order.detail.placed': 'Złożono',
+    'order.detail.itemsHeading': 'Pozycje',
+    'order.detail.col.product': 'Produkt',
+    'order.detail.col.qty': 'Ilość',
+    'order.detail.col.unit': 'Cena jedn.',
+    'order.detail.col.line': 'Wartość',
+    'order.detail.subtotal': 'Suma częściowa',
+    'order.detail.tax': 'Podatek',
+    'order.detail.discount': 'Rabat',
+    'order.detail.delivery': 'Dostawa',
+    'order.detail.total': 'Suma',
+    'order.detail.awaitingPayment': 'To zamówienie oczekuje na płatność.',
+    'order.detail.awaitingPaymentTransfer': 'Użyj danych do przelewu powyżej, aby zapłacić.',
+    'order.detail.awaitingPaymentComplete': 'Dokończ płatność, aby kontynuować.',
+    'order.detail.commentsHeading': 'Komentarze',
+    'order.detail.commentsEmpty': 'Brak komentarzy.',
+    'order.detail.commentsClosed': 'Komentowanie jest zamknięte dla tego zamówienia.',
+    'order.detail.commentAria': 'Dodaj komentarz',
+    'order.detail.commentPlaceholder': 'Napisz wiadomość do naszego zespołu…',
+    'order.detail.commentSubmit': 'Dodaj komentarz',
+    'order.detail.error.reorder': 'Nie udało się zamówić ponownie.',
+    'order.detail.error.cloneToQuote': 'Nie udało się utworzyć zapytania ofertowego.',
+    'order.detail.error.comment': 'Nie udało się dodać komentarza.',
+    'order.detail.paymentStatus.awaiting_payment': 'Oczekuje na płatność',
+    'order.detail.paymentStatus.paid': 'Opłacone',
+    'order.detail.paymentStatus.failed': 'Nieudane',
+    'order.detail.paymentStatus.deferred': 'Odroczone',
+    'order.detail.paymentStatus.refunded': 'Zwrócone',
+    'quoteRequest.detail.back': '← Lista zapytań',
+    'quoteRequest.detail.notFound': 'Nie znaleziono zapytania ofertowego.',
+    'quoteRequest.detail.title': 'Zapytanie #{id}',
+    'quoteRequest.detail.created': 'Utworzono {date}',
+    'quoteRequest.detail.submitted': ' · zgłoszono {date}',
+    'quoteRequest.detail.cancelReason': 'Powód anulowania: ',
+    'quoteRequest.detail.notes': 'Uwagi: ',
+    'quoteRequest.detail.col.product': 'Produkt',
+    'quoteRequest.detail.col.qty': 'Ilość',
+    'quoteRequest.detail.col.desired': 'Cena żądana',
+    'quoteRequest.detail.col.agreed': 'Cena uzgodniona',
+    'quoteRequest.detail.col.total': 'Razem',
+    'quoteRequest.detail.net': 'Suma netto',
+    'quoteRequest.detail.vat': 'VAT ({rate}%)',
+    'quoteRequest.detail.gross': 'Suma brutto',
+    'quoteRequest.detail.sum': 'Suma',
+    'quoteRequest.detail.comparisonIntro': 'Co zmieniło się od Twojej ostatniej wizyty:',
+    'quoteRequest.detail.history': 'Historia zmian',
+    'quoteRequest.detail.event.created': 'Utworzono zapytanie',
+    'quoteRequest.detail.event.submitted': 'Zgłoszono do realizacji',
+    'quoteRequest.detail.event.modified': 'Zmodyfikowano',
+    'quoteRequest.detail.event.approved': 'Zaakceptowano',
+    'quoteRequest.detail.event.canceled': 'Anulowano',
+    'quoteRequest.detail.event.expired': 'Wygasło',
+    'quoteRequest.detail.event.completed': 'Zrealizowane',
+    'quoteRequest.detail.event.customer-accepted-revision': 'Klient zaakceptował zmiany',
+    'quoteRequest.detail.event.customer-rejected-revision': 'Klient odrzucił zmiany',
+    'quoteRequest.detail.event.re-submitted': 'Złożono ponownie',
+    'quoteRequest.detail.event.note-added': 'Dodano notatkę',
+    'quoteRequest.detail.accept': 'Akceptuj wersję',
+    'quoteRequest.detail.reject': 'Odrzuć',
+    'quoteRequest.detail.rejectReasonPlaceholder': 'Powód odrzucenia (opcjonalny)',
+    'quoteRequest.detail.convert': 'Złóż zamówienie z tej oferty',
+    'quoteRequest.detail.error.accept': 'Nie udało się zaakceptować zmian.',
+    'quoteRequest.detail.error.reject': 'Nie udało się odrzucić zmian.',
+    'quoteRequest.detail.error.resubmit': 'Nie udało się złożyć ponownie.',
     'checkout.delivery.none':
       'Brak dostępnych metod dostawy dla Twojego konta w tym kanale sprzedaży.',
     'checkout.payment.none':

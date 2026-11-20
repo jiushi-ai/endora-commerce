@@ -57,7 +57,7 @@ function disabledCount(html: string): number {
 describe('a deadline still ahead', () => {
   it('leaves Accept pressable and says nothing about validity', () => {
     const html = render({ status: 'Pending', awaiting: true, expiresAt: FUTURE });
-    expect(html).toContain('Akceptuj wersję');
+    expect(html).toContain('Accept revision');
     expect(disabledCount(html)).toBe(0);
     expect(html).not.toContain('rfq-validity-notice');
     expect(html).not.toContain('validity period has ended');
@@ -65,7 +65,7 @@ describe('a deadline still ahead', () => {
 
   it('leaves Place order pressable on an approved quote', () => {
     const html = render({ status: 'Approved', awaiting: false, expiresAt: FUTURE });
-    expect(html).toContain('Złóż zamówienie z tej oferty');
+    expect(html).toContain('Place order from this quote');
     expect(disabledCount(html)).toBe(0);
     expect(html).not.toContain('rfq-validity-notice');
   });
@@ -82,14 +82,14 @@ describe('a deadline that has passed', () => {
     expect(html).toContain('validity period has ended');
     // The control is disabled, never removed: a buyer who cannot find the
     // button they used yesterday learns nothing from its absence.
-    expect(html).toContain('Akceptuj wersję');
+    expect(html).toContain('Accept revision');
   });
 
   it('leaves Reject pressable on the same lapsed offer', () => {
     // !1137 gates accept and nothing else here: refusing the decline would
     // leave the buyer no way to clear a row they have been told is dead.
     const html = render({ status: 'Pending', awaiting: true, expiresAt: PAST });
-    expect(html).toContain('Odrzuć');
+    expect(html).toContain('Reject');
     expect(disabledCount(html)).toBe(1);
   });
 

@@ -951,3 +951,13 @@ feat-26-11-19 19:21:47 [45.1~45.6]：发票PDF chrome跟文档语；CJK镜像字
 汇总：分支 `feat/batch-44-invoice-pdf-locale`；发版只需重建 backend（镜像约再增 ~16MB TC）。定向 vitest document_templates 35 通过。未 commit。
 
 feat-26-11-19 20:14:37 [46.1~46.4]：发票PDF强制Noto简繁字体，修复Roboto盖掉CJK
+
+### 47. 小b 订单详情+询价详情 i18n（EN/PL 硬编码改 t）
+
+- [x] 47.1 订单详情页 `orders/[id]` 硬编码改 t()；`messages.ts` 补 order.detail.* 四语（含 paymentStatus 枚举与「按此单发起询价」）
+- [x] 47.2 询价详情页 `quote-requests/[id]` + `RfqDetailActions` 去掉 PL 硬编码；补 quoteRequest.detail.* 四语；状态复用 account.rfq.status.*；日期用页面 locale
+- [x] 47.3 测试：`order-quote-detail-locale.test.ts` + 更新 `rfq-detail-actions.test.tsx`；定向 vitest 14 通过
+- [x] 47.4 本 §99 汇总
+
+汇总：仅 storefront i18n，不改下单/询价业务逻辑；发版需重建/发布 storefront 镜像。
+feat-26-11-19 22:45:00 [47.1~47.4]：小b订单详情与询价详情四语i18n，去掉EN/PL硬编码

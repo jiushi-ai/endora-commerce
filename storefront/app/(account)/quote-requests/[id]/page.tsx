@@ -12,6 +12,7 @@ import { getSessionCookie } from '../../../../lib/session';
 import { getServerContext } from '../../../../lib/server-context';
 import { StorefrontApiError } from '../../../../lib/api/client';
 import { formatMoney } from '../../../../lib/i18n/money';
+import { tForLocale, type MessageKey } from '../../../../lib/i18n/messages';
 import { rfqValidity, rfqValidityGate } from '../../../../lib/quote-requests/validity';
 import { RfqValidityMeta } from '../../../../components/rfq/RfqValidityMeta';
 import { RfqDetailActions } from '../../../../components/rfq/RfqDetailActions';
@@ -51,7 +52,33 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
  * The classification runs on the **server's** clock, because this is a Server
  * Component and there is no client boundary here that could substitute the
  * buyer's. See `lib/quote-requests/validity.ts`.
+ *
+ * Batch 47 — chrome goes through `tForLocale` (was Polish hard-coded).
  */
+
+const EVENT_KEYS = {
+  created: 'quoteRequest.detail.event.created',
+  submitted: 'quoteRequest.detail.event.submitted',
+  modified: 'quoteRequest.detail.event.modified',
+  approved: 'quoteRequest.detail.event.approved',
+  canceled: 'quoteRequest.detail.event.canceled',
+  expired: 'quoteRequest.detail.event.expired',
+  completed: 'quoteRequest.detail.event.completed',
+  'customer-accepted-revision': 'quoteRequest.detail.event.customer-accepted-revision',
+  'customer-rejected-revision': 'quoteRequest.detail.event.customer-rejected-revision',
+  're-submitted': 'quoteRequest.detail.event.re-submitted',
+  'note-added': 'quoteRequest.detail.event.note-added',
+} as const satisfies Record<string, MessageKey>;
+
+const STATUS_KEYS = {
+  Pending: 'account.rfq.status.Pending',
+  'Created from admin': 'account.rfq.status.Created from admin',
+  Approved: 'account.rfq.status.Approved',
+  Completed: 'account.rfq.status.Completed',
+  Canceled: 'account.rfq.status.Canceled',
+  Expired: 'account.rfq.status.Expired',
+} as const satisfies Record<RfqStatus, MessageKey>;
+
 export default async function QuoteRequestDetailPage({
   params,
   searchParams,
@@ -63,6 +90,9 @@ export default async function QuoteRequestDetailPage({
   const { id } = await params;
   if (!session) return await localeRedirect(`/login?next=/quote-requests/${id}`);
 
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
+
   let rfq: RfqDetail;
   try {
     rfq = await getRfqById(session, id);
@@ -70,9 +100,9 @@ export default async function QuoteRequestDetailPage({
     if (err instanceof StorefrontApiError && err.status === 404) {
       return (
         <div className="mx-auto max-w-[1360px] px-[24px]" style={{ paddingTop: 24, paddingBottom: 48 }}>
-          <p className="muted">Nie znaleziono zapytania ofertowego.</p>
+          <p className="muted">{t('quoteRequest.detail.notFound')}</p>
           <LocalizedLink href="/quote-requests" className="btn btn--outline btn--sm">
-            ← Lista zapytań
+            {t('quoteRequest.detail.back')}
           </LocalizedLink>
         </div>
       );
@@ -80,7 +110,6 @@ export default async function QuoteRequestDetailPage({
     throw err;
   }
   const sp = await searchParams;
-  const { locale } = await getServerContext();
   // The server's clock, taken once so the meta sentence and the gate below it
   // cannot disagree about which side of the deadline this render is on.
   const now = new Date();
@@ -101,25 +130,32 @@ export default async function QuoteRequestDetailPage({
   const total = totals.net;
   const taxTotal = totals.vat;
   const grossTotal = totals.gross;
-  const fmt = (n: number): string => formatMoney(n, currency);
+  const fmt = (n: number): string => formatMoney(n, currency, locale);
 
   return (
     <div className="mx-auto max-w-[1360px] px-[24px]" style={{ paddingTop: 24, paddingBottom: 48 }}>
       <LocalizedLink href="/quote-requests" className="btn btn--ghost btn--sm" style={{ marginBottom: 8 }}>
-        ← Lista zapytań
+        {t('quoteRequest.detail.back')}
       </LocalizedLink>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-        <h1>Zapytanie #{rfq.businessId}</h1>
+        <h1>{t('quoteRequest.detail.title').replace('{id}', String(rfq.businessId))}</h1>
         <RfqStatusBadge
           status={rfq.status}
           awaiting={rfq.awaitingCustomerRevisionAcceptance}
+          t={t}
         />
       </div>
       <p className="muted" style={{ fontSize: 13, marginBottom: 18 }}>
-        Utworzone {new Date(rfq.createdAt).toLocaleString('pl-PL')}
+        {t('quoteRequest.detail.created').replace(
+          '{date}',
+          new Date(rfq.createdAt).toLocaleString(locale),
+        )}
         {rfq.submittedAt
-          ? ` · zgłoszone ${new Date(rfq.submittedAt).toLocaleString('pl-PL')}`
+          ? t('quoteRequest.detail.submitted').replace(
+              '{date}',
+              new Date(rfq.submittedAt).toLocaleString(locale),
+            )
           : null}
         {/*
           The deadline reads as a third instant of the same kind, beside the two
@@ -161,20 +197,20 @@ export default async function QuoteRequestDetailPage({
             fontSize: 13,
           }}
         >
-          <strong>Powód anulowania: </strong>
+          <strong>{t('quoteRequest.detail.cancelReason')}</strong>
           {rfq.cancellationReason}
         </p>
       ) : null}
 
       {rfq.headerNote ? (
         <p style={{ fontSize: 13, color: 'var(--ink-700)', marginBottom: 18 }}>
-          <strong>Uwagi: </strong>
+          <strong>{t('quoteRequest.detail.notes')}</strong>
           {rfq.headerNote}
         </p>
       ) : null}
 
       {rfq.awaitingCustomerRevisionAcceptance && rfq.comparisonAgainstLastSeen ? (
-        <ComparisonBlock comparison={rfq.comparisonAgainstLastSeen} locale={locale} />
+        <ComparisonBlock comparison={rfq.comparisonAgainstLastSeen} locale={locale} t={t} />
       ) : null}
 
       <div
@@ -189,11 +225,11 @@ export default async function QuoteRequestDetailPage({
         <table className="industria-orders" style={{ width: '100%' }}>
           <thead>
             <tr>
-              <th>Produkt</th>
-              <th>Ilość</th>
-              <th>Cena żądana</th>
-              <th>Cena uzgodniona</th>
-              <th>Razem</th>
+              <th>{t('quoteRequest.detail.col.product')}</th>
+              <th>{t('quoteRequest.detail.col.qty')}</th>
+              <th>{t('quoteRequest.detail.col.desired')}</th>
+              <th>{t('quoteRequest.detail.col.agreed')}</th>
+              <th>{t('quoteRequest.detail.col.total')}</th>
             </tr>
           </thead>
           <tbody>
@@ -227,7 +263,7 @@ export default async function QuoteRequestDetailPage({
                     <td>{it.desiredUnitPrice !== null ? unitPriceDisplayText(it.desiredUnitPrice) : '—'}</td>
                     <td>{it.agreedUnitPrice !== null ? unitPriceDisplayText(it.agreedUnitPrice) : '—'}</td>
                     <td style={{ fontWeight: 600 }}>
-                      {lineTotal !== null ? formatMoney(lineTotal, it.lineCurrency) : '—'}
+                      {lineTotal !== null ? formatMoney(lineTotal, it.lineCurrency, locale) : '—'}
                     </td>
                   </tr>
                 );
@@ -240,7 +276,7 @@ export default async function QuoteRequestDetailPage({
                 <>
                   <tr>
                     <td colSpan={4} style={{ textAlign: 'right' }}>
-                      Suma netto
+                      {t('quoteRequest.detail.net')}
                     </td>
                     <td>
                       {fmt(total)}
@@ -248,7 +284,7 @@ export default async function QuoteRequestDetailPage({
                   </tr>
                   <tr>
                     <td colSpan={4} style={{ textAlign: 'right' }}>
-                      VAT ({(taxRate * 100).toFixed(0)}%)
+                      {t('quoteRequest.detail.vat').replace('{rate}', (taxRate * 100).toFixed(0))}
                     </td>
                     <td>
                       {fmt(taxTotal ?? 0)}
@@ -258,7 +294,7 @@ export default async function QuoteRequestDetailPage({
               ) : null}
               <tr>
                 <th colSpan={4} style={{ textAlign: 'right' }}>
-                  {taxRate > 0 ? 'Suma brutto' : 'Suma'}
+                  {taxRate > 0 ? t('quoteRequest.detail.gross') : t('quoteRequest.detail.sum')}
                 </th>
                 <th>
                   {fmt(grossTotal ?? total)}
@@ -291,7 +327,7 @@ export default async function QuoteRequestDetailPage({
 
       {rfq.events.length > 0 ? (
         <section style={{ marginTop: 32 }}>
-          <h2>Historia zmian</h2>
+          <h2>{t('quoteRequest.detail.history')}</h2>
           <ul
             style={{
               listStyle: 'none',
@@ -306,10 +342,10 @@ export default async function QuoteRequestDetailPage({
                 style={{ padding: '10px 0 10px 16px', borderBottom: '1px dashed var(--line)' }}
               >
                 <div style={{ fontSize: 12, color: 'var(--ink-500)' }}>
-                  {new Date(e.createdAt).toLocaleString('pl-PL')}
+                  {new Date(e.createdAt).toLocaleString(locale)}
                   {e.actorRoleLabel ? ` · ${e.actorRoleLabel}` : null}
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 500 }}>{describeEvent(e.eventType)}</div>
+                <div style={{ fontSize: 13, fontWeight: 500 }}>{describeEvent(e.eventType, t)}</div>
               </li>
             ))}
           </ul>
@@ -322,9 +358,11 @@ export default async function QuoteRequestDetailPage({
 function ComparisonBlock({
   comparison,
   locale,
+  t,
 }: {
   comparison: NonNullable<RfqDetail['comparisonAgainstLastSeen']>;
   locale: string;
+  t: (key: MessageKey) => string;
 }): ReactNode {
   if (comparison.diff.length === 0) return null;
   return (
@@ -338,7 +376,7 @@ function ComparisonBlock({
       }}
     >
       <strong style={{ display: 'block', marginBottom: 8 }}>
-        Co zmieniło się od Twojej ostatniej wizyty:
+        {t('quoteRequest.detail.comparisonIntro')}
       </strong>
       <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13 }}>
         {comparison.diff.map((d, i) => (
@@ -349,47 +387,41 @@ function ComparisonBlock({
   );
 }
 
-function describeEvent(t: string): string {
-  const map: Record<string, string> = {
-    created: 'Utworzono zapytanie',
-    submitted: 'Zgłoszono do realizacji',
-    modified: 'Zmodyfikowano',
-    approved: 'Zaakceptowano',
-    canceled: 'Anulowano',
-    expired: 'Wygasło',
-    completed: 'Zrealizowane',
-    'customer-accepted-revision': 'Klient zaakceptował zmiany',
-    'customer-rejected-revision': 'Klient odrzucił zmiany',
-    're-submitted': 'Złożono ponownie',
-    'note-added': 'Dodano notatkę',
-  };
-  return map[t] ?? t;
+function describeEvent(eventType: string, t: (key: MessageKey) => string): string {
+  const key = EVENT_KEYS[eventType as keyof typeof EVENT_KEYS];
+  return key ? t(key) : eventType;
 }
 
 function RfqStatusBadge({
   status,
   awaiting,
+  t,
 }: {
   status: RfqStatus;
   awaiting: boolean;
+  t: (key: MessageKey) => string;
 }): ReactNode {
   if (awaiting) {
     return (
       <span className="industria-status industria-status--processing">
-        Oczekuje akceptacji
+        {t('account.rfq.status.awaiting')}
       </span>
     );
   }
-  const map: Record<RfqStatus, { cls: string; label: string }> = {
-    Pending: { cls: 'industria-status--processing', label: 'Oczekuje' },
-    'Created from admin': { cls: 'industria-status--processing', label: 'Od opiekuna' },
-    Approved: { cls: 'industria-status--paid', label: 'Zatwierdzone' },
-    Completed: { cls: 'industria-status--delivered', label: 'Zrealizowane' },
-    Canceled: { cls: 'industria-status--draft', label: 'Anulowane' },
-    Expired: { cls: 'industria-status--draft', label: 'Wygasłe' },
+  const map: Record<RfqStatus, { cls: string; key: MessageKey }> = {
+    Pending: { cls: 'industria-status--processing', key: STATUS_KEYS.Pending },
+    'Created from admin': { cls: 'industria-status--processing', key: STATUS_KEYS['Created from admin'] },
+    Approved: { cls: 'industria-status--paid', key: STATUS_KEYS.Approved },
+    Completed: { cls: 'industria-status--delivered', key: STATUS_KEYS.Completed },
+    Canceled: { cls: 'industria-status--draft', key: STATUS_KEYS.Canceled },
+    Expired: { cls: 'industria-status--draft', key: STATUS_KEYS.Expired },
   };
-  const entry = map[status] ?? { cls: 'industria-status--draft', label: status };
-  return <span className={`industria-status ${entry.cls}`}>{entry.label}</span>;
+  const entry = map[status] ?? { cls: 'industria-status--draft', key: STATUS_KEYS.Pending };
+  return (
+    <span className={`industria-status ${entry.cls}`}>
+      {map[status] ? t(entry.key) : status}
+    </span>
+  );
 }
 
 async function acceptAction(formData: FormData): Promise<void> {
@@ -398,10 +430,13 @@ async function acceptAction(formData: FormData): Promise<void> {
   const expectedRevisionNumber = Number(formData.get('expectedRevisionNumber'));
   const session = await getSessionCookie();
   if (!session) return await localeRedirect('/login');
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
   try {
     await acceptRevision(session, rfqId, expectedRevisionNumber);
   } catch (err) {
-    const msg = err instanceof StorefrontApiError ? err.detail : 'Nie udało się zaakceptować zmian.';
+    const msg =
+      err instanceof StorefrontApiError ? err.detail : t('quoteRequest.detail.error.accept');
     return await localeRedirect(`/quote-requests/${rfqId}?error=${encodeURIComponent(msg)}`);
   }
   return await localeRedirect(`/quote-requests/${rfqId}`);
@@ -414,10 +449,13 @@ async function rejectAction(formData: FormData): Promise<void> {
   const reason = (formData.get('reason') as string | null) ?? undefined;
   const session = await getSessionCookie();
   if (!session) return await localeRedirect('/login');
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
   try {
     await rejectRevision(session, rfqId, expectedRevisionNumber, reason || undefined);
   } catch (err) {
-    const msg = err instanceof StorefrontApiError ? err.detail : 'Nie udało się odrzucić zmian.';
+    const msg =
+      err instanceof StorefrontApiError ? err.detail : t('quoteRequest.detail.error.reject');
     return await localeRedirect(`/quote-requests/${rfqId}?error=${encodeURIComponent(msg)}`);
   }
   return await localeRedirect(`/quote-requests/${rfqId}`);
@@ -444,11 +482,14 @@ async function resubmitAction(formData: FormData): Promise<void> {
   const rfqId = formData.get('rfqId') as string;
   const session = await getSessionCookie();
   if (!session) return await localeRedirect('/login');
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
   try {
     const created = await resubmitRfq(session, rfqId);
     return await localeRedirect(`/quote-requests/${created.id}`);
   } catch (err) {
-    const msg = err instanceof StorefrontApiError ? err.detail : 'Nie udało się złożyć ponownie.';
+    const msg =
+      err instanceof StorefrontApiError ? err.detail : t('quoteRequest.detail.error.resubmit');
     return await localeRedirect(`/quote-requests/${rfqId}?error=${encodeURIComponent(msg)}`);
   }
 }
