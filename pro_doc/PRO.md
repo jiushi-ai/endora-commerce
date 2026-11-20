@@ -992,3 +992,14 @@ feat-26-11-20 00:05:49 [49.1~49.4]：85 pick最小移植codeLabel；订单支付
 汇总：按页续做 #85 P0；未 cherry-pick 全量、未拆 namespace。组织状态/VAT、购物车状态/审批状态随语系显示；chrome 文案本批不动。定向 vitest 10 通过。
 
 feat-26-11-20 00:46:02 [50.1~50.3]：organization与carts枚举接codeLabel；四语词条对齐上游
+
+### 51. 采购清单 Delete + 自动默认名 i18n
+
+- [x] 51.1 `messages.ts` 补 `account.lists.delete.*` + `autoDefaultName` 四语（EN 对齐原硬编码）
+- [x] 51.2 `DeleteShoppingListButton` 接 `locale` + `tForLocale`；列表页传 `locale`
+- [x] 51.3 最小 `shoppingListDisplayName`（本地判定 `Default`+`isDefault`）；名称列与 `listName` 接线；未并 `canEdit`/`ModalDialog`
+- [x] 51.4 `display-name.test.ts`；本 §99
+
+汇总：红框 Delete 硬编码改为词条；未改名系统默认清单显示「默认/Domyślna」等；用户自起名原样。contracts 未移植 `isAutoDefaultShoppingList`（storefront 本地等价）。定向 vitest 4 通过。
+
+feat-26-11-20 01:31:04 [51.1~51.4]：采购清单Delete与自动默认名随语系；对齐开源最小接线

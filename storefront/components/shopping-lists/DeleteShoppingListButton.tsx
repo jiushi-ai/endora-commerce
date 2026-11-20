@@ -2,6 +2,7 @@
 
 import { useState, useTransition, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { tForLocale } from '../../lib/i18n/messages';
 
 /**
  * "Delete list" control for the shopping-lists overview. Renders a button that
@@ -12,16 +13,23 @@ import { createPortal } from 'react-dom';
  * fixed backdrop covers the viewport rather than being trapped inside the
  * account panel, and the `deleteAction` server action runs inside a transition
  * so dismissing the dialog can't unmount the form and abort the mutation.
+ *
+ * Labels come from `tForLocale(locale)` (issue #85 / batch 51) so the trigger
+ * and dialog follow the page language — the previous hard-coded English did not.
  */
 export function DeleteShoppingListButton({
   listId,
   listName,
+  locale,
   deleteAction,
 }: {
   listId: string;
   listName: string;
+  /** Page language from the server page that renders this. */
+  locale: string;
   deleteAction: (formData: FormData) => void | Promise<void>;
 }): ReactNode {
+  const t = tForLocale(locale);
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -34,6 +42,19 @@ export function DeleteShoppingListButton({
     setOpen(false);
   };
 
+  const body = t('account.lists.delete.body');
+  const nameIdx = body.indexOf('{name}');
+  const bodyNodes =
+    nameIdx === -1
+      ? body
+      : (
+          <>
+            {body.slice(0, nameIdx)}
+            <strong>{listName}</strong>
+            {body.slice(nameIdx + '{name}'.length)}
+          </>
+        );
+
   return (
     <>
       <button
@@ -41,7 +62,7 @@ export function DeleteShoppingListButton({
         className="btn btn--outline btn--sm"
         onClick={(): void => setOpen(true)}
       >
-        Delete
+        {t('account.lists.delete.button')}
       </button>
 
       {open && typeof document !== 'undefined'
@@ -74,12 +95,9 @@ export function DeleteShoppingListButton({
                 }}
               >
                 <h2 id="delete-list-title" style={{ marginTop: 0, fontSize: 18 }}>
-                  Delete this list?
+                  {t('account.lists.delete.title')}
                 </h2>
-                <p style={{ marginTop: 8, fontSize: 14 }}>
-                  Deleting <strong>{listName}</strong> removes the list and all its items.
-                  This action cannot be undone.
-                </p>
+                <p style={{ marginTop: 8, fontSize: 14 }}>{bodyNodes}</p>
                 <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 20 }}>
                   <button
                     type="button"
@@ -87,7 +105,7 @@ export function DeleteShoppingListButton({
                     disabled={pending}
                     onClick={(): void => setOpen(false)}
                   >
-                    Cancel
+                    {t('account.lists.delete.cancel')}
                   </button>
                   <button
                     type="button"
@@ -96,7 +114,9 @@ export function DeleteShoppingListButton({
                     style={{ background: '#b91c1c', borderColor: '#b91c1c', color: '#fff' }}
                     onClick={confirmDelete}
                   >
-                    {pending ? 'Deleting…' : 'Delete list'}
+                    {pending
+                      ? t('account.lists.delete.pending')
+                      : t('account.lists.delete.confirm')}
                   </button>
                 </div>
               </div>

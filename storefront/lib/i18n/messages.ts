@@ -897,6 +897,13 @@ export type MessageKey =
   | 'account.lists.default'
   | 'account.lists.isDefault'
   | 'account.lists.setDefault'
+  | 'account.lists.delete.button'
+  | 'account.lists.delete.title'
+  | 'account.lists.delete.body'
+  | 'account.lists.delete.cancel'
+  | 'account.lists.delete.confirm'
+  | 'account.lists.delete.pending'
+  | 'account.lists.autoDefaultName'
   | 'account.org.taxId'
   | 'account.org.status'
   // Batch 50 — org / cart API enum labels via codeLabel (85续, from upstream 4645).
@@ -1779,6 +1786,13 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.default': 'Default',
     'account.lists.isDefault': 'Default',
     'account.lists.setDefault': 'Set as default',
+    'account.lists.delete.button': 'Delete',
+    'account.lists.delete.title': 'Delete this list?',
+    'account.lists.delete.body': 'Deleting {name} removes the list and all its items. This action cannot be undone.',
+    'account.lists.delete.cancel': 'Cancel',
+    'account.lists.delete.confirm': 'Delete list',
+    'account.lists.delete.pending': 'Deleting…',
+    'account.lists.autoDefaultName': 'Default',
     'account.org.taxId': 'Tax ID',
     'account.org.status': 'Status',
 
@@ -2699,6 +2713,13 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.default': '默认',
     'account.lists.isDefault': '默认',
     'account.lists.setDefault': '设为默认',
+    'account.lists.delete.button': '删除',
+    'account.lists.delete.title': '删除此清单？',
+    'account.lists.delete.body': '删除「{name}」将移除该清单及其全部商品，此操作无法撤销。',
+    'account.lists.delete.cancel': '取消',
+    'account.lists.delete.confirm': '删除清单',
+    'account.lists.delete.pending': '删除中…',
+    'account.lists.autoDefaultName': '默认',
     'account.org.taxId': '税号',
     'account.org.status': '状态',
 
@@ -3620,6 +3641,13 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.default': '預設',
     'account.lists.isDefault': '預設',
     'account.lists.setDefault': '設為預設',
+    'account.lists.delete.button': '刪除',
+    'account.lists.delete.title': '刪除此清單？',
+    'account.lists.delete.body': '刪除「{name}」將移除該清單及其全部商品，此操作無法復原。',
+    'account.lists.delete.cancel': '取消',
+    'account.lists.delete.confirm': '刪除清單',
+    'account.lists.delete.pending': '刪除中…',
+    'account.lists.autoDefaultName': '預設',
     'account.org.taxId': '稅號',
     'account.org.status': '狀態',
 
@@ -4584,6 +4612,13 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.default': 'Domyślna',
     'account.lists.isDefault': 'Domyślna',
     'account.lists.setDefault': 'Ustaw jako domyślną',
+    'account.lists.delete.button': 'Usuń',
+    'account.lists.delete.title': 'Usunąć tę listę?',
+    'account.lists.delete.body': 'Usunięcie {name} kasuje listę i wszystkie jej pozycje. Tej operacji nie można cofnąć.',
+    'account.lists.delete.cancel': 'Anuluj',
+    'account.lists.delete.confirm': 'Usuń listę',
+    'account.lists.delete.pending': 'Usuwanie…',
+    'account.lists.autoDefaultName': 'Domyślna',
     'account.org.taxId': 'NIP',
     'account.org.status': 'Status',
 
