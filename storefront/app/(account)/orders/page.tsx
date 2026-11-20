@@ -4,7 +4,8 @@ import { getSessionCookie } from '../../../lib/session';
 import { getServerContext } from '../../../lib/server-context';
 import { formatMoney } from '../../../lib/i18n/money';
 import { tForLocale } from '../../../lib/i18n/messages';
-import { orderStatusLabel, paymentStatusLabel } from '../../../lib/orders/status-labels';
+import { codeLabel } from '../../../lib/account/labels';
+import { orderStatusLabel } from '../../../lib/orders/status-labels';
 import type { Metadata } from 'next';
 import { localeRedirect } from '../../../lib/i18n/navigation';
 import { LocalizedLink } from '../../../lib/i18n/localized-link';
@@ -62,7 +63,7 @@ export default async function OrdersListPage(): Promise<ReactNode> {
               <td>{new Date(o.placedAt).toLocaleDateString(locale)}</td>
               <td>{o.businessId}</td>
               <td>{orderStatusLabel(o, locale, t)}</td>
-              <td>{paymentStatusLabel(o.paymentStatus, t)}</td>
+              <td>{codeLabel(t, 'order.detail.paymentStatus', o.paymentStatus)}</td>
               <td className="text-right">{formatMoney(o.total, o.currency, locale)}</td>
               <td>
                 <LocalizedLink href={`/orders/${o.id}`}>{t('account.orders.open')}</LocalizedLink>

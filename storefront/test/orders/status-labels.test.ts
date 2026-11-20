@@ -2,25 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { tForLocale } from '../../lib/i18n/messages';
-import { orderStatusLabel, paymentStatusLabel } from '../../lib/orders/status-labels';
+import { codeLabel } from '../../lib/account/labels';
+import { orderStatusLabel } from '../../lib/orders/status-labels';
 import { resolveOrderStatusLabel } from '../../lib/api/orders';
 
 /**
- * Batch 48 — orders list payment/status cells follow the page locale
- * (upstream `codeLabel` shape + short-code statusName fallback).
+ * Batch 48 / 85 pick — orders list payment via `codeLabel`; fulfilment status
+ * via API statusName then catalogue.
  */
-
-describe('paymentStatusLabel', () => {
-  it('maps API codes through the catalogue', () => {
-    expect(paymentStatusLabel('awaiting_payment', tForLocale('en-US'))).toBe('Awaiting payment');
-    expect(paymentStatusLabel('awaiting_payment', tForLocale('zh-CN'))).toBe('等待付款');
-    expect(paymentStatusLabel('deferred', tForLocale('pl-PL'))).toBe('Odroczone');
-  });
-
-  it('returns an unknown code unchanged', () => {
-    expect(paymentStatusLabel('chargeback', tForLocale('zh-CN'))).toBe('chargeback');
-  });
-});
 
 describe('resolveOrderStatusLabel short-code fallback', () => {
   const order = {
@@ -49,20 +38,21 @@ describe('orderStatusLabel', () => {
     expect(orderStatusLabel(order, 'pl-PL', tForLocale('pl-PL'))).toBe('Nowy');
   });
 
-  it('uses the catalogue when statusName has no zh entry', () => {
+  it('uses codeLabel catalogue when statusName has no zh entry', () => {
     expect(orderStatusLabel(order, 'zh-CN', tForLocale('zh-CN'))).toBe('新的');
-    expect(orderStatusLabel(order, 'zh-TW', tForLocale('zh-TW'))).toBe('新的');
+    expect(codeLabel(tForLocale('zh-CN'), 'order.status', 'new')).toBe('新的');
   });
 });
 
-describe('orders list wires status helpers', () => {
-  it('does not render raw paymentStatus', () => {
+describe('orders list wires open-source-style helpers', () => {
+  it('uses codeLabel for payment and orderStatusLabel for status', () => {
     const src = readFileSync(
       resolve(import.meta.dirname, '../../app/(account)/orders/page.tsx'),
       'utf8',
     );
-    expect(src).toContain('paymentStatusLabel(');
+    expect(src).toContain("codeLabel(t, 'order.detail.paymentStatus'");
     expect(src).toContain('orderStatusLabel(');
     expect(src).not.toContain('{o.paymentStatus}');
+    expect(src).not.toContain('paymentStatusLabel');
   });
 });

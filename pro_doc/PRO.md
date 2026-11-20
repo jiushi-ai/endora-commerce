@@ -971,3 +971,14 @@ feat-26-11-19 22:45:00 [47.1~47.4]：小b订单详情与询价详情四语i18n�
 
 汇总：对齐开源 demo 的支付列前端映射思路；zh-CN 状态在 API 无中文名时用词条「新的」等兜底。仅 storefront；发版需发布 storefront 镜像。未改业务逻辑。
 feat-26-11-19 23:27:32 [48.1~48.4]：订单列表Status/Payment随语系；短码回退与词条兜底
+
+### 49. 85 pick — codeLabel 最小移植（namespace 整 pick 暂缓）
+
+- [x] 49.1 融合步骤 chatlog：`chatlog/2026-11-20-chat3-Feature85-account-i18n融合方案步骤/`
+- [x] 49.2 工作区 clean；新开 `feat/storefront-85-from-upstream`；`fetch upstream`
+- [x] 49.3 `cherry-pick 30d0e3ba7` 冲突（messages 整文件）→ abort → §5 最小移植 `codeLabel`
+- [x] 49.4 订单支付列改 `codeLabel`；`orderStatusLabel` 走 API+codeLabel；测试 12 通过；本 §99
+
+汇总：对标开源 **#85**；完整 `4645fffc1` 依赖 catalogue namespace 拆分，与四语 monolith 冲突过大，本批改为适配移植。后续若拆 namespace，再专批合全量 account 页。
+
+feat-26-11-20 00:05:49 [49.1~49.4]：85 pick最小移植codeLabel；订单支付枚举对齐开源模式

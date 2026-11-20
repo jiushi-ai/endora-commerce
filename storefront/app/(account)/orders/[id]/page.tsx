@@ -20,7 +20,8 @@ import { StorefrontApiError } from '../../../../lib/api/client';
 import { formatMoney } from '../../../../lib/i18n/money';
 import { tForLocale } from '../../../../lib/i18n/messages';
 import { resolvePaymentReturnNotice } from '../../../../lib/orders/payment-return-notice';
-import { orderStatusLabel, paymentStatusLabel } from '../../../../lib/orders/status-labels';
+import { codeLabel } from '../../../../lib/account/labels';
+import { orderStatusLabel } from '../../../../lib/orders/status-labels';
 import { OrderItemRows } from '../../../../components/orders/OrderItemRows';
 import { PurchaseTracker } from '../../../../components/analytics/EcommerceTrackers';
 import { purchaseTrackingPayload } from '../../../../lib/analytics/purchase-eligibility';
@@ -251,7 +252,7 @@ export default async function OrderConfirmationPage({
           </tr>
           <tr>
             <th scope="row">{t('order.detail.paymentStatus')}</th>
-            <td>{paymentStatusLabel(order.paymentStatus, t)}</td>
+            <td>{codeLabel(t, 'order.detail.paymentStatus', order.paymentStatus)}</td>
           </tr>
           <tr>
             <th scope="row">{t('order.detail.placed')}</th>
