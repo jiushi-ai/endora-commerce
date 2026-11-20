@@ -200,6 +200,7 @@ ECS `.env` 里 `REGISTRY_IMAGE` 应仍是 **VPC** 域名，例如：
 `mobii-b2b-registry-vpc.cn-guangzhou.cr.aliyuncs.com/mobii`
 
 ```bash
+ssh.exe aliyun-mobii
 cd /opt/b2b
 # 换成上一步 echo 出的 IMAGE_TAG
 sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${IMAGE_TAG}/" .env
@@ -213,8 +214,6 @@ docker compose --env-file .env -f compose.prod.yml up -d
 
 docker compose --env-file .env -f compose.prod.yml ps
 ```
-
-
 
 ---
 
@@ -258,13 +257,13 @@ curl -sI https://api.mobiib2b.com/ | head
 - `api.mobiib2b.com` → `api.justgoai.com`
 - 给台湾插入一个新管理员：
 
-    cd /opt/b2b
+  cd /opt/b2b
 
-    docker compose --env-file .env -f compose.prod.yml run --rm backend
-    node dist/cli.js admin_users create
-    --email=support@mobiigenius.com
-   --password='111111aaaaaa'
-   --first-name=Support
+  docker compose --env-file .env -f compose.prod.yml run --rm backend
+  node dist/cli.js admin_users create
+  --email=support@mobiigenius.com
+  --password='111111aaaaaa'
+  --first-name=Support
   --last-name=Mobii
 
 **不要**再配置 `b2b.mobiib2b.com`。不要写成带 `https://` 的 URL。TTL 可先设 10 分钟便于切换。配好后告知我们。

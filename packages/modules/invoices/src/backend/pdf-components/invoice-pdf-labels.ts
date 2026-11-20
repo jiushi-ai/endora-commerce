@@ -193,6 +193,45 @@ const BY_BASE: Record<string, InvoicePdfLabels> = {
   zh: ZH_CN,
 };
 
+/** Collect stock chrome strings used by seed/editor defaults across locales. */
+function chromeStringsOf(catalog: InvoicePdfLabels): string[] {
+  return [
+    ...Object.values(catalog.titles),
+    catalog.numberPrefix,
+    catalog.labelKsefNumber,
+    catalog.labelIssuedAt,
+    catalog.labelSaleDate,
+    catalog.labelPaymentDue,
+    catalog.labelPaymentMethod,
+    catalog.sellerLabel,
+    catalog.buyerLabel,
+    catalog.totalLabel,
+    catalog.labelPaid,
+    catalog.labelAmountDue,
+    catalog.labelOverpayment,
+    catalog.labelGross,
+    catalog.labelInWords,
+    catalog.footerDefault,
+  ];
+}
+
+/**
+ * Stock chrome from EN / PL / zh-CN / zh-TW (and historical EN/PL footer copy).
+ * Template props that equal any of these yield to `invoicePdfLabels` at render.
+ */
+const STOCK_CHROME_LABELS: ReadonlySet<string> = new Set(
+  [EN, PL, ZH_CN, ZH_TW].flatMap(chromeStringsOf).map((s) => s.trim()).filter(Boolean),
+);
+
+/**
+ * True when `text` (trimmed) matches a built-in chrome string from any supported
+ * catalog — including the English / Polish footer defaults that older seeds stored.
+ */
+export function isStockChromeLabel(text: string): boolean {
+  const trimmed = text.trim();
+  return trimmed.length > 0 && STOCK_CHROME_LABELS.has(trimmed);
+}
+
 /** Labels for a document language; unknown tags fall back to English. */
 export function invoicePdfLabels(documentLanguage: string | undefined | null): InvoicePdfLabels {
   if (!documentLanguage) return PL;

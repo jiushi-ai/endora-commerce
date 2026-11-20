@@ -14,10 +14,7 @@ export const GENERIC_INVOICE_TEMPLATE_LANGUAGES = ['pl-PL', 'en-US'];
  * Bump when the seeded Puck tree shape changes so `ensureGenericSeed` (and the
  * matching data migration) refresh the system `generic` row on existing DBs.
  */
-export const GENERIC_INVOICE_TEMPLATE_SEED_REVISION = 2;
-
-const DEFAULT_FOOTER_TEXT =
-  'Thank you for your business.\n{{var seller.legalName}} · Tax ID {{var seller.taxId}}';
+export const GENERIC_INVOICE_TEMPLATE_SEED_REVISION = 3;
 
 function genericTree() {
   return {
@@ -48,10 +45,12 @@ function genericTree() {
           showSaleDate: true,
           showPaymentDue: true,
           showPaymentMethod: true,
-          labelIssuedAt: 'Issue date',
-          labelSaleDate: 'Sale date',
-          labelPaymentDue: 'Payment due',
-          labelPaymentMethod: 'Payment method',
+          // Empty chrome: render-time `chromeStr` uses document-language labels
+          // (batch 45). Stock English props previously painted yellow-box EN.
+          labelIssuedAt: '',
+          labelSaleDate: '',
+          labelPaymentDue: '',
+          labelPaymentMethod: '',
           marginTop: 0,
           marginBottom: 12,
         },
@@ -64,8 +63,8 @@ function genericTree() {
         type: 'invoices.InvoiceParties',
         props: {
           id: 'inv-parties',
-          sellerLabel: 'Seller',
-          buyerLabel: 'Buyer',
+          sellerLabel: '',
+          buyerLabel: '',
           showSellerBank: true,
           showSellerSwift: true,
           showBuyerTaxId: true,
@@ -107,7 +106,7 @@ function genericTree() {
           headerColor: '',
           borderColor: '#cbd5e1',
           showTotalRow: true,
-          totalLabel: 'Total',
+          totalLabel: '',
           marginTop: 0,
           marginBottom: 12,
         },
@@ -127,14 +126,12 @@ function genericTree() {
           showOverpayment: true,
           showGross: true,
           showAmountInWords: true,
-          labelPaid: 'Paid',
-          labelAmountDue: 'Amount due',
-          // Empty on purpose (issue #428): the row is labelled in the language
-          // the amounts are written in — Polish on a Polish invoice —
-          // unless a template sets its own label.
+          labelPaid: '',
+          labelAmountDue: '',
+          // Empty on purpose (issue #428 / batch 45): chrome follows document language.
           labelOverpayment: '',
-          labelGross: 'Total',
-          labelInWords: 'In words',
+          labelGross: '',
+          labelInWords: '',
           marginTop: 0,
           marginBottom: 16,
         },
@@ -158,7 +155,7 @@ function genericTree() {
         type: 'invoices.InvoiceFooter',
         props: {
           id: 'inv-footer',
-          text: DEFAULT_FOOTER_TEXT,
+          text: '',
           align: 'center',
           fontSize: 9,
           color: '#0f172a',

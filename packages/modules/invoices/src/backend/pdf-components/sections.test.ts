@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { InvoiceDetail } from '@endora-commerce/contracts';
-import { interpolate, lineItemsSection, money, totalsSection, unitMoney } from './sections.js';
+import {
+  headerSection,
+  interpolate,
+  lineItemsSection,
+  money,
+  totalsSection,
+  unitMoney,
+} from './sections.js';
 import { sampleInvoiceDetail } from './sample.js';
 
 /**
@@ -46,10 +53,15 @@ describe('invoice PDF — overpayment', () => {
     expect(lines).toContain(`Nadpłata: ${money(50)} USD`);
   });
 
-  it('takes the label from the template, and can be hidden', () => {
+  it('ignores stock English chrome and keeps a true custom label (batch 45)', () => {
     const invoice = { ...sampleInvoiceDetail(), paidTotal: 2450, amountDue: 0, overpayment: 50 };
+    // Stock EN "Overpayment" on a PL doc → localized Polish, not yellow-box English.
     expect(texts(totalsSection(invoice, 'pl', { labelOverpayment: 'Overpayment' }))).toContain(
-      `Overpayment: ${money(50)} USD`,
+      `Nadpłata: ${money(50)} USD`,
+    );
+    // Non-stock custom still wins.
+    expect(texts(totalsSection(invoice, 'pl', { labelOverpayment: 'Acme overpay' }))).toContain(
+      `Acme overpay: ${money(50)} USD`,
     );
     expect(texts(totalsSection(invoice, 'pl', { showOverpayment: false })).join('\n')).not.toContain('Nadpłata');
   });
@@ -69,5 +81,50 @@ describe('invoice PDF — overpayment', () => {
   it('offers the overpayment as a merge field', () => {
     const invoice = { ...sampleInvoiceDetail(), overpayment: 50 };
     expect(interpolate('{{var invoice.overpayment}}', invoice)).toBe(money(50));
+  });
+});
+
+/**
+ * Batch 45 — seed/template stock English chrome must not paint yellow-box EN
+ * on a zh-CN (or any non-EN) document; true custom labels still win.
+ */
+describe('invoice PDF — chrome labels vs document language (batch 45)', () => {
+  const englishSeedChrome = {
+    labelIssuedAt: 'Issue date',
+    labelSaleDate: 'Sale date',
+    labelPaymentDue: 'Payment due',
+    labelPaymentMethod: 'Payment method',
+    labelPaid: 'Paid',
+    labelAmountDue: 'Amount due',
+    labelGross: 'Total',
+    labelInWords: 'In words',
+  };
+
+  const headerTexts = (content: unknown): string[] =>
+    ((content as { table: { body: Array<Array<{ text: string }>> } }).table.body ?? []).map(
+      (row) => row[0]!.text,
+    );
+
+  const totalsTexts = (content: unknown): string[] =>
+    ((content as { stack: Array<{ text: string }> }).stack ?? []).map((c) => c.text);
+
+  it('uses Chinese chrome when English seed props sit on a zh-CN document', () => {
+    const invoice = sampleInvoiceDetail();
+    const headers = headerTexts(headerSection(invoice, englishSeedChrome, {}, 'zh-CN'));
+    expect(headers.some((t) => t.startsWith('开票日期:'))).toBe(true);
+
+    const lines = totalsTexts(
+      totalsSection(invoice, 'en', { ...englishSeedChrome, showAmountInWords: false }, 'zh-CN'),
+    );
+    expect(lines.some((t) => t.startsWith('已付:'))).toBe(true);
+    expect(lines.some((t) => t.startsWith('应付金额:'))).toBe(true);
+  });
+
+  it('keeps a non-stock custom chrome label', () => {
+    const invoice = sampleInvoiceDetail();
+    const headers = headerTexts(
+      headerSection(invoice, { labelIssuedAt: 'Acme issue day' }, {}, 'zh-CN'),
+    );
+    expect(headers.some((t) => t.startsWith('Acme issue day:'))).toBe(true);
   });
 });

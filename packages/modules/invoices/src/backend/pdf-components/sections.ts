@@ -2,7 +2,7 @@ import type { Content, TableCell } from 'pdfmake/interfaces.js';
 import { unitPriceFractionDigits, type InvoiceDetail } from '@endora-commerce/contracts';
 import { amountToWords, type AmountToWordsLocale } from '../services/amount-to-words.js';
 import { numberLocaleOf } from '../document/invoice-pdf-language.js';
-import { invoicePdfLabels, type InvoicePdfLabels } from './invoice-pdf-labels.js';
+import { invoicePdfLabels, isStockChromeLabel, type InvoicePdfLabels } from './invoice-pdf-labels.js';
 
 /**
  * Invoice PDF section builders (feature 047, US6). Each maps a slice of the
@@ -53,9 +53,15 @@ function bool(p: Props, key: string, fallback: boolean): boolean {
   if (v === 'false') return false;
   return fallback;
 }
-function str(p: Props, key: string, fallback: string): string {
+/**
+ * Chrome labels prefer the document language. A non-empty prop wins only when
+ * it is not a stock EN/PL/zh seed string (batch 45) — so yellow-box English
+ * defaults no longer override `invoicePdfLabels`, while true custom copy does.
+ */
+function chromeStr(p: Props, key: string, localized: string): string {
   const v = p[key];
-  return typeof v === 'string' && v.trim() ? v : fallback;
+  if (typeof v === 'string' && v.trim() && !isStockChromeLabel(v)) return v;
+  return localized;
 }
 function optStr(p: Props, key: string): string | undefined {
   const v = p[key];
@@ -128,7 +134,7 @@ export function headerSection(
   if (inv.ksefReferenceNumber && !options.suppressKsefNumber) {
     rows.push([
       {
-        text: `${str(props, 'labelKsefNumber', L.labelKsefNumber)}: ${inv.ksefReferenceNumber}`,
+        text: `${chromeStr(props, 'labelKsefNumber', L.labelKsefNumber)}: ${inv.ksefReferenceNumber}`,
         alignment: align,
       },
     ]);
@@ -136,7 +142,7 @@ export function headerSection(
   if (bool(props, 'showIssuedAt', true)) {
     rows.push([
       {
-        text: `${str(props, 'labelIssuedAt', L.labelIssuedAt)}: ${inv.issuedAt.slice(0, 10)}`,
+        text: `${chromeStr(props, 'labelIssuedAt', L.labelIssuedAt)}: ${inv.issuedAt.slice(0, 10)}`,
         alignment: align,
       },
     ]);
@@ -144,7 +150,7 @@ export function headerSection(
   if (bool(props, 'showSaleDate', true)) {
     rows.push([
       {
-        text: `${str(props, 'labelSaleDate', L.labelSaleDate)}: ${inv.saleDate ?? inv.issuedAt.slice(0, 10)}`,
+        text: `${chromeStr(props, 'labelSaleDate', L.labelSaleDate)}: ${inv.saleDate ?? inv.issuedAt.slice(0, 10)}`,
         alignment: align,
       },
     ]);
@@ -152,7 +158,7 @@ export function headerSection(
   if (bool(props, 'showPaymentDue', true)) {
     rows.push([
       {
-        text: `${str(props, 'labelPaymentDue', L.labelPaymentDue)}: ${inv.paymentDueDate ?? '-'}`,
+        text: `${chromeStr(props, 'labelPaymentDue', L.labelPaymentDue)}: ${inv.paymentDueDate ?? '-'}`,
         alignment: align,
       },
     ]);
@@ -160,7 +166,7 @@ export function headerSection(
   if (bool(props, 'showPaymentMethod', true)) {
     rows.push([
       {
-        text: `${str(props, 'labelPaymentMethod', L.labelPaymentMethod)}: ${inv.paymentMethod ?? '-'}`,
+        text: `${chromeStr(props, 'labelPaymentMethod', L.labelPaymentMethod)}: ${inv.paymentMethod ?? '-'}`,
         alignment: align,
       },
     ]);
@@ -185,7 +191,7 @@ export function partiesSection(
   const sellerPct = Math.min(70, Math.max(30, num(props, 'sellerWidthPercent', 50)));
   const gap = num(props, 'columnGap', 16);
   const sellerStack: Content[] = [
-    { text: str(props, 'sellerLabel', L.sellerLabel), bold: true, fontSize: labelFs, margin: [0, 0, 0, 2] },
+    { text: chromeStr(props, 'sellerLabel', L.sellerLabel), bold: true, fontSize: labelFs, margin: [0, 0, 0, 2] },
     { text: seller.legalName, fontSize: bodyFs },
     { text: seller.addressLine1, fontSize: bodyFs },
   ];
@@ -200,7 +206,7 @@ export function partiesSection(
   }
 
   const buyerStack: Content[] = [
-    { text: str(props, 'buyerLabel', L.buyerLabel), bold: true, fontSize: labelFs, margin: [0, 0, 0, 2] },
+    { text: chromeStr(props, 'buyerLabel', L.buyerLabel), bold: true, fontSize: labelFs, margin: [0, 0, 0, 2] },
     { text: buyer.name, fontSize: bodyFs },
   ];
   if (buyer.addressLine1) buyerStack.push({ text: buyer.addressLine1, fontSize: bodyFs });
@@ -334,7 +340,7 @@ export function vatSummarySection(
   const headerColor = optStr(props, 'headerColor');
   const borderColor = optStr(props, 'borderColor') ?? '#cbd5e1';
   const showTotalRow = bool(props, 'showTotalRow', true);
-  const totalLabel = str(props, 'totalLabel', L.totalLabel);
+  const totalLabel = chromeStr(props, 'totalLabel', L.totalLabel);
 
   const header: TableCell[] = [L.vatRate, L.vatNet, L.vatAmount, L.vatGross].map((t, i) => ({
     text: t,
@@ -388,7 +394,7 @@ export function totalsSection(
   const stack: Content[] = [];
   if (bool(props, 'showPaid', true)) {
     stack.push({
-      text: `${str(props, 'labelPaid', L.labelPaid)}: ${money(inv.paidTotal, nl)} ${inv.currency}`,
+      text: `${chromeStr(props, 'labelPaid', L.labelPaid)}: ${money(inv.paidTotal, nl)} ${inv.currency}`,
       alignment: align,
       fontSize,
       color,
@@ -396,7 +402,7 @@ export function totalsSection(
   }
   if (bool(props, 'showAmountDue', true)) {
     stack.push({
-      text: `${str(props, 'labelAmountDue', L.labelAmountDue)}: ${money(inv.amountDue, nl)} ${inv.currency}`,
+      text: `${chromeStr(props, 'labelAmountDue', L.labelAmountDue)}: ${money(inv.amountDue, nl)} ${inv.currency}`,
       alignment: align,
       bold: bool(props, 'amountDueBold', true),
       fontSize,
@@ -406,7 +412,7 @@ export function totalsSection(
   // Issue #428 — what was paid above the gross, beside an amount due of 0.
   if (bool(props, 'showOverpayment', true) && inv.overpayment > 0) {
     stack.push({
-      text: `${str(props, 'labelOverpayment', L.labelOverpayment)}: ${money(inv.overpayment, nl)} ${inv.currency}`,
+      text: `${chromeStr(props, 'labelOverpayment', L.labelOverpayment)}: ${money(inv.overpayment, nl)} ${inv.currency}`,
       alignment: align,
       fontSize,
       color,
@@ -414,7 +420,7 @@ export function totalsSection(
   }
   if (bool(props, 'showGross', true)) {
     stack.push({
-      text: `${str(props, 'labelGross', L.labelGross)}: ${money(inv.grossTotal, nl)} ${inv.currency}`,
+      text: `${chromeStr(props, 'labelGross', L.labelGross)}: ${money(inv.grossTotal, nl)} ${inv.currency}`,
       alignment: align,
       fontSize,
       color,
@@ -422,7 +428,7 @@ export function totalsSection(
   }
   if (bool(props, 'showAmountInWords', true)) {
     stack.push({
-      text: `${str(props, 'labelInWords', L.labelInWords)}: ${amountToWords(inv.grossTotal, inv.currency, locale)}`,
+      text: `${chromeStr(props, 'labelInWords', L.labelInWords)}: ${amountToWords(inv.grossTotal, inv.currency, locale)}`,
       alignment: align,
       italics: bool(props, 'amountInWordsItalics', true),
       fontSize,
@@ -472,10 +478,9 @@ export function footerSection(
   documentLanguage?: string | null,
 ): Content {
   const L = labelsOf(documentLanguage);
+  const propText = typeof props['text'] === 'string' ? (props['text'] as string) : '';
   const raw =
-    typeof props['text'] === 'string' && (props['text'] as string).trim()
-      ? (props['text'] as string)
-      : L.footerDefault;
+    propText.trim() && !isStockChromeLabel(propText) ? propText : L.footerDefault;
   return textBlock(raw, inv, props, { fontSize: 9, showTopDivider: true, marginBottom: 8 });
 }
 

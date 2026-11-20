@@ -83,7 +83,7 @@ export async function updatePreferredLanguage(
     path: '/api/v1/me/customer/preferred-language',
     body: { preferredLanguage },
     sessionCookie,
-    ctx,
+    ...(ctx ? { ctx } : {}),
   });
   return result.data?.preferredLanguage ?? null;
 }

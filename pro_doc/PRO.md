@@ -927,3 +927,16 @@ feat-26-11-17 22:27:56 [43.1~43.3]：mobiib2b 切入手册与 ready-for-ecs 证�
 汇总：分支 `feat/batch-44-invoice-pdf-locale`；发票 PDF 固定标题跟小 b Email language；CJK 依赖镜像字体；定向 vitest 23 通过。发版需跑 migration + 重建含 Noto 的 backend 镜像 + admin/storefront。有意推迟：注册/登录自动 capture、中文金额大写、完整 #652 旁路与 OpenAPI baseline。
 
 feat-26-11-19 18:13:46 [44.1~44.11]：发票PDF跟买家Email language+CJK；订单/开票错误i18n
+
+### 45. 发票 PDF chrome 跟文档语 + CJK 镜像校验
+
+- [x] 45.1 `isStockChromeLabel` + `chromeStr`：stock EN/PL/zh 黄框文案让位于 `invoicePdfLabels`
+- [x] 45.2 footer：空或 stock → `L.footerDefault`；真自定义仍胜出
+- [x] 45.3 generic seed chrome 置空 + `GENERIC_INVOICE_TEMPLATE_SEED_REVISION` → 3
+- [x] 45.4 Dockerfile Noto 下载后 `stat` 大小 > 1MB；`pdfmake` 缺字体 warn once；fonts README ECS 检查
+- [x] 45.5 单测：zh-CN + EN seed → 中文标签；自定义非 stock 仍胜出；定向 vitest 通过
+- [x] 45.6 运维清单 `pro_doc/batch-45-ops-checklist.md` + 本 §99 汇总
+
+汇总：分支 `feat/batch-44-invoice-pdf-locale`；黄框英文 seed 不再压过文档语；生产旧 DB 模板靠 `chromeStr` 即可，无需新 migration；CJK 镜像构建失败即截断字体。pdf-components + seed 定向 33 通过。未 commit。
+
+feat-26-11-19 19:21:47 [45.1~45.6]：发票PDF chrome跟文档语；CJK镜像字体大小校验

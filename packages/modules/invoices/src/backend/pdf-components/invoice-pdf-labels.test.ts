@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { invoicePdfLabels } from './invoice-pdf-labels.js';
+import { invoicePdfLabels, isStockChromeLabel } from './invoice-pdf-labels.js';
 
 describe('invoicePdfLabels (batch 44)', () => {
   it('returns Polish titles for pl-PL (historical default)', () => {
@@ -24,5 +24,21 @@ describe('invoicePdfLabels (batch 44)', () => {
 
   it('falls back to English for an unknown tag', () => {
     expect(invoicePdfLabels('de-DE').titles.invoice).toBe('Invoice');
+  });
+});
+
+describe('isStockChromeLabel (batch 45)', () => {
+  it('recognises EN / PL / zh chrome and rejects true custom copy', () => {
+    expect(isStockChromeLabel('Issue date')).toBe(true);
+    expect(isStockChromeLabel('Data wystawienia')).toBe(true);
+    expect(isStockChromeLabel('开票日期')).toBe(true);
+    expect(isStockChromeLabel('Overpayment')).toBe(true);
+    expect(
+      isStockChromeLabel(
+        'Thank you for your business.\n{{var seller.legalName}} · Tax ID {{var seller.taxId}}',
+      ),
+    ).toBe(true);
+    expect(isStockChromeLabel('Acme overpay')).toBe(false);
+    expect(isStockChromeLabel('')).toBe(false);
   });
 });

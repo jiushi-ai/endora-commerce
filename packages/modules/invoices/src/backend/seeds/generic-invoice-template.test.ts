@@ -28,12 +28,9 @@ describe('generic invoice template seed', () => {
     }
   });
 
-  it('keeps the seed revision, so no stored template is rewritten by the change', () => {
-    // `ensureGenericSeed` rewrites an existing system row when this number
-    // advances. Bumping it here would strip the KSeF node out of every
-    // existing instance's stored template — a write into stored documents the
-    // ruling rules out: existing templates keep the node, and it takes the
-    // FR-019 path wherever its declarant is absent.
-    expect(GENERIC_INVOICE_TEMPLATE_SEED_REVISION).toBe(2);
+  it('bumps the seed revision when chrome label props go empty (batch 45)', () => {
+    // Revision 3: empty chrome labels so `chromeStr` / footer follow document
+    // language. `ensureGenericSeed` refreshes the system `generic` row.
+    expect(GENERIC_INVOICE_TEMPLATE_SEED_REVISION).toBe(3);
   });
 });

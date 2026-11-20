@@ -80,6 +80,11 @@ function configure(): void {
       bolditalics: cjk,
     };
     defaultFontFamily = 'NotoSansCJK';
+  } else {
+    // Once per process: missing CJK falls back to Roboto → Chinese tofu (□).
+    console.warn(
+      '[document_templates] Noto Sans CJK font not found; Chinese glyphs on PDFs will render as tofu. See fonts/README.md or DOCUMENT_TEMPLATES_CJK_FONT.',
+    );
   }
   pdfMake.setFonts(fonts);
   pdfMake.setUrlAccessPolicy(() => false);
