@@ -153,6 +153,8 @@ export const customerAccountSchema = z.object({
   role: organizationRoleSchema,
   emailVerifiedAt: isoDateTimeSchema.nullable(),
   twoFactorEnabled: z.boolean(),
+  /** Issue #652 — e-mail / document language; `null` while unknown. */
+  preferredLanguage: z.string().nullable(),
   createdAt: isoDateTimeSchema,
   updatedAt: isoDateTimeSchema,
 });

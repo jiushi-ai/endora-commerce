@@ -451,6 +451,8 @@ export class CustomerAccountLifecycleWriteService implements CustomerAccountLife
     // the opposite of what the scrub just did.
     account.passwordSetAt = null;
     account.twoFactorConfirmedAt = null;
+    // Issue #652 — preferred language is personal data; clear with the scrub.
+    account.preferredLanguage = null;
     account.anonymizedAt = new Date();
     await em.flush();
     // The sweep runs on a timer, so there is no operator to attribute it to.

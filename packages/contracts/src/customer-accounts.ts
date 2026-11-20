@@ -119,6 +119,13 @@ export interface CustomerAccountRecord {
   blockedByCustomerAccountId: string | null;
   deletionRequestedByAdminUserId: string | null;
   anonymizedAt: Date | null;
+  /**
+   * Issue #652 (D-292) — the language the account's owner reads: one BCP-47
+   * content-language tag in the spelling of the sales channel that captured
+   * it (`pl-PL`, `en-US`, `zh-CN`). `null` means unknown — readers fall back
+   * to the rendering channel's default language.
+   */
+  preferredLanguage: string | null;
 }
 
 /**
@@ -303,6 +310,25 @@ export interface CustomerAccountProfilePatch {
  * non-deactivatable, so that gate cannot be reached today; it is registered
  * through `providePort` anyway, for the reason its seven siblings give.
  */
+/** Where a preferred-language write comes from (issue #652, D-292). */
+export type CustomerPreferredLanguageSource = 'self_service' | 'sign_in';
+
+/**
+ * Container name: `customerAccountPreferencePort`. Owner: `customer_accounts`.
+ *
+ * Issue #652 (D-292) — the account's preferred language. `setPreferredLanguage`
+ * is the owner's explicit choice on the storefront account page and overwrites;
+ * `captureIfUnset` fills only while unknown (sign-in capture; optional for
+ * callers that wire it).
+ */
+export interface CustomerAccountPreferencePort {
+  setPreferredLanguage(
+    customerAccountId: string,
+    preferredLanguage: string,
+  ): Promise<CustomerAccountRecord>;
+  captureIfUnset(customerAccountId: string, preferredLanguage: string): Promise<void>;
+}
+
 export interface CustomerAccountMemberWritePort {
   /**
    * Creates the account. Throws HTTP 409 `EMAIL_ALREADY_REGISTERED` when the

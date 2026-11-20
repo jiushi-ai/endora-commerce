@@ -158,6 +158,12 @@ export type InvoiceDetail = z.infer<typeof invoiceDetailSchema>;
 export const invoiceDocumentDataSchema = z.object({
   invoice: invoiceDetailSchema,
   amountLocale: z.enum(['pl', 'en']),
+  /**
+   * Batch 44 — BCP-47 tag for fixed PDF chrome labels (titles, table headers,
+   * party labels). Independent of which template language tree was picked.
+   * Absent ⇒ section builders keep their historical Polish defaults.
+   */
+  documentLanguage: z.string().optional(),
 });
 export type InvoiceDocumentData = z.infer<typeof invoiceDocumentDataSchema>;
 

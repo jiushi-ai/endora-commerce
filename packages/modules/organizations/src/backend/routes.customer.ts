@@ -198,6 +198,7 @@ function serializeCustomer(c: CustomerAccountRecord) {
     role: c.role,
     emailVerifiedAt: c.emailVerifiedAt?.toISOString() ?? null,
     twoFactorEnabled: c.twoFactorEnabled,
+    preferredLanguage: c.preferredLanguage ?? null,
     createdAt: c.createdAt.toISOString(),
     updatedAt: c.updatedAt.toISOString(),
   };

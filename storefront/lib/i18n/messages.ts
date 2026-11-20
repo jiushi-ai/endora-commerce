@@ -733,6 +733,12 @@ export type MessageKey =
   | 'account.profile.unverified'
   | 'account.profile.enabled'
   | 'account.profile.disabled'
+  | 'account.profile.emailLanguage'
+  | 'account.profile.emailLanguageHint'
+  | 'account.profile.emailLanguageSave'
+  | 'account.profile.emailLanguageSaved'
+  | 'account.profile.emailLanguageError'
+  | 'account.profile.emailLanguageNotOffered'
   | 'account.role.organization_admin'
   | 'account.role.regular_user'
   | 'account.password.title'
@@ -1503,6 +1509,14 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.profile.unverified': '(unverified)',
     'account.profile.enabled': 'Enabled',
     'account.profile.disabled': 'Disabled',
+    'account.profile.emailLanguage': 'E-mail language',
+    'account.profile.emailLanguageHint':
+      'Invoices and transactional e-mails use this language for fixed labels.',
+    'account.profile.emailLanguageSave': 'Save',
+    'account.profile.emailLanguageSaved': 'E-mail language saved.',
+    'account.profile.emailLanguageError': 'Could not save the e-mail language.',
+    'account.profile.emailLanguageNotOffered':
+      '{language} is no longer offered in this store; e-mails use {fallback}.',
     'account.role.organization_admin': 'Organization Admin',
     'account.role.regular_user': 'Regular User',
     'account.password.title': 'Change password',
@@ -2314,6 +2328,13 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.profile.unverified': '（未验证）',
     'account.profile.enabled': '已启用',
     'account.profile.disabled': '未启用',
+    'account.profile.emailLanguage': '邮件语言',
+    'account.profile.emailLanguageHint': '发票与事务邮件的固定文案将使用此语言。',
+    'account.profile.emailLanguageSave': '保存',
+    'account.profile.emailLanguageSaved': '邮件语言已保存。',
+    'account.profile.emailLanguageError': '无法保存邮件语言。',
+    'account.profile.emailLanguageNotOffered':
+      '本店已不再提供 {language}；邮件将使用 {fallback}。',
     'account.role.organization_admin': '组织管理员',
     'account.role.regular_user': '普通用户',
     'account.password.title': '修改密码',
@@ -3126,6 +3147,13 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.profile.unverified': '（未驗證）',
     'account.profile.enabled': '已啟用',
     'account.profile.disabled': '未啟用',
+    'account.profile.emailLanguage': '郵件語言',
+    'account.profile.emailLanguageHint': '發票與事務郵件的固定文案將使用此語言。',
+    'account.profile.emailLanguageSave': '儲存',
+    'account.profile.emailLanguageSaved': '郵件語言已儲存。',
+    'account.profile.emailLanguageError': '無法儲存郵件語言。',
+    'account.profile.emailLanguageNotOffered':
+      '本店已不再提供 {language}；郵件將使用 {fallback}。',
     'account.role.organization_admin': '組織管理員',
     'account.role.regular_user': '一般使用者',
     'account.password.title': '修改密碼',
@@ -3980,6 +4008,14 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.profile.unverified': '(niezweryfikowany)',
     'account.profile.enabled': 'Włączone',
     'account.profile.disabled': 'Wyłączone',
+    'account.profile.emailLanguage': 'Język e-mail',
+    'account.profile.emailLanguageHint':
+      'Faktury i e-maile transakcyjne używają tego języka dla stałych etykiet.',
+    'account.profile.emailLanguageSave': 'Zapisz',
+    'account.profile.emailLanguageSaved': 'Zapisano język e-mail.',
+    'account.profile.emailLanguageError': 'Nie udało się zapisać języka e-mail.',
+    'account.profile.emailLanguageNotOffered':
+      '{language} nie jest już oferowany w tym sklepie; e-maile używają {fallback}.',
     'account.role.organization_admin': 'Administrator organizacji',
     'account.role.regular_user': 'Zwykły użytkownik',
     'account.password.title': 'Zmień hasło',

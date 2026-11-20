@@ -194,6 +194,8 @@ export const manifest = defineModuleManifest({
   errorCodes: [
     { code: 'CUSTOMER_ADDRESS_NOT_FOUND' },
     { code: 'REGISTRATION_REQUIRES_ORGANIZATION' },
+    // Issue #652 / batch 44 — preferred language not on the request channel.
+    { code: 'PREFERRED_LANGUAGE_NOT_OFFERED' },
   ],
   actions: [
     {

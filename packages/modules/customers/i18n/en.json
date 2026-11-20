@@ -88,5 +88,6 @@
   "adminSearch.field.email": "E-mail",
   "adminSearch.field.name": "Name",
   "adminSearch.status.active": "Active",
-  "adminSearch.status.blocked": "Blocked"
+  "adminSearch.status.blocked": "Blocked",
+  "errors.PREFERRED_LANGUAGE_NOT_OFFERED": "This store does not offer that language."
 }

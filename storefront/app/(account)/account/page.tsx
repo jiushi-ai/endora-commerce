@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { getSessionCookie } from '../../../lib/session';
 import { getServerContext } from '../../../lib/server-context';
-import { getMe } from '../../../lib/api/account';
+import { getMe, updatePreferredLanguage } from '../../../lib/api/account';
 import { getMyCreditLimit } from '../../../lib/api/credit-limit';
 import {
   fetchPwaConfig,
@@ -13,8 +13,13 @@ import {
   PushNotificationsSection,
   pushPreferencesPatch,
 } from '../../../components/pwa/PushPreferencesForm';
+import {
+  EmailLanguageRow,
+  emailLanguageFromForm,
+} from '../../../components/account/EmailLanguageRow';
 import { tForLocale } from '../../../lib/i18n/messages';
 import { accountRoleLabel } from '../../../lib/i18n/account-labels';
+import { storefrontLanguageOption } from '../../../lib/i18n/language-labels';
 import type { Metadata } from 'next';
 import { localeRedirect } from '../../../lib/i18n/navigation';
 
@@ -29,16 +34,23 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
  * Account profile (T154). Read-only summary of the current customer +
  * their organization role. Profile-edit is intentionally out of scope for
  * MVP — buyers update their name via support to keep audit trails simple.
+ *
+ * Batch 44 — e-mail / document language row (issue #652).
  */
 export default async function AccountProfilePage({
   searchParams,
 }: {
-  searchParams: Promise<{ pushSaved?: string; pushError?: string }>;
+  searchParams: Promise<{
+    pushSaved?: string;
+    pushError?: string;
+    languageSaved?: string;
+    languageError?: string;
+  }>;
 }): Promise<ReactNode> {
   const session = await getSessionCookie();
   if (!session) return await localeRedirect('/login');
   const sp = await searchParams;
-  const { locale, ctx } = await getServerContext();
+  const { locale, ctx, modules, urlState } = await getServerContext();
   const t = tForLocale(locale);
   // The push section (`specs/149-pwa-order-status-push/`) is read beside the
   // profile: the public config says what the channel offers, the preferences
@@ -49,6 +61,13 @@ export default async function AccountProfilePage({
     fetchPwaConfig(ctx.salesChannelCode),
     getPushPreferences(session, ctx),
   ]);
+
+  const channelLanguages = urlState.languages.map((language) => language.languageCode);
+  const channelDefault =
+    urlState.languages.find((language) => language.isDefault)?.languageCode ??
+    channelLanguages[0] ??
+    locale;
+  const languageLabel = (code: string): string => storefrontLanguageOption(code).label;
 
   return (
     <>
@@ -93,6 +112,17 @@ export default async function AccountProfilePage({
             <th scope="row">{t('account.profile.organization')}</th>
             <td>{me.organization?.name ?? '—'}</td>
           </tr>
+          <EmailLanguageRow
+            locale={locale}
+            languages={channelLanguages.length > 0 ? channelLanguages : [locale]}
+            defaultLanguage={channelDefault}
+            preferredLanguage={me.customerAccount.preferredLanguage ?? null}
+            labelOf={languageLabel}
+            editable={modules.isPresent('customers')}
+            saveAction={saveEmailLanguageAction}
+            saved={sp.languageSaved === '1'}
+            failed={sp.languageError === '1'}
+          />
         </tbody>
       </table>
       <PushNotificationsSection
@@ -105,6 +135,22 @@ export default async function AccountProfilePage({
       />
     </>
   );
+}
+
+async function saveEmailLanguageAction(formData: FormData): Promise<void> {
+  'use server';
+  const session = await getSessionCookie();
+  if (!session) return await localeRedirect('/login');
+  const language = emailLanguageFromForm(formData);
+  if (!language) return await localeRedirect('/account');
+  const { ctx } = await getServerContext();
+  let saved = true;
+  try {
+    await updatePreferredLanguage(session, language, ctx);
+  } catch {
+    saved = false;
+  }
+  return await localeRedirect(saved ? '/account?languageSaved=1' : '/account?languageError=1');
 }
 
 async function savePushPreferencesAction(formData: FormData): Promise<void> {

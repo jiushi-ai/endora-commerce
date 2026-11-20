@@ -31,7 +31,8 @@ export class CustomerAccount {
     | 'blockedByAdminUserId'
     | 'blockedByCustomerAccountId'
     | 'deletionRequestedByAdminUserId'
-    | 'anonymizedAt';
+    | 'anonymizedAt'
+    | 'preferredLanguage';
 
   @PrimaryKey({ type: 'uuid' })
   id: string = randomUUID();
@@ -187,4 +188,13 @@ export class CustomerAccount {
    */
   @Property({ type: 'datetime', nullable: true })
   anonymizedAt?: Date | null;
+
+  /**
+   * Issue #652 (D-292) — the language the account's owner reads: one BCP-47
+   * content-language tag in the spelling of the sales channel that captured
+   * it. Overwritten by the owner's choice on the storefront account page.
+   * `null` means unknown — a sender then uses the rendering channel's default.
+   */
+  @Property({ type: 'string', length: 35, nullable: true })
+  preferredLanguage?: string | null;
 }

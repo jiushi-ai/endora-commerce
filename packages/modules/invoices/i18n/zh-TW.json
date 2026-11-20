@@ -16,6 +16,7 @@
   "errors.INVOICE_NUMBER_PATTERN_COLLIDES.other_channel": "此編號模式可以生成與銷售渠道“{channel}”相同的文檔編號。發票號碼在整個平臺上是唯一的，因此為該渠道提供一種其他渠道無法重複的模式 - 添加渠道令牌是通常的方法。",
   "errors.INVOICE_NUMBER_PATTERN_COLLIDES.no_sequence_token": "此編號模式沒有序列標記，因此此通道中的每個文檔都將被賦予相同的編號。字段描述列出了您可以使用的令牌。",
   "errors.INVOICE_ORDER_REFUNDED": "該訂單的付款在開具發票之前已全額退還，因此沒有剩餘銷售可開具發票。什麼也沒發出。",
+  "errors.INVOICE_SELLER_NOT_CONFIGURED": "開立發票前須先設定賣方增值稅號/NIP 與公司資料。",
   "errors.INVOICE_NUMBER_ALREADY_ISSUED": "該文檔編號已被使用。發票號碼在整個平臺上是唯一的。",
   "errors.INVOICE_NUMBER_ALREADY_ISSUED.other_channel": "發票編號 {number} 已被銷售渠道“{channel}”使用。在再次發佈之前，為該頻道指定自己的編號模式 - 沒有發佈任何內容。",
   "errors.INVOICE_NUMBER_ALREADY_ISSUED.same_channel": "發票編號 {number} 已在此銷售渠道中開具，因此其編號模式會產生重複 — 未開具任何內容。",

@@ -44,7 +44,12 @@ ENV PATH="$PNPM_HOME:$PATH"
 # argon2 ships a native addon; these cover the case where no prebuilt binary
 # matches the target platform/arch.
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends python3 make g++ ca-certificates \
+  && apt-get install -y --no-install-recommends python3 make g++ ca-certificates curl \
+  && mkdir -p /usr/share/fonts/truetype/noto \
+  && curl -fsSL -o /usr/share/fonts/truetype/noto/NotoSansCJKsc-Regular.otf \
+       'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf' \
+  && apt-get purge -y curl \
+  && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/*
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 WORKDIR /app

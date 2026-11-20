@@ -55,6 +55,7 @@ import {
   createAssetImageLoader,
   createChannelLanguageResolver,
   createChannelUrlFactsResolver,
+  createInvoicePdfLocaleResolver,
   createRecipientEmailResolver,
 } from './services/cross-module-context.js';
 import { INVOICE_ISSUED_DEFAULT } from './email-templates/invoice-issued.default.js';
@@ -239,6 +240,10 @@ export function registerModule(ctx: ModuleContext): void {
             lazyPort<CustomerAccountReadPort>(ctx, 'customerAccountReadPort'),
           ),
           resolveLanguage: createChannelLanguageResolver(emFactory),
+          resolvePdfLocale: createInvoicePdfLocaleResolver(
+            lazyPort<CustomerAccountReadPort>(ctx, 'customerAccountReadPort'),
+            emFactory,
+          ),
           channelUrlFactsFor: createChannelUrlFactsResolver(emFactory),
           loadAssetImage: createAssetImageLoader(lazyPort<AssetReadPort>(ctx, 'assetReadPort')),
           // `specs/152-compare-pdf-template/` — every invoice PDF is produced

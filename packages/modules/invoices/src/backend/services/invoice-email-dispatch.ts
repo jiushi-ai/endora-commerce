@@ -14,8 +14,18 @@ import {
 } from '@endora-commerce/platform/kernel';
 import type { InvoiceService } from './invoice-service.js';
 import { renderInvoicePdf } from '../document/render-invoice.js';
+import { resolveInvoiceDocumentLanguage } from '../document/invoice-pdf-language.js';
 import type { SettingsReader } from './seller-settings.js';
 import { INVOICES_SETTING_CODES } from '../../manifest.js';
+
+function resolveInvoiceEmailLanguage(pdfLocale: {
+  preferredLanguage: string | null;
+  channelLanguages: string[] | null;
+  channelDefaultLanguage: string | null;
+}): string | null {
+  if (!pdfLocale.preferredLanguage && !pdfLocale.channelDefaultLanguage) return null;
+  return resolveInvoiceDocumentLanguage(pdfLocale);
+}
 
 /**
  * Why the invoice e-mail did — or did not — go out (issue #103).
@@ -67,6 +77,15 @@ export interface InvoiceEmailDispatchDeps {
    * the logical path.
    */
   channelUrlFactsFor?: (salesChannelId: string | null) => Promise<ChannelUrlFacts | null>;
+  /** Batch 44 — preferred language + channel languages for the PDF attachment. */
+  resolvePdfLocale: (input: {
+    order: OrderRecord | null;
+    salesChannelId: string | null;
+  }) => Promise<{
+    preferredLanguage: string | null;
+    channelLanguages: string[] | null;
+    channelDefaultLanguage: string | null;
+  }>;
   log?: InvoiceEmailLog;
 }
 
@@ -109,7 +128,10 @@ export class InvoiceEmailDispatcher {
       if (!to) return this.notSent(invoiceId, 'no_recipient');
 
       const channelId = detail.salesChannelId;
-      const language = await this.deps.resolveLanguage(channelId);
+      const pdfLocale = await this.deps.resolvePdfLocale({ order, salesChannelId: channelId });
+      // Prefer the account language for the e-mail too when the channel offers it.
+      const language =
+        resolveInvoiceEmailLanguage(pdfLocale) ?? (await this.deps.resolveLanguage(channelId));
       const mode = opts.mode ?? (await this.resolveMode(channelId));
       const baseUrl = await this.resolveBaseUrl(channelId);
       // Owner ruling OR-14 (feature 167) — the storefront order page, which lists
@@ -137,7 +159,7 @@ export class InvoiceEmailDispatcher {
           ? [
               {
                 filename: `invoice-${detail.number.replace(/\W+/g, '_')}.pdf`,
-                content: await renderInvoicePdf(this.deps.documents, detail),
+                content: await renderInvoicePdf(this.deps.documents, detail, pdfLocale),
                 contentType: 'application/pdf',
               },
             ]

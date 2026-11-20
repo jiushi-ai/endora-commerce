@@ -88,5 +88,6 @@
   "adminSearch.field.email": "E-mail",
   "adminSearch.field.name": "Imię i nazwisko",
   "adminSearch.status.active": "Aktywny",
-  "adminSearch.status.blocked": "Zablokowany"
+  "adminSearch.status.blocked": "Zablokowany",
+  "errors.PREFERRED_LANGUAGE_NOT_OFFERED": "Ten sklep nie oferuje tego języka."
 }

@@ -909,3 +909,21 @@ feat-26-11-17 00:56:07 [42.1~42.3]：cherry-pick 上游 #436+#852 税展示对�
 汇总：不并行 + 方案 A（含 api）；Agent 交付手册与就绪包，ECS/台湾 DNS/镜像发版由人工按手册执行（Agent 不直连 ECS）。
 
 feat-26-11-17 22:27:56 [43.1~43.3]：mobiib2b 切入手册与 ready-for-ecs 证书/nginx 包
+
+### 44. 发票 PDF 跟买家 Email language + CJK + 订单 i18n
+
+- [x] 44.1 口径文档 `pro_doc/invoice-pdf-locale-policy.md`（标签跟 preferredLanguage；Value 跟库；乱码=CJK；非中国专票）
+- [x] 44.2 上游 `#652/#1300` 全量 cherry-pick 冲突过大 → **最小移植** preferredLanguage（实体/迁移 T145934/contracts/PATCH）
+- [x] 44.3 storefront `EmailLanguageRow` + `messages.ts` 四语
+- [x] 44.4 PDF 解开 pl 硬编码；`invoice-pdf-labels` 支持 en/pl/zh-CN/zh-TW
+- [x] 44.5 开票从订单客户解析 language（preferred → 渠道默认 → en-US）；下载/预览/邮件附件同路径
+- [x] 44.6 pdfmake 运行时探测 Noto CJK；`backend/Dockerfile` 构建下载；字体不进 git
+- [x] 44.7 `invoice_issued` 补 zh-CN/zh-TW；邮件语系与 PDF resolver 对齐
+- [x] 44.8 reorder/cloneToQuote + CRM orderPanel 中文纠偏（zh-CN/zh-TW）
+- [x] 44.9 `INVOICE_SELLER_NOT_CONFIGURED` 错误码 + 四语句子
+- [x] 44.10 运维验收清单 `pro_doc/batch-44-ops-checklist.md`
+- [x] 44.11 本 §99 汇总
+
+汇总：分支 `feat/batch-44-invoice-pdf-locale`；发票 PDF 固定标题跟小 b Email language；CJK 依赖镜像字体；定向 vitest 23 通过。发版需跑 migration + 重建含 Noto 的 backend 镜像 + admin/storefront。有意推迟：注册/登录自动 capture、中文金额大写、完整 #652 旁路与 OpenAPI baseline。
+
+feat-26-11-19 18:13:46 [44.1~44.11]：发票PDF跟买家Email language+CJK；订单/开票错误i18n

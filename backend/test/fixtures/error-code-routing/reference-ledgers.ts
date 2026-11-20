@@ -98,6 +98,13 @@ export const MINTED_ERROR_CODES: MintedErrorCodes = {
       'invoiced: there is no sale left to document. The noun is the invoice, which `invoices` ' +
       'owns, and `invoices` raises it; the automatic issuance skips the order and logs the code.',
   },
+  INVOICE_SELLER_NOT_CONFIGURED: {
+    to: 'invoices',
+    reason:
+      'Minted by batch 44 for the refusal when seller VAT/NIP and company data are missing from ' +
+      'settings, so issuance cannot print a valid document. Raised by seller-settings.ts; the ' +
+      'noun is the invoice seller identity, which `invoices` owns.',
+  },
   AMOUNT_PRECISION_EXCEEDED: {
     to: '_i18n',
     reason:
@@ -2181,6 +2188,12 @@ export const PLATFORM_OWNED_ERROR_CODES: PlatformOwnedErrorCodes = {
       'not evidence of an owner — ownership follows the noun, and no module claims this ' +
       'one. It is on the defect register as an unraised code, which is a separate question ' +
       'from whose it is.',
+  },
+  PREFERRED_LANGUAGE_NOT_OFFERED: {
+    to: 'customers',
+    reason:
+      'Minted by issue #652 / batch 44 for PATCH /api/v1/me/customer/preferred-language when the ' +
+      'requested tag is not among the request channel languages. Owned and raised by customers.',
   },
   PRICE_UNAVAILABLE: {
     tier: 'T3',

@@ -93,6 +93,7 @@ function record(over: Partial<CustomerAccountRecord>): CustomerAccountRecord {
     lastName: 'B',
     deletedAt: null,
     anonymizedAt: null,
+    preferredLanguage: null,
     blockedAt: null,
     ...over,
   } as CustomerAccountRecord;

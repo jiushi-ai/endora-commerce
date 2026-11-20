@@ -42,6 +42,11 @@ function deps(sender: TransactionalEmailSender, render: (input: DocumentRenderIn
     getSender: () => sender,
     resolveRecipientEmail: async () => 'buyer@example.com',
     resolveLanguage: async () => 'pl-PL',
+    resolvePdfLocale: async () => ({
+      preferredLanguage: null,
+      channelLanguages: null,
+      channelDefaultLanguage: 'pl-PL',
+    }),
     log: () => undefined,
   };
 }
@@ -55,12 +60,18 @@ describe('invoice e-mail attachment (FR-093)', () => {
     ).dispatch(DETAIL.id);
     expect(result).toEqual({ sent: true });
     expect(render).toHaveBeenCalledTimes(1);
-    expect(render).toHaveBeenCalledWith(invoiceRenderInput(DETAIL));
+    expect(render).toHaveBeenCalledWith(
+      invoiceRenderInput(DETAIL, {
+        preferredLanguage: null,
+        channelLanguages: null,
+        channelDefaultLanguage: 'pl-PL',
+      }),
+    );
     expect(invoiceRenderInput(DETAIL)).toEqual({
       documentType: 'invoices.invoice',
       salesChannelId: DETAIL.salesChannelId,
       language: 'pl-PL',
-      data: { invoice: DETAIL, amountLocale: 'pl' },
+      data: { invoice: DETAIL, amountLocale: 'pl', documentLanguage: 'pl-PL' },
     });
     expect(sent[0]!.attachments?.[0]?.content).toEqual(Buffer.from([0x25, 0x50, 0x44, 0x46]));
   });

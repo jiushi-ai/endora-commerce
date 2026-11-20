@@ -352,6 +352,7 @@ function serializeCustomerAccount(c: CustomerAccountRecord) {
     // The record already answers this; the entity carried the secret's
     // confirmation timestamp and every caller derived the same boolean from it.
     twoFactorEnabled: c.twoFactorEnabled,
+    preferredLanguage: c.preferredLanguage ?? null,
     createdAt: c.createdAt.toISOString(),
     updatedAt: c.updatedAt.toISOString(),
   };

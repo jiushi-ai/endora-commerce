@@ -56,7 +56,9 @@ describe('invoice PDF — overpayment', () => {
 
   it('labels it in English on an English document', () => {
     const invoice = { ...sampleInvoiceDetail(), paidTotal: 2450, amountDue: 0, overpayment: 50 };
-    expect(texts(totalsSection(invoice, 'en', {}))).toContain(`Overpayment: ${money(50)} USD`);
+    expect(texts(totalsSection(invoice, 'en', {}))).toContain(
+      `Overpayment: ${money(50, 'en-US')} USD`,
+    );
   });
 
   it('prints no overpayment line when nothing was overpaid', () => {

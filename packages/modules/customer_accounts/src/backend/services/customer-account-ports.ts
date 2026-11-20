@@ -78,6 +78,7 @@ export function toCustomerAccountRecord(
     blockedByCustomerAccountId: account.blockedByCustomerAccountId ?? null,
     deletionRequestedByAdminUserId: account.deletionRequestedByAdminUserId ?? null,
     anonymizedAt: account.anonymizedAt ?? null,
+    preferredLanguage: account.preferredLanguage ?? null,
   };
 }
 

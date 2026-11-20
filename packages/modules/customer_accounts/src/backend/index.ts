@@ -9,6 +9,7 @@ import type {
   CustomerAccountAdminSearchPort,
   CustomerAccountLifecycleWritePort,
   CustomerAccountMemberWritePort,
+  CustomerAccountPreferencePort,
   CustomerAccountReadPort,
   CustomerAuthPort,
   CustomerAuthenticationThrottlePort,
@@ -55,6 +56,7 @@ import {
   CustomerAccountLifecycleWriteService,
 } from './services/customer-account-lifecycle-ports.js';
 import { CustomerAuthService } from './services/customer-auth-service.js';
+import { CustomerAccountPreferenceService } from './services/customer-account-preference-port.js';
 import { CustomerAuthenticationThrottle } from './services/customer-authentication-throttle.js';
 import { CustomerGroupReadService } from './services/customer-group-read-port.js';
 import { CustomerGroupService } from './services/customer-group-service.js';
@@ -300,6 +302,20 @@ export function registerModule(ctx: ModuleContext): void {
       .asFunction(
         ({ emFactory }: CustomerAccountsCradle) =>
           new CustomerAccountAdminSearchService(emFactory, twoFactorEnrolments),
+      )
+      .singleton(),
+  );
+
+  /**
+   * Issue #652 (D-292) — preferred language writes for the storefront account
+   * page (`customers` self-service route).
+   */
+  ctx.di.providePort<CustomerAccountPreferencePort>(
+    'customerAccountPreferencePort',
+    ctx
+      .asFunction(
+        ({ commandBus }: CustomerAccountsCradle) =>
+          new CustomerAccountPreferenceService(twoFactorEnrolments, commandBus),
       )
       .singleton(),
   );

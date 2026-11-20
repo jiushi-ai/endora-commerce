@@ -5,6 +5,7 @@ import type {
   InvoiceDocumentData,
 } from '@endora-commerce/contracts';
 import { INVOICE_DOCUMENT_TYPE, INVOICE_RENDER_LANGUAGE } from './invoice-document-type.js';
+import { amountLocaleOf, resolveInvoiceDocumentLanguage } from './invoice-pdf-language.js';
 
 /**
  * The one render input of an invoice PDF (`contracts/invoice-document.md` §2).
@@ -14,13 +15,36 @@ import { INVOICE_DOCUMENT_TYPE, INVOICE_RENDER_LANGUAGE } from './invoice-docume
  * FR-093) — builds its input here, so the same invoice is printed from the same
  * template whichever way it reaches the customer: the default of its channel,
  * else the default for all channels, else the built-in layout (FR-084).
+ *
+ * Batch 44 — `documentLanguage` drives fixed chrome labels:
+ * preferredLanguage → channel defaultLanguage → `en-US`.
  */
-export function invoiceRenderInput(detail: InvoiceDetail): DocumentRenderInput<InvoiceDocumentData> {
+export function invoiceRenderInput(
+  detail: InvoiceDetail,
+  options: {
+    preferredLanguage?: string | null;
+    channelLanguages?: readonly string[] | null;
+    channelDefaultLanguage?: string | null;
+    /** Explicit override (tests). */
+    documentLanguage?: string;
+  } = {},
+): DocumentRenderInput<InvoiceDocumentData> {
+  const documentLanguage =
+    options.documentLanguage ??
+    resolveInvoiceDocumentLanguage({
+      preferredLanguage: options.preferredLanguage ?? null,
+      channelLanguages: options.channelLanguages ?? null,
+      channelDefaultLanguage: options.channelDefaultLanguage ?? INVOICE_RENDER_LANGUAGE,
+    });
   return {
     documentType: INVOICE_DOCUMENT_TYPE,
     salesChannelId: detail.salesChannelId ?? null,
-    language: INVOICE_RENDER_LANGUAGE,
-    data: { invoice: detail, amountLocale: 'pl' },
+    language: documentLanguage,
+    data: {
+      invoice: detail,
+      amountLocale: amountLocaleOf(documentLanguage),
+      documentLanguage,
+    },
   };
 }
 
@@ -28,7 +52,8 @@ export function invoiceRenderInput(detail: InvoiceDetail): DocumentRenderInput<I
 export async function renderInvoicePdf(
   documents: Pick<DocumentRenderPort, 'render'>,
   detail: InvoiceDetail,
+  options?: Parameters<typeof invoiceRenderInput>[1],
 ): Promise<Buffer> {
-  const result = await documents.render(invoiceRenderInput(detail));
+  const result = await documents.render(invoiceRenderInput(detail, options));
   return Buffer.from(result.bytes);
 }

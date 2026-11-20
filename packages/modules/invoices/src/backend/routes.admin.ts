@@ -6,6 +6,7 @@ import {
   sendInvoiceEmailRequestSchema,
   type IssueInvoiceEmailOutcome,
   type OrderReadPort,
+  type OrderRecord,
 } from '@endora-commerce/contracts';
 import { Invoice } from './entities/invoice.entity.js';
 import { isOrgInScope } from '@endora-commerce/platform/tenancy';
@@ -45,6 +46,15 @@ export interface InvoicesAdminDeps {
    */
   emailDispatcher: InvoiceEmailDispatcher;
   resolveAdminUserId: (req: FastifyRequest) => string | null;
+  /** Batch 44 — preferred language + channel languages for PDF chrome. */
+  resolvePdfLocale: (input: {
+    order: OrderRecord | null;
+    salesChannelId: string | null;
+  }) => Promise<{
+    preferredLanguage: string | null;
+    channelLanguages: string[] | null;
+    channelDefaultLanguage: string | null;
+  }>;
 }
 
 export async function registerInvoicesAdminRoutes(
@@ -135,7 +145,12 @@ export async function registerInvoicesAdminRoutes(
     { preHandler: requireAdmin('invoices:read'), config: { streamingResponse: true } },
     async (request, reply) => {
       const detail = await invoiceService.buildDetail(request.params.id);
-      const pdf = await renderInvoicePdf(documents, detail);
+      const order = detail.orderId ? await deps.orderReadPort.findById(detail.orderId) : null;
+      const pdf = await renderInvoicePdf(
+        documents,
+        detail,
+        await deps.resolvePdfLocale({ order, salesChannelId: detail.salesChannelId }),
+      );
       reply
         .header('content-type', 'application/pdf')
         .header('content-disposition', `attachment; filename="invoice-${detail.number.replace(/\W+/g, '_')}.pdf"`);
@@ -172,7 +187,12 @@ export async function registerInvoicesAdminRoutes(
     { preHandler: requireAdmin('invoices:write') },
     async (request) => {
       const detail = await invoiceService.buildDetail(request.params.id);
-      await renderInvoicePdf(documents, detail);
+      const order = detail.orderId ? await deps.orderReadPort.findById(detail.orderId) : null;
+      await renderInvoicePdf(
+        documents,
+        detail,
+        await deps.resolvePdfLocale({ order, salesChannelId: detail.salesChannelId }),
+      );
       return { data: detail };
     },
   );

@@ -30,6 +30,15 @@ export interface InvoicesCustomerDeps {
   invoiceService: InvoiceService;
   /** `document_templates`' render port (`specs/152-compare-pdf-template/`). */
   documents: Pick<DocumentRenderPort, 'render'>;
+  /** Batch 44 — preferred language + channel languages for PDF chrome. */
+  resolvePdfLocale: (input: {
+    order: OrderRecord | null;
+    salesChannelId: string | null;
+  }) => Promise<{
+    preferredLanguage: string | null;
+    channelLanguages: string[] | null;
+    channelDefaultLanguage: string | null;
+  }>;
 }
 
 /**
@@ -103,7 +112,12 @@ export async function registerInvoicesCustomerRoutes(
       });
       if (!inv) throw new HttpError(404, ERROR_CODES.NOT_FOUND, 'Invoice not found.');
       const detail = await invoiceService.buildDetail(inv.id);
-      const pdf = await renderInvoicePdf(documents, detail);
+      const order = detail.orderId ? await orderReadPort.findById(detail.orderId) : null;
+      const pdf = await renderInvoicePdf(
+        documents,
+        detail,
+        await deps.resolvePdfLocale({ order, salesChannelId: detail.salesChannelId }),
+      );
       reply
         .header('content-type', 'application/pdf')
         .header('content-disposition', `attachment; filename="invoice-${detail.number.replace(/\W+/g, '_')}.pdf"`);

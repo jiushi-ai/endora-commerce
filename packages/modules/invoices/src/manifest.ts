@@ -314,6 +314,8 @@ export const manifest = defineModuleManifest({
     // refuses to invoice an order refunded in full before it was invoiced. No
     // `details`, so no token.
     { code: 'INVOICE_ORDER_REFUNDED' },
+    // Batch 44 — seller VAT/NIP missing from settings; raised by seller-settings.ts.
+    { code: 'INVOICE_SELLER_NOT_CONFIGURED' },
   ],
   actions: [
     {

@@ -76,6 +76,41 @@ export function createChannelLanguageResolver(
 }
 
 /**
+ * Batch 44 — inputs for `invoiceRenderInput` / `renderInvoicePdf`: the order
+ * customer's preferred language plus the channel's languages and default.
+ */
+export function createInvoicePdfLocaleResolver(
+  accounts: Pick<CustomerAccountReadPort, 'findById'>,
+  emFactory: () => EntityManager,
+): (input: {
+  order: OrderRecord | null;
+  salesChannelId: string | null;
+}) => Promise<{
+  preferredLanguage: string | null;
+  channelLanguages: string[] | null;
+  channelDefaultLanguage: string | null;
+}> {
+  return async ({ order, salesChannelId }) => {
+    const preferredLanguage = order
+      ? ((await accounts.findById(order.placedByCustomerAccountId))?.preferredLanguage ?? null)
+      : null;
+    if (!salesChannelId) {
+      return {
+        preferredLanguage,
+        channelLanguages: null,
+        channelDefaultLanguage: null,
+      };
+    }
+    const channel = await emFactory().findOne(SalesChannel, { id: salesChannelId });
+    return {
+      preferredLanguage,
+      channelLanguages: channel?.languages ?? null,
+      channelDefaultLanguage: channel?.defaultLanguage ?? null,
+    };
+  };
+}
+
+/**
  * Feature 167 (OR-14) — a channel's URL-language facts (its languages, default and
  * *prefix the default language* setting), for links to storefront pages. The kernel
  * `SalesChannel` row, read as the language resolver above reads it.

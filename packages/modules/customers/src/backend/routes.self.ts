@@ -1,5 +1,6 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type {
+  CustomerAccountPreferencePort,
   CustomerAccountReadPort,
   CustomerAuthPort,
   OrderListPort,
@@ -9,10 +10,13 @@ import {
   SESSION_COOKIE_NAME,
   changePasswordRequestSchema,
   customerAddressInputSchema,
+  patchCustomerPreferredLanguageBodySchema,
   updateCustomerDefaultsRequestSchema,
   ERROR_CODES,
+  type PatchCustomerPreferredLanguageResponse,
 } from '@endora-commerce/contracts';
 import { HttpError } from '@endora-commerce/platform/http';
+import { getResolvedChannel } from '@endora-commerce/platform/kernel';
 import type { CustomerAddressService } from './services/customer-address-service.js';
 import type { CustomerDefaultsService } from './services/customer-defaults-service.js';
 import {
@@ -67,6 +71,8 @@ export interface CustomersSelfDeps {
   rfqService: RfqCustomerPort;
   customerAddressService: CustomerAddressService;
   customerDefaultsService: CustomerDefaultsService;
+  /** Issue #652 (D-292) — preferred-language write for the account page. */
+  preferences: CustomerAccountPreferencePort;
 }
 
 export async function registerCustomersSelfRoutes(
@@ -100,8 +106,33 @@ export async function registerCustomersSelfRoutes(
           organizationId: customer.organizationId ?? null,
           customerGroupId: customer.customerGroupId ?? null,
           twoFactorEnabled: customer.twoFactorEnabled,
+          preferredLanguage: customer.preferredLanguage ?? null,
         },
       };
+    },
+  );
+
+  // PATCH /api/v1/me/customer/preferred-language — issue #652 (D-292).
+  app.patch(
+    '/api/v1/me/customer/preferred-language',
+    { preHandler: requireCustomer, schema: { body: patchCustomerPreferredLanguageBodySchema } },
+    async (request): Promise<PatchCustomerPreferredLanguageResponse> => {
+      const actor = resolveCustomerActor(request);
+      const body = patchCustomerPreferredLanguageBodySchema.parse(request.body);
+      const requested = body.preferredLanguage.toLowerCase();
+      const channel = getResolvedChannel();
+      const offered = [...channel.languages, channel.defaultLanguage].find(
+        (language) => language.toLowerCase() === requested,
+      );
+      if (offered === undefined) {
+        throw new HttpError(
+          422,
+          ERROR_CODES.PREFERRED_LANGUAGE_NOT_OFFERED,
+          'This store does not offer that language.',
+        );
+      }
+      const account = await deps.preferences.setPreferredLanguage(actor.customerAccountId, offered);
+      return { data: { preferredLanguage: account.preferredLanguage ?? offered } };
     },
   );
 

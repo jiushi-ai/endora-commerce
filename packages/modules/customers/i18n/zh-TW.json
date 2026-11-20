@@ -88,5 +88,6 @@
   "adminSearch.field.email": "電子郵件",
   "adminSearch.field.name": "姓名",
   "adminSearch.status.active": "積極的",
-  "adminSearch.status.blocked": "被阻止"
+  "adminSearch.status.blocked": "被阻止",
+  "errors.PREFERRED_LANGUAGE_NOT_OFFERED": "本店不提供該語言。"
 }

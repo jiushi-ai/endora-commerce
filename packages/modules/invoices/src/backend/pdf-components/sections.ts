@@ -1,6 +1,8 @@
 import type { Content, TableCell } from 'pdfmake/interfaces.js';
 import { unitPriceFractionDigits, type InvoiceDetail } from '@endora-commerce/contracts';
 import { amountToWords, type AmountToWordsLocale } from '../services/amount-to-words.js';
+import { numberLocaleOf } from '../document/invoice-pdf-language.js';
+import { invoicePdfLabels, type InvoicePdfLabels } from './invoice-pdf-labels.js';
 
 /**
  * Invoice PDF section builders (feature 047, US6). Each maps a slice of the
@@ -8,27 +10,34 @@ import { amountToWords, type AmountToWordsLocale } from '../services/amount-to-w
  * built-in generic layout and the WYSIWYG template tree mapper.
  */
 
-export function money(n: number): string {
-  return n.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export function money(n: number, numberLocale = 'pl-PL'): string {
+  return n.toLocaleString(numberLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 /**
  * A unit price — the unit net price column: its significant places, up to
  * four, at least two (owner ruling of 2026-10-25; `unitPriceFractionDigits`).
  * Line values and totals are {@link money}, two places.
  */
-export function unitMoney(n: number): string {
-  return n.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: unitPriceFractionDigits(n) });
+export function unitMoney(n: number, numberLocale = 'pl-PL'): string {
+  return n.toLocaleString(numberLocale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: unitPriceFractionDigits(n),
+  });
 }
 export function pct(rate: number): string {
   return `${Math.round(rate * 100)}%`;
 }
 
-export const TITLES: Record<InvoiceDetail['kind'], string> = {
-  invoice: 'Faktura',
-  proforma: 'Faktura proforma',
-  correction: 'Faktura korygująca',
-  wz: 'Dokument WZ',
-};
+/** @deprecated Prefer `invoicePdfLabels(language).titles` — kept for callers. */
+export const TITLES: Record<InvoiceDetail['kind'], string> = invoicePdfLabels('pl-PL').titles;
+
+function labelsOf(documentLanguage?: string | null): InvoicePdfLabels {
+  return invoicePdfLabels(documentLanguage);
+}
+
+function numberLocale(documentLanguage?: string | null): string {
+  return documentLanguage ? numberLocaleOf(documentLanguage) : 'pl-PL';
+}
 
 type Align = 'left' | 'center' | 'right';
 type Props = Record<string, unknown>;
@@ -94,7 +103,9 @@ export function headerSection(
   inv: InvoiceDetail,
   props: Props = {},
   options: HeaderSectionOptions = {},
+  documentLanguage?: string | null,
 ): Content {
+  const L = labelsOf(documentLanguage);
   const titleSize = num(props, 'titleSize', 14);
   const titleColor = optStr(props, 'titleColor');
   const titleBold = bool(props, 'titleBold', true);
@@ -102,7 +113,7 @@ export function headerSection(
   const rows: TableCell[][] = [
     [
       {
-        text: `${TITLES[inv.kind]} nr ${inv.number}`,
+        text: `${L.titles[inv.kind]} ${L.numberPrefix} ${inv.number}`,
         bold: titleBold,
         fontSize: titleSize,
         color: titleColor,
@@ -117,7 +128,7 @@ export function headerSection(
   if (inv.ksefReferenceNumber && !options.suppressKsefNumber) {
     rows.push([
       {
-        text: `${str(props, 'labelKsefNumber', 'Numer w KSeF')}: ${inv.ksefReferenceNumber}`,
+        text: `${str(props, 'labelKsefNumber', L.labelKsefNumber)}: ${inv.ksefReferenceNumber}`,
         alignment: align,
       },
     ]);
@@ -125,7 +136,7 @@ export function headerSection(
   if (bool(props, 'showIssuedAt', true)) {
     rows.push([
       {
-        text: `${str(props, 'labelIssuedAt', 'Data wystawienia')}: ${inv.issuedAt.slice(0, 10)}`,
+        text: `${str(props, 'labelIssuedAt', L.labelIssuedAt)}: ${inv.issuedAt.slice(0, 10)}`,
         alignment: align,
       },
     ]);
@@ -133,7 +144,7 @@ export function headerSection(
   if (bool(props, 'showSaleDate', true)) {
     rows.push([
       {
-        text: `${str(props, 'labelSaleDate', 'Data sprzedaży')}: ${inv.saleDate ?? inv.issuedAt.slice(0, 10)}`,
+        text: `${str(props, 'labelSaleDate', L.labelSaleDate)}: ${inv.saleDate ?? inv.issuedAt.slice(0, 10)}`,
         alignment: align,
       },
     ]);
@@ -141,7 +152,7 @@ export function headerSection(
   if (bool(props, 'showPaymentDue', true)) {
     rows.push([
       {
-        text: `${str(props, 'labelPaymentDue', 'Termin płatności')}: ${inv.paymentDueDate ?? '-'}`,
+        text: `${str(props, 'labelPaymentDue', L.labelPaymentDue)}: ${inv.paymentDueDate ?? '-'}`,
         alignment: align,
       },
     ]);
@@ -149,7 +160,7 @@ export function headerSection(
   if (bool(props, 'showPaymentMethod', true)) {
     rows.push([
       {
-        text: `${str(props, 'labelPaymentMethod', 'Metoda płatności')}: ${inv.paymentMethod ?? '-'}`,
+        text: `${str(props, 'labelPaymentMethod', L.labelPaymentMethod)}: ${inv.paymentMethod ?? '-'}`,
         alignment: align,
       },
     ]);
@@ -161,7 +172,12 @@ export function headerSection(
   };
 }
 
-export function partiesSection(inv: InvoiceDetail, props: Props = {}): Content {
+export function partiesSection(
+  inv: InvoiceDetail,
+  props: Props = {},
+  documentLanguage?: string | null,
+): Content {
+  const L = labelsOf(documentLanguage);
   const seller = inv.seller;
   const buyer = inv.buyer;
   const labelFs = num(props, 'labelFontSize', 10);
@@ -169,13 +185,13 @@ export function partiesSection(inv: InvoiceDetail, props: Props = {}): Content {
   const sellerPct = Math.min(70, Math.max(30, num(props, 'sellerWidthPercent', 50)));
   const gap = num(props, 'columnGap', 16);
   const sellerStack: Content[] = [
-    { text: str(props, 'sellerLabel', 'Sprzedawca'), bold: true, fontSize: labelFs, margin: [0, 0, 0, 2] },
+    { text: str(props, 'sellerLabel', L.sellerLabel), bold: true, fontSize: labelFs, margin: [0, 0, 0, 2] },
     { text: seller.legalName, fontSize: bodyFs },
     { text: seller.addressLine1, fontSize: bodyFs },
   ];
   if (seller.addressLine2) sellerStack.push({ text: seller.addressLine2, fontSize: bodyFs });
   sellerStack.push({ text: `${seller.postalCode} ${seller.city}`, fontSize: bodyFs });
-  sellerStack.push({ text: `NIP: ${seller.taxId}`, fontSize: bodyFs });
+  sellerStack.push({ text: `${L.taxIdLabel}: ${seller.taxId}`, fontSize: bodyFs });
   if (bool(props, 'showSellerBank', true) && seller.bankAccount) {
     sellerStack.push({ text: `${seller.bankName ?? ''} ${seller.bankAccount}`.trim(), fontSize: bodyFs });
   }
@@ -184,7 +200,7 @@ export function partiesSection(inv: InvoiceDetail, props: Props = {}): Content {
   }
 
   const buyerStack: Content[] = [
-    { text: str(props, 'buyerLabel', 'Nabywca'), bold: true, fontSize: labelFs, margin: [0, 0, 0, 2] },
+    { text: str(props, 'buyerLabel', L.buyerLabel), bold: true, fontSize: labelFs, margin: [0, 0, 0, 2] },
     { text: buyer.name, fontSize: bodyFs },
   ];
   if (buyer.addressLine1) buyerStack.push({ text: buyer.addressLine1, fontSize: bodyFs });
@@ -192,7 +208,7 @@ export function partiesSection(inv: InvoiceDetail, props: Props = {}): Content {
     buyerStack.push({ text: `${buyer.postalCode} ${buyer.city}`.trim(), fontSize: bodyFs });
   }
   if (bool(props, 'showBuyerTaxId', true) && buyer.taxId) {
-    buyerStack.push({ text: `NIP: ${buyer.taxId}`, fontSize: bodyFs });
+    buyerStack.push({ text: `${L.taxIdLabel}: ${buyer.taxId}`, fontSize: bodyFs });
   }
 
   return {
@@ -205,7 +221,13 @@ export function partiesSection(inv: InvoiceDetail, props: Props = {}): Content {
   };
 }
 
-export function lineItemsSection(inv: InvoiceDetail, props: Props = {}): Content {
+export function lineItemsSection(
+  inv: InvoiceDetail,
+  props: Props = {},
+  documentLanguage?: string | null,
+): Content {
+  const L = labelsOf(documentLanguage);
+  const nl = numberLocale(documentLanguage);
   const fontSize = num(props, 'fontSize', 8);
   const headerBold = bool(props, 'headerBold', true);
   const headerBg = optStr(props, 'headerBackground');
@@ -221,15 +243,15 @@ export function lineItemsSection(inv: InvoiceDetail, props: Props = {}): Content
 
   type Col = { key: string; label: string; width: number | '*'; right?: boolean };
   const cols: Col[] = [
-    { key: 'lp', label: 'Lp', width: 16 },
-    { key: 'name', label: 'Nazwa', width: '*' },
+    { key: 'lp', label: L.colLp, width: 16 },
+    { key: 'name', label: L.colName, width: '*' },
   ];
-  if (showUnit) cols.push({ key: 'unit', label: 'Jedn.', width: 28 });
-  if (showQty) cols.push({ key: 'qty', label: 'Ilość', width: 32, right: true });
-  if (showUnitNet) cols.push({ key: 'unitNet', label: 'Cena netto', width: 50, right: true });
-  if (showTaxRate) cols.push({ key: 'tax', label: 'Stawka', width: 32, right: true });
-  if (showNet) cols.push({ key: 'net', label: 'Wartość netto', width: 56, right: true });
-  if (showGross) cols.push({ key: 'gross', label: 'Wartość brutto', width: 56, right: true });
+  if (showUnit) cols.push({ key: 'unit', label: L.colUnit, width: 28 });
+  if (showQty) cols.push({ key: 'qty', label: L.colQty, width: 32, right: true });
+  if (showUnitNet) cols.push({ key: 'unitNet', label: L.colUnitNet, width: 50, right: true });
+  if (showTaxRate) cols.push({ key: 'tax', label: L.colTax, width: 32, right: true });
+  if (showNet) cols.push({ key: 'net', label: L.colNet, width: 56, right: true });
+  if (showGross) cols.push({ key: 'gross', label: L.colGross, width: 56, right: true });
 
   const headerRow: TableCell[] = cols.map((c) => ({
     text: c.label,
@@ -265,16 +287,16 @@ export function lineItemsSection(inv: InvoiceDetail, props: Props = {}): Content
           row.push(cell(String(l.quantity), true));
           break;
         case 'unitNet':
-          row.push(cell(unitMoney(l.unitNetPrice), true));
+          row.push(cell(unitMoney(l.unitNetPrice, nl), true));
           break;
         case 'tax':
           row.push(cell(pct(l.taxRate), true));
           break;
         case 'net':
-          row.push(cell(money(l.netValue), true));
+          row.push(cell(money(l.netValue, nl), true));
           break;
         case 'gross':
-          row.push(cell(money(l.grossValue), true));
+          row.push(cell(money(l.grossValue, nl), true));
           break;
         default:
           break;
@@ -299,40 +321,44 @@ export function lineItemsSection(inv: InvoiceDetail, props: Props = {}): Content
   };
 }
 
-export function vatSummarySection(inv: InvoiceDetail, props: Props = {}): Content {
+export function vatSummarySection(
+  inv: InvoiceDetail,
+  props: Props = {},
+  documentLanguage?: string | null,
+): Content {
+  const L = labelsOf(documentLanguage);
+  const nl = numberLocale(documentLanguage);
   const fontSize = num(props, 'fontSize', 8);
   const headerBold = bool(props, 'headerBold', true);
   const headerBg = optStr(props, 'headerBackground');
   const headerColor = optStr(props, 'headerColor');
   const borderColor = optStr(props, 'borderColor') ?? '#cbd5e1';
   const showTotalRow = bool(props, 'showTotalRow', true);
-  const totalLabel = str(props, 'totalLabel', 'Razem');
+  const totalLabel = str(props, 'totalLabel', L.totalLabel);
 
-  const header: TableCell[] = ['Stawka VAT', 'Wartość netto', 'Kwota VAT', 'Wartość brutto'].map(
-    (t, i) => ({
-      text: t,
-      bold: headerBold,
-      fontSize,
-      color: headerColor,
-      fillColor: headerBg,
-      alignment: i === 0 ? ('left' as const) : ('right' as const),
-    }),
-  );
+  const header: TableCell[] = [L.vatRate, L.vatNet, L.vatAmount, L.vatGross].map((t, i) => ({
+    text: t,
+    bold: headerBold,
+    fontSize,
+    color: headerColor,
+    fillColor: headerBg,
+    alignment: i === 0 ? ('left' as const) : ('right' as const),
+  }));
   const rows: TableCell[][] = [header];
   for (const v of inv.vatSummary) {
     rows.push([
       { text: pct(v.taxRate), fontSize },
-      { text: money(v.netTotal), fontSize, alignment: 'right' },
-      { text: money(v.vatAmount), fontSize, alignment: 'right' },
-      { text: money(v.grossTotal), fontSize, alignment: 'right' },
+      { text: money(v.netTotal, nl), fontSize, alignment: 'right' },
+      { text: money(v.vatAmount, nl), fontSize, alignment: 'right' },
+      { text: money(v.grossTotal, nl), fontSize, alignment: 'right' },
     ]);
   }
   if (showTotalRow) {
     rows.push([
       { text: totalLabel, fontSize, bold: true },
-      { text: money(inv.netTotal), fontSize, alignment: 'right', bold: true },
-      { text: money(inv.taxTotal), fontSize, alignment: 'right', bold: true },
-      { text: money(inv.grossTotal), fontSize, alignment: 'right', bold: true },
+      { text: money(inv.netTotal, nl), fontSize, alignment: 'right', bold: true },
+      { text: money(inv.taxTotal, nl), fontSize, alignment: 'right', bold: true },
+      { text: money(inv.grossTotal, nl), fontSize, alignment: 'right', bold: true },
     ]);
   }
   return {
@@ -347,20 +373,14 @@ export function vatSummarySection(inv: InvoiceDetail, props: Props = {}): Conten
   };
 }
 
-/**
- * The overpayment row's default label, in the language the amounts are written
- * in (issue #428). A template's `labelOverpayment` replaces it.
- */
-const OVERPAYMENT_LABEL: Record<AmountToWordsLocale, string> = {
-  en: 'Overpayment',
-  pl: 'Nadpłata',
-};
-
 export function totalsSection(
   inv: InvoiceDetail,
   locale: AmountToWordsLocale,
   props: Props = {},
+  documentLanguage?: string | null,
 ): Content {
+  const L = labelsOf(documentLanguage ?? (locale === 'pl' ? 'pl-PL' : 'en-US'));
+  const nl = numberLocale(documentLanguage ?? (locale === 'pl' ? 'pl-PL' : 'en-US'));
   const align = alignOf(props, 'right');
   const fontSize = num(props, 'fontSize', 10);
   const color = optStr(props, 'color');
@@ -368,7 +388,7 @@ export function totalsSection(
   const stack: Content[] = [];
   if (bool(props, 'showPaid', true)) {
     stack.push({
-      text: `${str(props, 'labelPaid', 'Zapłacono')}: ${money(inv.paidTotal)} ${inv.currency}`,
+      text: `${str(props, 'labelPaid', L.labelPaid)}: ${money(inv.paidTotal, nl)} ${inv.currency}`,
       alignment: align,
       fontSize,
       color,
@@ -376,7 +396,7 @@ export function totalsSection(
   }
   if (bool(props, 'showAmountDue', true)) {
     stack.push({
-      text: `${str(props, 'labelAmountDue', 'Do zapłaty')}: ${money(inv.amountDue)} ${inv.currency}`,
+      text: `${str(props, 'labelAmountDue', L.labelAmountDue)}: ${money(inv.amountDue, nl)} ${inv.currency}`,
       alignment: align,
       bold: bool(props, 'amountDueBold', true),
       fontSize,
@@ -386,7 +406,7 @@ export function totalsSection(
   // Issue #428 — what was paid above the gross, beside an amount due of 0.
   if (bool(props, 'showOverpayment', true) && inv.overpayment > 0) {
     stack.push({
-      text: `${str(props, 'labelOverpayment', OVERPAYMENT_LABEL[locale])}: ${money(inv.overpayment)} ${inv.currency}`,
+      text: `${str(props, 'labelOverpayment', L.labelOverpayment)}: ${money(inv.overpayment, nl)} ${inv.currency}`,
       alignment: align,
       fontSize,
       color,
@@ -394,7 +414,7 @@ export function totalsSection(
   }
   if (bool(props, 'showGross', true)) {
     stack.push({
-      text: `${str(props, 'labelGross', 'Razem')}: ${money(inv.grossTotal)} ${inv.currency}`,
+      text: `${str(props, 'labelGross', L.labelGross)}: ${money(inv.grossTotal, nl)} ${inv.currency}`,
       alignment: align,
       fontSize,
       color,
@@ -402,7 +422,7 @@ export function totalsSection(
   }
   if (bool(props, 'showAmountInWords', true)) {
     stack.push({
-      text: `${str(props, 'labelInWords', 'Słownie')}: ${amountToWords(inv.grossTotal, inv.currency, locale)}`,
+      text: `${str(props, 'labelInWords', L.labelInWords)}: ${amountToWords(inv.grossTotal, inv.currency, locale)}`,
       alignment: align,
       italics: bool(props, 'amountInWordsItalics', true),
       fontSize,
@@ -446,11 +466,16 @@ export function notesSection(props: Props, inv: InvoiceDetail): Content {
   return textBlock(raw, inv, props, { fontSize: 11, showTopDivider: false, marginBottom: 8 });
 }
 
-export function footerSection(props: Props, inv: InvoiceDetail): Content {
+export function footerSection(
+  props: Props,
+  inv: InvoiceDetail,
+  documentLanguage?: string | null,
+): Content {
+  const L = labelsOf(documentLanguage);
   const raw =
-    typeof props['text'] === 'string'
+    typeof props['text'] === 'string' && (props['text'] as string).trim()
       ? (props['text'] as string)
-      : 'Dziękujemy za współpracę.\n{{var seller.legalName}} · NIP {{var seller.taxId}}';
+      : L.footerDefault;
   return textBlock(raw, inv, props, { fontSize: 9, showTopDivider: true, marginBottom: 8 });
 }
 

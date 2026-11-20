@@ -15,6 +15,8 @@ export interface CurrentCustomer {
   role: 'organization_admin' | 'regular_user';
   emailVerifiedAt: string | null;
   twoFactorEnabled: boolean;
+  /** Issue #652 — e-mail / document language; `null` while unknown. */
+  preferredLanguage: string | null;
 }
 
 export type OrganizationLifecycleStatus =
@@ -68,4 +70,20 @@ export async function changePassword(
     body: { currentPassword, newPassword },
     sessionCookie,
   });
+}
+
+/** Issue #652 — save the buyer's e-mail / document language. */
+export async function updatePreferredLanguage(
+  sessionCookie: string,
+  preferredLanguage: string,
+  ctx?: import('./client').RequestContext,
+): Promise<string | null> {
+  const result = await apiMutate<{ preferredLanguage: string }>({
+    method: 'PATCH',
+    path: '/api/v1/me/customer/preferred-language',
+    body: { preferredLanguage },
+    sessionCookie,
+    ctx,
+  });
+  return result.data?.preferredLanguage ?? null;
 }

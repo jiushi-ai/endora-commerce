@@ -74,6 +74,7 @@ function account(overrides: Partial<CustomerAccountRecord> = {}): CustomerAccoun
     organizationId: 'org-1',
     deletedAt: null,
     anonymizedAt: null,
+    preferredLanguage: null,
     ...overrides,
   } as CustomerAccountRecord;
 }

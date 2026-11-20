@@ -89,6 +89,17 @@ export interface InvoicesModuleOptions {
   resolveLanguage: (salesChannelId: string | null) => Promise<string>;
   /** Feature 167 (OR-14) — a channel's URL-language facts, for the e-mail's order-page link. */
   channelUrlFactsFor?: (salesChannelId: string | null) => Promise<ChannelUrlFacts | null>;
+  /**
+   * Batch 44 — preferred language + channel languages for invoice PDF chrome.
+   */
+  resolvePdfLocale: (input: {
+    order: OrderRecord | null;
+    salesChannelId: string | null;
+  }) => Promise<{
+    preferredLanguage: string | null;
+    channelLanguages: string[] | null;
+    channelDefaultLanguage: string | null;
+  }>;
   /** Feature 059 — emits `invoice.issued.v1` / `invoice.corrected.v1`. */
   eventBus?: InvoicesEventBus;
   /** FR-035 — audit-log recorder for issuance / correction. */
@@ -175,6 +186,7 @@ export function invoicesModule(options: InvoicesModuleOptions): {
     getSender: options.getTransactionalEmailSender,
     resolveRecipientEmail: options.resolveRecipientEmail,
     resolveLanguage: options.resolveLanguage,
+    resolvePdfLocale: options.resolvePdfLocale,
     ...(options.channelUrlFactsFor ? { channelUrlFactsFor: options.channelUrlFactsFor } : {}),
   });
   emailOnReadyHolder.dispatch = async (invoiceId) => {
@@ -207,6 +219,7 @@ export function invoicesModule(options: InvoicesModuleOptions): {
       documents: options.documents,
       emailDispatcher,
       resolveAdminUserId: options.resolveAdminUserId,
+      resolvePdfLocale: options.resolvePdfLocale,
     });
     await registerInvoicesCustomerRoutes(app, {
       emFactory: options.emFactory,
@@ -217,6 +230,7 @@ export function invoicesModule(options: InvoicesModuleOptions): {
       resolveCustomerContext: options.resolveCustomerContext,
       invoiceService,
       documents: options.documents,
+      resolvePdfLocale: options.resolvePdfLocale,
     });
   };
 

@@ -166,6 +166,12 @@ export const ERROR_CODES = {
   CUSTOMER_NOT_DELETED: 'CUSTOMER_NOT_DELETED',
   CUSTOMER_RESTORE_WINDOW_ELAPSED: 'CUSTOMER_RESTORE_WINDOW_ELAPSED',
   ORG_OWNER_DEPLETION: 'ORG_OWNER_DEPLETION',
+  /**
+   * Issue #652 (D-292): `PATCH /api/v1/me/customer/preferred-language` names a
+   * language the request's sales channel does not offer (422). Owned by
+   * `customers`.
+   */
+  PREFERRED_LANGUAGE_NOT_OFFERED: 'PREFERRED_LANGUAGE_NOT_OFFERED',
 
   // Orders + Carts (feature 027)
   CART_EMPTY: 'CART_EMPTY',
@@ -206,6 +212,12 @@ export const ERROR_CODES = {
   // invoiced has no sale left to document (issue #417, owner ruling of
   // 2026-10-24), so issuance refuses it.
   INVOICE_ORDER_REFUNDED: 'INVOICE_ORDER_REFUNDED',
+  /**
+   * Seller VAT/NIP and company data are missing from settings, so issuance
+   * refuses rather than print an invalid document (batch 44). Owned by
+   * `invoices`.
+   */
+  INVOICE_SELLER_NOT_CONFIGURED: 'INVOICE_SELLER_NOT_CONFIGURED',
   INVALID_TRANSITION: 'INVALID_TRANSITION',
 
   // Returns 155 — a `return`-kind case naming an order line recorded as not

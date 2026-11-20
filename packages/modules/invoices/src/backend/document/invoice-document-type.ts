@@ -13,8 +13,16 @@ import { describeOwnBlock } from './block-descriptions.js';
 
 export const INVOICE_DOCUMENT_TYPE = 'invoices.invoice';
 
-/** The language invoice PDFs are printed in (owner answer N5). */
+/**
+ * Historical built-in / seed language (owner answer N5). Batch 44 unlocks
+ * per-invoice locale via `invoiceRenderInput` — this constant remains the
+ * fallback when no preferred / channel language is known, and the seed tree
+ * key that always exists.
+ */
 export const INVOICE_RENDER_LANGUAGE = 'pl-PL';
+
+/** Languages the built-in invoice layout offers for template trees. */
+export const INVOICE_DOCUMENT_LANGUAGES = ['pl-PL', 'en-US', 'zh-CN', 'zh-TW'] as const;
 
 /** What `prepareRender` computes once per invoice PDF. */
 export interface InvoicePrepared {
@@ -57,7 +65,7 @@ export function createInvoiceDocumentType(deps: {
       name,
       moduleId: 'invoices',
       describe: () => describeOwnBlock(name),
-      async render({ props, data, prepared }) {
+      async render({ props, data, prepared, language }) {
         let effective: Record<string, unknown> = { ...props };
         if (name === 'invoices.InvoiceLogo') {
           const embedded = (await embedInvoiceLogoImages(
@@ -68,6 +76,7 @@ export function createInvoiceDocumentType(deps: {
         }
         return renderOwnBlock(name, effective, data.invoice, data.amountLocale, {
           suppressKsefNumber: prepared.suppressKsefNumber,
+          documentLanguage: data.documentLanguage ?? language,
         });
       },
     }),
@@ -97,15 +106,26 @@ export function createInvoiceDocumentType(deps: {
     blocks: () => [...own, ...deps.contributed.present().filter((b) => !OWN.has(b.name)).map(adapt)],
     coreBlocks: 'none',
     selection: 'default_only',
-    languages: [INVOICE_RENDER_LANGUAGE],
-    defaultContent: () => ({
-      schemaVersion: 1,
-      languages: {
-        [INVOICE_RENDER_LANGUAGE]: structuredClone(
-          (GENERIC_INVOICE_TEMPLATE_CONTENT.languages as Record<string, unknown>)[INVOICE_RENDER_LANGUAGE],
-        ),
-      },
-    }) as ReturnType<DocumentTypeRegistration['defaultContent']>,
+    languages: [...INVOICE_DOCUMENT_LANGUAGES],
+    defaultContent: () => {
+      const plTree = structuredClone(
+        (GENERIC_INVOICE_TEMPLATE_CONTENT.languages as Record<string, unknown>)[INVOICE_RENDER_LANGUAGE],
+      );
+      const enTree = structuredClone(
+        (GENERIC_INVOICE_TEMPLATE_CONTENT.languages as Record<string, unknown>)['en-US'] ?? plTree,
+      );
+      return {
+        schemaVersion: 1 as const,
+        languages: {
+          'pl-PL': plTree,
+          'en-US': enTree,
+          // CJK trees reuse the English structure; chrome labels come from
+          // `documentLanguage` in the section builders (batch 44).
+          'zh-CN': structuredClone(enTree),
+          'zh-TW': structuredClone(enTree),
+        },
+      } as ReturnType<DocumentTypeRegistration['defaultContent']>;
+    },
     pageDefaults: {
       pageSize: 'A4',
       orientation: 'portrait',

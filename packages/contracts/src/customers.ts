@@ -125,8 +125,43 @@ export const customerSelfProfileSchema = z.object({
   organizationId: uuidSchema.nullable(),
   customerGroupId: uuidSchema.nullable(),
   twoFactorEnabled: z.boolean(),
+  /**
+   * Issue #652 (D-292) — the language the account's e-mails / invoice PDF labels
+   * are written in; `null` while unknown.
+   */
+  preferredLanguage: z.string().nullable(),
 });
 export type CustomerSelfProfile = z.infer<typeof customerSelfProfileSchema>;
+
+/**
+ * The longest language tag a preferred language may be — RFC 5646 §4.4.1's
+ * recommended minimum buffer, and the width of `customer_accounts.preferred_language`.
+ */
+export const CUSTOMER_PREFERRED_LANGUAGE_MAX_LENGTH = 35;
+
+const LANGUAGE_TAG_SHAPE = /^[A-Za-z]{2,3}(-[A-Za-z0-9]{1,8})*$/;
+
+/**
+ * `PATCH /api/v1/me/customer/preferred-language` — the buyer's explicit choice
+ * of e-mail / document language (issue #652, D-292).
+ */
+export const patchCustomerPreferredLanguageBodySchema = z.object({
+  preferredLanguage: z
+    .string()
+    .trim()
+    .max(CUSTOMER_PREFERRED_LANGUAGE_MAX_LENGTH)
+    .regex(LANGUAGE_TAG_SHAPE),
+});
+export type PatchCustomerPreferredLanguageBody = z.infer<
+  typeof patchCustomerPreferredLanguageBodySchema
+>;
+
+export const patchCustomerPreferredLanguageResponseSchema = z.object({
+  data: z.object({ preferredLanguage: z.string() }),
+});
+export type PatchCustomerPreferredLanguageResponse = z.infer<
+  typeof patchCustomerPreferredLanguageResponseSchema
+>;
 
 // Password change reuses `changePasswordRequestSchema` from organizations.ts.
 
