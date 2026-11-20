@@ -961,3 +961,13 @@ feat-26-11-19 20:14:37 [46.1~46.4]：发票PDF强制Noto简繁字体，修复Rob
 
 汇总：仅 storefront i18n，不改下单/询价业务逻辑；发版需重建/发布 storefront 镜像。
 feat-26-11-19 22:45:00 [47.1~47.4]：小b订单详情与询价详情四语i18n，去掉EN/PL硬编码
+
+### 48. 小b 订单列表 Status/Payment 随语系显示
+
+- [x] 48.1 抽出 `lib/orders/status-labels.ts`（paymentStatusLabel）；列表页接线；详情页复用
+- [x] 48.2 `resolveOrderStatusLabel` / `orderStatusLabel`：locale 短码回退（pl-PL→pl）；API statusName 优先，缺省用 catalogue
+- [x] 48.3 `messages.ts` 补 `order.status.*` 四语（en 文案与种子一致）；`status-labels.test.ts`；定向 vitest 12 通过
+- [x] 48.4 本 §99 汇总
+
+汇总：对齐开源 demo 的支付列前端映射思路；zh-CN 状态在 API 无中文名时用词条「新的」等兜底。仅 storefront；发版需发布 storefront 镜像。未改业务逻辑。
+feat-26-11-19 23:27:32 [48.1~48.4]：订单列表Status/Payment随语系；短码回退与词条兜底

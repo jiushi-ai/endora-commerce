@@ -390,6 +390,17 @@ export type MessageKey =
   | 'order.cancel.cta'
   | 'order.cancel.hint'
   | 'order.cancel.failed'
+  // Batch 48 — fulfilment status codes (catalogue fallback when statusName misses locale).
+  | 'order.status.new'
+  | 'order.status.pending'
+  | 'order.status.paid'
+  | 'order.status.processing'
+  | 'order.status.shipment_ready'
+  | 'order.status.shipment_sent'
+  | 'order.status.completed'
+  | 'order.status.on_hold'
+  | 'order.status.cancelled'
+
   // Batch 47 — order detail + quote-request detail chrome (was EN/PL hard-coded).
   | 'order.detail.title'
   | 'order.detail.received'
@@ -1363,7 +1374,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.notFound.body': "We couldn't find that order.",
     'order.detail.transferHint': "Pay by bank transfer using the reference printed on the proforma invoice we'll email shortly. We'll update the order once the payment clears.",
     'order.detail.reorderCart': 'Order again → cart',
-    'order.detail.reorderQuote': 'Start a quote from this order',
+    'order.detail.reorderQuote': 'Order again → quote request',
     'order.detail.downloadInvoice': 'Download invoice {number}',
     'order.detail.seeAll': 'See all orders',
     'order.detail.statusHeading': 'Status',
@@ -1397,6 +1408,16 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.paymentStatus.failed': 'Failed',
     'order.detail.paymentStatus.deferred': 'Deferred',
     'order.detail.paymentStatus.refunded': 'Refunded',
+
+    'order.status.new': 'New',
+    'order.status.pending': 'Pending',
+    'order.status.paid': 'Paid',
+    'order.status.processing': 'Processing',
+    'order.status.shipment_ready': 'Shipment Ready',
+    'order.status.shipment_sent': 'Shipment Sent',
+    'order.status.completed': 'Completed',
+    'order.status.on_hold': 'On Hold',
+    'order.status.cancelled': 'Cancelled',
     'quoteRequest.detail.back': '← Quote requests',
     'quoteRequest.detail.notFound': 'Quote request not found.',
     'quoteRequest.detail.title': 'Quote request #{id}',
@@ -2283,7 +2304,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.notFound.body': '找不到该订单。',
     'order.detail.transferHint': '请按我们稍后邮件发送的形式发票上的汇款备注进行银行转账。款项到账后我们会更新订单状态。',
     'order.detail.reorderCart': '再次下单 → 购物车',
-    'order.detail.reorderQuote': '按此单发起询价',
+    'order.detail.reorderQuote': '按此订单 → 询价请求',
     'order.detail.downloadInvoice': '下载发票 {number}',
     'order.detail.seeAll': '查看全部订单',
     'order.detail.statusHeading': '状态',
@@ -2317,6 +2338,15 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.paymentStatus.failed': '付款失败',
     'order.detail.paymentStatus.deferred': '延期付款',
     'order.detail.paymentStatus.refunded': '已退款',
+    'order.status.new': '新的',
+    'order.status.pending': '待处理',
+    'order.status.paid': '已付款',
+    'order.status.processing': '处理中',
+    'order.status.shipment_ready': '待发货',
+    'order.status.shipment_sent': '已发货',
+    'order.status.completed': '已完成',
+    'order.status.on_hold': '已挂起',
+    'order.status.cancelled': '已取消',
     'quoteRequest.detail.back': '← 询价单列表',
     'quoteRequest.detail.notFound': '未找到询价单。',
     'quoteRequest.detail.title': '询价单 #{id}',
@@ -3179,7 +3209,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.notFound.body': '找不到該訂單。',
     'order.detail.transferHint': '請依我們稍後郵件發送的形式發票上的匯款備註進行銀行轉帳。款項入帳後我們會更新訂單狀態。',
     'order.detail.reorderCart': '再次下單 → 購物車',
-    'order.detail.reorderQuote': '按此單發起詢價',
+    'order.detail.reorderQuote': '再次下單 → 詢價請求',
     'order.detail.downloadInvoice': '下載發票 {number}',
     'order.detail.seeAll': '查看全部訂單',
     'order.detail.statusHeading': '狀態',
@@ -3213,6 +3243,15 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.paymentStatus.failed': '付款失敗',
     'order.detail.paymentStatus.deferred': '延期付款',
     'order.detail.paymentStatus.refunded': '已退款',
+    'order.status.new': '新的',
+    'order.status.pending': '待處理',
+    'order.status.paid': '已付款',
+    'order.status.processing': '處理中',
+    'order.status.shipment_ready': '待出貨',
+    'order.status.shipment_sent': '已出貨',
+    'order.status.completed': '已完成',
+    'order.status.on_hold': '已暫停',
+    'order.status.cancelled': '已取消',
     'quoteRequest.detail.back': '← 詢價單列表',
     'quoteRequest.detail.notFound': '找不到詢價單。',
     'quoteRequest.detail.title': '詢價單 #{id}',
@@ -4092,7 +4131,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.notFound.body': 'Nie mogliśmy znaleźć tego zamówienia.',
     'order.detail.transferHint': 'Opłać przelewem, używając numeru referencyjnego z proformy, którą wkrótce wyślemy e-mailem. Zaktualizujemy zamówienie po zaksięgowaniu płatności.',
     'order.detail.reorderCart': 'Zamów ponownie → koszyk',
-    'order.detail.reorderQuote': 'Utwórz zapytanie z tego zamówienia',
+    'order.detail.reorderQuote': 'Zamów ponownie → zapytanie ofertowe',
     'order.detail.downloadInvoice': 'Pobierz fakturę {number}',
     'order.detail.seeAll': 'Wszystkie zamówienia',
     'order.detail.statusHeading': 'Status',
@@ -4126,6 +4165,15 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.paymentStatus.failed': 'Nieudane',
     'order.detail.paymentStatus.deferred': 'Odroczone',
     'order.detail.paymentStatus.refunded': 'Zwrócone',
+    'order.status.new': 'Nowy',
+    'order.status.pending': 'Oczekujące',
+    'order.status.paid': 'Zapłacone',
+    'order.status.processing': 'Przetwarzanie',
+    'order.status.shipment_ready': 'Przesyłka gotowa',
+    'order.status.shipment_sent': 'Przesyłka wysłana',
+    'order.status.completed': 'Zakończone',
+    'order.status.on_hold': 'Wstrzymane',
+    'order.status.cancelled': 'Anulowane',
     'quoteRequest.detail.back': '← Lista zapytań',
     'quoteRequest.detail.notFound': 'Nie znaleziono zapytania ofertowego.',
     'quoteRequest.detail.title': 'Zapytanie #{id}',

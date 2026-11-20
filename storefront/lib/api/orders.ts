@@ -55,13 +55,20 @@ export type NextAction =
 
 /**
  * Resolve an order's status label for the active locale (feature 039):
- * statusName[locale] → statusDefaultName → raw status code.
+ * statusName[locale] → statusName[primary] → statusDefaultName → raw status code.
+ *
+ * Graph seeds store short keys (`en` / `pl`); the storefront locale is often
+ * `en-US` / `pl-PL` / `zh-CN`. Prefer `orderStatusLabel` from
+ * `lib/orders/status-labels.ts` when a catalogue fallback is available.
  */
 export function resolveOrderStatusLabel(
   order: { status: string; statusName?: Record<string, string>; statusDefaultName?: string },
   locale: string,
 ): string {
-  return order.statusName?.[locale] ?? order.statusDefaultName ?? order.status;
+  if (order.statusName?.[locale]) return order.statusName[locale];
+  const primary = locale.split('-')[0];
+  if (primary && order.statusName?.[primary]) return order.statusName[primary];
+  return order.statusDefaultName ?? order.status;
 }
 
 export interface OrderItem {

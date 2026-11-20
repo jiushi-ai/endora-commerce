@@ -34,7 +34,9 @@ describe('order.detail / quoteRequest.detail catalogue', () => {
       expect(tForLocale('zh-CN')(key), key).not.toBe(key);
       expect(tForLocale('zh-CN')(key), key).not.toBe(tForLocale('en-US')(key));
     }
-    expect(tForLocale('zh-CN')('order.detail.reorderQuote')).toBe('按此单发起询价');
+    expect(tForLocale('zh-CN')('order.detail.reorderQuote')).toBe('按此订单 → 询价请求');
+    expect(tForLocale('en-US')('order.detail.reorderQuote')).toBe('Order again → quote request');
+    expect(tForLocale('en-US')('order.detail.reorderQuote')).toContain('→');
     expect(tForLocale('zh-CN')('quoteRequest.detail.history')).toBe('变更历史');
     expect(tForLocale('pl-PL')('quoteRequest.detail.accept')).toBe('Akceptuj wersję');
   });

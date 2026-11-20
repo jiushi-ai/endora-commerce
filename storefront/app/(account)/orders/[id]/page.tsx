@@ -6,7 +6,6 @@ import {
   getMyOrder,
   listOrderComments,
   reorderOrder,
-  resolveOrderStatusLabel,
   type OrderComment,
 } from '../../../../lib/api/orders';
 import { retryOrderPayment } from '../../../../lib/api/payments';
@@ -19,8 +18,9 @@ import { getSessionCookie } from '../../../../lib/session';
 import { getServerContext } from '../../../../lib/server-context';
 import { StorefrontApiError } from '../../../../lib/api/client';
 import { formatMoney } from '../../../../lib/i18n/money';
-import { tForLocale, type MessageKey } from '../../../../lib/i18n/messages';
+import { tForLocale } from '../../../../lib/i18n/messages';
 import { resolvePaymentReturnNotice } from '../../../../lib/orders/payment-return-notice';
+import { orderStatusLabel, paymentStatusLabel } from '../../../../lib/orders/status-labels';
 import { OrderItemRows } from '../../../../components/orders/OrderItemRows';
 import { PurchaseTracker } from '../../../../components/analytics/EcommerceTrackers';
 import { purchaseTrackingPayload } from '../../../../lib/analytics/purchase-eligibility';
@@ -42,23 +42,8 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
  * `awaiting_transfer` and the page tells the buyer what to do next.
  *
  * Batch 47 — chrome goes through `tForLocale` (was English hard-coded).
+ * Batch 48 — status/payment cells share `lib/orders/status-labels`.
  */
-
-const PAYMENT_STATUS_KEYS = {
-  awaiting_payment: 'order.detail.paymentStatus.awaiting_payment',
-  paid: 'order.detail.paymentStatus.paid',
-  failed: 'order.detail.paymentStatus.failed',
-  deferred: 'order.detail.paymentStatus.deferred',
-  refunded: 'order.detail.paymentStatus.refunded',
-} as const satisfies Record<string, MessageKey>;
-
-function paymentStatusLabel(
-  paymentStatus: string,
-  t: (key: MessageKey) => string,
-): string {
-  const key = PAYMENT_STATUS_KEYS[paymentStatus as keyof typeof PAYMENT_STATUS_KEYS];
-  return key ? t(key) : paymentStatus;
-}
 
 export default async function OrderConfirmationPage({
   params,
@@ -262,7 +247,7 @@ export default async function OrderConfirmationPage({
         <tbody>
           <tr>
             <th scope="row">{t('order.detail.orderStatus')}</th>
-            <td>{resolveOrderStatusLabel(order, locale)}</td>
+            <td>{orderStatusLabel(order, locale, t)}</td>
           </tr>
           <tr>
             <th scope="row">{t('order.detail.paymentStatus')}</th>
