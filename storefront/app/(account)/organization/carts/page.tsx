@@ -6,6 +6,9 @@ import {
 import { getSessionCookie, getAnonCartCookie } from '../../../../lib/session';
 import { getMe } from '../../../../lib/api/account';
 import { formatMoney } from '../../../../lib/i18n/money';
+import { getServerContext } from '../../../../lib/server-context';
+import { tForLocale } from '../../../../lib/i18n/messages';
+import { codeLabel } from '../../../../lib/account/labels';
 import type { Metadata } from 'next';
 import { localeRedirect } from '../../../../lib/i18n/navigation';
 
@@ -56,6 +59,9 @@ export default async function OrganizationCartsPage(): Promise<ReactNode> {
     loadError = err instanceof Error ? err.message : 'Could not load organization carts.';
   }
 
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
+
   return (
     <>
       <h2>Organization carts</h2>
@@ -88,14 +94,14 @@ export default async function OrganizationCartsPage(): Promise<ReactNode> {
                 <td>{cart.ownerDisplayName}</td>
                 <td>
                   <span className={`b2b-cart-status b2b-cart-status--${cart.status}`}>
-                    {cart.status}
+                    {codeLabel(t, 'account.cartStatus', cart.status)}
                   </span>
                 </td>
                 <td>
                   <span
                     className={`b2b-cart-approval b2b-cart-approval--${cart.approvalStatus}`}
                   >
-                    {cart.approvalStatus}
+                    {codeLabel(t, 'account.cartApprovalStatus', cart.approvalStatus)}
                   </span>
                 </td>
                 <td>{cart.itemCount}</td>

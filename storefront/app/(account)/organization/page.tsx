@@ -3,6 +3,7 @@ import { getSessionCookie } from '../../../lib/session';
 import { getServerContext } from '../../../lib/server-context';
 import { getMe } from '../../../lib/api/account';
 import { tForLocale } from '../../../lib/i18n/messages';
+import { codeLabel } from '../../../lib/account/labels';
 import type { Metadata } from 'next';
 import { localeRedirect } from '../../../lib/i18n/navigation';
 
@@ -36,11 +37,11 @@ export default async function OrganizationPage(): Promise<ReactNode> {
           </tr>
           <tr>
             <th scope="row">{t('account.org.status')}</th>
-            <td>{o.status}</td>
+            <td>{codeLabel(t, 'account.organizationStatus', o.status)}</td>
           </tr>
           <tr>
             <th scope="row">{t('account.org.vatStatus')}</th>
-            <td>{o.vatStatus}</td>
+            <td>{codeLabel(t, 'account.vatStatus', o.vatStatus)}</td>
           </tr>
           <tr>
             <th scope="row">{t('account.org.registeredAddress')}</th>

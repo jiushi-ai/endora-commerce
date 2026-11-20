@@ -982,3 +982,13 @@ feat-26-11-19 23:27:32 [48.1~48.4]：订单列表Status/Payment随语系；短�
 汇总：对标开源 **#85**；完整 `4645fffc1` 依赖 catalogue namespace 拆分，与四语 monolith 冲突过大，本批改为适配移植。后续若拆 namespace，再专批合全量 account 页。
 
 feat-26-11-20 00:05:49 [49.1~49.4]：85 pick最小移植codeLabel；订单支付枚举对齐开源模式
+
+### 50. 85续 P0 — organization / carts 枚举 codeLabel
+
+- [x] 50.1 `messages.ts` 补 `account.organizationStatus.*` / `vatStatus.*` / `cartStatus.*` / `cartApprovalStatus.*` 四语（EN/PL 对齐上游 `4645`）
+- [x] 50.2 `organization/page` + `organization/carts` 状态列改 `codeLabel`（CSS class 仍用 raw code）
+- [x] 50.3 `labels.test.ts` 覆盖词条与接线；顺修 `order.status.new` 测试期望「新创建」；本 §99
+
+汇总：按页续做 #85 P0；未 cherry-pick 全量、未拆 namespace。组织状态/VAT、购物车状态/审批状态随语系显示；chrome 文案本批不动。定向 vitest 10 通过。
+
+feat-26-11-20 00:46:02 [50.1~50.3]：organization与carts枚举接codeLabel；四语词条对齐上游

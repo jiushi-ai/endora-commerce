@@ -899,6 +899,23 @@ export type MessageKey =
   | 'account.lists.setDefault'
   | 'account.org.taxId'
   | 'account.org.status'
+  // Batch 50 — org / cart API enum labels via codeLabel (85续, from upstream 4645).
+  | 'account.organizationStatus.pending_verification'
+  | 'account.organizationStatus.active'
+  | 'account.organizationStatus.blocked'
+  | 'account.organizationStatus.rejected'
+  | 'account.vatStatus.vat_payer'
+  | 'account.vatStatus.vat_exempt'
+  | 'account.vatStatus.reverse_charge'
+  | 'account.cartStatus.active'
+  | 'account.cartStatus.abandoned'
+  | 'account.cartStatus.completed'
+  | 'account.cartStatus.rejected'
+  | 'account.cartApprovalStatus.not_required'
+  | 'account.cartApprovalStatus.pending'
+  | 'account.cartApprovalStatus.approved'
+  | 'account.cartApprovalStatus.rejected_by_org_admin'
+
   | 'account.org.vatStatus'
   | 'account.org.registeredAddress'
   | 'account.members.title'
@@ -1764,6 +1781,22 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.setDefault': 'Set as default',
     'account.org.taxId': 'Tax ID',
     'account.org.status': 'Status',
+
+    'account.organizationStatus.pending_verification': 'Awaiting verification',
+    'account.organizationStatus.active': 'Active',
+    'account.organizationStatus.blocked': 'Blocked',
+    'account.organizationStatus.rejected': 'Rejected',
+    'account.vatStatus.vat_payer': 'VAT payer',
+    'account.vatStatus.vat_exempt': 'VAT exempt',
+    'account.vatStatus.reverse_charge': 'Reverse charge',
+    'account.cartStatus.active': 'Active',
+    'account.cartStatus.abandoned': 'Abandoned',
+    'account.cartStatus.completed': 'Completed',
+    'account.cartStatus.rejected': 'Rejected',
+    'account.cartApprovalStatus.not_required': 'Not required',
+    'account.cartApprovalStatus.pending': 'Awaiting approval',
+    'account.cartApprovalStatus.approved': 'Approved',
+    'account.cartApprovalStatus.rejected_by_org_admin': 'Rejected by an approver',
     'account.org.vatStatus': 'VAT status',
     'account.org.registeredAddress': 'Registered address',
     'account.members.title': 'Members',
@@ -2338,7 +2371,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.paymentStatus.failed': '付款失败',
     'order.detail.paymentStatus.deferred': '延期付款',
     'order.detail.paymentStatus.refunded': '已退款',
-    'order.status.new': '新的',
+    'order.status.new': '新创建',
     'order.status.pending': '待处理',
     'order.status.paid': '已付款',
     'order.status.processing': '处理中',
@@ -2668,6 +2701,22 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.setDefault': '设为默认',
     'account.org.taxId': '税号',
     'account.org.status': '状态',
+
+    'account.organizationStatus.pending_verification': '待验证',
+    'account.organizationStatus.active': '已激活',
+    'account.organizationStatus.blocked': '已封禁',
+    'account.organizationStatus.rejected': '已拒绝',
+    'account.vatStatus.vat_payer': '增值税纳税人',
+    'account.vatStatus.vat_exempt': '免税',
+    'account.vatStatus.reverse_charge': '反向征收',
+    'account.cartStatus.active': '进行中',
+    'account.cartStatus.abandoned': '已遗弃',
+    'account.cartStatus.completed': '已完成',
+    'account.cartStatus.rejected': '已拒绝',
+    'account.cartApprovalStatus.not_required': '无需审批',
+    'account.cartApprovalStatus.pending': '待审批',
+    'account.cartApprovalStatus.approved': '已批准',
+    'account.cartApprovalStatus.rejected_by_org_admin': '审批人已拒绝',
     'account.org.vatStatus': '增值税状态',
     'account.org.registeredAddress': '注册地址',
     'account.members.title': '成员',
@@ -3243,7 +3292,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.paymentStatus.failed': '付款失敗',
     'order.detail.paymentStatus.deferred': '延期付款',
     'order.detail.paymentStatus.refunded': '已退款',
-    'order.status.new': '新的',
+    'order.status.new': '新創建',
     'order.status.pending': '待處理',
     'order.status.paid': '已付款',
     'order.status.processing': '處理中',
@@ -3573,6 +3622,22 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.setDefault': '設為預設',
     'account.org.taxId': '稅號',
     'account.org.status': '狀態',
+
+    'account.organizationStatus.pending_verification': '待驗證',
+    'account.organizationStatus.active': '已啟用',
+    'account.organizationStatus.blocked': '已封鎖',
+    'account.organizationStatus.rejected': '已拒絕',
+    'account.vatStatus.vat_payer': '增值稅納稅人',
+    'account.vatStatus.vat_exempt': '免稅',
+    'account.vatStatus.reverse_charge': '反向課稅',
+    'account.cartStatus.active': '進行中',
+    'account.cartStatus.abandoned': '已遺棄',
+    'account.cartStatus.completed': '已完成',
+    'account.cartStatus.rejected': '已拒絕',
+    'account.cartApprovalStatus.not_required': '無需審批',
+    'account.cartApprovalStatus.pending': '待審批',
+    'account.cartApprovalStatus.approved': '已核准',
+    'account.cartApprovalStatus.rejected_by_org_admin': '審批人已拒絕',
     'account.org.vatStatus': '增值稅狀態',
     'account.org.registeredAddress': '註冊地址',
     'account.members.title': '成員',
@@ -4521,6 +4586,22 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.lists.setDefault': 'Ustaw jako domyślną',
     'account.org.taxId': 'NIP',
     'account.org.status': 'Status',
+
+    'account.organizationStatus.pending_verification': 'Oczekuje na weryfikację',
+    'account.organizationStatus.active': 'Aktywna',
+    'account.organizationStatus.blocked': 'Zablokowana',
+    'account.organizationStatus.rejected': 'Odrzucona',
+    'account.vatStatus.vat_payer': 'Czynny podatnik VAT',
+    'account.vatStatus.vat_exempt': 'Zwolniony z VAT',
+    'account.vatStatus.reverse_charge': 'Odwrotne obciążenie',
+    'account.cartStatus.active': 'Aktywny',
+    'account.cartStatus.abandoned': 'Porzucony',
+    'account.cartStatus.completed': 'Zrealizowany',
+    'account.cartStatus.rejected': 'Odrzucony',
+    'account.cartApprovalStatus.not_required': 'Nie wymaga akceptacji',
+    'account.cartApprovalStatus.pending': 'Oczekuje na akceptację',
+    'account.cartApprovalStatus.approved': 'Zaakceptowany',
+    'account.cartApprovalStatus.rejected_by_org_admin': 'Odrzucony przez akceptującego',
     'account.org.vatStatus': 'Status VAT',
     'account.org.registeredAddress': 'Adres rejestrowy',
     'account.members.title': 'Członkowie',

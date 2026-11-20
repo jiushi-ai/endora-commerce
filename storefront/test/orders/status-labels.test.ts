@@ -39,8 +39,8 @@ describe('orderStatusLabel', () => {
   });
 
   it('uses codeLabel catalogue when statusName has no zh entry', () => {
-    expect(orderStatusLabel(order, 'zh-CN', tForLocale('zh-CN'))).toBe('新的');
-    expect(codeLabel(tForLocale('zh-CN'), 'order.status', 'new')).toBe('新的');
+    expect(orderStatusLabel(order, 'zh-CN', tForLocale('zh-CN'))).toBe('新创建');
+    expect(codeLabel(tForLocale('zh-CN'), 'order.status', 'new')).toBe('新创建');
   });
 });
 
