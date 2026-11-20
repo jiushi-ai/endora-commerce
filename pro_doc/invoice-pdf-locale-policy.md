@@ -9,7 +9,7 @@
 | --- | --- |
 | Fixed labels (title, table headers, party labels, footer chrome, amount-in-words locale) | Buyer **E-mail language** = `customer_accounts.preferredLanguage` on the order’s customer account |
 | Variable values (legal names, addresses, tax IDs, product names, numeric amounts) | Database / order snapshot **as stored** — do not machine-translate |
-| Missing glyphs (tofu / □) | Font problem — embed a CJK-capable font in pdfmake; independent of label locale |
+| Missing glyphs (tofu / □) | Font problem — embed Noto CJK SC+TC and **force** them as `defaultStyle.font` (batch 46; file-on-disk alone is not enough if Roboto stays default) |
 
 ## Resolution order (issue invoice from Admin order detail)
 

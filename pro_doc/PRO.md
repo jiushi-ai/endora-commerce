@@ -940,3 +940,14 @@ feat-26-11-19 18:13:46 [44.1~44.11]：发票PDF跟买家Email language+CJK；订
 汇总：分支 `feat/batch-44-invoice-pdf-locale`；黄框英文 seed 不再压过文档语；生产旧 DB 模板靠 `chromeStr` 即可，无需新 migration；CJK 镜像构建失败即截断字体。pdf-components + seed 定向 33 通过。未 commit。
 
 feat-26-11-19 19:21:47 [45.1~45.6]：发票PDF chrome跟文档语；CJK镜像字体大小校验
+
+### 46. 发票 PDF 强制 Noto 简繁字体（修 Roboto 盖掉 CJK）
+
+- [x] 46.1 根因：`document-renderer` 写死 `font: Roboto`，`pdfBytes` 未覆盖 → 容器有 Noto 仍豆腐
+- [x] 46.2 `resolvePdfDefaultFont`：zh-TW/Hant/HK→TC，zh-CN→SC，en/pl 有字也用 CJK；`pdfBytes` 强制该 font
+- [x] 46.3 Dockerfile 同时下载 SC+TC 并各自 `stat` > 1MB
+- [x] 46.4 单测 + `batch-46-ops-checklist` + fonts README；本 §99
+
+汇总：分支 `feat/batch-44-invoice-pdf-locale`；发版只需重建 backend（镜像约再增 ~16MB TC）。定向 vitest document_templates 35 通过。未 commit。
+
+feat-26-11-19 20:14:37 [46.1~46.4]：发票PDF强制Noto简繁字体，修复Roboto盖掉CJK

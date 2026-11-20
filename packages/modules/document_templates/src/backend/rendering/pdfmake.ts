@@ -7,14 +7,15 @@ import type { TDocumentDefinitions, TFontDictionary } from 'pdfmake/interfaces.j
 /**
  * The one seam this module has onto pdfmake's server-side singleton.
  *
- * pdfmake's font dictionary and URL policy are process-global, and every
- * renderer in the platform (`comparisons`' fixed layout, this engine) sets them
- * to the same values: Roboto (Latin + Polish) plus, when available, Noto Sans
- * CJK SC so Chinese names on invoices do not render as tofu — and a deny-all
- * URL policy (images are inlined as `data:` URIs before a render).
+ * Fonts: Roboto (Latin + Polish) plus optional Noto Sans CJK SC / TC so Chinese
+ * (简体 / 繁體) on invoices does not render as tofu. A deny-all URL policy keeps
+ * images as inlined `data:` URIs.
  *
- * Noto Sans CJK is SIL OFL 1.1; see `fonts/README.md`. The binary is resolved
- * at runtime, not committed (batch 44).
+ * Batch 46: document-renderer used to hard-code `font: 'Roboto'`, which overrode
+ * a registered Noto family. `pdfBytes` now forces the resolved default font when
+ * any CJK face is installed. SC vs TC is chosen from the document language.
+ *
+ * Noto Sans CJK is SIL OFL 1.1; see `fonts/README.md`.
  */
 
 interface PdfMakeOutput {
@@ -29,8 +30,13 @@ interface PdfMakeSingleton {
 const requireFromHere = createRequire(import.meta.url);
 const pdfMake = requireFromHere('pdfmake') as PdfMakeSingleton;
 
+export const FONT_ROBOTO = 'Roboto';
+export const FONT_CJK_SC = 'NotoSansCJKSC';
+export const FONT_CJK_TC = 'NotoSansCJKTC';
+
 let configured = false;
-let defaultFontFamily = 'Roboto';
+let scPath: string | null = null;
+let tcPath: string | null = null;
 
 function firstExisting(paths: readonly string[]): string | null {
   for (const candidate of paths) {
@@ -43,17 +49,69 @@ function firstExisting(paths: readonly string[]): string | null {
   return null;
 }
 
-/** Absolute path to a CJK-capable Regular face, or `null` when none is installed. */
-export function resolveCjkFontPath(): string | null {
+function moduleFontsDir(): string {
   const here = path.dirname(fileURLToPath(import.meta.url));
-  const moduleFonts = path.resolve(here, '../../../fonts');
+  return path.resolve(here, '../../../fonts');
+}
+
+/** Absolute path to Simplified Chinese Regular, or `null`. */
+export function resolveCjkScFontPath(): string | null {
+  const moduleFonts = moduleFontsDir();
   return firstExisting([
+    process.env['DOCUMENT_TEMPLATES_CJK_FONT_SC'] ?? '',
     process.env['DOCUMENT_TEMPLATES_CJK_FONT'] ?? '',
     path.join(moduleFonts, 'NotoSansCJKsc-Regular.otf'),
     path.join(moduleFonts, 'NotoSansSC-Regular.otf'),
     '/usr/share/fonts/truetype/noto/NotoSansCJKsc-Regular.otf',
     '/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf',
   ]);
+}
+
+/** Absolute path to Traditional Chinese Regular, or `null`. */
+export function resolveCjkTcFontPath(): string | null {
+  const moduleFonts = moduleFontsDir();
+  return firstExisting([
+    process.env['DOCUMENT_TEMPLATES_CJK_FONT_TC'] ?? '',
+    path.join(moduleFonts, 'NotoSansCJKtc-Regular.otf'),
+    path.join(moduleFonts, 'NotoSansTC-Regular.otf'),
+    '/usr/share/fonts/truetype/noto/NotoSansCJKtc-Regular.otf',
+    '/usr/share/fonts/opentype/noto/NotoSansCJKtc-Regular.otf',
+  ]);
+}
+
+/** @deprecated Prefer {@link resolveCjkScFontPath}. */
+export function resolveCjkFontPath(): string | null {
+  return resolveCjkScFontPath() ?? resolveCjkTcFontPath();
+}
+
+/**
+ * pdfmake default font family for a document language.
+ * zh-TW / Hant / zh-HK → TC (fallback SC); other zh → SC (fallback TC);
+ * en/pl still prefer SC/TC when installed so Chinese *values* do not tofu.
+ */
+export function resolvePdfDefaultFont(
+  documentLanguage?: string | null,
+  available: { sc: boolean; tc: boolean } = {
+    sc: Boolean(scPath ?? resolveCjkScFontPath()),
+    tc: Boolean(tcPath ?? resolveCjkTcFontPath()),
+  },
+): string {
+  const lang = (documentLanguage ?? '').toLowerCase();
+  const wantTc =
+    lang.startsWith('zh-tw') || lang.startsWith('zh-hk') || lang.includes('hant');
+  if (wantTc) {
+    if (available.tc) return FONT_CJK_TC;
+    if (available.sc) return FONT_CJK_SC;
+    return FONT_ROBOTO;
+  }
+  if (lang.startsWith('zh')) {
+    if (available.sc) return FONT_CJK_SC;
+    if (available.tc) return FONT_CJK_TC;
+    return FONT_ROBOTO;
+  }
+  if (available.sc) return FONT_CJK_SC;
+  if (available.tc) return FONT_CJK_TC;
+  return FONT_ROBOTO;
 }
 
 function configure(): void {
@@ -69,21 +127,27 @@ function configure(): void {
       bolditalics: `${fontsDir}Roboto-MediumItalic.ttf`,
     },
   };
-  const cjk = resolveCjkFontPath();
-  if (cjk) {
-    // One Regular face for all styles — enough to print Chinese names; Latin
-    // glyphs are also in Noto Sans CJK SC, so it can be the document default.
-    fonts.NotoSansCJK = {
-      normal: cjk,
-      bold: cjk,
-      italics: cjk,
-      bolditalics: cjk,
+  scPath = resolveCjkScFontPath();
+  tcPath = resolveCjkTcFontPath();
+  if (scPath) {
+    fonts[FONT_CJK_SC] = {
+      normal: scPath,
+      bold: scPath,
+      italics: scPath,
+      bolditalics: scPath,
     };
-    defaultFontFamily = 'NotoSansCJK';
-  } else {
-    // Once per process: missing CJK falls back to Roboto → Chinese tofu (□).
+  }
+  if (tcPath) {
+    fonts[FONT_CJK_TC] = {
+      normal: tcPath,
+      bold: tcPath,
+      italics: tcPath,
+      bolditalics: tcPath,
+    };
+  }
+  if (!scPath && !tcPath) {
     console.warn(
-      '[document_templates] Noto Sans CJK font not found; Chinese glyphs on PDFs will render as tofu. See fonts/README.md or DOCUMENT_TEMPLATES_CJK_FONT.',
+      '[document_templates] Noto Sans CJK SC/TC not found; Chinese glyphs on PDFs will render as tofu. See fonts/README.md.',
     );
   }
   pdfMake.setFonts(fonts);
@@ -92,13 +156,18 @@ function configure(): void {
 }
 
 /** The PDF bytes of a document definition. */
-export async function pdfBytes(definition: TDocumentDefinitions): Promise<Uint8Array> {
+export async function pdfBytes(
+  definition: TDocumentDefinitions,
+  options?: { documentLanguage?: string | null },
+): Promise<Uint8Array> {
   configure();
+  const font = resolvePdfDefaultFont(options?.documentLanguage ?? null);
   const withDefaultFont: TDocumentDefinitions = {
     ...definition,
     defaultStyle: {
       ...(definition.defaultStyle ?? {}),
-      font: (definition.defaultStyle as { font?: string } | undefined)?.font ?? defaultFontFamily,
+      // Always win over a hard-coded Roboto from document-renderer (batch 46).
+      font,
     },
   };
   const buffer = await pdfMake.createPdf(withDefaultFont).getBuffer();

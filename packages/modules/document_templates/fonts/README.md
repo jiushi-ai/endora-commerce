@@ -1,35 +1,42 @@
 # PDF fonts (document_templates)
 
-## Noto Sans CJK SC (Chinese)
+## Noto Sans CJK (Chinese)
 
 - **License:** SIL Open Font License 1.1 (`https://scripts.sil.org/OFL`)
-- **Source:** [notofonts/noto-cjk](https://github.com/notofonts/noto-cjk) — `Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf` (~16–30 MB depending on the release artefact)
-- **Why:** Roboto (pdfmake default) has no CJK glyphs; Chinese legal names otherwise render as tofu (□).
-- **Min size:** a healthy download is well over **1 MB** (typically ~16 MB+; treat ~30 MB as a normal upper band for related Noto CJK packs). `backend/Dockerfile` fails the image build if the file is ≤ 1 000 000 bytes (truncated HTML / failed curl).
+- **Source:** [notofonts/noto-cjk](https://github.com/notofonts/noto-cjk)
+  - SC: `Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf` (~16 MB+)
+  - TC: `Sans/OTF/TraditionalChinese/NotoSansCJKtc-Regular.otf` (~16 MB+)
+- **Why:** Roboto (pdfmake default) has no CJK glyphs. Batch 46 also **forces** the
+  resolved Noto family as `defaultStyle.font` (document-renderer used to hard-code
+  Roboto, which left Chinese as tofu even when the file was in the image).
 
-The binary is **not** vendored in git. `pdfmake.ts` resolves it from, in order:
+Binaries are **not** vendored in git. `pdfmake.ts` resolves them from, in order:
 
-1. `DOCUMENT_TEMPLATES_CJK_FONT` (absolute path)
-2. `fonts/NotoSansCJKsc-Regular.otf` next to this README (local drop-in)
-3. `/usr/share/fonts/truetype/noto/NotoSansCJKsc-Regular.otf` (backend Docker image)
+| Face | Env / paths |
+| --- | --- |
+| SC | `DOCUMENT_TEMPLATES_CJK_FONT_SC`, `DOCUMENT_TEMPLATES_CJK_FONT`, `fonts/NotoSansCJKsc-Regular.otf`, `/usr/share/fonts/truetype/noto/NotoSansCJKsc-Regular.otf` |
+| TC | `DOCUMENT_TEMPLATES_CJK_FONT_TC`, `fonts/NotoSansCJKtc-Regular.otf`, `/usr/share/fonts/truetype/noto/NotoSansCJKtc-Regular.otf` |
 
-If none exist, the process logs a one-time warning and Chinese text will tofu.
+Document language → face: `zh-TW` / Hant / `zh-HK` → TC (fallback SC); other `zh*` → SC; `en`/`pl` still use SC/TC when present so Chinese **values** print.
 
 ### Local drop-in
 
 ```bash
 curl -fsSL -o packages/modules/document_templates/fonts/NotoSansCJKsc-Regular.otf \
   'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf'
+curl -fsSL -o packages/modules/document_templates/fonts/NotoSansCJKtc-Regular.otf \
+  'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/TraditionalChinese/NotoSansCJKtc-Regular.otf'
 ```
 
-### Docker / ECS check
+### Docker / ECS
 
-`backend/Dockerfile` downloads the same file into `/usr/share/fonts/truetype/noto/` at image build time and asserts size `> 1000000`.
-
-On a running backend container (ECS task / `docker exec`):
+`backend/Dockerfile` downloads **both** faces and fails the build if either file is ≤ 1 MB.
 
 ```bash
-ls -la /usr/share/fonts/truetype/noto/NotoSansCJKsc-Regular.otf
-stat -c '%n %s' /usr/share/fonts/truetype/noto/NotoSansCJKsc-Regular.otf
-# expect size >> 1000000 (often ~16MB+)
+docker exec b2b-backend-1 ls -la /usr/share/fonts/truetype/noto/
+docker exec b2b-backend-1 stat -c '%n %s' \
+  /usr/share/fonts/truetype/noto/NotoSansCJKsc-Regular.otf \
+  /usr/share/fonts/truetype/noto/NotoSansCJKtc-Regular.otf
 ```
+
+Expect each size **> 1 000 000** bytes.

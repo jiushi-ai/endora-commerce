@@ -26,7 +26,7 @@ import { collectImageAssetIds, loadAssetImages, type AssetBytesReader } from './
 import { numberItems, renderItemsTable } from './items-table.js';
 import { interpolateMergeFields, type MergeFieldValues } from './merge-fields.js';
 import { resolveRootProps, usableWidth } from './page.js';
-import { pdfBytes } from './pdfmake.js';
+import { pdfBytes, resolvePdfDefaultFont } from './pdfmake.js';
 
 /**
  * The Page Builder → pdfmake engine — the implementation of
@@ -122,7 +122,7 @@ export class DocumentRenderer implements DocumentRenderPort {
     const built = await this.buildDefinition(input);
     let bytes: Uint8Array;
     try {
-      bytes = await pdfBytes(built.definition);
+      bytes = await pdfBytes(built.definition, { documentLanguage: built.language });
     } catch (error) {
       rethrowIfModuleDisabled(error);
       this.log('[document_templates] pdfmake could not produce the document', {
@@ -344,7 +344,7 @@ export class DocumentRenderer implements DocumentRenderPort {
       pageSize: root.pageSize,
       ...(orientation === 'landscape' ? { pageOrientation: 'landscape' as const } : {}),
       pageMargins: [root.marginLeft, root.marginTop, root.marginRight, root.marginBottom],
-      defaultStyle: { fontSize: root.baseFontSize, font: 'Roboto' },
+      defaultStyle: { fontSize: root.baseFontSize, font: resolvePdfDefaultFont(language) },
       ...(registration.pageDefaults?.styles
         ? { styles: structuredClone(registration.pageDefaults.styles) as TDocumentDefinitions['styles'] }
         : {}),

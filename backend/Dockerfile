@@ -48,9 +48,13 @@ RUN apt-get update \
   && mkdir -p /usr/share/fonts/truetype/noto \
   && curl -fsSL -o /usr/share/fonts/truetype/noto/NotoSansCJKsc-Regular.otf \
        'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf' \
-  && FONT=/usr/share/fonts/truetype/noto/NotoSansCJKsc-Regular.otf \
-  && ls -la "$FONT" \
-  && test "$(stat -c%s "$FONT")" -gt 1000000 \
+  && curl -fsSL -o /usr/share/fonts/truetype/noto/NotoSansCJKtc-Regular.otf \
+       'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/TraditionalChinese/NotoSansCJKtc-Regular.otf' \
+  && FONT_SC=/usr/share/fonts/truetype/noto/NotoSansCJKsc-Regular.otf \
+  && FONT_TC=/usr/share/fonts/truetype/noto/NotoSansCJKtc-Regular.otf \
+  && ls -la "$FONT_SC" "$FONT_TC" \
+  && test "$(stat -c%s "$FONT_SC")" -gt 1000000 \
+  && test "$(stat -c%s "$FONT_TC")" -gt 1000000 \
   && apt-get purge -y curl \
   && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/*
