@@ -1046,3 +1046,13 @@ feat-26-11-20 19:26:55 [54.1~54.3]：补quickOrder.notAllowed四语词条，解D
 汇总：对照 `upstream/master` **语义对齐**（非整文件替换：未引入 `commerce.*` catalogue 拆分 / note-storage 等旁路 diff）。`tsc` 仍余 WP-10 测试文件（`permission-aware-*`、`shopping-lists.test`）因 monolith 缺上游 key / `./text`——**不进本批**；若 `next build` 仍咬测试再另开。53.6（详情 canEdit / migrate）仍待续。
 
 feat-26-11-20 19:51:30 [55.1~55.5]：开源对齐cart/compare/RFQ权限props，解Docker类型错
+
+### 53.6 清单详情 canEdit + migrate 验收清单（不含 WP-12）
+
+- [x] 53.6.1 `shopping-lists/[id]`：`getCommerceAbilitiesAction`；`canEdit` 门控改名/数量/删除/清空；转购物车/询价随 `convertListToCart` / `convertListToQuote`；只读说明复用 `account.lists.readOnlyNote`
+- [x] 53.6.2 编写 `pro_doc/batch-53-ops-checklist.md`（M2/M3 + ECS `migration:pending`/`up` + 冒烟）；**不**合 WP-12；Agent 不直连 ECS
+- [x] 53.6.3 本 §99；详情页无新增 MessageKey 类型错
+
+汇总：列表门控（53.4）+ 详情门控（本项）对齐开源 170 语义，页面结构仍为本仓 monolith 版（未换 `ShoppingListEditor`）。发版需重建 **storefront**；若 ECS 尚未跑过组织角色迁移，按 ops checklist 对 **backend** 执行 `migration:up`。WP-12 仍另开。
+
+feat-26-11-20 20:05:55 [53.6.1~53.6.3]：清单详情canEdit门控；170 migrate运维清单

@@ -25,6 +25,7 @@ import { LIST_QUANTITY_MAX, parseListQuantity } from '../../../../lib/shoppingLi
 import type { Metadata } from 'next';
 import { localeRedirect } from '../../../../lib/i18n/navigation';
 import { LocalizedLink } from '../../../../lib/i18n/localized-link';
+import { getCommerceAbilitiesAction } from '../../../../lib/actions/cart';
 
 /**
  * Not indexed (`specs/098-storefront-ssr-seo-a11y-suite/`, FR-010): an
@@ -46,6 +47,10 @@ interface ResolvedProduct {
  * checkboxes feed an `itemIds` array to the server actions for the
  * "Convert selected" variant; archived skips are surfaced via a banner
  * after conversion.
+ *
+ * `specs/170-organization-roles/` (FR-057): rename / qty / remove / clear need
+ * `shopping_lists.create`; convert-to-cart and convert-to-quote each need their
+ * own ability. A read-only member still sees the list.
  */
 
 export default async function ShoppingListDetailPage({
@@ -93,6 +98,8 @@ export default async function ShoppingListDetailPage({
   // to the raw id so the row still renders.
   const { ctx, locale } = await getServerContext();
   const t = tForLocale(locale);
+  const abilities = await getCommerceAbilitiesAction();
+  const canEdit = abilities.editShoppingLists;
   // Feature 155 (FR-011) — which rows the conversion left out, and why (a minimum included).
   // Carried capped (the first rows plus a count), so the URL stays bounded.
   const cartSkipReport = sp.cartAdded !== undefined ? decodeConversionSkips(sp.cartSkips) : { lines: [], more: 0 };
@@ -157,25 +164,33 @@ export default async function ShoppingListDetailPage({
         </p>
       ) : null}
 
-      <form action={renameAction} className="flex items-end gap-2">
-        <input type="hidden" name="listId" value={list.id} />
-        <div className="flex flex-1 flex-col gap-1">
-          <label htmlFor="rename" className="text-sm text-fg-soft">
-            {t('shoppingList.rename.label')}
-          </label>
-          <input
-            id="rename"
-            name="name"
-            defaultValue={list.name}
-            required
-            maxLength={160}
-            className="w-full rounded-md border border-line px-3 py-2 text-sm"
-          />
-        </div>
-        <button type="submit" className="btn btn--outline">
-          {t('shoppingList.rename.submit')}
-        </button>
-      </form>
+      {!canEdit ? (
+        <p className="b2b-auth__hint" role="note">
+          {t('account.lists.readOnlyNote')}
+        </p>
+      ) : null}
+
+      {canEdit ? (
+        <form action={renameAction} className="flex items-end gap-2">
+          <input type="hidden" name="listId" value={list.id} />
+          <div className="flex flex-1 flex-col gap-1">
+            <label htmlFor="rename" className="text-sm text-fg-soft">
+              {t('shoppingList.rename.label')}
+            </label>
+            <input
+              id="rename"
+              name="name"
+              defaultValue={list.name}
+              required
+              maxLength={160}
+              className="w-full rounded-md border border-line px-3 py-2 text-sm"
+            />
+          </div>
+          <button type="submit" className="btn btn--outline">
+            {t('shoppingList.rename.submit')}
+          </button>
+        </form>
+      ) : null}
 
       <h3 className="mt-10 mb-4">{t('shoppingList.items.heading')}</h3>
       {list.items.length === 0 ? (
@@ -195,36 +210,40 @@ export default async function ShoppingListDetailPage({
         <form id="sl-convert" action={convertSelectedToCartAction}>
           <input type="hidden" name="listId" value={list.id} />
         </form>
-        {list.items.map((it) => (
-          <Fragment key={`forms-${it.id}`}>
-            {/* `noValidate`: the browser's own `min` bubble speaks the browser's language. The
-                action validates and the row says what is wrong beside the field (U4). */}
-            <form id={`sl-qty-${it.id}`} action={updateQtyAction} noValidate>
-              <input type="hidden" name="listId" value={list.id} />
-              <input type="hidden" name="itemId" value={it.id} />
-            </form>
-            <form id={`sl-remove-${it.id}`} action={removeAction}>
-              <input type="hidden" name="listId" value={list.id} />
-              <input type="hidden" name="itemId" value={it.id} />
-            </form>
-          </Fragment>
-        ))}
+        {canEdit
+          ? list.items.map((it) => (
+              <Fragment key={`forms-${it.id}`}>
+                {/* `noValidate`: the browser's own `min` bubble speaks the browser's language. The
+                    action validates and the row says what is wrong beside the field (U4). */}
+                <form id={`sl-qty-${it.id}`} action={updateQtyAction} noValidate>
+                  <input type="hidden" name="listId" value={list.id} />
+                  <input type="hidden" name="itemId" value={it.id} />
+                </form>
+                <form id={`sl-remove-${it.id}`} action={removeAction}>
+                  <input type="hidden" name="listId" value={list.id} />
+                  <input type="hidden" name="itemId" value={it.id} />
+                </form>
+              </Fragment>
+            ))
+          : null}
         <table className="b2b-account__table">
             <thead>
               <tr>
-                <th></th>
+                {abilities.convertListToCart || abilities.convertListToQuote ? <th></th> : null}
                 <th>{t('shoppingList.col.product')}</th>
                 <th>{t('shoppingList.col.qty')}</th>
                 <th>{t('shoppingList.col.note')}</th>
-                <th></th>
+                {canEdit ? <th></th> : null}
               </tr>
             </thead>
             <tbody>
               {list.items.map((it) => (
                 <tr key={it.id}>
-                  <td>
-                    <input type="checkbox" name="itemIds" value={it.id} form="sl-convert" />
-                  </td>
+                  {abilities.convertListToCart || abilities.convertListToQuote ? (
+                    <td>
+                      <input type="checkbox" name="itemIds" value={it.id} form="sl-convert" />
+                    </td>
+                  ) : null}
                   <td>
                     {(() => {
                       const product = productsById.get(it.productId);
@@ -247,49 +266,67 @@ export default async function ShoppingListDetailPage({
                     ) : null}
                   </td>
                   <td>
-                    <UpdateQtyForm
-                      itemId={it.id}
-                      qty={it.quantity}
-                      label={t('common.quantity')}
-                      saveLabel={t('shoppingList.qty.save')}
-                      error={sp.qtyError === it.id ? t('shoppingList.qty.invalid') : null}
-                    />
+                    {canEdit ? (
+                      <UpdateQtyForm
+                        itemId={it.id}
+                        qty={it.quantity}
+                        label={t('common.quantity')}
+                        saveLabel={t('shoppingList.qty.save')}
+                        error={sp.qtyError === it.id ? t('shoppingList.qty.invalid') : null}
+                      />
+                    ) : (
+                      <span>{it.quantity}</span>
+                    )}
                   </td>
                   <td>{it.note ?? ''}</td>
-                  <td>
-                    <RemoveItemForm itemId={it.id} label={t('shoppingList.remove')} />
-                  </td>
+                  {canEdit ? (
+                    <td>
+                      <RemoveItemForm itemId={it.id} label={t('shoppingList.remove')} />
+                    </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="mt-6 mb-10 flex flex-wrap gap-2">
-            <button type="submit" form="sl-convert" formAction={convertAllToCartAction} className="btn btn--primary">
-              {t('shoppingList.convertAllCart')}
-            </button>
-            <button type="submit" form="sl-convert" className="btn btn--outline">
-              {t('shoppingList.convertSelectedCart')}
-            </button>
-            <button type="submit" form="sl-convert" formAction={convertAllToRfqAction} className="btn btn--outline">
-              {t('shoppingList.convertAllRfq')}
-            </button>
-            <button type="submit" form="sl-convert" formAction={convertSelectedToRfqAction} className="btn btn--outline">
-              {t('shoppingList.convertSelectedRfq')}
-            </button>
+          {abilities.convertListToCart || abilities.convertListToQuote ? (
+            <div className="mt-6 mb-10 flex flex-wrap gap-2">
+              {abilities.convertListToCart ? (
+                <>
+                  <button type="submit" form="sl-convert" formAction={convertAllToCartAction} className="btn btn--primary">
+                    {t('shoppingList.convertAllCart')}
+                  </button>
+                  <button type="submit" form="sl-convert" className="btn btn--outline">
+                    {t('shoppingList.convertSelectedCart')}
+                  </button>
+                </>
+              ) : null}
+              {abilities.convertListToQuote ? (
+                <>
+                  <button type="submit" form="sl-convert" formAction={convertAllToRfqAction} className="btn btn--outline">
+                    {t('shoppingList.convertAllRfq')}
+                  </button>
+                  <button type="submit" form="sl-convert" formAction={convertSelectedToRfqAction} className="btn btn--outline">
+                    {t('shoppingList.convertSelectedRfq')}
+                  </button>
+                </>
+              ) : null}
+            </div>
+          ) : null}
+        {canEdit ? (
+          <div className="mb-10 flex flex-wrap gap-2 border-t border-line pt-6">
+            <ClearListButton
+              listId={list.id}
+              clearAction={clearListAction}
+              labels={{
+                clear: t('shoppingList.clear'),
+                confirmTitle: t('shoppingList.clear.confirmTitle'),
+                confirmBody: t('shoppingList.clear.confirmBody'),
+                cancel: t('shoppingList.clear.cancel'),
+                clearing: t('shoppingList.clear.clearing'),
+              }}
+            />
           </div>
-        <div className="mb-10 flex flex-wrap gap-2 border-t border-line pt-6">
-          <ClearListButton
-            listId={list.id}
-            clearAction={clearListAction}
-            labels={{
-              clear: t('shoppingList.clear'),
-              confirmTitle: t('shoppingList.clear.confirmTitle'),
-              confirmBody: t('shoppingList.clear.confirmBody'),
-              cancel: t('shoppingList.clear.cancel'),
-              clearing: t('shoppingList.clear.clearing'),
-            }}
-          />
-        </div>
+        ) : null}
         </>
       )}
     </>
