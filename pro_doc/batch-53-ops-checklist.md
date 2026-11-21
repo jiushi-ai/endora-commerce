@@ -6,11 +6,11 @@ Agent 不直连 ECS；下列在 **ECS / 能连生产库的环境**执行。
 
 ## 关键 migrations（须已进镜像并跑过）
 
-| 模块 | 类 / 文件 | 作用 |
-| --- | --- | --- |
-| `organizations` | `Migration20261103T173304OrganizationsOrganizationRoles` | M2：`organization_roles` + 预置 Administrator/Member + 邀请 FK |
-| `customer_accounts` | `Migration20261103T190132CustomerAccountsOrganizationRoleAssignment` | M3：账户 ↔ 组织角色赋值 |
-| `organizations` | `Migration20261102T014300OrganizationsStaffAssignments` | 若尚未跑过：staff assignments（波 1 同窗） |
+| 模块                  | 类 / 文件                                                              | 作用                                                             |
+| --------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `organizations`     | `Migration20261103T173304OrganizationsOrganizationRoles`             | M2：`organization_roles` + 预置 Administrator/Member + 邀请 FK |
+| `customer_accounts` | `Migration20261103T190132CustomerAccountsOrganizationRoleAssignment` | M3：账户 ↔ 组织角色赋值                                         |
+| `organizations`     | `Migration20261102T014300OrganizationsStaffAssignments`              | 若尚未跑过：staff assignments（波 1 同窗）                       |
 
 ## ECS 上执行
 
@@ -42,10 +42,10 @@ docker compose --env-file .env -f compose.prod.yml exec postgres \
 
 ## 功能冒烟（与 chatlog 波 1 验收对齐）
 
-1. Admin：组织可管理角色并为成员赋权  
-2. 小 b：`/api/v1/me`（或登录后能力）含 permissions  
-3. 无 `shopping_lists.create`：清单**列表 + 详情**只读 + `account.lists.readOnlyNote`  
-4. 有权限：详情可改名 / 改数量 / 清空；转购物车/询价随各自 ability  
+1. Admin：组织可管理角色并为成员赋权
+2. 小 b：`/api/v1/me`（或登录后能力）含 permissions
+3. 无 `shopping_lists.create`：清单**列表 + 详情**只读 + `account.lists.readOnlyNote`
+4. 有权限：详情可改名 / 改数量 / 清空；转购物车/询价随各自 ability
 
 ## 回滚注意
 
