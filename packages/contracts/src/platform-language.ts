@@ -29,3 +29,30 @@ export const SUPPORTED_LANGUAGES = SupportedLanguageSchema.options;
 
 /** The language the platform answers in when nothing else resolves. */
 export const LANGUAGE_FALLBACK: SupportedLanguage = 'en';
+
+/**
+ * The shipped language a BCP-47 tag (`pl-PL`, `zh-CN`, a sales channel's
+ * `defaultLanguage`) is written in — an exact / prefix match against
+ * {@link SUPPORTED_LANGUAGES}, else a primary-subtag match, else
+ * {@link LANGUAGE_FALLBACK}.
+ *
+ * This fork ships `zh-CN` / `zh-TW` as full tags (not only `en` / `pl`), so
+ * matching prefers the full tag before falling back to the primary subtag.
+ * A bare `zh` maps to `zh-CN`.
+ */
+export function supportedLanguageOf(tag: string | null | undefined): SupportedLanguage {
+  const raw = (tag ?? '').trim();
+  if (!raw) return LANGUAGE_FALLBACK;
+  const normalized = raw.replace(/_/g, '-');
+  const lower = normalized.toLowerCase();
+  for (const lang of SUPPORTED_LANGUAGES) {
+    const langLower = lang.toLowerCase();
+    if (lower === langLower || lower.startsWith(`${langLower}-`)) return lang;
+  }
+  const primary = lower.split('-', 1)[0] ?? '';
+  if ((SUPPORTED_LANGUAGES as readonly string[]).includes(primary)) {
+    return primary as SupportedLanguage;
+  }
+  if (primary === 'zh') return 'zh-CN';
+  return LANGUAGE_FALLBACK;
+}

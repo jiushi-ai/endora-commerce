@@ -1,6 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import {
-  firstLanguageTag,
   organizationPermissionPreHandler,
   quickOrderBuildRequestSchema,
   quickOrderImportRequestSchema,

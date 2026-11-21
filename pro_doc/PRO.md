@@ -1024,3 +1024,13 @@ feat-26-11-20 17:57:53 [52.1~52.2]：account表链接补#1178样式；170组织�
 汇总：流程见 [chatlog/2026-11-20-chat4](../chatlog/2026-11-20-chat4-Feature170融合方案步骤/2026-11-20-chat4-Feature170融合方案步骤.md)。已 pick：01→02a→02b→06→08→10(裁)→03。未做 WP-12；清单详情页尚未接 canEdit；发 ECS 前必须 `build:packages` + migration。
 
 feat-26-11-20 18:30:19 [53.1~53.5]：170波1挑WP-01/02/03/06/08/10；清单列表canEdit
+
+### 54. 补 commerce.quickOrder.notAllowed 词条（解 storefront Docker 类型错）
+
+- [x] 54.1 `messages.ts`：`MessageKey` + en / zh-CN / zh-TW / pl（EN/PL 对齐上游 `commerce.ts`）
+- [x] 54.2 确认 `t('commerce.quickOrder.notAllowed')` 不再报 MessageKey 错
+- [x] 54.3 本 §99 汇总
+
+汇总：波1 裁剪 WP-10 时页面已接线、词条未落 monolith。本批只补这一 key，不改页面逻辑、不合整份 commerce 词条。发版前重打 storefront 镜像时，**仍可能**因 WP-10 裁剪残留（cart `policyOn` / quote-request `canSubmit` / compare `canAddToCart` 等 props 与本地组件不一致）继续失败——另批处理。
+
+feat-26-11-20 19:26:55 [54.1~54.3]：补quickOrder.notAllowed四语词条，解Docker MessageKey报错

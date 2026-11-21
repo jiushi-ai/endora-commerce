@@ -248,7 +248,7 @@ function serializeCustomer(c: CustomerAccountRecord) {
   };
 }
 
-function serializeOrganization(o: Organization) {
+function serializeOrganization(o: Organization, moderationMessage: string | null) {
   return {
     id: o.id,
     name: o.name,
@@ -260,30 +260,8 @@ function serializeOrganization(o: Organization) {
     registeredAddress: o.registeredAddress,
     version: o.version,
     canTransact: o.status === 'active',
-    moderationMessage: describeModerationStatus(o.status),
+    moderationMessage,
     createdAt: o.createdAt.toISOString(),
     updatedAt: o.updatedAt.toISOString(),
   };
-}
-
-/**
- * Localized, customer-safe explanation of the current Organization status
- * when ordering is unavailable. Returns `null` for `active` (no message).
- * The storefront uses the non-null value as the disabled-CTA tooltip /
- * cart-banner body. Never contains admin-only details (the admin's
- * `blockedReason` field is intentionally not exposed).
- */
-function describeModerationStatus(
-  status: Organization['status'],
-): string | null {
-  switch (status) {
-    case 'active':
-      return null;
-    case 'pending_verification':
-      return 'Twoja Organizacja oczekuje na weryfikację. Zamówienia i Zapytania Ofertowe będą dostępne po jej zakończeniu.';
-    case 'blocked':
-      return 'Składanie Zamówień i Zapytań Ofertowych jest obecnie wstrzymane. Prosimy o kontakt z opiekunem konta.';
-    case 'rejected':
-      return 'Rejestracja Twojej Organizacji została odrzucona. Prosimy o kontakt z administracją platformy.';
-  }
 }

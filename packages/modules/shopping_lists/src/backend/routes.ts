@@ -5,7 +5,6 @@ import {
   createShoppingListRequestSchema,
   renameShoppingListRequestSchema,
   updateShoppingListItemRequestSchema,
-  firstLanguageTag,
   organizationPermissionPreHandler,
   type OrganizationPermissionPort,
 } from '@endora-commerce/contracts';

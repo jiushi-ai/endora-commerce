@@ -2,7 +2,6 @@ import type { EntityManager } from '@mikro-orm/postgresql';
 import type { FastifyRequest } from 'fastify';
 import type {
   CartWritePort,
-  CatalogProductAvailabilityPort,
   CatalogProductReadPort,
   OrganizationPermissionPort,
   RfqCustomerPort,

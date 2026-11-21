@@ -108,6 +108,8 @@ export type MessageKey =
   /** Net label when a product carries no resolvable VAT rate (issue #852). */
   | 'commerce.common.net'
   | 'commerce.common.gross'
+  /** Feature 170 WP-10 — member lacks carts.create and quote_requests.create. */
+  | 'commerce.quickOrder.notAllowed'
   | 'catalog.price.heading'
   | 'catalog.price.min'
   | 'catalog.price.max'
@@ -1105,6 +1107,8 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'product.gross': 'gross {amount}',
     'commerce.common.net': 'net',
     'commerce.common.gross': 'gross',
+    'commerce.quickOrder.notAllowed':
+      'Your role does not allow adding products to the cart or requesting quotes, so quick order is not available to you.',
     'catalog.price.heading': 'Price',
     'catalog.price.min': 'From',
     'catalog.price.max': 'To',
@@ -2077,6 +2081,8 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'product.gross': '含税 {amount}',
     'commerce.common.net': '未税',
     'commerce.common.gross': '含税',
+    'commerce.quickOrder.notAllowed':
+      '您的角色不允许将商品加入购物车或发起询价，因此无法使用快速下单。',
     'catalog.price.heading': '价格',
     'catalog.price.min': '最低',
     'catalog.price.max': '最高',
@@ -3006,6 +3012,8 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'product.gross': '含稅 {amount}',
     'commerce.common.net': '未稅',
     'commerce.common.gross': '含稅',
+    'commerce.quickOrder.notAllowed':
+      '您的角色不允許將商品加入購物車或發起詢價，因此無法使用快速下單。',
     'catalog.price.heading': '价格',
     'catalog.price.min': '最低',
     'catalog.price.max': '最高',
@@ -3935,6 +3943,8 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'product.gross': 'brutto {amount}',
     'commerce.common.net': 'netto',
     'commerce.common.gross': 'brutto',
+    'commerce.quickOrder.notAllowed':
+      'Twoja rola nie pozwala dodawać produktów do koszyka ani wysyłać zapytań ofertowych, dlatego szybkie zamówienie jest dla Ciebie niedostępne.',
     'catalog.price.heading': 'Cena',
     'catalog.price.min': 'Od',
     'catalog.price.max': 'Do',

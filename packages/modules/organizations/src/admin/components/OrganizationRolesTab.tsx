@@ -368,8 +368,6 @@ function RoleEditorDialog({
       title={title}
       onClose={onClose}
       busy={busy}
-      dismissOnScrim={readOnly}
-      widthClassName="max-w-2xl"
       footer={
         readOnly ? (
           <Button type="button" variant="outline" onClick={onClose}>

@@ -85,6 +85,12 @@ export interface OrganizationsModuleOptions {
    * the role label it shows (#667, FR-008).
    */
   resolveEmailLanguage: () => Promise<SupportedLanguage>;
+  /**
+   * This module's i18n bundle (issue #95 / WP-03) — moderation copy on
+   * `/api/v1/me` and invitation prose. Absent, English fallbacks in
+   * `organizations-prose.ts` are used.
+   */
+  translate?: import('./services/organizations-prose.js').OrganizationsTranslate;
   emFactory: () => EntityManager;
   eventBus: EventBus;
   requireCustomer: (req: FastifyRequest, reply: unknown) => Promise<void>;
