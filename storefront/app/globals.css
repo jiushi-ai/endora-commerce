@@ -874,6 +874,17 @@
   .b2b-account__table th, .b2b-account__table td { @apply border-b border-line p-[10px] text-left text-[13px]; }
   .b2b-account__table th { @apply text-[11px] font-medium uppercase tracking-[0.04em] text-muted; }
   .b2b-account__table td { @apply font-mono; }
+  /* Issue #1178 — a link in an account table. The base reset gives every <a>
+     the inherited colour and no underline, so a link there read as the cell's
+     text. Underlined (never colour alone) in the accent colour; dark mode uses
+     the light brand tint. Hover thickens the underline rather than changing
+     colour. */
+  .b2b-account__link { @apply text-accent underline underline-offset-2 dark:text-[color:var(--brand-200)]; }
+  .b2b-account__link:hover { @apply decoration-2; }
+  .b2b-account__link:focus-visible { @apply rounded-sm outline-2 outline-offset-2 outline-[color:var(--brand-600)]; }
+  /* In a cell: the 44px touch floor, pulled into the cell's own 10px padding
+     so the row does not grow (Fitts's Law, WCAG 2.5.8). */
+  .b2b-account__table .b2b-account__link { @apply -my-[10px] inline-flex min-h-11 min-w-11 items-center; }
   .b2b-account__comments { @apply m-0 flex list-none flex-col gap-[10px] p-0; }
   .b2b-account__comments li { @apply rounded-md border border-line bg-surface-alt px-[14px] py-[10px]; }
   .b2b-account__comments li small { @apply block text-[11px] text-subtle; }

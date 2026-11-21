@@ -1003,3 +1003,12 @@ feat-26-11-20 00:46:02 [50.1~50.3]：organization与carts枚举接codeLabel；�
 汇总：红框 Delete 硬编码改为词条；未改名系统默认清单显示「默认/Domyślna」等；用户自起名原样。contracts 未移植 `isAutoDefaultShoppingList`（storefront 本地等价）。定向 vitest 4 通过。
 
 feat-26-11-20 01:31:04 [51.1~51.4]：采购清单Delete与自动默认名随语系；对齐开源最小接线
+
+### 52. account 表链接样式 #1178（A）；B=170 另开
+
+- [x] 52.1 `globals.css` 补 `.b2b-account__link` + table 内 44px 点击区（对齐上游 #1178 / PR #1203）
+- [x] 52.2 `account-table-link.css.test.ts`（无 ModalDialog 断言）；本 §99 记 B 待办
+
+汇总：清单名链接此前已有 class、缺样式。本批只合 A。**B 不在本批**：另开 `feat/…-170-…` + issue，合 `specs/170-organization-roles`（PR #736）含 backend `/me.permissions` + `commerce-permissions` + 清单 `canEdit`；禁止只 pick 一页。
+
+feat-26-11-20 17:57:53 [52.1~52.2]：account表链接补#1178样式；170组织角色另开pick
