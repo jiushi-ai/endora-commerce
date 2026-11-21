@@ -1012,3 +1012,15 @@ feat-26-11-20 01:31:04 [51.1~51.4]：采购清单Delete与自动默认名随语�
 汇总：清单名链接此前已有 class、缺样式。本批只合 A。**B 不在本批**：另开 `feat/…-170-…` + issue，合 `specs/170-organization-roles`（PR #736）含 backend `/me.permissions` + `commerce-permissions` + 清单 `canEdit`；禁止只 pick 一页。
 
 feat-26-11-20 17:57:53 [52.1~52.2]：account表链接补#1178样式；170组织角色另开pick
+
+### 53. Feature 170 波 1 cherry-pick（清单 + 权限链）
+
+- [x] 53.1 分支 `feat/170-organization-roles-from-upstream`（自 #85 tip）
+- [x] 53.2 波1a：WP-01 `#697` / WP-02a `#701` / WP-02b `#703`（`-m 1`，冲突已解）
+- [x] 53.3 波1b/1c：WP-06 `#707` + WP-08 `#706`
+- [x] 53.4 波1d：WP-10 `#713` **裁剪**（清单列表 `canEdit` + 本地 key；PDP/cart/compare 暂 ours）；补 WP-03 `#710`（`/me`→`permissions`，否则登录用户全无权限）
+- [x] 53.5 定向 vitest 14 通过；本 §99；**WP-12 legacy / 详情页 canEdit / build:packages+migrate 待续**
+
+汇总：流程见 [chatlog/2026-11-20-chat4](../chatlog/2026-11-20-chat4-Feature170融合方案步骤/2026-11-20-chat4-Feature170融合方案步骤.md)。已 pick：01→02a→02b→06→08→10(裁)→03。未做 WP-12；清单详情页尚未接 canEdit；发 ECS 前必须 `build:packages` + migration。
+
+feat-26-11-20 18:30:19 [53.1~53.5]：170波1挑WP-01/02/03/06/08/10；清单列表canEdit
