@@ -1034,3 +1034,15 @@ feat-26-11-20 18:30:19 [53.1~53.5]：170波1挑WP-01/02/03/06/08/10；清单列�
 汇总：波1 裁剪 WP-10 时页面已接线、词条未落 monolith。本批只补这一 key，不改页面逻辑、不合整份 commerce 词条。发版前重打 storefront 镜像时，**仍可能**因 WP-10 裁剪残留（cart `policyOn` / quote-request `canSubmit` / compare `canAddToCart` 等 props 与本地组件不一致）继续失败——另批处理。
 
 feat-26-11-20 19:26:55 [54.1~54.3]：补quickOrder.notAllowed四语词条，解Docker MessageKey报错
+
+### 55. WP-10 开源对齐 — cart/compare/RFQ 权限接线（解 Docker）
+
+- [x] 55.1 `cart/page`：`policyOn`→`primaryCta`；去掉 `submitForApprovalNeeded`；`strings.submissionRequired`
+- [x] 55.2 `ComparisonTable` + `CompareActionCell`：合入开源 `canAddToCart`（页面已传）
+- [x] 55.3 `RfqDraftView` + `DraftSubmitButton`：合入开源 `canSubmit`（页面已传）
+- [x] 55.4 `messages.ts` 补 `cart.approval.submissionRequired` 四语（EN/PL 对齐 upstream）；RFQ `submitNotAllowed` 落本地 `strings()` EN/PL
+- [x] 55.5 app 侧上述类型错已清；本 §99
+
+汇总：对照 `upstream/master` **语义对齐**（非整文件替换：未引入 `commerce.*` catalogue 拆分 / note-storage 等旁路 diff）。`tsc` 仍余 WP-10 测试文件（`permission-aware-*`、`shopping-lists.test`）因 monolith 缺上游 key / `./text`——**不进本批**；若 `next build` 仍咬测试再另开。53.6（详情 canEdit / migrate）仍待续。
+
+feat-26-11-20 19:51:30 [55.1~55.5]：开源对齐cart/compare/RFQ权限props，解Docker类型错

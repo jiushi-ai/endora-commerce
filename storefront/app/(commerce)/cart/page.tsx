@@ -123,11 +123,9 @@ export default async function CartPage({
     ? await getMe(session).catch(() => null)
     : null;
   const canTransact = me?.organization?.canTransact ?? true;
-  // Heuristic until the backend `/me` payload exposes
-  // `requiresCartApproval`: any non-`not_required` approval state on
-  // the cart means the policy was on at submission time.
-  const requiresApproval =
-    cart.approvalStatus !== undefined && cart.approvalStatus !== 'not_required';
+  // Feature 170 / FR-031: whether the basket needs approval is decided by the
+  // member's role (`carts.order_without_approval`); the backend already encodes
+  // it in `primaryCta` (issue #619). Do not re-derive from a org-wide switch.
 
   const { locale, ctx } = await getServerContext();
 
@@ -176,7 +174,6 @@ export default async function CartPage({
   }
 
   const primaryCta = cart.primaryCta ?? (canTransact ? 'checkout' : 'blocked_by_organization');
-  const submitForApprovalNeeded = requiresApproval && cart.approvalStatus === 'not_required';
 
   return (
     <div className="mx-auto max-w-[1360px] px-[24px] pt-[8px] pb-[64px]">
@@ -197,7 +194,7 @@ export default async function CartPage({
       {cart.approvalStatus ? (
         <CartApprovalBanner
           approvalStatus={cart.approvalStatus}
-          policyOn={requiresApproval}
+          primaryCta={cart.primaryCta}
           rejectedReason={null}
           submitForApprovalAction={submitForApprovalAction}
           linesBlockedNote={cartBlocksCheckout(cart) ? tForLocale(locale)('cart.approvalBlocked') : null}
@@ -322,7 +319,6 @@ export default async function CartPage({
             <CartPrimaryCta
               cta={primaryCta}
               authenticated={me !== null}
-              submitForApprovalNeeded={submitForApprovalNeeded}
               canTransact={canTransact}
               moderationMessage={me?.organization?.moderationMessage ?? null}
               submitAction={submitForApprovalAction}
@@ -679,7 +675,7 @@ function STRINGS(locale: string): {
         reason
           ? t('cart.approval.rejectedReason').replace('{reason}', reason)
           : t('cart.approval.rejected'),
-      policyOn: t('cart.approval.policyOn'),
+      submissionRequired: t('cart.approval.submissionRequired'),
       submitButton: t('cart.approval.submit'),
     },
     upsells: {

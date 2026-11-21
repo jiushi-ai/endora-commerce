@@ -276,6 +276,8 @@ export type MessageKey =
   | 'cart.approval.rejected'
   | 'cart.approval.rejectedReason'
   | 'cart.approval.policyOn'
+  /** Feature 170 — role lacks carts.order_without_approval (upstream commerce.cart.approval.submissionRequired). */
+  | 'cart.approval.submissionRequired'
   | 'cart.approval.submit'
   | 'cart.upsells.heading'
   | 'cart.upsells.noPrice'
@@ -1275,6 +1277,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'cart.approval.rejected': 'Your cart was rejected by an organization administrator.',
     'cart.approval.rejectedReason': 'Your cart was rejected by an organization administrator. Reason: {reason}',
     'cart.approval.policyOn': 'Your organization requires cart approval before checkout.',
+    'cart.approval.submissionRequired': 'Your role requires approval of this cart before checkout.',
     'cart.approval.submit': 'Submit for approval',
     'cart.upsells.heading': 'You might also need',
     'cart.upsells.noPrice': 'Price on request',
@@ -2247,6 +2250,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'cart.approval.rejected': '您的购物车已被组织管理员拒绝。',
     'cart.approval.rejectedReason': '您的购物车已被组织管理员拒绝。原因：{reason}',
     'cart.approval.policyOn': '您的组织要求结算前先审批购物车。',
+    'cart.approval.submissionRequired': '您的角色要求结算前先审批此购物车。',
     'cart.approval.submit': '提交审批',
     'cart.upsells.heading': '您可能还需要',
     'cart.upsells.noPrice': '询价获取价格',
@@ -3178,6 +3182,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'cart.approval.rejected': '您的購物車已被組織管理員拒絕。',
     'cart.approval.rejectedReason': '您的購物車已被組織管理員拒絕。原因：{reason}',
     'cart.approval.policyOn': '您的組織要求結算前先審批購物車。',
+    'cart.approval.submissionRequired': '您的角色要求結算前先審批此購物車。',
     'cart.approval.submit': '提交審批',
     'cart.upsells.heading': '您可能還需要',
     'cart.upsells.noPrice': '詢價取得價格',
@@ -4110,6 +4115,8 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'cart.approval.rejected': 'Twój koszyk został odrzucony przez administratora organizacji.',
     'cart.approval.rejectedReason': 'Twój koszyk został odrzucony przez administratora organizacji. Powód: {reason}',
     'cart.approval.policyOn': 'Twoja organizacja wymaga akceptacji koszyka przed realizacją.',
+    'cart.approval.submissionRequired':
+      'Twoja rola wymaga akceptacji koszyka przed realizacją zamówienia.',
     'cart.approval.submit': 'Zgłoś do akceptacji',
     'cart.upsells.heading': 'Możesz też potrzebować',
     'cart.upsells.noPrice': 'Cena na zapytanie',

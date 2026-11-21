@@ -55,6 +55,12 @@ import { LocalizedLink, LocalizedAnchor } from '../../lib/i18n/localized-link';
 export function RfqDraftView(props: {
   locale: string;
   priceProposalsAllowed: boolean;
+  /**
+   * `specs/170-organization-roles/` (FR-040, FR-057) — whether the buyer's role holds
+   * `quote_requests.create`. Without it the draft stays reviewable and the submit is disabled
+   * with the reason beside it. Defaults to `true`; a visitor keeps it and signs in on submit.
+   */
+  canSubmit?: boolean;
 }): ReactNode {
   const pl = props.locale.startsWith('pl');
   const t = strings(pl);
@@ -116,8 +122,9 @@ export function RfqDraftView(props: {
     ? Number(moneySum(items.map((i) => lineAmountHalfUp(effectiveUnitPrice(i, proposalsAllowed) ?? 0, i.quantity))))
     : null;
 
+  const canSubmit = props.canSubmit ?? true;
   const submit = async (): Promise<void> => {
-    if (items.length === 0 || submitting) return;
+    if (items.length === 0 || submitting || !canSubmit) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -260,15 +267,12 @@ export function RfqDraftView(props: {
             className="mt-1 w-full resize-y rounded-sm border border-line px-[10px] py-[8px] text-[13px]"
           />
 
-          <button
-            type="button"
-            onClick={(): void => void submit()}
-            disabled={submitting}
-            className="btn btn--dark btn--lg btn--block mt-4"
-            style={submitting ? { opacity: 0.6, cursor: 'wait' } : undefined}
-          >
-            {submitting ? t.submitting : t.submit}
-          </button>
+          <DraftSubmitButton
+            t={t}
+            canSubmit={canSubmit}
+            submitting={submitting}
+            onSubmit={(): void => void submit()}
+          />
 
           <p className="mt-[12px] border-t border-line pt-[12px] text-[12px] text-muted">
             {t.note}
@@ -303,6 +307,56 @@ export function buildSubmitItems(
 function effectiveUnitPrice(line: RfqDraftItem, proposalsAllowed: boolean): number | null {
   if (proposalsAllowed && line.proposedUnitPrice != null) return line.proposedUnitPrice;
   return line.unitPrice?.amount ?? null;
+}
+
+const SUBMIT_NOT_ALLOWED_ID = 'rfq-draft-submit-not-allowed';
+
+/**
+ * The draft's primary control. 170 (FR-040, R-12): a member whose role lacks
+ * `quote_requests.create` would look for it here, so it stays in place, disabled,
+ * with the reason as visible text it points at — not a silently missing button.
+ */
+export function DraftSubmitButton({
+  t,
+  canSubmit,
+  submitting,
+  onSubmit,
+}: {
+  t: Strings;
+  canSubmit: boolean;
+  submitting: boolean;
+  onSubmit: () => void;
+}): ReactNode {
+  if (!canSubmit) {
+    return (
+      <>
+        <button
+          type="button"
+          disabled
+          aria-disabled
+          aria-describedby={SUBMIT_NOT_ALLOWED_ID}
+          className="btn btn--dark btn--lg btn--block mt-4"
+          style={{ opacity: 0.55, cursor: 'not-allowed' }}
+        >
+          {t.submit}
+        </button>
+        <p id={SUBMIT_NOT_ALLOWED_ID} className="m-0 mt-2 text-[12px] font-medium text-warn">
+          {t.submitNotAllowed}
+        </p>
+      </>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={onSubmit}
+      disabled={submitting}
+      className="btn btn--dark btn--lg btn--block mt-4"
+      style={submitting ? { opacity: 0.6, cursor: 'wait' } : undefined}
+    >
+      {submitting ? t.submitting : t.submit}
+    </button>
+  );
 }
 
 /**
@@ -573,6 +627,8 @@ export interface Strings {
   notePlaceholder: string;
   submit: string;
   submitting: string;
+  /** Feature 170 — role lacks quote_requests.create (upstream commerce.rfqDraft.submitNotAllowed). */
+  submitNotAllowed: string;
   note: string;
   errorGeneric: string;
 }
@@ -606,6 +662,7 @@ export function strings(pl: boolean): Strings {
       notePlaceholder: 'Np. preferowany termin dostawy, wymagania techniczne…',
       submit: 'Złóż zapytanie ofertowe',
       submitting: 'Wysyłanie…',
+      submitNotAllowed: 'Twoja rola nie pozwala wysyłać zapytań ofertowych.',
       note: 'Po złożeniu zapytania dział sprzedaży przygotuje ofertę z cenami i warunkami.',
       errorGeneric: 'Nie udało się złożyć zapytania ofertowego.',
     };
@@ -637,6 +694,7 @@ export function strings(pl: boolean): Strings {
     notePlaceholder: 'E.g. preferred delivery date, technical requirements…',
     submit: 'Submit quote request',
     submitting: 'Submitting…',
+    submitNotAllowed: 'Your role does not allow sending quote requests.',
     note: 'After you submit, our sales team will prepare a quote with prices and terms.',
     errorGeneric: 'Could not submit the quote request.',
   };
