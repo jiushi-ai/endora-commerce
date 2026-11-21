@@ -53,17 +53,20 @@ class CapturingSender implements TransactionalEmailSender {
  * foreign entity would let the read creep back and be read as "no such order";
  * this one names the module that was queried directly.
  */
-function fakeEmFactory(channel: unknown): ShipmentEmailNotifierDeps['emFactory'] {
+function fakeEmFactory(
+  channel: unknown,
+  shipment: { externalReference?: string | null } | null = null,
+): ShipmentEmailNotifierDeps['emFactory'] {
   return () =>
     ({
       async findOne(entity: { name: string }) {
-        if (entity.name !== 'SalesChannel') {
-          throw new Error(
-            `shipments queried '${entity.name}' directly — it belongs to another module, ` +
-              'and its owner publishes a port for it (feature 075, FR-012).',
-          );
-        }
-        return channel;
+        if (entity.name === 'SalesChannel') return channel;
+        // Own-module row — tracking for the create path (batch 58).
+        if (entity.name === 'Shipment') return shipment;
+        throw new Error(
+          `shipments queried '${entity.name}' directly — it belongs to another module, ` +
+            'and its owner publishes a port for it (feature 075, FR-012).',
+        );
       },
     }) as unknown as ReturnType<ShipmentEmailNotifierDeps['emFactory']>;
 }
@@ -102,10 +105,15 @@ function notifier(
     salesChannelId: CHANNEL_ID,
     placedByCustomerAccountId: 'customer-1',
   } as unknown as OrderRecord;
-  const customer = { id: 'customer-1', email: 'buyer@example.com' } as unknown as CustomerAccountRecord;
+  const customer = {
+    id: 'customer-1',
+    email: 'buyer@example.com',
+    preferredLanguage: null,
+  } as unknown as CustomerAccountRecord;
   return new ShipmentEmailNotifier({
     emFactory: fakeEmFactory(
-      'channel' in rows ? rows.channel : { id: CHANNEL_ID, defaultLanguage: 'en-US' },
+      'channel' in rows ? rows.channel : { id: CHANNEL_ID, defaultLanguage: 'en-US', languages: ['en-US'] },
+      { externalReference: null },
     ),
     orderRead: orderReadPort('order' in rows ? (rows.order ?? null) : order),
     customerAccountRead: customerAccountReadPort(
@@ -244,6 +252,36 @@ describe('shipments — the shipment-created notifier reports what happened (#78
       reason: 'failed',
     });
     expect(String(logged[0]!.context['error'])).toContain('smtp down');
+  });
+
+  it('batch 58 — prefers the buyer language and includes tracking on receive', async () => {
+    const logged: Logged[] = [];
+    const sender = new CapturingSender();
+    const buyer = {
+      id: 'customer-1',
+      email: 'buyer@example.com',
+      preferredLanguage: 'zh-CN',
+    } as unknown as CustomerAccountRecord;
+
+    await expect(
+      notifier(sender, logged, {
+        customer: buyer,
+        channel: {
+          id: CHANNEL_ID,
+          defaultLanguage: 'en-US',
+          languages: ['en-US', 'zh-CN', 'pl-PL'],
+        },
+      }).notify(ORDER_ID, SHIPMENT_ID, 'success', 'TRACK-9', 'received'),
+    ).resolves.toEqual({ sent: true });
+
+    expect(sender.sent[0]).toMatchObject({
+      language: 'zh-CN',
+      messageId: `shipment_created:${SHIPMENT_ID}:received`,
+      variables: {
+        order: { businessId: 'ORD-2' },
+        shipment: { tracking: 'TRACK-9' },
+      },
+    });
   });
 
   it('lets a switched-off module through the tolerance', async () => {

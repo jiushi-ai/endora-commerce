@@ -1056,3 +1056,41 @@ feat-26-11-20 19:51:30 [55.1~55.5]：开源对齐cart/compare/RFQ权限props，�
 汇总：列表门控（53.4）+ 详情门控（本项）对齐开源 170 语义，页面结构仍为本仓 monolith 版（未换 `ShoppingListEditor`）。发版需重建 **storefront**；若 ECS 尚未跑过组织角色迁移，按 ops checklist 对 **backend** 执行 `migration:up`。WP-12 仍另开。
 
 feat-26-11-20 20:05:55 [53.6.1~53.6.3]：清单详情canEdit门控；170 migrate运维清单
+
+### 56. 流程咨询 — 银行支付 / 信用额度 / 订单履约闭环（对照开源）
+
+- [x] 56.1 梳理本仓银行支付：adapter `iban:null`、收款账户在 `invoices.seller.company_data`、到账靠 Admin 标 paid
+- [x] 56.2 梳理信用额度：Admin 授信组织 → 下单 reserve = 订单 total 同币种 → paid/取消释放
+- [x] 56.3 梳理订单双轴状态 + 发货/退货（无独立验货订单态）
+- [x] 56.4 对照开源 `endora-commerce/endora-commerce`：`BankTransferAdapter` 同为 `iban:null`，属上游产品设计非本仓漂移
+- [x] 56.5 本 §99；咨询结论见对话（流程图 + 缺口/融合建议）；**未改业务代码**
+
+汇总：小 b 银行转账不指望订单页展示大 B 账号，而指望 Settings 卖家公司资料 + 形式发票/邮件上的银行信息与 `ORDER-xxxxxxxx` 备注；额度是货币授信非积分。与开源一致，无需为「对齐开源」融合；若产品要在 checkout 直接展示账号，属本仓产品增强（接 seller company_data → nextAction）。
+
+feat-26-11-20 22:06:54 [56.1~56.5]：银行支付/额度/履约流程咨询对照开源，无代码融合
+
+### 57. 额度支付不可选 + 发货闭环/邮件语系咨询（对照生产截图）
+
+- [x] 57.1 补全 chat5 第二轮流程分析 rep；归档本轮 ask（fig1～fig6）
+- [x] 57.2 根因：授信 Widget ≠ 支付方式；优先查 Admin 是否有 active `credit_limit` PaymentMethod
+- [x] 57.3 发货：Generate → pending；运单/成功靠 `shipments/receive`；Admin UI 无编辑；无小b确认收货
+- [x] 57.4 邮件：shipment_created / order_comment 用 channel.defaultLanguage，未跟 preferredLanguage（发票已跟）
+- [x] 57.5 本 §99；**未改业务代码**；待用户确认优先改邮件 / 发货 UI / 确认收货
+
+汇总：B（订单页展示银行账号）暂不做；发货流程确有闭环缺口。checkout 无额度支付最可能是付款方式目录缺 `credit_limit`，不是授信失败。
+
+feat-26-11-20 23:30:00 [57.1~57.5]：额度不可选与发货邮件语系根因咨询；chat5归档
+
+### 58. 邮件 preferredLanguage + 发货闭环（Admin 运单/成功、小 b 物流与确认收货）
+
+- [x] 58.1 额度不可选：checkout 过滤 = cart total > available（运维/产品口径；无代码）
+- [x] 58.2 `order_confirmation` / `order_comment` / `shipment_created` 语系：preferredLanguage → channel default → en-US（本地 resolve，不引 invoices）
+- [x] 58.3 默认模板补 zh-CN/zh-TW；shipment 变量含 tracking；`shipment.received.v1` 再发一封带运单号邮件
+- [x] 58.4 Admin Delivery：运单 Input + Mark success → `POST /api/v1/shipments/receive`；`_i18n` 四语
+- [x] 58.5 小 b：`GET /api/v1/orders/:id/shipments` + 订单详情配送区；messages.ts 四语
+- [x] 58.6 `POST /api/v1/orders/:id/confirm-receipt`：`shipment_sent`→`completed`；详情按钮 + 测试
+- [x] 58.7 本 §99；建议 commit 如下（未执行 git commit）
+
+汇总：发货邮件跟买家 preferredLanguage；Admin 可手填运单并标成功；小 b 可见物流并可确认收货。发版需重建 **backend + admin + storefront**；已有渠道若改过邮件模板，需在 Admin 对 `shipment_created` / `order_confirmation` / `order_comment` 做 reconcile 以吸入 zh-CN/zh-TW 与 tracking 变量。
+
+feat-26-11-21 00:38:30 [58.1~58.7]：邮件preferredLanguage与zh模板；Admin运单成功；小b物流与确认收货

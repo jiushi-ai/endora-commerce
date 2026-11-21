@@ -142,4 +142,10 @@ export interface ShipmentReadPort {
    * reference re-used across attempts answers with the live one.
    */
   findByExternalReference(reference: string): Promise<ShipmentRecord | null>;
+  /**
+   * Batch 58 — every attempt for an order, oldest attempt first. Used by the
+   * buyer's order detail and by any surface that must not open a write seam
+   * just to list history.
+   */
+  listForOrder(orderId: string): Promise<ShipmentRecord[]>;
 }

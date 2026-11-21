@@ -192,6 +192,7 @@ import {
   type OrganizationMethodChoice,
 } from './organization-method-allow-list-gate.js';
 import { loadArrangedOrderLines } from './order-line-order.js';
+import { resolveOrderEmailLanguage } from '../email-templates/resolve-email-language.js';
 
 
 export interface OrderEvents extends Record<string, EventBase> {
@@ -692,7 +693,11 @@ export class OrderService {
     const sender = this.getTransactionalEmailSender?.();
     if (sender) {
       const channel = await em.findOne(SalesChannel, { id: order.salesChannelId });
-      const language = channel?.defaultLanguage ?? 'en-US';
+      const language = resolveOrderEmailLanguage({
+        preferredLanguage: customer.preferredLanguage ?? null,
+        channelLanguages: channel?.languages ?? null,
+        channelDefaultLanguage: channel?.defaultLanguage ?? null,
+      });
       const rendererKey =
         this.paymentAdapters?.get(order.paymentMethodSnapshot.adapter ?? '')?.renderers?.email ?? null;
       const deliveryMethod =
@@ -781,7 +786,11 @@ export class OrderService {
     const shippingRendererKey =
       this.shippingAdapters?.get(deliveryMethod?.adapter ?? '')?.renderers?.email ?? null;
     const channel = await em.findOne(SalesChannel, { id: order.salesChannelId });
-    const language = channel?.defaultLanguage ?? 'en-US';
+    const language = resolveOrderEmailLanguage({
+      preferredLanguage: customer.preferredLanguage ?? null,
+      channelLanguages: channel?.languages ?? null,
+      channelDefaultLanguage: channel?.defaultLanguage ?? null,
+    });
     const message = buildOrderConfirmationEmail(
       {
         to: customer.email,

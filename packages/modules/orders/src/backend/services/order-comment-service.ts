@@ -10,12 +10,13 @@ import type {
 } from '@endora-commerce/contracts';
 import type { OrderStatusGraphService } from './order-status-graph-service.js';
 import { buildOrderCommentNotificationEmail } from '../email-templates/order-comment-notification.js';
+import { resolveOrderEmailLanguage } from '../email-templates/resolve-email-language.js';
 import {
   orderEmailNotSent,
   sendOrderTransactionalEmail,
   type OrderEmailResult,
 } from './transactional-email-helper.js';
-import { rethrowIfModuleDisabled } from '@endora-commerce/platform/kernel';
+import { rethrowIfModuleDisabled, SalesChannel } from '@endora-commerce/platform/kernel';
 
 /**
  * OrderCommentService — feature 038 (US5).
@@ -131,6 +132,12 @@ export class OrderCommentService {
     const context = { orderId: order.id, code: 'order_comment' };
     const customer = await this.customerAccountRead.findById(order.placedByCustomerAccountId);
     if (!customer?.email) return orderEmailNotSent(undefined, context, 'no_recipient');
+    const channel = await em.findOne(SalesChannel, { id: order.salesChannelId });
+    const language = resolveOrderEmailLanguage({
+      preferredLanguage: customer.preferredLanguage ?? null,
+      channelLanguages: channel?.languages ?? null,
+      channelDefaultLanguage: channel?.defaultLanguage ?? null,
+    });
     const message = buildOrderCommentNotificationEmail({
       to: customer.email,
       orderId: order.id,
@@ -146,6 +153,7 @@ export class OrderCommentService {
         messageId: message.messageId,
         variables: { order: { businessId: order.businessId }, comment: { body } },
         meta: { orderId: order.id, kind: 'order_comment' },
+        language,
       });
     }
     if (!this.mailer) return orderEmailNotSent(undefined, context, 'no_transport');

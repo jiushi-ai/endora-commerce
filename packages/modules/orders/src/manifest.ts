@@ -468,6 +468,17 @@ export const manifest = defineModuleManifest({
         'platform that keeps taking orders. Presence is asked per send in `backend.ts`.',
     },
     {
+      moduleId: 'shipments',
+      name: 'shipmentReadPort',
+      kind: 'degrades-without',
+      whenAbsent:
+        'the buyer order detail shows no shipment rows (empty list)',
+      reason:
+        'Batch 58 — customer GET /api/v1/orders/:id/shipments lists attempts over ' +
+        '`shipmentReadPort`. Same mutual-declaration shape as shippingEmailRendererPort: ' +
+        '`shipments` declares this module, so the edge cannot bind.',
+    },
+    {
       moduleId: 'payment_methods',
       name: 'paymentMethodReadPort',
       kind: 'degrades-without',

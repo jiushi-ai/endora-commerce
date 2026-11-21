@@ -3,10 +3,13 @@ import {
   addOrderComment,
   cancelMyOrder,
   cloneOrderToQuote,
+  confirmMyOrderReceipt,
   getMyOrder,
+  listMyOrderShipments,
   listOrderComments,
   reorderOrder,
   type OrderComment,
+  type OrderShipmentRow,
 } from '../../../../lib/api/orders';
 import { retryOrderPayment } from '../../../../lib/api/payments';
 import { offersCancellation } from '../../../../lib/order-cancel';
@@ -135,6 +138,8 @@ export default async function OrderConfirmationPage({
   // status graph and the payment method's configured failure status, so the
   // platform decides it and sends the answer; see `lib/order-cancel.ts`.
   const canCancel = offersCancellation(order);
+  // Batch 58 — confirm receipt when the shop has marked the order shipped.
+  const canConfirmReceipt = order.status === 'shipment_sent';
 
   // Surface a return/complaint entry point directly on the order — a return when
   // any line is returnable, a complaint when none is (feature 155, FR-018/FR-021:
@@ -153,6 +158,14 @@ export default async function OrderConfirmationPage({
     invoices = await listMyOrderInvoices(session, id);
   } catch {
     invoices = [];
+  }
+
+  // Batch 58 — shipment status + tracking for the buyer.
+  let shipments: OrderShipmentRow[] = [];
+  try {
+    shipments = await listMyOrderShipments(session, id);
+  } catch {
+    shipments = [];
   }
 
   return (
@@ -209,6 +222,18 @@ export default async function OrderConfirmationPage({
         </div>
       ) : null}
 
+      {canConfirmReceipt ? (
+        <div className="mb-6">
+          <p className="b2b-auth__hint">{t('order.confirmReceipt.hint')}</p>
+          <form action={confirmReceiptAction} className="mt-2 inline">
+            <input type="hidden" name="id" value={order.id} />
+            <button type="submit" className="btn btn--primary btn--sm">
+              {t('order.confirmReceipt.cta')}
+            </button>
+          </form>
+        </div>
+      ) : null}
+
       <div className="mb-6 flex flex-wrap gap-2">
         <form action={reorderAction} className="inline">
           <input type="hidden" name="id" value={order.id} />
@@ -260,6 +285,28 @@ export default async function OrderConfirmationPage({
           </tr>
         </tbody>
       </table>
+
+      <h2 className="mt-10">{t('order.detail.shipmentsHeading')}</h2>
+      {shipments.length === 0 ? (
+        <p className="b2b-auth__hint">{t('order.detail.shipmentsEmpty')}</p>
+      ) : (
+        <table className="b2b-account__table">
+          <thead>
+            <tr>
+              <th>{t('order.detail.shipments.col.status')}</th>
+              <th>{t('order.detail.shipments.col.tracking')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {shipments.map((s) => (
+              <tr key={s.id}>
+                <td>{codeLabel(t, 'order.detail.shipments.status', s.status)}</td>
+                <td className="font-mono text-sm">{s.externalReference ?? '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
       <h2 className="mt-10">{t('order.detail.itemsHeading')}</h2>
       <table className="b2b-account__table">
@@ -462,6 +509,25 @@ async function cancelOrderAction(formData: FormData): Promise<void> {
   }
   return await localeRedirect(`/orders/${id}`);
 }
+
+/** Batch 58 — confirm receipt (`shipment_sent` → `completed`). */
+async function confirmReceiptAction(formData: FormData): Promise<void> {
+  'use server';
+  const session = await getSessionCookie();
+  if (!session) return await localeRedirect('/login');
+  const id = (formData.get('id') as string) ?? '';
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
+  try {
+    await confirmMyOrderReceipt(session, id);
+  } catch (err) {
+    const message =
+      err instanceof StorefrontApiError ? err.detail : t('order.confirmReceipt.failed');
+    return await localeRedirect(`/orders/${id}?error=${encodeURIComponent(message)}`);
+  }
+  return await localeRedirect(`/orders/${id}`);
+}
+
 
 async function reorderToQuoteAction(formData: FormData): Promise<void> {
   'use server';

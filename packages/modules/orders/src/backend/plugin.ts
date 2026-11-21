@@ -31,6 +31,7 @@ import { OrderCloneToQuoteService } from './services/order-clone-to-quote-servic
 import { OrderConfirmationService } from './services/order-confirmation-service.js';
 import { OrderCreationAdminService } from './services/order-creation-admin-service.js';
 import { CustomerOrderCancellationService } from './services/order-cancellation-service.js';
+import { CustomerOrderReceiptService } from './services/customer-order-receipt-service.js';
 import { OrderApiIntakeService } from './services/order-api-intake-service.js';
 import { registerOrdersExternalRoutes } from './routes.external.js';
 import type { OrganizationConfirmationEmailsPort } from '../ports/organization-confirmation-emails.port.js';
@@ -63,6 +64,7 @@ import type {
   PromotionApplyPort,
   RfqCustomerPort,
   ShippingAdapterRegistryPort,
+  ShipmentReadPort,
 } from '@endora-commerce/contracts';
 import { createBusinessIdGenerator } from './services/business-id-generator.js';
 import { registerOrderRoutes } from './routes.js';
@@ -215,6 +217,12 @@ export interface OrdersModuleOptions {
    */
   invoiceRead: () => InvoiceReadPort | null;
   invoicePdf: () => InvoicePdfPort | null;
+  /**
+   * Batch 58 — buyer shipment history. `shipments` is deactivatable and
+   * declares this module, so the edge is `degrades-without`: `null` ⇒ empty
+   * shipment list on the order detail.
+   */
+  shipmentRead: () => ShipmentReadPort | null;
   /**
    * The proforma placement opens (feature 080, T048). An accessor for the same
    * reason the two above are: the module is switchable, this one is not, and
@@ -569,6 +577,11 @@ export function commerceModule(options: OrdersModuleOptions) {
       // default is the only thing that does.
       transitionHistory: options.auditLogService ?? null,
     });
+    // Batch 58 — buyer confirms receipt (`shipment_sent` → `completed`).
+    const customerOrderReceipt = new CustomerOrderReceiptService({
+      emFactory: options.emFactory,
+      transitions: options.orderTransitionPort,
+    });
     // Feature 038 US2 — orders list query, saved views, CSV export.
     const orderListService = new OrderListService(
       options.emFactory,
@@ -624,6 +637,7 @@ export function commerceModule(options: OrdersModuleOptions) {
       orderCloneToQuoteService,
       orderCreationAdminService,
       customerOrderCancellation,
+      customerOrderReceipt,
       purchaseConversion: options.purchaseConversion,
       ...(options.log ? { log: options.log } : {}),
       emFactory: options.emFactory,
@@ -642,6 +656,7 @@ export function commerceModule(options: OrdersModuleOptions) {
       paymentMethodRead: options.paymentMethodRead,
       invoiceRead: options.invoiceRead,
       invoicePdf: options.invoicePdf,
+      shipmentRead: options.shipmentRead,
       assetRead: options.assetRead,
       ...(options.assertOrganizationCanTransact
         ? { assertOrganizationCanTransact: options.assertOrganizationCanTransact }

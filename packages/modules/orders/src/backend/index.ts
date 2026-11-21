@@ -40,6 +40,7 @@ import type {
   SalesChannelAttributionRegistryPort,
   SalesRepAssignmentPort,
   SettingWriteValidatorRegistryPort,
+  ShipmentReadPort,
   ShippingEmailRendererPort,
   TransactionalEmailSender,
 } from '@endora-commerce/contracts';
@@ -624,6 +625,10 @@ export function registerModule(ctx: ModuleContext): void {
             invoicePdf: () =>
               effectiveState.isPresent('invoices')
                 ? lazyPort<InvoicePdfPort>(ctx, 'invoicePdfPort')
+                : null,
+            shipmentRead: () =>
+              effectiveState.isPresent('shipments')
+                ? lazyPort<ShipmentReadPort>(ctx, 'shipmentReadPort')
                 : null,
             // The proforma placement opens (feature 080, T048). Presence is
             // asked here for the same reason the two reads above ask it — the

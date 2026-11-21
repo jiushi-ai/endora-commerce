@@ -3,12 +3,15 @@
 
 import { simpleEmailBodyTree } from '@endora-commerce/email-components/defaults/simple-email-body';
 
-const LANGS = ['en-US', 'pl-PL'];
+const LANGS = ['en-US', 'pl-PL', 'zh-CN', 'zh-TW'];
+const SECONDARY_LANGS = ['en-US', 'pl-PL'];
 
 export const ORDER_COMMENT_DEFAULT = {
   defaultSubject: {
     'en-US': 'New comment on your order {{var order.businessId}}',
     'pl-PL': 'Nowy komentarz do zamówienia {{var order.businessId}}',
+    'zh-CN': '订单 {{var order.businessId}} 有新评论',
+    'zh-TW': '訂單 {{var order.businessId}} 有新評論',
   } as Record<string, string>,
   defaultContent: {
     schema_version: 1,
@@ -22,6 +25,16 @@ export const ORDER_COMMENT_DEFAULT = {
         idPrefix: 'order-comment',
         heading: 'Nowy komentarz',
         text: 'Do Twojego zamówienia {{var order.businessId}} dodano nowy komentarz:\n\n{{var comment.body}}',
+      }),
+      'zh-CN': simpleEmailBodyTree({
+        idPrefix: 'order-comment',
+        heading: '订单新评论',
+        text: '您的订单 {{var order.businessId}} 有新评论：\n\n{{var comment.body}}',
+      }),
+      'zh-TW': simpleEmailBodyTree({
+        idPrefix: 'order-comment',
+        heading: '訂單新評論',
+        text: '您的訂單 {{var order.businessId}} 有新評論：\n\n{{var comment.body}}',
       }),
     },
   } as Record<string, unknown>,
@@ -48,7 +61,7 @@ export const REORDER_CREATED_DEFAULT = {
       }),
     },
   } as Record<string, unknown>,
-  languages: LANGS,
+  languages: SECONDARY_LANGS,
 };
 
 export const ADMIN_CREATED_ORDER_DEFAULT = {
@@ -71,5 +84,5 @@ export const ADMIN_CREATED_ORDER_DEFAULT = {
       }),
     },
   } as Record<string, unknown>,
-  languages: LANGS,
+  languages: SECONDARY_LANGS,
 };

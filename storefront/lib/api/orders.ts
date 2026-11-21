@@ -299,6 +299,38 @@ export async function cancelMyOrder(sessionCookie: string, id: string): Promise<
   return result.data!;
 }
 
+/** Batch 58 — shipment attempts for an order the buyer may read. */
+export interface OrderShipmentRow {
+  id: string;
+  status: string;
+  externalReference: string | null;
+  attemptNo: number;
+  createdAt: string;
+}
+
+export async function listMyOrderShipments(
+  sessionCookie: string,
+  id: string,
+): Promise<OrderShipmentRow[]> {
+  return apiGetAuthed<OrderShipmentRow[]>({ path: `/api/v1/orders/${id}/shipments`, sessionCookie });
+}
+
+/**
+ * Batch 58 — buyer confirms receipt (`shipment_sent` → `completed`).
+ */
+export async function confirmMyOrderReceipt(
+  sessionCookie: string,
+  id: string,
+): Promise<OrderSummary> {
+  const result = await apiMutate<OrderSummary>({
+    method: 'POST',
+    path: `/api/v1/orders/${id}/confirm-receipt`,
+    body: {},
+    sessionCookie,
+  });
+  return result.data!;
+}
+
 /**
  * Order again as a Quote Request (feature 039 / US4). Reuses the existing
  * clone-to-quote path (feature 038 US7).

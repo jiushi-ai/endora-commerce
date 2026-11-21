@@ -40,6 +40,7 @@ import type {
   LinePricesPort,
   OrganizationDetailsPort,
   PaymentMethodReadPort,
+  ShipmentReadPort,
 } from '@endora-commerce/contracts';
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { HttpError } from '@endora-commerce/platform/http';
@@ -63,6 +64,7 @@ import type { OrderReorderService } from './services/order-reorder-service.js';
 import type { OrderCloneToQuoteService } from './services/order-clone-to-quote-service.js';
 import type { OrderCreationAdminService } from './services/order-creation-admin-service.js';
 import type { CustomerOrderCancellationService } from './services/order-cancellation-service.js';
+import type { CustomerOrderReceiptService } from './services/customer-order-receipt-service.js';
 import type { PurchaseConversionService } from './services/purchase-conversion-service.js';
 import { Order } from './entities/order.entity.js';
 import { replyAfterCommittedWrite } from './services/committed-write-reply.js';
@@ -93,6 +95,13 @@ export interface OrdersDeps {
    * capability the buyer's surface renders that control from.
    */
   customerOrderCancellation: CustomerOrderCancellationService;
+  /** Batch 58 — buyer confirm-receipt (`shipment_sent` → `completed`). */
+  customerOrderReceipt: CustomerOrderReceiptService;
+  /**
+   * Batch 58 — shipment history for the buyer. Accessor: `shipments` is
+   * deactivatable (`degrades-without`); `null` ⇒ empty list.
+   */
+  shipmentRead: () => ShipmentReadPort | null;
   /**
    * Issue #277 — the per-order claim on the GA4 `purchase` conversion, spent
    * by whichever storefront page the buyer sees the order on first.
@@ -432,6 +441,53 @@ export async function registerOrderRoutes(
         () => serializeForBuyer(order, ctx.customerAccountId),
         deps.log,
       );
+    },
+  );
+
+  /**
+   * Batch 58 — buyer confirms receipt. Moves `shipment_sent` → `completed`
+   * through the order lifecycle (not the shipments receive ingress).
+   */
+  app.post<{ Params: { id: string } }>(
+    '/api/v1/orders/:id/confirm-receipt',
+    { preHandler: requireCustomer },
+    async (request) => {
+      const ctx = resolveCustomerContext(request);
+      const order = await deps.customerOrderReceipt.confirmByCustomer(
+        request.params.id,
+        ctx.customerAccountId,
+      );
+      return replyAfterCommittedWrite(
+        order,
+        () => serializeForBuyer(order, ctx.customerAccountId),
+        deps.log,
+      );
+    },
+  );
+
+  /**
+   * Batch 58 — shipment attempts for an order the buyer may read. Ownership
+   * goes through `getById` (org-admin scope included); with `shipments` off
+   * the answer is an empty list rather than 503.
+   */
+  app.get<{ Params: { id: string } }>(
+    '/api/v1/orders/:id/shipments',
+    { preHandler: requireCustomer },
+    async (request) => {
+      const ctx = resolveCustomerContext(request);
+      await orderService.getById(request.params.id, ctx);
+      const shipmentRead = deps.shipmentRead();
+      if (!shipmentRead) return { data: [] };
+      const rows = await shipmentRead.listForOrder(request.params.id);
+      return {
+        data: rows.map((s) => ({
+          id: s.id,
+          status: s.status,
+          externalReference: s.externalReference,
+          attemptNo: s.attemptNo,
+          createdAt: s.createdAt.toISOString(),
+        })),
+      };
     },
   );
 

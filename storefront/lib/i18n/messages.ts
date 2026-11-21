@@ -441,6 +441,17 @@ export type MessageKey =
   | 'order.detail.error.reorder'
   | 'order.detail.error.cloneToQuote'
   | 'order.detail.error.comment'
+  | 'order.detail.shipmentsHeading'
+  | 'order.detail.shipmentsEmpty'
+  | 'order.detail.shipments.col.status'
+  | 'order.detail.shipments.col.tracking'
+  | 'order.detail.shipments.status.pending'
+  | 'order.detail.shipments.status.pending_manual'
+  | 'order.detail.shipments.status.success'
+  | 'order.detail.shipments.status.failure'
+  | 'order.confirmReceipt.hint'
+  | 'order.confirmReceipt.cta'
+  | 'order.confirmReceipt.failed'
   | 'order.detail.paymentStatus.awaiting_payment'
   | 'order.detail.paymentStatus.paid'
   | 'order.detail.paymentStatus.failed'
@@ -1435,6 +1446,17 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.error.reorder': 'Could not reorder.',
     'order.detail.error.cloneToQuote': 'Could not create quote request.',
     'order.detail.error.comment': 'Could not add comment.',
+    'order.detail.shipmentsHeading': 'Delivery',
+    'order.detail.shipmentsEmpty': 'No shipment yet.',
+    'order.detail.shipments.col.status': 'Status',
+    'order.detail.shipments.col.tracking': 'Tracking',
+    'order.detail.shipments.status.pending': 'pending',
+    'order.detail.shipments.status.pending_manual': 'awaiting a person',
+    'order.detail.shipments.status.success': 'success',
+    'order.detail.shipments.status.failure': 'failed',
+    'order.confirmReceipt.hint': 'When you have received this shipment, confirm receipt to complete the order.',
+    'order.confirmReceipt.cta': 'Confirm receipt',
+    'order.confirmReceipt.failed': 'Could not confirm receipt.',
     'order.detail.paymentStatus.awaiting_payment': 'Awaiting payment',
     'order.detail.paymentStatus.paid': 'Paid',
     'order.detail.paymentStatus.failed': 'Failed',
@@ -2392,6 +2414,17 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.error.reorder': '无法再次下单。',
     'order.detail.error.cloneToQuote': '无法创建询价单。',
     'order.detail.error.comment': '无法添加留言。',
+    'order.detail.shipmentsHeading': '配送',
+    'order.detail.shipmentsEmpty': '暂无发货信息。',
+    'order.detail.shipments.col.status': '状态',
+    'order.detail.shipments.col.tracking': '运单号',
+    'order.detail.shipments.status.pending': '处理中',
+    'order.detail.shipments.status.pending_manual': '等待人工处理',
+    'order.detail.shipments.status.success': '成功',
+    'order.detail.shipments.status.failure': '失败',
+    'order.confirmReceipt.hint': '收到货物后，请确认收货以完成订单。',
+    'order.confirmReceipt.cta': '确认收货',
+    'order.confirmReceipt.failed': '无法确认收货。',
     'order.detail.paymentStatus.awaiting_payment': '等待付款',
     'order.detail.paymentStatus.paid': '已付款',
     'order.detail.paymentStatus.failed': '付款失败',
@@ -3324,6 +3357,17 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.error.reorder': '無法再次下單。',
     'order.detail.error.cloneToQuote': '無法建立詢價單。',
     'order.detail.error.comment': '無法新增留言。',
+    'order.detail.shipmentsHeading': '配送',
+    'order.detail.shipmentsEmpty': '尚無出貨資訊。',
+    'order.detail.shipments.col.status': '狀態',
+    'order.detail.shipments.col.tracking': '追蹤號碼',
+    'order.detail.shipments.status.pending': '處理中',
+    'order.detail.shipments.status.pending_manual': '等待人工處理',
+    'order.detail.shipments.status.success': '成功',
+    'order.detail.shipments.status.failure': '失敗',
+    'order.confirmReceipt.hint': '收到貨物後，請確認收貨以完成訂單。',
+    'order.confirmReceipt.cta': '確認收貨',
+    'order.confirmReceipt.failed': '無法確認收貨。',
     'order.detail.paymentStatus.awaiting_payment': '等待付款',
     'order.detail.paymentStatus.paid': '已付款',
     'order.detail.paymentStatus.failed': '付款失敗',
@@ -4274,6 +4318,17 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.error.reorder': 'Nie udało się zamówić ponownie.',
     'order.detail.error.cloneToQuote': 'Nie udało się utworzyć zapytania ofertowego.',
     'order.detail.error.comment': 'Nie udało się dodać komentarza.',
+    'order.detail.shipmentsHeading': 'Dostawa',
+    'order.detail.shipmentsEmpty': 'Brak przesyłki.',
+    'order.detail.shipments.col.status': 'Status',
+    'order.detail.shipments.col.tracking': 'Numer śledzenia',
+    'order.detail.shipments.status.pending': 'oczekuje',
+    'order.detail.shipments.status.pending_manual': 'oczekuje na osobę',
+    'order.detail.shipments.status.success': 'sukces',
+    'order.detail.shipments.status.failure': 'niepowodzenie',
+    'order.confirmReceipt.hint': 'Gdy otrzymasz przesyłkę, potwierdź odbiór, aby zakończyć zamówienie.',
+    'order.confirmReceipt.cta': 'Potwierdź odbiór',
+    'order.confirmReceipt.failed': 'Nie udało się potwierdzić odbioru.',
     'order.detail.paymentStatus.awaiting_payment': 'Oczekuje na płatność',
     'order.detail.paymentStatus.paid': 'Opłacone',
     'order.detail.paymentStatus.failed': 'Nieudane',

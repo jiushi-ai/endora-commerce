@@ -1,6 +1,10 @@
 // Feature 047 — shipment_created transactional email. A net-new email: subscribes
 // to shipment.created.v1 and sends the admin-editable template to the order's
 // customer. Best-effort; event-bus dispatch isolates handler errors.
+//
+// Batch 58 — also notifies on shipment.received.v1 so the customer gets the
+// tracking number when Admin marks the attempt successful (create often has
+// none yet). Language follows preferredLanguage → channel default → en-US.
 
 import type { EntityManager } from '@mikro-orm/postgresql';
 import type {
@@ -11,6 +15,8 @@ import type {
 } from '@endora-commerce/contracts';
 import { rethrowIfModuleDisabled } from '@endora-commerce/platform/kernel';
 import { SalesChannel } from '@endora-commerce/platform/kernel';
+import { Shipment } from '../entities/shipment.entity.js';
+import { resolveShipmentEmailLanguage } from '../email-templates/resolve-email-language.js';
 
 /**
  * Why the shipment-created e-mail did — or did not — go out (issue #78).
@@ -89,11 +95,18 @@ export class ShipmentEmailNotifier {
    * result to inspect, so every non-sent path is written to the log as well as
    * named in the return value; a shipment must not be un-created because the
    * notification failed.
+   *
+   * @param trackingOverride — when set (receive success), wins over the row;
+   *   the create path leaves it undefined and reads `externalReference`.
+   * @param messageIdSuffix — distinct idempotency key for the receive path so
+   *   a create e-mail with empty tracking does not suppress the tracking copy.
    */
   async notify(
     orderId: string,
     shipmentId: string,
     status: ShipmentStatus,
+    trackingOverride?: string | null,
+    messageIdSuffix?: string,
   ): Promise<ShipmentEmailResult> {
     // First, and before any plumbing is consulted: this is a decision about the
     // shipment, not about the mail. A `pending_manual` row is one no carrier
@@ -112,13 +125,28 @@ export class ShipmentEmailNotifier {
       );
       if (!customer?.email) return this.notSent(orderId, shipmentId, 'no_recipient');
       const channel = await em.findOne(SalesChannel, { id: order.salesChannelId });
+      const language = resolveShipmentEmailLanguage({
+        preferredLanguage: customer.preferredLanguage ?? null,
+        channelLanguages: channel?.languages ?? null,
+        channelDefaultLanguage: channel?.defaultLanguage ?? null,
+      });
+      const tracking =
+        trackingOverride !== undefined
+          ? (trackingOverride ?? '')
+          : ((await em.findOne(Shipment, { id: shipmentId }))?.externalReference ?? '');
+      const messageId = messageIdSuffix
+        ? `shipment_created:${shipmentId}:${messageIdSuffix}`
+        : `shipment_created:${shipmentId}`;
       const outcome = await sender.send({
         code: 'shipment_created',
         salesChannelId: order.salesChannelId,
-        language: channel?.defaultLanguage ?? 'en-US',
+        language,
         to: customer.email,
-        messageId: `shipment_created:${shipmentId}`,
-        variables: { order: { businessId: order.businessId } },
+        messageId,
+        variables: {
+          order: { businessId: order.businessId },
+          shipment: { tracking },
+        },
         meta: { orderId: order.id, shipmentId, kind: 'shipment_created' },
       });
       if (outcome.status !== 'sent') return this.notSent(orderId, shipmentId, outcome.status);

@@ -26,6 +26,15 @@ export class ShipmentReadService implements ShipmentReadPort {
     );
     return row ? toShipmentRecord(row) : null;
   }
+
+  async listForOrder(orderId: string): Promise<ShipmentRecord[]> {
+    const rows = await this.emFactory().find(
+      Shipment,
+      { orderId },
+      { orderBy: { attemptNo: 'asc' } },
+    );
+    return rows.map(toShipmentRecord);
+  }
 }
 
 export function toShipmentRecord(shipment: Shipment): ShipmentRecord {

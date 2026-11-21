@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import { PackageX } from 'lucide-react';
 import type { ShipmentStatus } from '@endora-commerce/contracts';
 import { ApiError, apiClient, formatDateTime, useSurfaceVisibility } from '@endora-commerce/admin-kit/lib';
-import { Alert, AlertDescription, AlertTitle, Badge, Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Section } from '@endora-commerce/admin-kit/ui';
+import { Alert, AlertDescription, AlertTitle, Badge, Button, Input, Label, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Section } from '@endora-commerce/admin-kit/ui';
 import type { BadgeProps } from '@endora-commerce/admin-kit/ui';
 import { useTranslation } from '@endora-commerce/admin-kit/i18n';
 import { AdminZone, selectZoneContributions, useAdminContributions } from '@endora-commerce/admin-kit/zones';
@@ -95,6 +95,8 @@ export function OrderShipmentsTab(props: {
   const [loadError, setLoadError] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [regenerating, setRegenerating] = useState(false);
+  const [markingSuccess, setMarkingSuccess] = useState(false);
+  const [trackingInput, setTrackingInput] = useState('');
   const [reloadToken, setReloadToken] = useState(0);
 
   /**
@@ -178,11 +180,46 @@ export function OrderShipmentsTab(props: {
       });
   }, [props.orderId, t]);
 
+  /**
+   * Batch 58 — mark the latest open attempt successful with an optional
+   * tracking / carrier reference. Posts the existing receive ingress; that is
+   * also what moves the order via `statusOnSuccess` (usually `shipment_sent`).
+   */
+  const markSuccess = useCallback(() => {
+    const latestRow = latestAttempt(rows);
+    if (!latestRow) return;
+    setMarkingSuccess(true);
+    setActionError(null);
+    const tracking = trackingInput.trim();
+    void apiClient
+      .post('/api/v1/shipments/receive', {
+        shipmentId: latestRow.id,
+        outcome: 'success',
+        ...(tracking ? { externalReference: tracking } : {}),
+      })
+      .then(() => {
+        setTrackingInput('');
+        setReloadToken((token) => token + 1);
+      })
+      .catch((err: unknown) => {
+        setActionError(
+          err instanceof ApiError
+            ? err.envelope.error.message
+            : t('orderDetail.shipments.markSuccess.error'),
+        );
+      })
+      .finally(() => {
+        setMarkingSuccess(false);
+      });
+  }, [rows, trackingInput, t]);
+
   const stalled =
     latestAttempt(rows)?.status === 'pending_manual' ? latestAttempt(rows) : undefined;
   const latest = latestAttempt(rows);
   const canGenerate =
     rows.length === 0 || latest?.status === 'failure' || latest?.status === 'pending_manual';
+  const canMarkSuccess =
+    latest?.status === 'pending' || latest?.status === 'pending_manual';
 
   return (
     <Section title={t('orderDetail.shipments.title')}>
@@ -255,7 +292,28 @@ export function OrderShipmentsTab(props: {
               </TableBody>
             </Table>
           ) : null}
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap items-end gap-2">
+            {canMarkSuccess ? (
+              <>
+                <div className="flex min-w-[12rem] flex-col gap-1">
+                  <Label htmlFor={`shipment-tracking-${props.orderId}`}>
+                    {t('orderDetail.shipments.tracking.label')}
+                  </Label>
+                  <Input
+                    id={`shipment-tracking-${props.orderId}`}
+                    value={trackingInput}
+                    onChange={(event) => setTrackingInput(event.target.value)}
+                    placeholder={t('orderDetail.shipments.tracking.placeholder')}
+                    disabled={markingSuccess}
+                  />
+                </div>
+                <Button size="sm" disabled={markingSuccess} onClick={markSuccess}>
+                  {markingSuccess
+                    ? t('orderDetail.shipments.markSuccess.busy')
+                    : t('orderDetail.shipments.markSuccess')}
+                </Button>
+              </>
+            ) : null}
             {canGenerate ? (
               <Button size="sm" disabled={regenerating} onClick={generateAgain}>
                 {regenerating

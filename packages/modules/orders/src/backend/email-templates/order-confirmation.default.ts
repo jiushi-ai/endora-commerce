@@ -1,7 +1,7 @@
 // Default content + subject for the `order_confirmation` transactional email
 // (feature 047). Simple header/footer embeds + order detail blocks.
 
-const DEFAULT_LANGUAGES = ['en-US', 'pl-PL'];
+const DEFAULT_LANGUAGES = ['en-US', 'pl-PL', 'zh-CN', 'zh-TW'];
 
 type Labels = {
   thanks: string;
@@ -52,6 +52,8 @@ export const ORDER_CONFIRMATION_DEFAULT = {
   defaultSubject: {
     'en-US': 'Order confirmation {{var order.businessId}}',
     'pl-PL': 'Potwierdzenie zamówienia {{var order.businessId}}',
+    'zh-CN': '订单确认 {{var order.businessId}}',
+    'zh-TW': '訂單確認 {{var order.businessId}}',
   } as Record<string, string>,
   defaultContent: {
     schema_version: 1,
@@ -77,6 +79,28 @@ export const ORDER_CONFIRMATION_DEFAULT = {
         summary: 'Podsumowanie',
         shipping: 'Adres dostawy',
         billing: 'Adres rozliczeniowy',
+      }),
+      'zh-CN': bodyTree({
+        thanks: '感谢您的订购',
+        orderId: '订单',
+        products: '商品',
+        delivery: '配送方式',
+        payment: '支付方式',
+        discounts: '已应用折扣',
+        summary: '汇总',
+        shipping: '收货地址',
+        billing: '账单地址',
+      }),
+      'zh-TW': bodyTree({
+        thanks: '感謝您的訂購',
+        orderId: '訂單',
+        products: '商品',
+        delivery: '配送方式',
+        payment: '支付方式',
+        discounts: '已套用折扣',
+        summary: '彙總',
+        shipping: '收貨地址',
+        billing: '帳單地址',
       }),
     },
   } as Record<string, unknown>,

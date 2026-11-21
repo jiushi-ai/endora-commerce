@@ -75,7 +75,10 @@ export const manifest = defineModuleManifest({
       code: 'shipment_created',
       name: 'Shipment created',
       group: 'shipments',
-      variables: [{ key: 'order.businessId', label: 'Order number', sampleValue: 'ORD-1042' }],
+      variables: [
+        { key: 'order.businessId', label: 'Order number', sampleValue: 'ORD-1042' },
+        { key: 'shipment.tracking', label: 'Tracking / reference', sampleValue: 'TRACK-123' },
+      ],
     },
   ],
 });

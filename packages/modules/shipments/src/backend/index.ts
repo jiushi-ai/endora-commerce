@@ -240,6 +240,21 @@ export function registerModule(ctx: ModuleContext): void {
     await ctx.cradle<ShipmentsCradle>().shipmentEmailNotifier.notify(orderId, shipmentId, status);
   });
 
+  // Batch 58 — when Admin (or a carrier) marks the attempt successful, the
+  // tracking number is usually set for the first time. Notify again with a
+  // distinct messageId so the create e-mail (often empty tracking) does not
+  // suppress this copy. Status `success` is never `pending_manual`.
+  ctx.subscribe('shipment.received.v1', async (payload) => {
+    const { orderId, shipmentId, externalReference } = payload as unknown as {
+      orderId: string;
+      shipmentId: string;
+      externalReference: string | null;
+    };
+    await ctx
+      .cradle<ShipmentsCradle>()
+      .shipmentEmailNotifier.notify(orderId, shipmentId, 'success', externalReference, 'received');
+  });
+
   ctx.subscribe('payment.received.v1', async (payload) => {
     const { orderId } = payload as unknown as { orderId: string };
     await ctx.cradle<ShipmentsCradle>().autoShipmentOnPaid.maybeCreate(orderId);
