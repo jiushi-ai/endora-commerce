@@ -1144,7 +1144,7 @@
   "orderDetail.shipments.generate.busy": "Generowanie…",
   "orderDetail.shipments.generate.error": "Nie udało się wygenerować przesyłki.",
   "orderDetail.shipments.status.failure": "niepowodzenie",
-  "orderDetail.shipments.status.pending": "oczekuje",
+  "orderDetail.shipments.status.pending": "przygotowywanie do wysyłki",
   "orderDetail.shipments.status.pending_manual": "czeka na człowieka",
   "orderDetail.shipments.status.received": "Odebrano",
   "orderDetail.shipments.status.success": "Wysłano",

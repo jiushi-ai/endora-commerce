@@ -1144,7 +1144,7 @@
   "orderDetail.shipments.generate.busy": "生成…",
   "orderDetail.shipments.generate.error": "無法生成貨件。",
   "orderDetail.shipments.status.failure": "失敗了",
-  "orderDetail.shipments.status.pending": "待定",
+  "orderDetail.shipments.status.pending": "準備發貨中",
   "orderDetail.shipments.status.pending_manual": "等待一個人",
   "orderDetail.shipments.status.received": "已確認收貨",
   "orderDetail.shipments.status.success": "已發出",
