@@ -39,6 +39,7 @@ const PENDING = {
   providerDetails: null,
   failureReason: null,
   attemptNo: 1,
+  customerConfirmedAt: null,
   createdAt: '2026-11-21T12:00:00Z',
 };
 
@@ -52,6 +53,7 @@ const BUNDLE = passthroughBundle('core', [
   'orderDetail.shipments.columns.status',
   'orderDetail.shipments.columns.tracking',
   'orderDetail.shipments.columns.createdAt',
+  'orderDetail.shipments.columns.confirmedAt',
   'orderDetail.shipments.columns.failure',
 ]);
 

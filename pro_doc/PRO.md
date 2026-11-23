@@ -1116,3 +1116,14 @@ feat-26-11-22 19:06:22 [59.0~59.4]：Mark success可达shipment_sent；物流文
 汇总：付款状态走 t() 本就正常；订单状态名在图/库里且 UI 曾硬取 en。发版需 migration:up（本批 zh 名称）+ 重建 admin。
 
 feat-26-11-22 23:41:39 [60.1~60.3]：Admin订单状态跟语系；Deferred改延期付款；支付流程说明
+
+### 61. 确认收货 → shipment `received` + 确认时间列（大 B / 小 b）
+
+- [x] 61.1 Shipment 增加 `received` 状态 + `customerConfirmedAt`（contracts / entity / migration）
+- [x] 61.2 小 b 确认收货后：最新 `success` 发货行 → `received` 并写入确认时间（`shipmentCustomerReceiptPort`）
+- [x] 61.3 Admin Delivery Shipments + 小 b 订单详情：状态同步为 Received / 已确认收货；新增「确认时间」列；四语 i18n
+- [x] 61.4 单测 + `composer:generate` 注册迁移；本 §99；建议 commit 如下（未执行 git commit）
+
+汇总：买家点确认收货后，订单仍走 `shipment_sent`→`completed`；并行把最新已发出发货行标为 `received` 并记录点击时间。大 B Delivery 与小 b 配送区同步展示新状态与确认时间。发版需 **migration:up**（本批 shipments）+ 重建 backend/admin/storefront。
+
+feat-26-11-23 00:37:33 [61.1~61.4]：确认收货同步shipment为received并展示确认时间

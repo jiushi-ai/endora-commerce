@@ -295,6 +295,7 @@ export default async function OrderConfirmationPage({
             <tr>
               <th>{t('order.detail.shipments.col.status')}</th>
               <th>{t('order.detail.shipments.col.tracking')}</th>
+              <th>{t('order.detail.shipments.col.confirmedAt')}</th>
             </tr>
           </thead>
           <tbody>
@@ -302,6 +303,11 @@ export default async function OrderConfirmationPage({
               <tr key={s.id}>
                 <td>{codeLabel(t, 'order.detail.shipments.status', s.status)}</td>
                 <td className="font-mono text-sm">{s.externalReference ?? '—'}</td>
+                <td>
+                  {s.customerConfirmedAt
+                    ? new Date(s.customerConfirmedAt).toLocaleString(locale)
+                    : '—'}
+                </td>
               </tr>
             ))}
           </tbody>

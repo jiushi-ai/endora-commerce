@@ -479,6 +479,17 @@ export const manifest = defineModuleManifest({
         '`shipments` declares this module, so the edge cannot bind.',
     },
     {
+      moduleId: 'shipments',
+      name: 'shipmentCustomerReceiptPort',
+      kind: 'degrades-without',
+      whenAbsent:
+        'buyer confirm-receipt still completes the order; the shipment row stays at success',
+      reason:
+        'Batch 61 — after shipment_sent → completed, stamp the latest success attempt as ' +
+        '`received` with customerConfirmedAt. Same mutual-declaration shape as ' +
+        'shipmentReadPort: `shipments` declares this module, so the edge cannot bind.',
+    },
+    {
       moduleId: 'payment_methods',
       name: 'paymentMethodReadPort',
       kind: 'degrades-without',

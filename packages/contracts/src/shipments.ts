@@ -104,6 +104,8 @@ export interface ShipmentRecord {
   providerDetails: Record<string, unknown> | null;
   failureReason: string | null;
   attemptNo: number;
+  /** Set when the buyer confirms receipt (batch 61). */
+  customerConfirmedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -148,4 +150,19 @@ export interface ShipmentReadPort {
    * just to list history.
    */
   listForOrder(orderId: string): Promise<ShipmentRecord[]>;
+}
+
+/**
+ * Container name: `shipmentCustomerReceiptPort`. Owner: `shipments`.
+ *
+ * Batch 61 — after the buyer confirms receipt on the order lifecycle
+ * (`shipment_sent` → `completed`), mark the latest dispatched (`success`)
+ * attempt as `received` and stamp `customerConfirmedAt`. Idempotent when the
+ * attempt is already `received`.
+ *
+ * **Owner off:** resolving throws `ModuleDisabledError`; callers treat that as
+ * "no shipment module" and leave the order transition as the only effect.
+ */
+export interface ShipmentCustomerReceiptPort {
+  markReceivedForOrder(orderId: string, confirmedAt: Date): Promise<void>;
 }

@@ -8,6 +8,7 @@ import type {
   OrderReadPort,
   OrderTransitionPort,
   ReceiveShipmentPort,
+  ShipmentCustomerReceiptPort,
   ShipmentReadPort,
   ShipmentStatus,
   ShipmentUsagePort,
@@ -21,6 +22,7 @@ import type { RequireAdminFactory } from '@endora-commerce/platform/kernel';
 import { ShipmentService } from './services/shipment-service.js';
 import { ShipmentUsageService } from './services/shipment-usage.service.js';
 import { ShipmentReadService } from './services/shipment-read.service.js';
+import { ShipmentCustomerReceiptService } from './services/shipment-customer-receipt.service.js';
 import { resolveShippingEmailRenderer } from './services/shipping-email-renderer.js';
 import { ReceiveShipmentHandler } from './services/receive-shipment-handler.js';
 import type { ShippingEventBus } from './services/events.js';
@@ -178,6 +180,15 @@ export function registerModule(ctx: ModuleContext): void {
     'shipmentReadPort',
     ctx
       .asFunction(({ emFactory }: ShipmentsCradle) => new ShipmentReadService(emFactory))
+      .singleton(),
+  );
+
+  ctx.di.providePort<ShipmentCustomerReceiptPort>(
+    'shipmentCustomerReceiptPort',
+    ctx
+      .asFunction(
+        ({ emFactory }: ShipmentsCradle) => new ShipmentCustomerReceiptService(emFactory),
+      )
       .singleton(),
   );
 

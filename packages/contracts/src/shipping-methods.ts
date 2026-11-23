@@ -161,6 +161,12 @@ export const shipmentStatusSchema = z.enum([
   'pending',
   'pending_manual',
   'success',
+  /**
+   * Batch 61 — buyer confirmed receipt on the storefront. Distinct from
+   * `success` (dispatched): the parcel left the seller; `received` means the
+   * buyer accepted it. Order lifecycle still uses `completed` in parallel.
+   */
+  'received',
   'failure',
 ]);
 export type ShipmentStatus = z.infer<typeof shipmentStatusSchema>;
@@ -175,6 +181,8 @@ export const shipmentSchema = z.object({
   providerDetails: z.record(z.string(), z.unknown()).nullable(),
   failureReason: z.string().nullable(),
   attemptNo: z.number().int(),
+  /** ISO timestamp when the buyer confirmed receipt; null until then. */
+  customerConfirmedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

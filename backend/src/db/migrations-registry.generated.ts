@@ -383,6 +383,7 @@ import { Migration20260425T154404SeoInit } from '@endora-commerce/mod-seo/migrat
 // ── shipments ───────────────────────────────────────────────────────────────
 import { Migration20260817T194652ShipmentsOrderFk } from '@endora-commerce/mod-shipments/migrations';
 import { Migration20260819T171006ShipmentsStatusPendingManual } from '@endora-commerce/mod-shipments/migrations';
+import { Migration20261123T083236ShipmentsStatusReceivedAndCustomerConfirmedAt } from '@endora-commerce/mod-shipments/migrations';
 
 // ── shopping_lists ──────────────────────────────────────────────────────────
 import { Migration20260426T135443ShoppingListsInit } from '@endora-commerce/mod-shopping-lists/migrations';
@@ -763,6 +764,7 @@ export const MIGRATION_REGISTRY: readonly MigrationRegistryEntry[] = [
   // ── shipments ───────────────────────────────────────────────────────────────
   migration('shipments', Migration20260817T194652ShipmentsOrderFk),
   migration('shipments', Migration20260819T171006ShipmentsStatusPendingManual),
+  migration('shipments', Migration20261123T083236ShipmentsStatusReceivedAndCustomerConfirmedAt),
 
   // ── shopping_lists ──────────────────────────────────────────────────────────
   migration('shopping_lists', Migration20260426T135443ShoppingListsInit),

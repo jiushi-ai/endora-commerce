@@ -8,9 +8,10 @@ import { randomUUID } from 'crypto';
  * have several: a failed generation followed by a successful retry, or a
  * future split into multiple parcels. The delivery-side twin of `Payment`.
  *
- * `status` is the shipment-process status (pending → success | failure),
- * distinct from the Order status the method maps to on a `receive_shipment`
- * outcome.
+ * `status` is the shipment-process status
+ * (pending → success → received | failure), distinct from the Order status the
+ * method maps to on a `receive_shipment` outcome. `received` is the buyer's
+ * confirm-receipt stamp (batch 61).
  */
 @GlobalEntity()
 @Entity({ tableName: 'shipments' })
@@ -23,7 +24,8 @@ export class Shipment {
     | 'externalReference'
     | 'providerDetails'
     | 'failureReason'
-    | 'attemptNo';
+    | 'attemptNo'
+    | 'customerConfirmedAt';
 
   @PrimaryKey({ type: 'uuid' })
   id: string = randomUUID();
@@ -44,11 +46,15 @@ export class Shipment {
    */
   @Property({ type: 'string', length: 32 })
   @Index()
-  status: 'pending' | 'pending_manual' | 'success' | 'failure' = 'pending';
+  status: 'pending' | 'pending_manual' | 'success' | 'received' | 'failure' = 'pending';
 
   /** Carrier/adapter reference (e.g. tracking number) for idempotent matching. */
   @Property({ type: 'string', length: 255, nullable: true })
   externalReference?: string | null;
+
+  /** When the buyer confirmed receipt on the storefront (batch 61). */
+  @Property({ type: 'datetime', nullable: true })
+  customerConfirmedAt?: Date | null;
 
   /** Adapter/carrier payload captured on receive_shipment. */
   @Property({ type: 'json', nullable: true })

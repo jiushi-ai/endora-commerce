@@ -64,6 +64,7 @@ import type {
   PromotionApplyPort,
   RfqCustomerPort,
   ShippingAdapterRegistryPort,
+  ShipmentCustomerReceiptPort,
   ShipmentReadPort,
 } from '@endora-commerce/contracts';
 import { createBusinessIdGenerator } from './services/business-id-generator.js';
@@ -223,6 +224,12 @@ export interface OrdersModuleOptions {
    * shipment list on the order detail.
    */
   shipmentRead: () => ShipmentReadPort | null;
+  /**
+   * Batch 61 — stamp latest success shipment as `received` on confirm-receipt.
+   * Same degrade shape as `shipmentRead`: `null` ⇒ order completes without a
+   * shipment status change.
+   */
+  shipmentCustomerReceipt: () => ShipmentCustomerReceiptPort | null;
   /**
    * The proforma placement opens (feature 080, T048). An accessor for the same
    * reason the two above are: the module is switchable, this one is not, and
@@ -578,9 +585,11 @@ export function commerceModule(options: OrdersModuleOptions) {
       transitionHistory: options.auditLogService ?? null,
     });
     // Batch 58 — buyer confirms receipt (`shipment_sent` → `completed`).
+    // Batch 61 — also stamps the latest success shipment as `received`.
     const customerOrderReceipt = new CustomerOrderReceiptService({
       emFactory: options.emFactory,
       transitions: options.orderTransitionPort,
+      shipmentCustomerReceipt: options.shipmentCustomerReceipt,
     });
     // Feature 038 US2 — orders list query, saved views, CSV export.
     const orderListService = new OrderListService(

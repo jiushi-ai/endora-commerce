@@ -76,6 +76,7 @@ function serializeShipment(s: Shipment) {
     providerDetails: s.providerDetails ?? null,
     failureReason: s.failureReason ?? null,
     attemptNo: s.attemptNo,
+    customerConfirmedAt: s.customerConfirmedAt ? s.customerConfirmedAt.toISOString() : null,
     createdAt: s.createdAt.toISOString(),
     updatedAt: s.updatedAt.toISOString(),
   };

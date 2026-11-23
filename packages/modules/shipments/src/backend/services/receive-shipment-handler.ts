@@ -97,7 +97,8 @@ export class ReceiveShipmentHandler {
       }
 
       // Idempotency / terminal-state guards (FR-025).
-      if (shipment.status === 'success') {
+      // `received` is past success (buyer confirmed); treat like success here.
+      if (shipment.status === 'success' || shipment.status === 'received') {
         if (input.outcome === 'failure') {
           throw new HttpError(
             409,

@@ -40,6 +40,7 @@ import type {
   SalesChannelAttributionRegistryPort,
   SalesRepAssignmentPort,
   SettingWriteValidatorRegistryPort,
+  ShipmentCustomerReceiptPort,
   ShipmentReadPort,
   ShippingEmailRendererPort,
   TransactionalEmailSender,
@@ -629,6 +630,10 @@ export function registerModule(ctx: ModuleContext): void {
             shipmentRead: () =>
               effectiveState.isPresent('shipments')
                 ? lazyPort<ShipmentReadPort>(ctx, 'shipmentReadPort')
+                : null,
+            shipmentCustomerReceipt: () =>
+              effectiveState.isPresent('shipments')
+                ? lazyPort<ShipmentCustomerReceiptPort>(ctx, 'shipmentCustomerReceiptPort')
                 : null,
             // The proforma placement opens (feature 080, T048). Presence is
             // asked here for the same reason the two reads above ask it — the

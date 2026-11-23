@@ -445,9 +445,11 @@ export type MessageKey =
   | 'order.detail.shipmentsEmpty'
   | 'order.detail.shipments.col.status'
   | 'order.detail.shipments.col.tracking'
+  | 'order.detail.shipments.col.confirmedAt'
   | 'order.detail.shipments.status.pending'
   | 'order.detail.shipments.status.pending_manual'
   | 'order.detail.shipments.status.success'
+  | 'order.detail.shipments.status.received'
   | 'order.detail.shipments.status.failure'
   | 'order.confirmReceipt.hint'
   | 'order.confirmReceipt.cta'
@@ -1450,9 +1452,11 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.shipmentsEmpty': 'No shipment yet.',
     'order.detail.shipments.col.status': 'Status',
     'order.detail.shipments.col.tracking': 'Tracking',
+    'order.detail.shipments.col.confirmedAt': 'Confirmation time',
     'order.detail.shipments.status.pending': 'pending',
     'order.detail.shipments.status.pending_manual': 'awaiting a person',
     'order.detail.shipments.status.success': 'Dispatched',
+    'order.detail.shipments.status.received': 'Received',
     'order.detail.shipments.status.failure': 'failed',
     'order.confirmReceipt.hint': 'When you have received this shipment, confirm receipt to complete the order.',
     'order.confirmReceipt.cta': 'Confirm receipt',
@@ -2418,9 +2422,11 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.shipmentsEmpty': '暂无发货信息。',
     'order.detail.shipments.col.status': '状态',
     'order.detail.shipments.col.tracking': '运单号',
+    'order.detail.shipments.col.confirmedAt': '确认时间',
     'order.detail.shipments.status.pending': '处理中',
     'order.detail.shipments.status.pending_manual': '等待人工处理',
     'order.detail.shipments.status.success': '已发出',
+    'order.detail.shipments.status.received': '已确认收货',
     'order.detail.shipments.status.failure': '失败',
     'order.confirmReceipt.hint': '收到货物后，请确认收货以完成订单。',
     'order.confirmReceipt.cta': '确认收货',
@@ -3361,9 +3367,11 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.shipmentsEmpty': '尚無出貨資訊。',
     'order.detail.shipments.col.status': '狀態',
     'order.detail.shipments.col.tracking': '追蹤號碼',
+    'order.detail.shipments.col.confirmedAt': '確認時間',
     'order.detail.shipments.status.pending': '處理中',
     'order.detail.shipments.status.pending_manual': '等待人工處理',
     'order.detail.shipments.status.success': '已發出',
+    'order.detail.shipments.status.received': '已確認收貨',
     'order.detail.shipments.status.failure': '失敗',
     'order.confirmReceipt.hint': '收到貨物後，請確認收貨以完成訂單。',
     'order.confirmReceipt.cta': '確認收貨',
@@ -4322,9 +4330,11 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'order.detail.shipmentsEmpty': 'Brak przesyłki.',
     'order.detail.shipments.col.status': 'Status',
     'order.detail.shipments.col.tracking': 'Numer śledzenia',
+    'order.detail.shipments.col.confirmedAt': 'Czas potwierdzenia',
     'order.detail.shipments.status.pending': 'oczekuje',
     'order.detail.shipments.status.pending_manual': 'oczekuje na osobę',
     'order.detail.shipments.status.success': 'Wysłano',
+    'order.detail.shipments.status.received': 'Odebrano',
     'order.detail.shipments.status.failure': 'niepowodzenie',
     'order.confirmReceipt.hint': 'Gdy otrzymasz przesyłkę, potwierdź odbiór, aby zakończyć zamówienie.',
     'order.confirmReceipt.cta': 'Potwierdź odbiór',

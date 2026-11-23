@@ -305,6 +305,8 @@ export interface OrderShipmentRow {
   status: string;
   externalReference: string | null;
   attemptNo: number;
+  /** ISO timestamp when the buyer confirmed receipt; null until then (batch 61). */
+  customerConfirmedAt: string | null;
   createdAt: string;
 }
 

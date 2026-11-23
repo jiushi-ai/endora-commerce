@@ -485,6 +485,9 @@ export async function registerOrderRoutes(
           status: s.status,
           externalReference: s.externalReference,
           attemptNo: s.attemptNo,
+          customerConfirmedAt: s.customerConfirmedAt
+            ? s.customerConfirmedAt.toISOString()
+            : null,
           createdAt: s.createdAt.toISOString(),
         })),
       };

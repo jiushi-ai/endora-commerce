@@ -109,6 +109,7 @@ const INPOST_SUCCESS = {
   providerDetails: { provider: 'inpost', shipxShipmentId: '4321' },
   failureReason: null,
   attemptNo: 1,
+  customerConfirmedAt: null,
   createdAt: '2026-08-21T12:00:00Z',
 };
 

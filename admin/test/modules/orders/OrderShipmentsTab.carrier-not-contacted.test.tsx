@@ -62,6 +62,7 @@ const STALLED = {
   failureReason:
     'The "demo_carrier" module is not switched on here, so the carrier was never asked to create this shipment.',
   attemptNo: 1,
+  customerConfirmedAt: null,
   createdAt: '2026-08-19T12:00:00Z',
 };
 
@@ -71,6 +72,7 @@ const ACCEPTED = {
   externalReference: null,
   failureReason: null,
   attemptNo: 2,
+  customerConfirmedAt: null,
   createdAt: '2026-08-19T13:00:00Z',
 };
 

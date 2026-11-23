@@ -1,5 +1,9 @@
 import type { EntityManager } from '@mikro-orm/postgresql';
-import { ERROR_CODES, type OrderTransitionPort } from '@endora-commerce/contracts';
+import {
+  ERROR_CODES,
+  type OrderTransitionPort,
+  type ShipmentCustomerReceiptPort,
+} from '@endora-commerce/contracts';
 import { HttpError } from '@endora-commerce/platform/http';
 import { Order } from '../entities/order.entity.js';
 
@@ -10,14 +14,21 @@ export const CUSTOMER_RECEIPT_TO_STATUS = 'completed';
 export interface CustomerOrderReceiptDeps {
   emFactory: () => EntityManager;
   transitions: OrderTransitionPort;
+  /**
+   * Batch 61 — optional: stamp the latest success shipment as `received`.
+   * Null when `shipments` is off; order completion still proceeds.
+   */
+  shipmentCustomerReceipt: () => ShipmentCustomerReceiptPort | null;
 }
 
 /**
  * Batch 58 — buyer confirms receipt of a shipped order.
  *
  * Moves `shipment_sent` → `completed` through the lifecycle port (not the
- * shipments receive ingress). Ownership is a scoped find: a foreign order id
- * answers 404, never 403.
+ * shipments receive ingress). Batch 61 also marks the latest dispatched
+ * shipment attempt as `received` with `customerConfirmedAt`.
+ *
+ * Ownership is a scoped find: a foreign order id answers 404, never 403.
  */
 export class CustomerOrderReceiptService {
   constructor(private readonly deps: CustomerOrderReceiptDeps) {}
@@ -27,7 +38,10 @@ export class CustomerOrderReceiptService {
     const order = await em.findOne(Order, { id: orderId, placedByCustomerAccountId: customerAccountId });
     if (!order) throw new HttpError(404, ERROR_CODES.ORDER_NOT_FOUND, 'Order not found.');
 
-    if (order.status === CUSTOMER_RECEIPT_TO_STATUS) return order;
+    if (order.status === CUSTOMER_RECEIPT_TO_STATUS) {
+      await this.markShipmentReceived(order.id);
+      return order;
+    }
 
     if (order.status !== CUSTOMER_RECEIPT_FROM_STATUS) {
       throw new HttpError(
@@ -51,6 +65,7 @@ export class CustomerOrderReceiptService {
       );
     }
 
+    await this.markShipmentReceived(order.id);
     return this.deps.emFactory().findOneOrFail(Order, { id: order.id }, { refresh: true });
   }
 
@@ -60,5 +75,11 @@ export class CustomerOrderReceiptService {
       order.placedByCustomerAccountId === customerAccountId &&
       order.status === CUSTOMER_RECEIPT_FROM_STATUS
     );
+  }
+
+  private async markShipmentReceived(orderId: string): Promise<void> {
+    const port = this.deps.shipmentCustomerReceipt();
+    if (!port) return;
+    await port.markReceivedForOrder(orderId, new Date());
   }
 }

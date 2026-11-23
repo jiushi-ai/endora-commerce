@@ -66,6 +66,7 @@ Rendered from the module's own manifest, and from nothing written by hand. What 
 | `prompt_actions` | no | contributes-to `promptActionToolRegistry` |
 | `quote_requests` | no | degrades-without `quoteRequestReadPort` — an order placed from a basket that an accepted quote filled no longer records that quote, so the quote is not completed by it; the order itself is placed exactly as before |
 | `quote_requests` | no | refuses-without `rfqService` — an order cannot be turned back into a quote — the reorder-as-quote action on the order screen refuses, and every other order surface keeps serving |
+| `shipments` | no | degrades-without `shipmentCustomerReceiptPort` — buyer confirm-receipt still completes the order; the shipment row stays at success |
 | `shipments` | no | degrades-without `shipmentReadPort` — the buyer order detail shows no shipment rows (empty list) |
 | `shipments` | no | degrades-without `shippingEmailRendererPort` — the order confirmation still goes out, with the delivery line written from the method snapshot instead of a carrier’s own wording |
 

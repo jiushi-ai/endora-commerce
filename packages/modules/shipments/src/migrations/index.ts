@@ -31,13 +31,16 @@
 
 import { Migration20260817T194652ShipmentsOrderFk } from './20260817T194652_shipments_order_fk.js';
 import { Migration20260819T171006ShipmentsStatusPendingManual } from './20260819T171006_shipments_status_pending_manual.js';
+import { Migration20261123T083236ShipmentsStatusReceivedAndCustomerConfirmedAt } from './20261123T083236_shipments_status_received_and_customer_confirmed_at.js';
 
 export const migrations = [
   Migration20260817T194652ShipmentsOrderFk,
   Migration20260819T171006ShipmentsStatusPendingManual,
+  Migration20261123T083236ShipmentsStatusReceivedAndCustomerConfirmedAt,
 ];
 
 export {
   Migration20260817T194652ShipmentsOrderFk,
   Migration20260819T171006ShipmentsStatusPendingManual,
+  Migration20261123T083236ShipmentsStatusReceivedAndCustomerConfirmedAt,
 };

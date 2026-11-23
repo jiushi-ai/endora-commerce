@@ -47,6 +47,7 @@ export function toShipmentRecord(shipment: Shipment): ShipmentRecord {
     providerDetails: shipment.providerDetails ?? null,
     failureReason: shipment.failureReason ?? null,
     attemptNo: shipment.attemptNo,
+    customerConfirmedAt: shipment.customerConfirmedAt ?? null,
     createdAt: shipment.createdAt,
     updatedAt: shipment.updatedAt,
   };

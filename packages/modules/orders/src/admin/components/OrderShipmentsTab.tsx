@@ -21,6 +21,8 @@ interface ShipmentRow {
   providerDetails: Record<string, unknown> | null;
   failureReason: string | null;
   attemptNo: number;
+  /** ISO timestamp when the buyer confirmed receipt; null until then. */
+  customerConfirmedAt: string | null;
   createdAt: string;
 }
 
@@ -32,6 +34,8 @@ const STATUS_VARIANT: Record<ShipmentRow['status'], BadgeProps['variant']> = {
   // remove (issue #250).
   pending_manual: 'destructive',
   success: 'success',
+  // Batch 61 — buyer confirmed receipt (past Dispatched).
+  received: 'success',
   failure: 'destructive',
 };
 
@@ -269,6 +273,7 @@ export function OrderShipmentsTab(props: {
                   <TableHead>{t('orderDetail.shipments.columns.status')}</TableHead>
                   <TableHead>{t('orderDetail.shipments.columns.tracking')}</TableHead>
                   <TableHead>{t('orderDetail.shipments.columns.createdAt')}</TableHead>
+                  <TableHead>{t('orderDetail.shipments.columns.confirmedAt')}</TableHead>
                   <TableHead>{t('orderDetail.shipments.columns.failure')}</TableHead>
                   {showRowActions ? <TableHead /> : null}
                 </TableRow>
@@ -284,6 +289,9 @@ export function OrderShipmentsTab(props: {
                     </TableCell>
                     <TableCell className="font-mono text-xs">{s.externalReference ?? '—'}</TableCell>
                     <TableCell>{formatDateTime(s.createdAt)}</TableCell>
+                    <TableCell>
+                      {s.customerConfirmedAt ? formatDateTime(s.customerConfirmedAt) : '—'}
+                    </TableCell>
                     <TableCell className="text-destructive">{s.failureReason ?? ''}</TableCell>
                     {showRowActions ? (
                       <TableCell>
