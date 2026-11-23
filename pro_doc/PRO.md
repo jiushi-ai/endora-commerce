@@ -1106,3 +1106,13 @@ feat-26-11-21 00:38:30 [58.1~58.7]：邮件preferredLanguage与zh模板；Admin�
 汇总：保留 Admin 状态下拉老路径；日常走 Delivery→填运单→Mark success 自动到 `shipment_sent`，小 b 即可出确认收货。发版需 **migration:up**（本迁移）+ 重建 backend/admin/storefront。
 
 feat-26-11-22 19:06:22 [59.0~59.4]：Mark success可达shipment_sent；物流文案已发出；迁移失败可见
+
+### 60. Admin 订单状态 i18n + 银行/额度支付流程说明
+
+- [x] 60.1 Deferred 中文建议「延期付款」；银行 vs 额度支付流程图（对话答复）；Admin deferred「推迟的」→「延期付款」
+- [x] 60.2 Admin 订单状态取词跟语系（不再写死 en）；默认状态补 zh-CN/zh-TW；migration 回填库内 name
+- [x] 60.3 单测通过；本 §99；建议 commit 如下（未执行 git commit）
+
+汇总：付款状态走 t() 本就正常；订单状态名在图/库里且 UI 曾硬取 en。发版需 migration:up（本批 zh 名称）+ 重建 admin。
+
+feat-26-11-22 23:41:39 [60.1~60.3]：Admin订单状态跟语系；Deferred改延期付款；支付流程说明

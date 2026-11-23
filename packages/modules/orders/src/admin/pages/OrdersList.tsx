@@ -34,6 +34,7 @@ import type { ResponsiveColumn, SavedViewState } from '@endora-commerce/admin-ki
 import type { CustomFieldFilters } from '@endora-commerce/contracts';
 import { useTranslation, useTranslationContext } from '@endora-commerce/admin-kit/i18n';
 import { DISPLAYABLE_PAYMENT_STATUSES, paymentStatusLabelKey } from '../lib/paymentStatus.js';
+import { orderStatusLabel } from '../order-status-label.js';
 import { OrdersBulkStatusDialog } from '../components/OrdersBulkStatusDialog.js';
 
 interface AdminOrderRow {
@@ -361,9 +362,9 @@ export function OrdersList(): ReactNode {
   const statusLabel = useCallback(
     (code: string): string => {
       const s = statuses.find((x) => x.code === code);
-      return s?.name['en'] ?? Object.values(s?.name ?? {})[0] ?? code;
+      return orderStatusLabel(s, language, code);
     },
-    [statuses],
+    [statuses, language],
   );
 
   const statusColor = useCallback(

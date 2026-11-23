@@ -762,7 +762,7 @@
   "blocks.productGrid.fields.cardImageBackground.label": "卡圖像背景",
   "blocks.productGrid.fields.cardDivider.label": "每張卡下方都有分隔線",
   "blocks.productGrid.fields.cardDivider.options.none": "沒有任何",
-  "blocks.productGrid.fields.cardDivider.options.line": "線",
+  "blocks.productGrid.fields.cardDivider.options.line": "小計",
   "blocks.productGrid.fields.cardDividerColor.label": "分隔線顏色",
   "blocks.productGrid.fields.ctaLabel.label": "卡鏈接標籤",
   "blocks.productGrid.fields.footerButton.label": "產品下方的按鈕",

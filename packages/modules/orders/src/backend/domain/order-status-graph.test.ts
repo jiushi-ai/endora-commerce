@@ -21,6 +21,16 @@ describe('resolveOrderStatusName', () => {
     expect(resolveOrderStatusName(def, 'de')).toBe('Paid');
   });
 
+  it('matches the same language base (batch 60)', () => {
+    const withZh = {
+      code: 'paid',
+      name: { en: 'Paid', 'zh-CN': '已付款' },
+      defaultName: 'Paid',
+    };
+    expect(resolveOrderStatusName(withZh, 'zh-CN')).toBe('已付款');
+    expect(resolveOrderStatusName(withZh, 'zh')).toBe('已付款');
+  });
+
   it('falls back to the code when neither a translation nor a default name exists', () => {
     expect(resolveOrderStatusName({ code: 'x', name: {}, defaultName: '' }, 'pl')).toBe('x');
   });

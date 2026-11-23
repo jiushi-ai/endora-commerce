@@ -22,6 +22,7 @@ import {
   paymentStatusLabelKey,
   paymentStatusOptions,
 } from '../lib/paymentStatus.js';
+import { orderStatusLabel } from '../order-status-label.js';
 import {
   arrangeLineGroups,
   customFieldCarrySkipReasonSchema,
@@ -120,10 +121,9 @@ interface StatusGraph {
   transitions: Array<{ fromStatusCode: string; toStatusCode: string }>;
 }
 
-function statusName(graph: StatusGraph | null, code: string): string {
+function statusName(graph: StatusGraph | null, code: string, language: string): string {
   const s = graph?.statuses.find((x) => x.code === code);
-  if (!s) return code;
-  return s.name['en'] ?? Object.values(s.name)[0] ?? code;
+  return orderStatusLabel(s, language, code);
 }
 
 function statusColor(graph: StatusGraph | null, code: string): string {
@@ -406,13 +406,13 @@ export function OrderDetail(): ReactNode {
     async (to: string): Promise<void> => {
       try {
         await apiClient.post<{ data: OrderDetail }>(`/api/v1/admin/orders/${id}/status`, { to });
-        setInfo(t('orderDetail.messages.orderMoved', { status: statusName(graph, to) }));
+        setInfo(t('orderDetail.messages.orderMoved', { status: statusName(graph, to, language) }));
         await refresh();
       } catch (err) {
         setError(err instanceof ApiError ? err.envelope.error.message : t('orderDetail.errors.statusChange'));
       }
     },
-    [id, refresh, graph, t],
+    [id, refresh, graph, t, language],
   );
 
   const handlePaymentStatus = useCallback(
@@ -459,7 +459,7 @@ export function OrderDetail(): ReactNode {
               <Copy className="size-3.5 opacity-60" />
             </button>
             <Badge className="text-xs font-medium" style={statusBadgeStyle(statusColor(graph, order.status))}>
-              {statusName(graph, order.status)}
+              {statusName(graph, order.status, language)}
             </Badge>
           </>
         }
@@ -587,7 +587,7 @@ export function OrderDetail(): ReactNode {
                     >
                       {statusOptions(graph, order.status).map((code) => (
                         <option key={code} value={code}>
-                          {statusName(graph, code)}
+                          {statusName(graph, code, language)}
                         </option>
                       ))}
                     </Select>

@@ -43,12 +43,29 @@ export interface OrderStatusDef {
  * Resolve a status's display label for a viewer's active language, falling
  * back to the language-independent default name, then the code (feature 039
  * follow-up). Shared by admin, storefront, and email rendering.
+ *
+ * Batch 60 — also tries case-insensitive and same-base matches (`zh-CN` ↔
+ * `zh`, `en-US` ↔ `en`) before the default name, so Admin ZH-CN stops falling
+ * through to English when only `en`/`pl` were seeded.
  */
 export function resolveOrderStatusName(
   def: { name: Record<string, string>; defaultName?: string | null; code: string },
   language: string,
 ): string {
-  return def.name[language] ?? (def.defaultName || undefined) ?? def.code;
+  const preferred = language.trim();
+  if (preferred) {
+    const exact = def.name[preferred];
+    if (exact) return exact;
+    const lower = preferred.toLowerCase();
+    for (const [key, value] of Object.entries(def.name)) {
+      if (key.toLowerCase() === lower) return value;
+    }
+    const base = preferred.split('-')[0]?.toLowerCase() ?? lower;
+    for (const [key, value] of Object.entries(def.name)) {
+      if ((key.split('-')[0]?.toLowerCase() ?? '') === base) return value;
+    }
+  }
+  return (def.defaultName || undefined) ?? def.code;
 }
 
 export interface OrderTransitionDef {
@@ -68,15 +85,15 @@ export { ORDER_STATUS_ON_HOLD, ORDER_STATUS_CANCELLED, ORDER_STATUS_INITIAL };
 
 /** The 9 default statuses shipped on install (data-model.md §1). */
 export const DEFAULT_ORDER_STATUSES: OrderStatusDef[] = [
-  { code: 'new', name: { en: 'New', pl: 'Nowy' }, defaultName: 'New', isInitial: true, isTerminal: false, isSystem: true, weight: 10, color: '#64748b' },
-  { code: 'pending', name: { en: 'Pending', pl: 'Oczekujące' }, defaultName: 'Pending', isInitial: false, isTerminal: false, isSystem: false, weight: 20, color: '#f59e0b' },
-  { code: 'paid', name: { en: 'Paid', pl: 'Zapłacone' }, defaultName: 'Paid', isInitial: false, isTerminal: false, isSystem: false, weight: 30, color: '#3b82f6' },
-  { code: 'processing', name: { en: 'Processing', pl: 'Przetwarzanie' }, defaultName: 'Processing', isInitial: false, isTerminal: false, isSystem: false, weight: 40, color: '#3b82f6' },
-  { code: 'shipment_ready', name: { en: 'Shipment Ready', pl: 'Przesyłka gotowa' }, defaultName: 'Shipment Ready', isInitial: false, isTerminal: false, isSystem: false, weight: 50, color: '#8b5cf6' },
-  { code: 'shipment_sent', name: { en: 'Shipment Sent', pl: 'Przesyłka wysłana' }, defaultName: 'Shipment Sent', isInitial: false, isTerminal: false, isSystem: false, weight: 60, color: '#8b5cf6' },
-  { code: 'completed', name: { en: 'Completed', pl: 'Zakończone' }, defaultName: 'Completed', isInitial: false, isTerminal: true, isSystem: true, weight: 70, color: '#10b981' },
-  { code: 'on_hold', name: { en: 'On Hold', pl: 'Wstrzymane' }, defaultName: 'On Hold', isInitial: false, isTerminal: false, isSystem: true, weight: 80, color: '#f59e0b' },
-  { code: 'cancelled', name: { en: 'Cancelled', pl: 'Anulowane' }, defaultName: 'Cancelled', isInitial: false, isTerminal: true, isSystem: true, weight: 90, color: '#ef4444' },
+  { code: 'new', name: { en: 'New', pl: 'Nowy', 'zh-CN': '新创建', 'zh-TW': '新建立' }, defaultName: 'New', isInitial: true, isTerminal: false, isSystem: true, weight: 10, color: '#64748b' },
+  { code: 'pending', name: { en: 'Pending', pl: 'Oczekujące', 'zh-CN': '待处理', 'zh-TW': '待處理' }, defaultName: 'Pending', isInitial: false, isTerminal: false, isSystem: false, weight: 20, color: '#f59e0b' },
+  { code: 'paid', name: { en: 'Paid', pl: 'Zapłacone', 'zh-CN': '已付款', 'zh-TW': '已付款' }, defaultName: 'Paid', isInitial: false, isTerminal: false, isSystem: false, weight: 30, color: '#3b82f6' },
+  { code: 'processing', name: { en: 'Processing', pl: 'Przetwarzanie', 'zh-CN': '处理中', 'zh-TW': '處理中' }, defaultName: 'Processing', isInitial: false, isTerminal: false, isSystem: false, weight: 40, color: '#3b82f6' },
+  { code: 'shipment_ready', name: { en: 'Shipment Ready', pl: 'Przesyłka gotowa', 'zh-CN': '待发货', 'zh-TW': '待出貨' }, defaultName: 'Shipment Ready', isInitial: false, isTerminal: false, isSystem: false, weight: 50, color: '#8b5cf6' },
+  { code: 'shipment_sent', name: { en: 'Shipment Sent', pl: 'Przesyłka wysłana', 'zh-CN': '已发货', 'zh-TW': '已出貨' }, defaultName: 'Shipment Sent', isInitial: false, isTerminal: false, isSystem: false, weight: 60, color: '#8b5cf6' },
+  { code: 'completed', name: { en: 'Completed', pl: 'Zakończone', 'zh-CN': '已完成', 'zh-TW': '已完成' }, defaultName: 'Completed', isInitial: false, isTerminal: true, isSystem: true, weight: 70, color: '#10b981' },
+  { code: 'on_hold', name: { en: 'On Hold', pl: 'Wstrzymane', 'zh-CN': '已挂起', 'zh-TW': '已暫停' }, defaultName: 'On Hold', isInitial: false, isTerminal: false, isSystem: true, weight: 80, color: '#f59e0b' },
+  { code: 'cancelled', name: { en: 'Cancelled', pl: 'Anulowane', 'zh-CN': '已取消', 'zh-TW': '已取消' }, defaultName: 'Cancelled', isInitial: false, isTerminal: true, isSystem: true, weight: 90, color: '#ef4444' },
 ];
 
 /**

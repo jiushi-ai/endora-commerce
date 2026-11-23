@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react';
 import { ApiError, apiClient } from '@endora-commerce/admin-kit/lib';
 import { Button, Label, Select } from '@endora-commerce/admin-kit/ui';
-import { useTranslation } from '@endora-commerce/admin-kit/i18n';
+import { useTranslation, useTranslationContext } from '@endora-commerce/admin-kit/i18n';
+import { orderStatusLabel } from '../order-status-label.js';
 
 interface StatusDef {
   code: string;
@@ -28,6 +29,7 @@ interface Props {
  */
 export function OrdersBulkStatusDialog({ open, orderIds, statuses, onClose, onDone }: Props): ReactNode {
   const t = useTranslation('core');
+  const { language } = useTranslationContext();
   const [target, setTarget] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +63,7 @@ export function OrdersBulkStatusDialog({ open, orderIds, statuses, onClose, onDo
             <option value="">—</option>
             {statuses.map((s) => (
               <option key={s.code} value={s.code}>
-                {s.name['en'] ?? s.code}
+                {orderStatusLabel(s, language, s.code)}
               </option>
             ))}
           </Select>
