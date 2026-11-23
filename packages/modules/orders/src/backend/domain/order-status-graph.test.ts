@@ -57,7 +57,8 @@ describe('OrderStatusGraph — default seed', () => {
   });
 
   it('rejects a transition with no configured edge (Scenario 3)', () => {
-    expect(graph.canTransition('pending', 'shipment_sent')).toBe(false);
+    // Batch 59 adds pending → shipment_sent; keep asserting a still-illegal hop.
+    expect(graph.canTransition('pending', 'completed')).toBe(false);
     expect(graph.canTransition('new', 'completed')).toBe(false);
   });
 
@@ -113,6 +114,17 @@ describe('computeDefaultTransitions', () => {
       toStatusCode: 'paid',
       isSystem: false,
     });
+  });
+
+  it('allows Mark success to reach shipment_sent from early statuses (batch 59)', () => {
+    for (const from of ['new', 'pending', 'paid', 'processing'] as const) {
+      expect(DEFAULT_EXPLICIT_TRANSITIONS).toContainEqual([from, 'shipment_sent']);
+      expect(computeDefaultTransitions()).toContainEqual({
+        fromStatusCode: from,
+        toStatusCode: 'shipment_sent',
+        isSystem: false,
+      });
+    }
   });
 
   it('has no duplicate edges', () => {

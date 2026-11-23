@@ -131,7 +131,7 @@ const modules = [
   },
   {
     type: 'category',
-    label: 'carts', key: 'carts',
+    label: 'Carts', key: 'carts',
     link: { type: 'doc', id: 'modules/carts' },
     items: [
       'module-reference/carts',

@@ -21,6 +21,8 @@ export interface ReceiveShipmentResult {
    * move at all (a repeated callback, or a method with no status configured).
    */
   orderStatus: string | null;
+  /** Batch 59 — Admin Mark success uses `refused` to warn the operator. */
+  orderTransition: 'applied' | 'already_there' | 'refused' | 'skipped';
   idempotent: boolean;
 }
 
@@ -151,14 +153,14 @@ export class ReceiveShipmentHandler {
      * and side-effects rather than a column, so it goes through the port and
      * the entity import goes with it.
      */
-    const orderStatus = result.transition
+    const orderMove = result.transition
       ? await this.moveOrder(
           result.shipment.orderId,
           result.transition.to,
           result.transition.setting,
           input.outcome === 'failure' ? (input.failureReason ?? null) : null,
         )
-      : null;
+      : { orderStatus: null as string | null, orderTransition: 'skipped' as const };
 
     if (result.emit && this.events) {
       const base = { eventId: randomUUID(), occurredAt: new Date().toISOString() };
@@ -191,7 +193,8 @@ export class ReceiveShipmentHandler {
     return {
       shipmentId: result.shipment.id,
       status: result.shipment.status,
-      orderStatus,
+      orderStatus: orderMove.orderStatus,
+      orderTransition: orderMove.orderTransition,
       idempotent: result.idempotent,
     };
   }
@@ -215,7 +218,10 @@ export class ReceiveShipmentHandler {
     to: string,
     setting: StatusSetting,
     reason: string | null,
-  ): Promise<string | null> {
+  ): Promise<{
+    orderStatus: string | null;
+    orderTransition: 'applied' | 'already_there' | 'refused';
+  }> {
     const outcome: OrderTransitionOutcome = await this.orderTransition.applyStatus({
       orderId,
       to,
@@ -223,8 +229,10 @@ export class ReceiveShipmentHandler {
       reason,
     });
 
-    if (outcome.applied) return outcome.to;
-    if (outcome.reason === 'already_there') return outcome.from;
+    if (outcome.applied) return { orderStatus: outcome.to, orderTransition: 'applied' };
+    if (outcome.reason === 'already_there') {
+      return { orderStatus: outcome.from, orderTransition: 'already_there' };
+    }
 
     this.log.warn(
       {
@@ -237,7 +245,7 @@ export class ReceiveShipmentHandler {
       },
       'shipments: the requested order status was not applied; the order keeps the one it has',
     );
-    return outcome.from;
+    return { orderStatus: outcome.from, orderTransition: 'refused' };
   }
 
   private async resolveShipment(

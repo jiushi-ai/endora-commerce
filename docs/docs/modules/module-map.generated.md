@@ -34,7 +34,7 @@ of the platform, not of what happens to be written.
 | [auth](./auth.md) | Customer + admin sessions, password hashing, TOTP | @endora-commerce/mod-auth |
 | [Bidding](./bidding.md) | Scarce-stock bidding campaigns, sealed receipts, dual review, and real order convert | @endora-commerce/mod-bidding |
 | [Blog](./blog/index.md) | Editorial Posts with Page Builder bodies, taxonomy (Categories + Tags), and storefront feeds | @endora-commerce/mod-blog |
-| [carts](./carts.md) | Customer shopping cart with anonymous→logged-in merge | @endora-commerce/mod-carts |
+| [Carts](./carts.md) | Customer shopping cart with anonymous→logged-in merge | @endora-commerce/mod-carts |
 | [Catalog](./catalog.md) | Products, variants, categories, attributes, sales channels | @endora-commerce/mod-catalog |
 | [CMS](./cms/index.md) | Page Builder authoring surface — Pages, Blocks, Templates, Hooks — per channel + language | @endora-commerce/mod-cms |
 | [Compare Products](./comparisons.md) | Compare Products: customer-curated set with display modes, share link, and PDF export | @endora-commerce/mod-comparisons |

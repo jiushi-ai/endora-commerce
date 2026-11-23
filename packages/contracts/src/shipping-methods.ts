@@ -210,6 +210,12 @@ export interface ReceiveShipmentPort {
     shipmentId: string;
     status: string;
     orderStatus: string | null;
+    /**
+     * Batch 59 — whether the delivery-method `statusOn*` move ran.
+     * `refused` means the shipment row changed but the order graph kept its
+     * status (Admin Mark success must surface this; carriers still get 200).
+     */
+    orderTransition: 'applied' | 'already_there' | 'refused' | 'skipped';
     idempotent: boolean;
   }>;
 }

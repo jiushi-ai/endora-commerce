@@ -99,6 +99,14 @@ export const DEFAULT_EXPLICIT_TRANSITIONS: ReadonlyArray<readonly [string, strin
   ['shipment_ready', 'shipment_sent'],
   ['paid', 'completed'],
   ['shipment_sent', 'completed'],
+  // Batch 59 — Mark success / receive may ask for shipment_sent while the order
+  // is still early (credit deferred often stays on `new`). Without these edges
+  // the shipment row becomes success and the order stays put, so the buyer never
+  // sees confirm-receipt. Operators may still walk the longer ladder by hand.
+  ['new', 'shipment_sent'],
+  ['pending', 'shipment_sent'],
+  ['paid', 'shipment_sent'],
+  ['processing', 'shipment_sent'],
 ];
 
 /**

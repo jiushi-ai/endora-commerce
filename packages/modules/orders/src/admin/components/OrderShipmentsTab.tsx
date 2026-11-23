@@ -192,14 +192,26 @@ export function OrderShipmentsTab(props: {
     setActionError(null);
     const tracking = trackingInput.trim();
     void apiClient
-      .post('/api/v1/shipments/receive', {
+      .post<{
+        data: {
+          shipmentId: string;
+          status: string;
+          orderStatus: string | null;
+          orderTransition: 'applied' | 'already_there' | 'refused' | 'skipped';
+          idempotent: boolean;
+        };
+      }>('/api/v1/shipments/receive', {
         shipmentId: latestRow.id,
         outcome: 'success',
         ...(tracking ? { externalReference: tracking } : {}),
       })
-      .then(() => {
+      .then((res) => {
         setTrackingInput('');
         setReloadToken((token) => token + 1);
+        // Batch 59 — shipment success with a refused order move must not look OK.
+        if (res.data.orderTransition === 'refused') {
+          setActionError(t('orderDetail.shipments.markSuccess.orderNotMoved'));
+        }
       })
       .catch((err: unknown) => {
         setActionError(

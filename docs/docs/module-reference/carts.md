@@ -38,7 +38,6 @@ Rendered from the module's own manifest, and from nothing written by hand. What 
 | `sales_channels` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
 | `settings` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
 | `taxes` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
-| `transactional_emails` | yes | installs and migrates after it, and an operator cannot switch it off underneath this module |
 | `promotions` | gating only | resolves `promotionCodePort`; withheld from `dependencies` because the install order cannot carry the edge |
 | `promotions` | gating only | resolves `promotionService`; withheld from `dependencies` because the install order cannot carry the edge |
 
@@ -48,12 +47,11 @@ Rendered from the module's own manifest, and from nothing written by hand. What 
 | --- | --- | --- |
 | `carts:read` | View customer carts | — |
 | `carts:reject` | Reject a cart pending organization approval | — |
+| `customers:manage` | Manage customer organizations | — |
 
 ## Command palette
 
-| Action | Opens | Permission |
-| --- | --- | --- |
-| `open-carts` | `/carts` | `carts:read` |
+_None._
 
 ## Settings
 

@@ -1094,3 +1094,15 @@ feat-26-11-20 23:30:00 [57.1~57.5]：额度不可选与发货邮件语系根因�
 汇总：发货邮件跟买家 preferredLanguage；Admin 可手填运单并标成功；小 b 可见物流并可确认收货。发版需重建 **backend + admin + storefront**；已有渠道若改过邮件模板，需在 Admin 对 `shipment_created` / `order_confirmation` / `order_comment` 做 reconcile 以吸入 zh-CN/zh-TW 与 tracking 变量。
 
 feat-26-11-21 00:38:30 [58.1~58.7]：邮件preferredLanguage与zh模板；Admin运单成功；小b物流与确认收货
+
+### 59. 方案 A — Mark success 能推到 shipment_sent + 物流文案「已发出」
+
+- [x] 59.0 chat5 追加最近两轮 ask/rep（旧流程说明 + A 方案四点确认）及 fig7/fig8
+- [x] 59.1 状态图补边 `new|pending|paid|processing → shipment_sent`（默认图 + migration）；单测更新
+- [x] 59.2 Shipment `success` 文案 → Dispatched / 已发出（Admin `_i18n` + storefront `messages.ts` 四语）；按钮「标记已发出」
+- [x] 59.3 receive 返回 `orderTransition`；Admin Mark success 在 `refused` 时明确提示
+- [x] 59.4 `composer:generate` 注册 migration；本 §99；建议 commit 如下（未执行 git commit）
+
+汇总：保留 Admin 状态下拉老路径；日常走 Delivery→填运单→Mark success 自动到 `shipment_sent`，小 b 即可出确认收货。发版需 **migration:up**（本迁移）+ 重建 backend/admin/storefront。
+
+feat-26-11-22 19:06:22 [59.0~59.4]：Mark success可达shipment_sent；物流文案已发出；迁移失败可见
