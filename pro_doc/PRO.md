@@ -1137,3 +1137,15 @@ feat-26-11-23 00:37:33 [61.1~61.4]：确认收货同步shipment为received并展
 汇总：zh-CN/zh-TW 询价草稿页红框英文因仅 pl/en 硬编码；已接线 catalogue。登录用户不能提交是缺 `quote_requests.create` 声明导致 session 无该码；Member/Administrator 发版后会按 memberDefault 自动获得。发版需重建 storefront + backend（manifest/i18n）。
 
 feat-26-11-23 19:39:31 [62.1~62.3]：询价草稿页四语i18n；补quote_requests.create权限声明
+
+### 63. 小 b 页脚对齐 demo + kontakt/newsletter i18n
+
+- [x] 63.1 Footer Shop：一级分类从 `getCategoryTree` 动态取；保留 Catalog + Quick order
+- [x] 63.2 B2B account 去掉 Invoices / Credit limit；Support 仅 Contact；隐藏 Terms/Privacy/Cookies（404）
+- [x] 63.3 补回 `carts` 的 `organizationPermissions`（create / approve / order_without_approval）使 Quick order 权限可用
+- [x] 63.4 kontakt + ContactForm、账户 newsletter 四语 i18n
+- [x] 63.5 Footer 单测；本 §99；建议 commit 如下（未执行 git commit）
+
+汇总：页脚 Shop 跟大 B 一级分类；账户列对齐开源 demo；Support/法务链先隐藏防 404。Quick order「无功能」主因是缺组织权限声明（与 62 同类）。发版需重建 storefront + backend（carts manifest/i18n）。
+
+feat-26-11-23 22:35:39 [63.1~63.5]：页脚动态一级分类与菜单精简；kontakt/newsletter四语；补carts权限

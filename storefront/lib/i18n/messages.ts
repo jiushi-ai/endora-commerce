@@ -141,6 +141,29 @@ export type MessageKey =
   | 'commerce.rfqDraft.submitNotAllowed'
   | 'commerce.rfqDraft.note'
   | 'commerce.rfqDraft.errorGeneric'
+  /** Batch 63 — contact page + form. */
+  | 'contact.title'
+  | 'contact.intro'
+  | 'contact.name'
+  | 'contact.email'
+  | 'contact.phone'
+  | 'contact.company'
+  | 'contact.subject'
+  | 'contact.message'
+  | 'contact.attachment'
+  | 'contact.submit'
+  | 'contact.thanksTitle'
+  | 'contact.thanksBody'
+  | 'contact.asideEmail'
+  | 'contact.asidePhone'
+  /** Batch 63 — account newsletter panel. */
+  | 'newsletter.title'
+  | 'newsletter.subscribed'
+  | 'newsletter.notSubscribed'
+  | 'newsletter.tags'
+  | 'newsletter.reasonPlaceholder'
+  | 'newsletter.subscribe'
+  | 'newsletter.unsubscribe'
   | 'catalog.price.heading'
   | 'catalog.price.min'
   | 'catalog.price.max'
@@ -1187,6 +1210,27 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'commerce.rfqDraft.note':
       'After you submit, our sales team will prepare a quote with prices and terms.',
     'commerce.rfqDraft.errorGeneric': 'Could not submit the quote request.',
+    'contact.title': 'Contact',
+    'contact.intro': 'Have a question? Fill in the form — we will reply as soon as we can.',
+    'contact.name': 'Full name *',
+    'contact.email': 'E-mail *',
+    'contact.phone': 'Phone',
+    'contact.company': 'Company',
+    'contact.subject': 'Subject',
+    'contact.message': 'Message *',
+    'contact.attachment': 'Attachment (optional)',
+    'contact.submit': 'Send message',
+    'contact.thanksTitle': 'Thank you for your message',
+    'contact.thanksBody': 'We will reply as soon as we can.',
+    'contact.asideEmail': 'E-mail:',
+    'contact.asidePhone': 'Tel.:',
+    'newsletter.title': 'Newsletter',
+    'newsletter.subscribed': 'You are subscribed.',
+    'newsletter.notSubscribed': 'You are not subscribed to our newsletter.',
+    'newsletter.tags': 'Tags: {tags}',
+    'newsletter.reasonPlaceholder': 'Reason (optional)',
+    'newsletter.subscribe': 'Subscribe',
+    'newsletter.unsubscribe': 'Unsubscribe',
     'catalog.price.heading': 'Price',
     'catalog.price.min': 'From',
     'catalog.price.max': 'To',
@@ -2206,6 +2250,27 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'commerce.rfqDraft.submitNotAllowed': '您的角色不允许发送询价请求。',
     'commerce.rfqDraft.note': '提交后，我们的销售团队将准备含价格与条款的报价。',
     'commerce.rfqDraft.errorGeneric': '无法提交询价请求。',
+    'contact.title': '联系我们',
+    'contact.intro': '有问题？请填写表单 — 我们会尽快回复。',
+    'contact.name': '姓名 *',
+    'contact.email': '电子邮箱 *',
+    'contact.phone': '电话',
+    'contact.company': '公司',
+    'contact.subject': '主题',
+    'contact.message': '留言 *',
+    'contact.attachment': '附件（可选）',
+    'contact.submit': '发送消息',
+    'contact.thanksTitle': '感谢您的留言',
+    'contact.thanksBody': '我们会尽快回复。',
+    'contact.asideEmail': '电子邮箱：',
+    'contact.asidePhone': '电话：',
+    'newsletter.title': '通讯订阅',
+    'newsletter.subscribed': '您已订阅。',
+    'newsletter.notSubscribed': '您尚未订阅我们的通讯。',
+    'newsletter.tags': '标签：{tags}',
+    'newsletter.reasonPlaceholder': '原因（可选）',
+    'newsletter.subscribe': '订阅',
+    'newsletter.unsubscribe': '取消订阅',
     'catalog.price.heading': '价格',
     'catalog.price.min': '最低',
     'catalog.price.max': '最高',
@@ -3182,6 +3247,27 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'commerce.rfqDraft.submitNotAllowed': '您的角色不允許發送詢價請求。',
     'commerce.rfqDraft.note': '提交後，我們的銷售團隊將準備含價格與條款的報價。',
     'commerce.rfqDraft.errorGeneric': '無法提交詢價請求。',
+    'contact.title': '聯絡我們',
+    'contact.intro': '有問題？請填寫表單 — 我們會盡快回覆。',
+    'contact.name': '姓名 *',
+    'contact.email': '電子郵件 *',
+    'contact.phone': '電話',
+    'contact.company': '公司',
+    'contact.subject': '主題',
+    'contact.message': '留言 *',
+    'contact.attachment': '附件（選填）',
+    'contact.submit': '傳送訊息',
+    'contact.thanksTitle': '感謝您的留言',
+    'contact.thanksBody': '我們會盡快回覆。',
+    'contact.asideEmail': '電子郵件：',
+    'contact.asidePhone': '電話：',
+    'newsletter.title': '通訊訂閱',
+    'newsletter.subscribed': '您已訂閱。',
+    'newsletter.notSubscribed': '您尚未訂閱我們的通訊。',
+    'newsletter.tags': '標籤：{tags}',
+    'newsletter.reasonPlaceholder': '原因（選填）',
+    'newsletter.subscribe': '訂閱',
+    'newsletter.unsubscribe': '取消訂閱',
     'catalog.price.heading': '价格',
     'catalog.price.min': '最低',
     'catalog.price.max': '最高',
@@ -4159,6 +4245,27 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'commerce.rfqDraft.note':
       'Po złożeniu zapytania dział sprzedaży przygotuje ofertę z cenami i warunkami.',
     'commerce.rfqDraft.errorGeneric': 'Nie udało się złożyć zapytania ofertowego.',
+    'contact.title': 'Kontakt',
+    'contact.intro': 'Masz pytanie? Wypełnij formularz — odpowiemy najszybciej, jak to możliwe.',
+    'contact.name': 'Imię i nazwisko *',
+    'contact.email': 'E-mail *',
+    'contact.phone': 'Telefon',
+    'contact.company': 'Firma',
+    'contact.subject': 'Temat',
+    'contact.message': 'Wiadomość *',
+    'contact.attachment': 'Załącznik (opcjonalnie)',
+    'contact.submit': 'Wyślij wiadomość',
+    'contact.thanksTitle': 'Dziękujemy za wiadomość',
+    'contact.thanksBody': 'Odpowiemy najszybciej, jak to możliwe.',
+    'contact.asideEmail': 'E-mail:',
+    'contact.asidePhone': 'Tel.:',
+    'newsletter.title': 'Newsletter',
+    'newsletter.subscribed': 'Jesteś zapisany.',
+    'newsletter.notSubscribed': 'Nie jesteś zapisany do newslettera.',
+    'newsletter.tags': 'Tagi: {tags}',
+    'newsletter.reasonPlaceholder': 'Powód (opcjonalnie)',
+    'newsletter.subscribe': 'Zapisz się',
+    'newsletter.unsubscribe': 'Wypisz się',
     'catalog.price.heading': 'Cena',
     'catalog.price.min': 'Od',
     'catalog.price.max': 'Do',

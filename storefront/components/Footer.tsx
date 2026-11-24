@@ -5,11 +5,22 @@ import { LocalizedAnchor, LocalizedForm } from '../lib/i18n/localized-link';
 /**
  * Industria-themed footer. Five-column dark layout with brand panel,
  * shop, account, support, and a newsletter sign-up.
+ *
+ * Batch 63 — Shop L1 categories come from Admin catalog (not hardcoded
+ * fasteners/tools demo slugs). B2B account matches the open-source demo
+ * (no invoices / credit-limit footer links). Support keeps Contact only;
+ * Terms / Privacy / Cookies are hidden while those routes 404.
  */
 
 const COL_HEADING =
   'mb-[14px] font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-[#fafafa]';
 const COL_LINK = 'block py-[5px] text-[13px] text-[#a1a1aa] hover:text-white';
+
+/** One top-level category for the Shop column (batch 63). */
+export interface FooterShopCategory {
+  slug: string;
+  name: string;
+}
 
 /** Storefront brand mark — same asset as Admin (`/brand/mobii.png`). */
 function MobiiBrandMark(props: { className?: string; label: string }): ReactNode {
@@ -27,22 +38,20 @@ function MobiiBrandMark(props: { className?: string; label: string }): ReactNode
 
 export function Footer(props: {
   locale: string;
+  /** Level-1 catalog categories from Admin; empty ⇒ Shop shows Catalog + Quick order only. */
+  shopCategories?: readonly FooterShopCategory[];
   cmsLinks?: Array<{ path: string; title: string }>;
   top?: ReactNode;
   bottom?: ReactNode;
   copyright?: ReactNode;
 }): ReactNode {
   const t = tForLocale(props.locale);
+  // Batch 63 / Support A — Contact only until other support CMS/pages exist.
   const supportLinks =
     props.cmsLinks && props.cmsLinks.length > 0
       ? props.cmsLinks
-      : [
-          { path: 'kontakt', title: t('footer.contact') },
-          { path: 'reklamacje', title: t('footer.complaints') },
-          { path: 'dostawa', title: t('footer.delivery') },
-          { path: 'certyfikaty', title: t('footer.certificates') },
-          { path: 'pomoc', title: t('footer.helpCenter') },
-        ];
+      : [{ path: 'kontakt', title: t('footer.contact') }];
+  const shopCategories = props.shopCategories ?? [];
 
   return (
     <footer className="mt-[64px] bg-[#18181b] pt-[56px] pb-[28px] text-[#d4d4d8] dark:bg-[#050507]">
@@ -68,18 +77,11 @@ export function Footer(props: {
             <LocalizedAnchor className={COL_LINK} href="/catalog">
               {t('footer.catalog')}
             </LocalizedAnchor>
-            <LocalizedAnchor className={COL_LINK} href="/c/fasteners">
-              {t('footer.fasteners')}
-            </LocalizedAnchor>
-            <LocalizedAnchor className={COL_LINK} href="/c/tools">
-              {t('footer.tools')}
-            </LocalizedAnchor>
-            <LocalizedAnchor className={COL_LINK} href="/c/electronics">
-              {t('footer.electronics')}
-            </LocalizedAnchor>
-            <LocalizedAnchor className={COL_LINK} href="/c/safety">
-              {t('footer.safety')}
-            </LocalizedAnchor>
+            {shopCategories.map((c) => (
+              <LocalizedAnchor key={c.slug} className={COL_LINK} href={`/c/${c.slug}`}>
+                {c.name}
+              </LocalizedAnchor>
+            ))}
             <LocalizedAnchor className={COL_LINK} href="/quick-order">
               {t('nav.quickOrder')}
             </LocalizedAnchor>
@@ -93,17 +95,11 @@ export function Footer(props: {
             <LocalizedAnchor className={COL_LINK} href="/orders">
               {t('footer.orders')}
             </LocalizedAnchor>
-            <LocalizedAnchor className={COL_LINK} href="/invoices">
-              {t('footer.invoices')}
-            </LocalizedAnchor>
             <LocalizedAnchor className={COL_LINK} href="/quote-requests">
               {t('footer.rfq')}
             </LocalizedAnchor>
             <LocalizedAnchor className={COL_LINK} href="/shopping-lists">
               {t('footer.shoppingLists')}
-            </LocalizedAnchor>
-            <LocalizedAnchor className={COL_LINK} href="/credit-limit">
-              {t('footer.creditLimit')}
             </LocalizedAnchor>
           </div>
 
@@ -141,17 +137,7 @@ export function Footer(props: {
             0000987654
           </span>
           {props.copyright}
-          <span className="inline-flex gap-4">
-            <LocalizedAnchor className="text-[#a1a1aa] hover:text-white" href="/regulamin">
-              {t('footer.terms')}
-            </LocalizedAnchor>
-            <LocalizedAnchor className="text-[#a1a1aa] hover:text-white" href="/polityka-prywatnosci">
-              {t('footer.privacy')}
-            </LocalizedAnchor>
-            <LocalizedAnchor className="text-[#a1a1aa] hover:text-white" href="/cookies">
-              {t('footer.cookies')}
-            </LocalizedAnchor>
-          </span>
+          {/* Batch 63 — Terms / Privacy / Cookies hidden while those routes 404. */}
         </div>
 
         <p

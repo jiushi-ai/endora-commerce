@@ -231,6 +231,31 @@ export const manifest = defineModuleManifest({
     { code: 'carts:reject', label: 'Reject a cart pending organization approval' },
     { code: 'customers:manage', label: 'Manage customer organizations' },
   ],
+  /**
+   * `specs/170-organization-roles/` (FR-022, FR-030) — buyer cart actions.
+   * Translations: `organizationPermissions.<code>.*` in `i18n/{en,pl,zh-CN,zh-TW}.json`.
+   */
+  organizationPermissions: [
+    {
+      code: 'carts.create',
+      label: 'Create and edit carts',
+      description:
+        'Add products to a cart, change quantities, apply coupons and build carts from quotes, lists and quick order.',
+      memberDefault: true,
+    },
+    {
+      code: 'carts.approve',
+      label: "Approve and reject colleagues' carts",
+      description: "See the organization's carts and approve or reject the ones sent for approval.",
+      memberDefault: false,
+    },
+    {
+      code: 'carts.order_without_approval',
+      label: 'Place orders without approval',
+      description: 'Order a cart directly, without sending it for approval first.',
+      memberDefault: true,
+    },
+  ],
   i18n: { bundlesDir: 'i18n' },
   docs: { dir: 'docs' },
 });

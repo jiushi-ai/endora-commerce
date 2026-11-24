@@ -84,5 +84,11 @@
   "policy.turnedOn": "该组织现在需要购物车批准。",
   "policy.turnedOff": "不再需要购物车批准；待处理的购物车已被释放。",
   "policy.loadError": "无法加载购物车批准策略。",
-  "policy.saveError": "更新策略失败。"
+  "policy.saveError": "更新策略失败。",
+  "organizationPermissions.carts.create.label": "创建与编辑购物车",
+  "organizationPermissions.carts.create.description": "将商品加入购物车、更改数量、使用优惠券，以及从报价、清单和快速下单构建购物车。",
+  "organizationPermissions.carts.approve.label": "批准与拒绝同事的购物车",
+  "organizationPermissions.carts.approve.description": "查看组织的购物车，并批准或拒绝送审的购物车。",
+  "organizationPermissions.carts.order_without_approval.label": "无需审批即可下单",
+  "organizationPermissions.carts.order_without_approval.description": "直接下单购物车，无需先送审。"
 }

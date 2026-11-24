@@ -84,5 +84,11 @@
   "policy.turnedOn": "該組織現在需要購物車批准。",
   "policy.turnedOff": "不再需要購物車批准；待處理的購物車已被釋放。",
   "policy.loadError": "無法加載購物車批准策略。",
-  "policy.saveError": "更新策略失敗。"
+  "policy.saveError": "更新策略失敗。",
+  "organizationPermissions.carts.create.label": "建立與編輯購物車",
+  "organizationPermissions.carts.create.description": "將商品加入購物車、變更數量、使用優惠券，以及從報價、清單和快速下單建立購物車。",
+  "organizationPermissions.carts.approve.label": "核准與拒絕同事的購物車",
+  "organizationPermissions.carts.approve.description": "查看組織的購物車，並核准或拒絕送審的購物車。",
+  "organizationPermissions.carts.order_without_approval.label": "無需核准即可下單",
+  "organizationPermissions.carts.order_without_approval.description": "直接下單購物車，無需先送審。"
 }

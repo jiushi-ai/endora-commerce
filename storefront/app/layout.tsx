@@ -15,6 +15,7 @@ import { CartMergeToast } from '../components/CartMergeToast';
 import { CheckoutHeader } from '../components/checkout/CheckoutHeader';
 import { HeaderSwitch } from '../components/HeaderSwitch';
 import { getActiveMegamenu } from '../lib/api/megamenu';
+import { getCategoryTree } from '../lib/api/catalog';
 import { getServerContext } from '../lib/server-context';
 import { LocalePathProvider } from '../lib/i18n/localized-link';
 import { localizePath } from '../lib/i18n/locale-path';
@@ -219,6 +220,7 @@ export default async function RootLayout({
     linkedInConfig,
     metaConfig,
     gtmConfig,
+    categoryTree,
   ] = await Promise.all([
     getActiveMegamenu(ctx),
     fetchDictionary({ ctx }),
@@ -242,7 +244,10 @@ export default async function RootLayout({
     // Feature 066 — per-channel Google Tag Manager config, same best-effort
     // contract again.
     getGoogleTagManagerConfig(ctx),
+    // Batch 63 — footer Shop column uses Admin level-1 categories.
+    getCategoryTree(ctx).catch(() => []),
   ]);
+  const footerShopCategories = categoryTree.map((c) => ({ slug: c.slug, name: c.name }));
   const me = viewer.me;
   if (viewer.refusal === 'sign_in_required') {
     // Feature 167 — `x-pathname` is the logical path; the visitor comes back to it
@@ -342,6 +347,7 @@ export default async function RootLayout({
           <Hook code="footer.before" />
           <Footer
             locale={locale}
+            shopCategories={footerShopCategories}
             top={<Hook code="footer.top" />}
             bottom={<Hook code="footer.bottom" />}
             copyright={<Hook code="footer.copyright" />}

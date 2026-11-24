@@ -10,12 +10,15 @@ import { localizedAlternates } from '../../lib/i18n/navigation';
 
 /**
  * Indexable (`specs/098-storefront-ssr-seo-a11y-suite/`, FR-010/FR-012).
+ * Batch 63 — title/description follow the request locale.
  */
 export async function generateMetadata(): Promise<Metadata> {
+  const { locale } = await getServerContext();
+  const t = tForLocale(locale);
   const alternates = await localizedAlternates(seo.route);
   return {
-    title: 'Kontakt',
-    description: 'Skontaktuj się z nami — formularz kontaktowy.',
+    title: t('contact.title'),
+    description: t('contact.intro'),
     // Feature 167 — canonical under the language prefix, with hreflang alternates.
     alternates: { ...alternates, canonical: alternates.canonical },
   };
@@ -40,28 +43,32 @@ export default async function KontaktPage(): Promise<ReactNode> {
       <Breadcrumbs
         crumbs={[
           { href: '/', label: t('nav.home') },
-          { href: '/kontakt', label: 'Kontakt' },
+          { href: '/kontakt', label: t('contact.title') },
         ]}
       />
-      <h1 className="text-[28px] font-semibold">Kontakt</h1>
-      <p className="mt-2 text-[15px] text-muted">
-        Masz pytanie? Wypełnij formularz — odpowiemy najszybciej, jak to możliwe.
-      </p>
+      <h1 className="text-[28px] font-semibold">{t('contact.title')}</h1>
+      <p className="mt-2 text-[15px] text-muted">{t('contact.intro')}</p>
 
       <div className="mt-8 grid gap-8 md:grid-cols-[1fr_280px]">
-        <ContactForm />
+        <ContactForm locale={locale} />
 
         <aside className="flex flex-col gap-3 text-[14px]">
           {shop.name ? <div className="font-semibold">{shop.name}</div> : null}
           {shop.address ? <div className="text-muted">{shop.address}</div> : null}
           {shop.contactEmail ? (
             <div>
-              E-mail: <a className="underline" href={`mailto:${shop.contactEmail}`}>{shop.contactEmail}</a>
+              {t('contact.asideEmail')}{' '}
+              <a className="underline" href={`mailto:${shop.contactEmail}`}>
+                {shop.contactEmail}
+              </a>
             </div>
           ) : null}
           {shop.phone ? (
             <div>
-              Tel.: <a className="underline" href={`tel:${shop.phone}`}>{shop.phone}</a>
+              {t('contact.asidePhone')}{' '}
+              <a className="underline" href={`tel:${shop.phone}`}>
+                {shop.phone}
+              </a>
             </div>
           ) : null}
         </aside>

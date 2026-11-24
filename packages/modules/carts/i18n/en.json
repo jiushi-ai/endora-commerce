@@ -96,5 +96,11 @@
   "policy.turnedOn": "Cart approval is now required for this organization.",
   "policy.turnedOff": "Cart approval is no longer required; pending carts were released.",
   "policy.loadError": "Failed to load the cart-approval policy.",
-  "policy.saveError": "Failed to update the policy."
+  "policy.saveError": "Failed to update the policy.",
+  "organizationPermissions.carts.create.label": "Create and edit carts",
+  "organizationPermissions.carts.create.description": "Add products to a cart, change quantities, apply coupons and build carts from quotes, lists and quick order.",
+  "organizationPermissions.carts.approve.label": "Approve and reject colleagues' carts",
+  "organizationPermissions.carts.approve.description": "See the organization's carts and approve or reject the ones sent for approval.",
+  "organizationPermissions.carts.order_without_approval.label": "Place orders without approval",
+  "organizationPermissions.carts.order_without_approval.description": "Order a cart directly, without sending it for approval first."
 }

@@ -96,5 +96,11 @@
   "policy.turnedOn": "Zatwierdzanie koszyka jest teraz wymagane w tej organizacji.",
   "policy.turnedOff": "Zatwierdzanie koszyka nie jest już wymagane; oczekujące koszyki zostały zwolnione.",
   "policy.loadError": "Nie udało się wczytać zasady zatwierdzania koszyka.",
-  "policy.saveError": "Nie udało się zaktualizować zasady."
+  "policy.saveError": "Nie udało się zaktualizować zasady.",
+  "organizationPermissions.carts.create.label": "Tworzenie i edycja koszyków",
+  "organizationPermissions.carts.create.description": "Dodawanie produktów do koszyka, zmiana ilości, kupony oraz budowanie koszyków z ofert, list i szybkiego zamówienia.",
+  "organizationPermissions.carts.approve.label": "Zatwierdzanie i odrzucanie koszyków współpracowników",
+  "organizationPermissions.carts.approve.description": "Podgląd koszyków organizacji oraz zatwierdzanie lub odrzucanie tych wysłanych do akceptacji.",
+  "organizationPermissions.carts.order_without_approval.label": "Składanie zamówień bez akceptacji",
+  "organizationPermissions.carts.order_without_approval.description": "Zamawianie koszyka bezpośrednio, bez wcześniejszego wysyłania do akceptacji."
 }
