@@ -28,11 +28,12 @@ const line: RfqDraftItem = {
   quantity: 2,
 };
 
-function renderLine(input: { pl: boolean; allowed: boolean; item?: RfqDraftItem }): string {
+function renderLine(input: { locale: string; allowed: boolean; item?: RfqDraftItem }): string {
   return renderToString(
     <DraftLine
       line={input.item ?? line}
-      t={strings(input.pl)}
+      t={strings(input.locale)}
+      locale={input.locale}
       proposalsAllowed={input.allowed}
       onQty={(): void => undefined}
       onProposedPrice={(): void => undefined}
@@ -43,10 +44,10 @@ function renderLine(input: { pl: boolean; allowed: boolean; item?: RfqDraftItem 
 
 describe('DraftLine — proposals allowed (US4 #1)', () => {
   it.each([
-    [true, 'Proponowana cena'],
-    [false, 'Proposed price'],
-  ])('shows the proposed-price input (pl=%s)', (pl, label) => {
-    const html = renderLine({ pl, allowed: true });
+    ['pl-PL', 'Proponowana cena'],
+    ['en-US', 'Proposed price'],
+  ])('shows the proposed-price input (%s)', (locale, label) => {
+    const html = renderLine({ locale, allowed: true });
     expect(html).toContain(`aria-label="${label}"`);
     expect(html).toContain('value="99.5"');
   });
@@ -54,10 +55,10 @@ describe('DraftLine — proposals allowed (US4 #1)', () => {
 
 describe('DraftLine — proposals locked (US4 #2, FR-021)', () => {
   it.each([
-    [true, 'Proponowana cena', 'Cena katalogowa'],
-    [false, 'Proposed price', 'Catalogue price'],
-  ])('hides the input and shows the catalogue price read-only (pl=%s)', (pl, inputLabel, readOnlyLabel) => {
-    const html = renderLine({ pl, allowed: false });
+    ['pl-PL', 'Proponowana cena', 'Cena katalogowa'],
+    ['en-US', 'Proposed price', 'Catalogue price'],
+  ])('hides the input and shows the catalogue price read-only (%s)', (locale, inputLabel, readOnlyLabel) => {
+    const html = renderLine({ locale, allowed: false });
     expect(html).not.toContain(`aria-label="${inputLabel}"`);
     expect(html).not.toContain('value="99.5"');
     expect(html).toContain(readOnlyLabel);
@@ -69,7 +70,7 @@ describe('DraftLine — proposals locked (US4 #2, FR-021)', () => {
 
   it('says "price on request" where the catalogue carries no price', () => {
     const html = renderLine({
-      pl: false,
+      locale: 'en-US',
       allowed: false,
       item: { ...line, unitPrice: null },
     });
@@ -108,10 +109,12 @@ describe('buildSubmitItems (FR-021)', () => {
 
 describe('LockedPricingNote', () => {
   it.each([
-    [true, 'Ceny w tym zapytaniu ustali dział sprzedaży'],
-    [false, 'Our sales team will set the prices for this request'],
-  ])('tells the buyer that sales will price the request (pl=%s)', (pl, sentence) => {
-    const html = renderToString(<LockedPricingNote t={strings(pl)} />);
+    ['pl-PL', 'Ceny w tym zapytaniu ustali dział sprzedaży'],
+    ['en-US', 'Our sales team will set the prices for this request'],
+    ['zh-CN', '本请求的价格由销售团队设定'],
+    ['zh-TW', '本請求的價格由銷售團隊設定'],
+  ])('tells the buyer that sales will price the request (%s)', (locale, sentence) => {
+    const html = renderToString(<LockedPricingNote t={strings(locale)} />);
     expect(html).toContain(sentence);
   });
 });

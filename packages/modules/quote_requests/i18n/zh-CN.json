@@ -171,5 +171,7 @@
   "history.carryReason.value_type_mismatch": "报价请求的字段具有不同的值类型",
   "history.carryReason.audience_mismatch": "报价请求的字段对客户可见，但销售机会的字段是内部的",
   "history.carryReason.value_invalid": "该值对于报价请求字段无效",
-  "history.carryReasonUnknown": "该值无法承载"
+  "history.carryReasonUnknown": "该值无法承载",
+  "organizationPermissions.quote_requests.create.label": "创建询价请求",
+  "organizationPermissions.quote_requests.create.description": "从零发起或重新提交询价，以及将购物车、采购清单或快速下单转为询价请求。"
 }

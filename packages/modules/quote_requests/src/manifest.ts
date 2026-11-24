@@ -368,6 +368,24 @@ export const manifest = defineModuleManifest({
     { code: 'rfqs:handle', label: 'Handle quote requests', requires: ['price_lists:read'] },
   ],
   /**
+   * `specs/170-organization-roles/` (FR-022, FR-040) — what a member's role may
+   * do with quote requests. Translations: `organizationPermissions.<code>.*`
+   * in `i18n/{en,pl,zh-CN,zh-TW}.json`.
+   *
+   * Seeing every quote request of the Organization is **not** a code until P3
+   * declares `quote_requests.approve` (research R-30): it is reserved to the
+   * *Administrator* role kind, judged in `rfq-service.ts`.
+   */
+  organizationPermissions: [
+    {
+      code: 'quote_requests.create',
+      label: 'Create quote requests',
+      description:
+        'Ask for a quote from scratch or by resubmitting one, and turn a cart, a shopping list or a quick order into a quote request.',
+      memberDefault: true,
+    },
+  ],
+  /**
    * Feature 153 — the four quote blocks of the document-template editor
    * (`contracts/quote-request-document.md` §2). Declared for the `document`
    * context only; the *Quote request* document type offers them. A label left

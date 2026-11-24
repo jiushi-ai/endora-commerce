@@ -171,5 +171,7 @@
   "history.carryReason.value_type_mismatch": "報價請求的字段具有不同的值類型",
   "history.carryReason.audience_mismatch": "報價請求的字段對客戶可見，但銷售機會的字段是內部的",
   "history.carryReason.value_invalid": "該值對於報價請求字段無效",
-  "history.carryReasonUnknown": "該值無法承載"
+  "history.carryReasonUnknown": "該值無法承載",
+  "organizationPermissions.quote_requests.create.label": "建立詢價請求",
+  "organizationPermissions.quote_requests.create.description": "從零發起或重新提交詢價，以及將購物車、採購清單或快速下單轉為詢價請求。"
 }

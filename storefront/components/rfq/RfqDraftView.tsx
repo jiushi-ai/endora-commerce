@@ -62,8 +62,7 @@ export function RfqDraftView(props: {
    */
   canSubmit?: boolean;
 }): ReactNode {
-  const pl = props.locale.startsWith('pl');
-  const t = strings(pl);
+  const t = strings(props.locale);
   const proposalsAllowed = props.priceProposalsAllowed;
   const router = useRouter();
   const localize = useLocalizedPath();
@@ -633,69 +632,48 @@ export interface Strings {
   errorGeneric: string;
 }
 
-export function strings(pl: boolean): Strings {
-  if (pl) {
-    return {
-      home: 'Strona główna',
-      heading: 'Zapytanie ofertowe',
-      subheading: (n) => (n === 1 ? '1 produkt w zapytaniu.' : `${n} produkty(ów) w zapytaniu.`),
-      empty: 'Twoje zapytanie ofertowe jest puste.',
-      browseCatalog: 'Przejdź do katalogu',
-      myRequests: 'Moje zapytania',
-      cardHeading: 'Pozycje zapytania',
-      itemCount: (n) => (n === 1 ? '1 pozycja' : `${n} pozycji`),
-      continueShopping: 'Kontynuuj zakupy',
-      clearAll: 'Wyczyść wszystko',
-      summaryHeading: 'Podsumowanie',
-      linesLabel: 'Liczba pozycji',
-      estTotalLabel: 'Szacowana wartość',
-      onRequest: 'Cena na zapytanie',
-      unit: 'szt.',
-      qtyLabel: 'Ilość',
-      proposedPriceLabel: 'Proponowana cena',
-      catalogPriceLabel: 'Cena katalogowa',
-      lockedPricingNote:
-        'Ceny w tym zapytaniu ustali dział sprzedaży. Przy pozycjach widzisz cenę katalogową — możesz zmienić ilości i dodać uwagi.',
-      lineTotalLabel: 'Wartość pozycji',
-      removeLabel: 'Usuń',
-      noteLabel: 'Uwagi do zapytania (opcjonalnie)',
-      notePlaceholder: 'Np. preferowany termin dostawy, wymagania techniczne…',
-      submit: 'Złóż zapytanie ofertowe',
-      submitting: 'Wysyłanie…',
-      submitNotAllowed: 'Twoja rola nie pozwala wysyłać zapytań ofertowych.',
-      note: 'Po złożeniu zapytania dział sprzedaży przygotuje ofertę z cenami i warunkami.',
-      errorGeneric: 'Nie udało się złożyć zapytania ofertowego.',
-    };
-  }
+/**
+ * Batch 62 — draft chrome from `messages.ts` via `tForLocale` (en / zh-CN /
+ * zh-TW / pl). Kept as a `Strings` object so existing child props stay stable.
+ */
+export function strings(locale: string): Strings {
+  const t = tForLocale(locale);
   return {
-    home: 'Home',
-    heading: 'Quote request',
-    subheading: (n) => (n === 1 ? '1 product in your request.' : `${n} products in your request.`),
-    empty: 'Your quote request is empty.',
-    browseCatalog: 'Browse the catalog',
-    myRequests: 'My requests',
-    cardHeading: 'Request items',
-    itemCount: (n) => (n === 1 ? '1 item' : `${n} items`),
-    continueShopping: 'Continue shopping',
-    clearAll: 'Clear all',
-    summaryHeading: 'Summary',
-    linesLabel: 'Line items',
-    estTotalLabel: 'Estimated total',
-    onRequest: 'Price on request',
-    unit: 'pc.',
-    qtyLabel: 'Quantity',
-    proposedPriceLabel: 'Proposed price',
-    catalogPriceLabel: 'Catalogue price',
-    lockedPricingNote:
-      'Our sales team will set the prices for this request. Each line shows its catalogue price — you can still change quantities and add notes.',
-    lineTotalLabel: 'Line total',
-    removeLabel: 'Remove',
-    noteLabel: 'Notes for sales (optional)',
-    notePlaceholder: 'E.g. preferred delivery date, technical requirements…',
-    submit: 'Submit quote request',
-    submitting: 'Submitting…',
-    submitNotAllowed: 'Your role does not allow sending quote requests.',
-    note: 'After you submit, our sales team will prepare a quote with prices and terms.',
-    errorGeneric: 'Could not submit the quote request.',
+    home: t('commerce.rfqDraft.home'),
+    heading: t('commerce.rfqDraft.heading'),
+    subheading: (n) =>
+      t(n === 1 ? 'commerce.rfqDraft.subheading.one' : 'commerce.rfqDraft.subheading.many').replace(
+        '{count}',
+        String(n),
+      ),
+    empty: t('commerce.rfqDraft.empty'),
+    browseCatalog: t('commerce.rfqDraft.browseCatalog'),
+    myRequests: t('commerce.rfqDraft.myRequests'),
+    cardHeading: t('commerce.rfqDraft.cardHeading'),
+    itemCount: (n) =>
+      t(n === 1 ? 'commerce.rfqDraft.itemCount.one' : 'commerce.rfqDraft.itemCount.many').replace(
+        '{count}',
+        String(n),
+      ),
+    continueShopping: t('commerce.rfqDraft.continueShopping'),
+    clearAll: t('commerce.rfqDraft.clearAll'),
+    summaryHeading: t('commerce.rfqDraft.summaryHeading'),
+    linesLabel: t('commerce.rfqDraft.linesLabel'),
+    estTotalLabel: t('commerce.rfqDraft.estTotalLabel'),
+    onRequest: t('commerce.rfqDraft.onRequest'),
+    unit: t('commerce.rfqDraft.unit'),
+    qtyLabel: t('commerce.rfqDraft.qtyLabel'),
+    proposedPriceLabel: t('commerce.rfqDraft.proposedPriceLabel'),
+    catalogPriceLabel: t('commerce.rfqDraft.catalogPriceLabel'),
+    lockedPricingNote: t('commerce.rfqDraft.lockedPricingNote'),
+    lineTotalLabel: t('commerce.rfqDraft.lineTotalLabel'),
+    removeLabel: t('commerce.rfqDraft.removeLabel'),
+    noteLabel: t('commerce.rfqDraft.noteLabel'),
+    notePlaceholder: t('commerce.rfqDraft.notePlaceholder'),
+    submit: t('commerce.rfqDraft.submit'),
+    submitting: t('commerce.rfqDraft.submitting'),
+    submitNotAllowed: t('commerce.rfqDraft.submitNotAllowed'),
+    note: t('commerce.rfqDraft.note'),
+    errorGeneric: t('commerce.rfqDraft.errorGeneric'),
   };
 }

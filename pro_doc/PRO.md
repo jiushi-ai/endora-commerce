@@ -1127,3 +1127,13 @@ feat-26-11-22 23:41:39 [60.1~60.3]：Admin订单状态跟语系；Deferred改延
 汇总：买家点确认收货后，订单仍走 `shipment_sent`→`completed`；并行把最新已发出发货行标为 `received` 并记录点击时间。大 B Delivery 与小 b 配送区同步展示新状态与确认时间。发版需 **migration:up**（本批 shipments）+ 重建 backend/admin/storefront。
 
 feat-26-11-23 00:37:33 [61.1~61.4]：确认收货同步shipment为received并展示确认时间
+
+### 62. 小 b 询价草稿页 i18n + quote_requests.create 权限声明
+
+- [x] 62.1 `RfqDraftView`：去掉 `strings(pl)` 二分法，改为 `tForLocale` + `messages.ts`（en / zh-CN / zh-TW / pl）
+- [x] 62.2 补回 `quote_requests` manifest `organizationPermissions.quote_requests.create`（memberDefault）及四语 i18n 词条
+- [x] 62.3 更新 RFQ draft 相关单测；本 §99；建议 commit 如下（未执行 git commit）
+
+汇总：zh-CN/zh-TW 询价草稿页红框英文因仅 pl/en 硬编码；已接线 catalogue。登录用户不能提交是缺 `quote_requests.create` 声明导致 session 无该码；Member/Administrator 发版后会按 memberDefault 自动获得。发版需重建 storefront + backend（manifest/i18n）。
+
+feat-26-11-23 19:39:31 [62.1~62.3]：询价草稿页四语i18n；补quote_requests.create权限声明

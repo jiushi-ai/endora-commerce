@@ -110,6 +110,37 @@ export type MessageKey =
   | 'commerce.common.gross'
   /** Feature 170 WP-10 — member lacks carts.create and quote_requests.create. */
   | 'commerce.quickOrder.notAllowed'
+  /** Batch 62 — quote-request draft page (`/quote-request`). */
+  | 'commerce.rfqDraft.home'
+  | 'commerce.rfqDraft.heading'
+  | 'commerce.rfqDraft.subheading.one'
+  | 'commerce.rfqDraft.subheading.many'
+  | 'commerce.rfqDraft.empty'
+  | 'commerce.rfqDraft.browseCatalog'
+  | 'commerce.rfqDraft.myRequests'
+  | 'commerce.rfqDraft.cardHeading'
+  | 'commerce.rfqDraft.itemCount.one'
+  | 'commerce.rfqDraft.itemCount.many'
+  | 'commerce.rfqDraft.continueShopping'
+  | 'commerce.rfqDraft.clearAll'
+  | 'commerce.rfqDraft.summaryHeading'
+  | 'commerce.rfqDraft.linesLabel'
+  | 'commerce.rfqDraft.estTotalLabel'
+  | 'commerce.rfqDraft.onRequest'
+  | 'commerce.rfqDraft.unit'
+  | 'commerce.rfqDraft.qtyLabel'
+  | 'commerce.rfqDraft.proposedPriceLabel'
+  | 'commerce.rfqDraft.catalogPriceLabel'
+  | 'commerce.rfqDraft.lockedPricingNote'
+  | 'commerce.rfqDraft.lineTotalLabel'
+  | 'commerce.rfqDraft.removeLabel'
+  | 'commerce.rfqDraft.noteLabel'
+  | 'commerce.rfqDraft.notePlaceholder'
+  | 'commerce.rfqDraft.submit'
+  | 'commerce.rfqDraft.submitting'
+  | 'commerce.rfqDraft.submitNotAllowed'
+  | 'commerce.rfqDraft.note'
+  | 'commerce.rfqDraft.errorGeneric'
   | 'catalog.price.heading'
   | 'catalog.price.min'
   | 'catalog.price.max'
@@ -1124,6 +1155,38 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'commerce.common.gross': 'gross',
     'commerce.quickOrder.notAllowed':
       'Your role does not allow adding products to the cart or requesting quotes, so quick order is not available to you.',
+    'commerce.rfqDraft.home': 'Home',
+    'commerce.rfqDraft.heading': 'Quote request',
+    'commerce.rfqDraft.subheading.one': '1 product in your request.',
+    'commerce.rfqDraft.subheading.many': '{count} products in your request.',
+    'commerce.rfqDraft.empty': 'Your quote request is empty.',
+    'commerce.rfqDraft.browseCatalog': 'Browse the catalog',
+    'commerce.rfqDraft.myRequests': 'My requests',
+    'commerce.rfqDraft.cardHeading': 'Request items',
+    'commerce.rfqDraft.itemCount.one': '1 item',
+    'commerce.rfqDraft.itemCount.many': '{count} items',
+    'commerce.rfqDraft.continueShopping': 'Continue shopping',
+    'commerce.rfqDraft.clearAll': 'Clear all',
+    'commerce.rfqDraft.summaryHeading': 'Summary',
+    'commerce.rfqDraft.linesLabel': 'Line items',
+    'commerce.rfqDraft.estTotalLabel': 'Estimated total',
+    'commerce.rfqDraft.onRequest': 'Price on request',
+    'commerce.rfqDraft.unit': 'pc.',
+    'commerce.rfqDraft.qtyLabel': 'Quantity',
+    'commerce.rfqDraft.proposedPriceLabel': 'Proposed price',
+    'commerce.rfqDraft.catalogPriceLabel': 'Catalogue price',
+    'commerce.rfqDraft.lockedPricingNote':
+      'Our sales team will set the prices for this request. Each line shows its catalogue price — you can still change quantities and add notes.',
+    'commerce.rfqDraft.lineTotalLabel': 'Line total',
+    'commerce.rfqDraft.removeLabel': 'Remove',
+    'commerce.rfqDraft.noteLabel': 'Notes for sales (optional)',
+    'commerce.rfqDraft.notePlaceholder': 'E.g. preferred delivery date, technical requirements…',
+    'commerce.rfqDraft.submit': 'Submit quote request',
+    'commerce.rfqDraft.submitting': 'Submitting…',
+    'commerce.rfqDraft.submitNotAllowed': 'Your role does not allow sending quote requests.',
+    'commerce.rfqDraft.note':
+      'After you submit, our sales team will prepare a quote with prices and terms.',
+    'commerce.rfqDraft.errorGeneric': 'Could not submit the quote request.',
     'catalog.price.heading': 'Price',
     'catalog.price.min': 'From',
     'catalog.price.max': 'To',
@@ -2112,6 +2175,37 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'commerce.common.gross': '含税',
     'commerce.quickOrder.notAllowed':
       '您的角色不允许将商品加入购物车或发起询价，因此无法使用快速下单。',
+    'commerce.rfqDraft.home': '首页',
+    'commerce.rfqDraft.heading': '询价请求',
+    'commerce.rfqDraft.subheading.one': '请求中有 1 件商品。',
+    'commerce.rfqDraft.subheading.many': '请求中有 {count} 件商品。',
+    'commerce.rfqDraft.empty': '您的询价请求为空。',
+    'commerce.rfqDraft.browseCatalog': '浏览目录',
+    'commerce.rfqDraft.myRequests': '我的请求',
+    'commerce.rfqDraft.cardHeading': '请求商品',
+    'commerce.rfqDraft.itemCount.one': '1 项',
+    'commerce.rfqDraft.itemCount.many': '{count} 项',
+    'commerce.rfqDraft.continueShopping': '继续购物',
+    'commerce.rfqDraft.clearAll': '全部清除',
+    'commerce.rfqDraft.summaryHeading': '摘要',
+    'commerce.rfqDraft.linesLabel': '行项目',
+    'commerce.rfqDraft.estTotalLabel': '预估合计',
+    'commerce.rfqDraft.onRequest': '询价定价',
+    'commerce.rfqDraft.unit': '件',
+    'commerce.rfqDraft.qtyLabel': '数量',
+    'commerce.rfqDraft.proposedPriceLabel': '建议价格',
+    'commerce.rfqDraft.catalogPriceLabel': '目录价',
+    'commerce.rfqDraft.lockedPricingNote':
+      '本请求的价格由销售团队设定。各行显示目录价 — 您仍可更改数量并添加备注。',
+    'commerce.rfqDraft.lineTotalLabel': '行合计',
+    'commerce.rfqDraft.removeLabel': '移除',
+    'commerce.rfqDraft.noteLabel': '给销售的备注（可选）',
+    'commerce.rfqDraft.notePlaceholder': '例如：期望交货日期、技术要求…',
+    'commerce.rfqDraft.submit': '提交询价请求',
+    'commerce.rfqDraft.submitting': '提交中…',
+    'commerce.rfqDraft.submitNotAllowed': '您的角色不允许发送询价请求。',
+    'commerce.rfqDraft.note': '提交后，我们的销售团队将准备含价格与条款的报价。',
+    'commerce.rfqDraft.errorGeneric': '无法提交询价请求。',
     'catalog.price.heading': '价格',
     'catalog.price.min': '最低',
     'catalog.price.max': '最高',
@@ -2744,7 +2838,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.returns.refund': '退款',
     'account.returns.open': '查看',
     'account.rfq.title': '询价单',
-    'account.rfq.browse': '浏览目录',
+    'account.rfq.browse': '浏览产品目录',
     'account.rfq.empty': '暂无询价单。',
     'account.rfq.number': '编号',
     'account.rfq.date': '日期',
@@ -3057,6 +3151,37 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'commerce.common.gross': '含稅',
     'commerce.quickOrder.notAllowed':
       '您的角色不允許將商品加入購物車或發起詢價，因此無法使用快速下單。',
+    'commerce.rfqDraft.home': '首頁',
+    'commerce.rfqDraft.heading': '詢價請求',
+    'commerce.rfqDraft.subheading.one': '請求中有 1 件商品。',
+    'commerce.rfqDraft.subheading.many': '請求中有 {count} 件商品。',
+    'commerce.rfqDraft.empty': '您的詢價請求為空。',
+    'commerce.rfqDraft.browseCatalog': '瀏覽目錄',
+    'commerce.rfqDraft.myRequests': '我的請求',
+    'commerce.rfqDraft.cardHeading': '請求商品',
+    'commerce.rfqDraft.itemCount.one': '1 項',
+    'commerce.rfqDraft.itemCount.many': '{count} 項',
+    'commerce.rfqDraft.continueShopping': '繼續購物',
+    'commerce.rfqDraft.clearAll': '全部清除',
+    'commerce.rfqDraft.summaryHeading': '摘要',
+    'commerce.rfqDraft.linesLabel': '行項目',
+    'commerce.rfqDraft.estTotalLabel': '預估合計',
+    'commerce.rfqDraft.onRequest': '詢價定價',
+    'commerce.rfqDraft.unit': '件',
+    'commerce.rfqDraft.qtyLabel': '數量',
+    'commerce.rfqDraft.proposedPriceLabel': '建議價格',
+    'commerce.rfqDraft.catalogPriceLabel': '目錄價',
+    'commerce.rfqDraft.lockedPricingNote':
+      '本請求的價格由銷售團隊設定。各行顯示目錄價 — 您仍可更改數量並新增備註。',
+    'commerce.rfqDraft.lineTotalLabel': '行合計',
+    'commerce.rfqDraft.removeLabel': '移除',
+    'commerce.rfqDraft.noteLabel': '給銷售的備註（選填）',
+    'commerce.rfqDraft.notePlaceholder': '例如：期望交貨日期、技術要求…',
+    'commerce.rfqDraft.submit': '提交詢價請求',
+    'commerce.rfqDraft.submitting': '提交中…',
+    'commerce.rfqDraft.submitNotAllowed': '您的角色不允許發送詢價請求。',
+    'commerce.rfqDraft.note': '提交後，我們的銷售團隊將準備含價格與條款的報價。',
+    'commerce.rfqDraft.errorGeneric': '無法提交詢價請求。',
     'catalog.price.heading': '价格',
     'catalog.price.min': '最低',
     'catalog.price.max': '最高',
@@ -3689,7 +3814,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.returns.refund': '退款',
     'account.returns.open': '查看',
     'account.rfq.title': '詢價單',
-    'account.rfq.browse': '瀏覽目錄',
+    'account.rfq.browse': '瀏覽产品目录',
     'account.rfq.empty': '尚無詢價單。',
     'account.rfq.number': '編號',
     'account.rfq.date': '日期',
@@ -4002,6 +4127,38 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'commerce.common.gross': 'brutto',
     'commerce.quickOrder.notAllowed':
       'Twoja rola nie pozwala dodawać produktów do koszyka ani wysyłać zapytań ofertowych, dlatego szybkie zamówienie jest dla Ciebie niedostępne.',
+    'commerce.rfqDraft.home': 'Strona główna',
+    'commerce.rfqDraft.heading': 'Zapytanie ofertowe',
+    'commerce.rfqDraft.subheading.one': '1 produkt w zapytaniu.',
+    'commerce.rfqDraft.subheading.many': '{count} produkty(ów) w zapytaniu.',
+    'commerce.rfqDraft.empty': 'Twoje zapytanie ofertowe jest puste.',
+    'commerce.rfqDraft.browseCatalog': 'Przejdź do katalogu',
+    'commerce.rfqDraft.myRequests': 'Moje zapytania',
+    'commerce.rfqDraft.cardHeading': 'Pozycje zapytania',
+    'commerce.rfqDraft.itemCount.one': '1 pozycja',
+    'commerce.rfqDraft.itemCount.many': '{count} pozycji',
+    'commerce.rfqDraft.continueShopping': 'Kontynuuj zakupy',
+    'commerce.rfqDraft.clearAll': 'Wyczyść wszystko',
+    'commerce.rfqDraft.summaryHeading': 'Podsumowanie',
+    'commerce.rfqDraft.linesLabel': 'Liczba pozycji',
+    'commerce.rfqDraft.estTotalLabel': 'Szacowana wartość',
+    'commerce.rfqDraft.onRequest': 'Cena na zapytanie',
+    'commerce.rfqDraft.unit': 'szt.',
+    'commerce.rfqDraft.qtyLabel': 'Ilość',
+    'commerce.rfqDraft.proposedPriceLabel': 'Proponowana cena',
+    'commerce.rfqDraft.catalogPriceLabel': 'Cena katalogowa',
+    'commerce.rfqDraft.lockedPricingNote':
+      'Ceny w tym zapytaniu ustali dział sprzedaży. Przy pozycjach widzisz cenę katalogową — możesz zmienić ilości i dodać uwagi.',
+    'commerce.rfqDraft.lineTotalLabel': 'Wartość pozycji',
+    'commerce.rfqDraft.removeLabel': 'Usuń',
+    'commerce.rfqDraft.noteLabel': 'Uwagi do zapytania (opcjonalnie)',
+    'commerce.rfqDraft.notePlaceholder': 'Np. preferowany termin dostawy, wymagania techniczne…',
+    'commerce.rfqDraft.submit': 'Złóż zapytanie ofertowe',
+    'commerce.rfqDraft.submitting': 'Wysyłanie…',
+    'commerce.rfqDraft.submitNotAllowed': 'Twoja rola nie pozwala wysyłać zapytań ofertowych.',
+    'commerce.rfqDraft.note':
+      'Po złożeniu zapytania dział sprzedaży przygotuje ofertę z cenami i warunkami.',
+    'commerce.rfqDraft.errorGeneric': 'Nie udało się złożyć zapytania ofertowego.',
     'catalog.price.heading': 'Cena',
     'catalog.price.min': 'Od',
     'catalog.price.max': 'Do',
@@ -4678,7 +4835,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.returns.refund': 'Zwrot',
     'account.returns.open': 'Otwórz',
     'account.rfq.title': 'Zapytania ofertowe',
-    'account.rfq.browse': 'Przeglądaj katalog',
+    'account.rfq.browse': 'Przeglądaj product catalog',
     'account.rfq.empty': 'Nie masz jeszcze żadnych zapytań ofertowych.',
     'account.rfq.number': 'Numer',
     'account.rfq.date': 'Data',
