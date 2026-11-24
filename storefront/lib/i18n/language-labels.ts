@@ -72,5 +72,9 @@ export function storefrontLanguageLabel(
   fallbackLabel: string,
   uiLocale?: string,
 ): string {
-  return storefrontLanguageOption(code, { uiLocale, fallbackLabel }).label;
+  // exactOptionalPropertyTypes — omit uiLocale when unset; do not pass `undefined`.
+  return storefrontLanguageOption(code, {
+    fallbackLabel,
+    ...(uiLocale ? { uiLocale } : {}),
+  }).label;
 }

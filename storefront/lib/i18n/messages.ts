@@ -3022,7 +3022,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.addresses.yes': '是',
     'footer.blurb': '面向 {categories} 的 B2B 批发与稀缺库存竞价批采。真实需求优先、可履约可追责。',
     'footer.blurbCategoriesFallback': 'GPU、存储、Mini 服务器、电子器件与绿电硬件',
-    'footer.copyright': '© {year} Mobii Bidding · 莫比绿电股份有限公司 / Mobii Green Energy CO., LTD. · 统一编号 28010606',
+    'footer.copyright': '© {year} Mobii b2b · 莫比绿电股份有限公司 / Mobii Green Energy CO., LTD. · 统一编号 28010606',
     'footer.shop': '商店',
     'footer.catalog': '商品目录',
     'footer.fasteners': '紧固件',
