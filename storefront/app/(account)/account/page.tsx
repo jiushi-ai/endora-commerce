@@ -67,7 +67,9 @@ export default async function AccountProfilePage({
     urlState.languages.find((language) => language.isDefault)?.languageCode ??
     channelLanguages[0] ??
     locale;
-  const languageLabel = (code: string): string => storefrontLanguageOption(code).label;
+  // Batch 64 — E-mail language option names follow the current UI locale.
+  const languageLabel = (code: string): string =>
+    storefrontLanguageOption(code, { uiLocale: locale }).label;
 
   return (
     <>

@@ -244,10 +244,15 @@ export default async function RootLayout({
     // Feature 066 — per-channel Google Tag Manager config, same best-effort
     // contract again.
     getGoogleTagManagerConfig(ctx),
-    // Batch 63 — footer Shop column uses Admin level-1 categories.
+    // Batch 63/64 — footer Shop: Admin catalog children (not the single "Catalog" root).
     getCategoryTree(ctx).catch(() => []),
   ]);
-  const footerShopCategories = categoryTree.map((c) => ({ slug: c.slug, name: c.name }));
+  // Batch 64 — when the tree is a single catalog root, list its children as L1.
+  const shopLevel1 =
+    categoryTree.length === 1 && (categoryTree[0]?.children.length ?? 0) > 0
+      ? categoryTree[0]!.children
+      : categoryTree;
+  const footerShopCategories = shopLevel1.map((c) => ({ slug: c.slug, name: c.name }));
   const me = viewer.me;
   if (viewer.refusal === 'sign_in_required') {
     // Feature 167 — `x-pathname` is the logical path; the visitor comes back to it

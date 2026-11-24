@@ -7,6 +7,7 @@ import { NewsletterSubscriberTag } from '../entities/newsletter-subscriber-tag.e
 import { NewsletterCustomField } from '../entities/newsletter-custom-field.entity.js';
 import { NewsletterSuppression } from '../entities/newsletter-suppression.entity.js';
 import type { NewsletterOptInService } from './opt-in.service.js';
+import { confirmationEmailCopy } from './confirmation-email-copy.js';
 
 export interface NewsletterLinkBuilder {
   confirm(token: string): string;
@@ -20,6 +21,8 @@ export interface SubscribeInput {
   customFields?: Record<string, string | number | boolean | null>;
   source?: string;
   customerAccountId?: string | null;
+  /** Batch 64 — UI locale hint when the e-mail has no account preferredLanguage. */
+  language?: string | null;
 }
 
 /**
@@ -228,7 +231,13 @@ export class NewsletterSubscriberService {
     await this.mergeTags(em, subscriber.id, input.tags);
 
     if (subscriber.status === 'pending') {
-      await this.sendConfirmation(subscriber.id, email, settingsChannelId);
+      await this.sendConfirmation(
+        subscriber.id,
+        email,
+        settingsChannelId,
+        input.language,
+        subscriber.customerAccountId,
+      );
     }
 
     await this.deps.auditLog?.record({
@@ -354,20 +363,50 @@ export class NewsletterSubscriberService {
     await em.flush();
   }
 
+  /**
+   * Batch 64 — preferredLanguage (account id or e-mail match) → language hint → en-US.
+   */
+  private async resolveConfirmLanguage(
+    email: string,
+    languageHint?: string | null,
+    customerAccountId?: string | null,
+  ): Promise<string> {
+    try {
+      if (customerAccountId) {
+        const byId = await this.deps.customerAccounts.findById(customerAccountId, {
+          activeOnly: true,
+        });
+        const preferred = byId?.preferredLanguage?.trim();
+        if (preferred) return preferred;
+      }
+      const byEmail = await this.deps.customerAccounts.findByEmail(email, { activeOnly: true });
+      const preferred = byEmail?.preferredLanguage?.trim();
+      if (preferred) return preferred;
+    } catch {
+      // customer_accounts off or lookup refused — fall through to the hint.
+    }
+    const hint = languageHint?.trim();
+    return hint || 'en-US';
+  }
+
   private async sendConfirmation(
     subscriberId: string,
     email: string,
     salesChannelId: string | null,
+    languageHint?: string | null,
+    customerAccountId?: string | null,
   ): Promise<void> {
     if (!this.deps.mailer) return;
     const token = await this.deps.optIn.mintConfirmToken(subscriberId, salesChannelId);
     const url = this.deps.links.confirm(token);
+    const language = await this.resolveConfirmLanguage(email, languageHint, customerAccountId);
+    const copy = confirmationEmailCopy(language);
     const outcome = await this.deps.mailer.send({
       messageId: `newsletter-confirm-${token}`,
       to: email,
-      subject: 'Confirm your newsletter subscription',
-      text: `Please confirm your subscription by opening this link:\n${url}\n`,
-      html: `<p>Please confirm your subscription:</p><p><a href="${url}">Confirm subscription</a></p>`,
+      subject: copy.subject,
+      text: copy.text(url),
+      html: copy.html(url),
       kind: 'newsletter_confirmation',
     });
     // Only the transport's refusal is named here. `logged` (issue #186) is the

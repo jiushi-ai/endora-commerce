@@ -52,6 +52,8 @@ export async function subscribeNewsletter(input: {
   channelCode: string;
   tags?: string[];
   source?: string;
+  /** Batch 64 — UI locale when the address has no preferredLanguage. */
+  language?: string;
 }): Promise<NewsletterSubscribeResponse> {
   const res = await apiMutate<NewsletterSubscribeResponse>({
     method: 'POST',

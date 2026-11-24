@@ -1149,3 +1149,15 @@ feat-26-11-23 19:39:31 [62.1~62.3]：询价草稿页四语i18n；补quote_reques
 汇总：页脚 Shop 跟大 B 一级分类；账户列对齐开源 demo；Support/法务链先隐藏防 404。Quick order「无功能」主因是缺组织权限声明（与 62 同类）。发版需重建 storefront + backend（carts manifest/i18n）。
 
 feat-26-11-23 22:35:39 [63.1~63.5]：页脚动态一级分类与菜单精简；kontakt/newsletter四语；补carts权限
+
+### 64. 小 b 页脚 Shop 子级分类 + 莫比绿电版权/Support/newsletter/语系
+
+- [x] 64.1 Footer Shop：若分类树仅一个根且有 children，则列 children（catalog 下一级），否则列根级
+- [x] 64.2 版权改为 © {year} Mobii Bidding · 莫比绿电股份有限公司 / Mobii Green Energy CO., LTD. · 统一编号/Tax ID 28010606（en/zh-CN/zh-TW/pl）；blurb 改批发+竞价并拼接动态一级类目名；Support 灰显不可点（Contact 可点）；订阅表单改 POST /newsletter/subscribe（consent+language）
+- [x] 64.3 newsletter 确认信：preferredLanguage（账户）→ 请求 language → en-US；四语 subject/body
+- [x] 64.4 E-mail language / LanguagePicker 选项名跟当前 UI 语系（lang.name.*）
+- [x] 64.5 Footer/language/confirmation-email-copy 单测；本 §99；建议 commit 如下（未执行 git commit）
+
+汇总：页脚 Shop 对齐顶栏蓝框子级分类；去掉 Industria NIP/KRS；确认信不再写死英文；账户「E-mail language」切 en 时显示 English 等。发版需重建 storefront + contracts + newsletter 模块。
+
+feat-26-11-24 00:04:42 [64.1~64.5]：页脚catalog子级与莫比绿电版权四语；Support灰显；newsletter确认信preferredLanguage；E-mail language跟UI语系

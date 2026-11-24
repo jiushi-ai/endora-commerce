@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type SelectHTMLAttributes } from 'react';
 import type { ResolvedLanguage } from '@endora-commerce/contracts';
 import { storefrontLanguageLabel } from '../../i18n/language-labels';
+import { useUrlLanguageState } from '../../i18n/localized-link';
 import { useDictionary } from '../DictionaryProvider';
 
 export interface LanguagePickerProps
@@ -26,6 +27,7 @@ export function LanguagePicker({
   ...props
 }: LanguagePickerProps): React.ReactElement {
   const dictionary = useDictionary();
+  const { current: uiLocale } = useUrlLanguageState();
   const selected = String(value ?? defaultValue ?? '');
   const [archived, setArchived] = useState<ResolvedLanguage & { isActive: boolean } | null>(null);
 
@@ -56,13 +58,13 @@ export function LanguagePicker({
       {includeBlank ? <option value="">{blankLabel}</option> : null}
       {active.map((language) => (
         <option key={language.code} value={language.code}>
-          {storefrontLanguageLabel(language.code, language.label)}
+          {storefrontLanguageLabel(language.code, language.label, uiLocale || undefined)}
         </option>
       ))}
       {archived ? (
         <optgroup label="Archived">
           <option value={archived.code}>
-            {storefrontLanguageLabel(archived.code, archived.label)} (archived)
+            {storefrontLanguageLabel(archived.code, archived.label, uiLocale || undefined)} (archived)
           </option>
         </optgroup>
       ) : null}

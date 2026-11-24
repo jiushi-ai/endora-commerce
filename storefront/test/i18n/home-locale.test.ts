@@ -22,23 +22,34 @@ const HOME_KEYS: MessageKey[] = [
   'home.fallback.greenCompute',
 ];
 
-describe('storefrontLanguageOption (Admin-aligned)', () => {
-  it('exposes flag + EN/ZH-CN/ZH-TW + Chinese name', () => {
-    expect(storefrontLanguageOption('en-US')).toMatchObject({
+describe('storefrontLanguageOption (UI-locale labels, batch 64)', () => {
+  it('exposes flag + EN/ZH-CN/ZH-TW with Chinese names under zh-CN UI', () => {
+    expect(storefrontLanguageOption('en-US', { uiLocale: 'zh-CN' })).toMatchObject({
       displayCode: 'EN',
       label: '英语',
       flag: '🇬🇧',
     });
-    expect(storefrontLanguageOption('zh-CN')).toMatchObject({
+    expect(storefrontLanguageOption('zh-CN', { uiLocale: 'zh-CN' })).toMatchObject({
       displayCode: 'ZH-CN',
       label: '简体中文',
       flag: '🇨🇳',
     });
-    expect(storefrontLanguageOption('zh-TW')).toMatchObject({
+    expect(storefrontLanguageOption('zh-TW', { uiLocale: 'zh-CN' })).toMatchObject({
       displayCode: 'ZH-TW',
       label: '繁体中文',
       flag: '🇹🇼',
     });
+  });
+
+  it('localises option names for an English UI', () => {
+    expect(storefrontLanguageOption('en-US', { uiLocale: 'en-US' }).label).toBe('English');
+    expect(storefrontLanguageOption('zh-CN', { uiLocale: 'en-US' }).label).toBe(
+      'Simplified Chinese',
+    );
+    expect(storefrontLanguageOption('zh-TW', { uiLocale: 'en-US' }).label).toBe(
+      'Traditional Chinese',
+    );
+    expect(storefrontLanguageOption('pl-PL', { uiLocale: 'en-US' }).label).toBe('Polish');
   });
 });
 

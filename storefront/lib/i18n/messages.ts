@@ -1051,6 +1051,8 @@ export type MessageKey =
   | 'account.bidding.pagerReceipts'
   | 'account.addresses.yes'
   | 'footer.blurb'
+  | 'footer.blurbCategoriesFallback'
+  | 'footer.copyright'
   | 'footer.shop'
   | 'footer.catalog'
   | 'footer.fasteners'
@@ -1076,7 +1078,13 @@ export type MessageKey =
   | 'footer.complaints'
   | 'footer.delivery'
   | 'footer.certificates'
-  | 'footer.helpCenter';
+  | 'footer.helpCenter'
+  | 'lang.name.en'
+  | 'lang.name.en-US'
+  | 'lang.name.zh-CN'
+  | 'lang.name.zh-TW'
+  | 'lang.name.pl'
+  | 'lang.name.pl-PL';
 
 const MESSAGES: Record<string, Record<MessageKey, string>> = {
   'en-US': {
@@ -2008,7 +2016,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.bidding.pagerCampaigns': 'Campaigns',
     'account.bidding.pagerReceipts': 'Receipts',
     'account.addresses.yes': 'yes',
-    'footer.blurb': 'B2B wholesale of industrial components. Bearings, drives, automation, electrics, pneumatics and tools. Same-day shipping, deferred-payment invoices and full technical documentation.',
+    'footer.blurb': 'B2B wholesale and scarce-stock bidding for {categories}. Fair allocation for verified demand.',
+    'footer.blurbCategoriesFallback': 'GPUs, memory, mini servers, electronics and green-energy hardware',
+    'footer.copyright': '© {year} Mobii Bidding · Mobii Green Energy CO., LTD. · Tax ID 28010606',
     'footer.shop': 'Shop',
     'footer.catalog': 'Catalog',
     'footer.fasteners': 'Fasteners',
@@ -2035,6 +2045,12 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'footer.delivery': 'Delivery and payments',
     'footer.certificates': 'Certificates and compliance',
     'footer.helpCenter': 'Help center',
+    'lang.name.en': 'English',
+    'lang.name.en-US': 'English',
+    'lang.name.zh-CN': 'Simplified Chinese',
+    'lang.name.zh-TW': 'Traditional Chinese',
+    'lang.name.pl': 'Polish',
+    'lang.name.pl-PL': 'Polish',
     'chrome.departments': 'Departments',
     'chrome.browseDepartment': 'Browse {label} →',
     'chrome.megaQuickOrderTitle': 'Quick Order — 200+ lines in 30 s',
@@ -3004,7 +3020,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.bidding.pagerCampaigns': '活动',
     'account.bidding.pagerReceipts': '回执',
     'account.addresses.yes': '是',
-    'footer.blurb': '工业元器件 B2B 批发。轴承、传动、自动化、电气、气动与工具。当日发货、账期发票与完整技术资料。',
+    'footer.blurb': '面向 {categories} 的 B2B 批发与稀缺库存竞价批采。真实需求优先、可履约可追责。',
+    'footer.blurbCategoriesFallback': 'GPU、存储、Mini 服务器、电子器件与绿电硬件',
+    'footer.copyright': '© {year} Mobii Bidding · 莫比绿电股份有限公司 / Mobii Green Energy CO., LTD. · 统一编号 28010606',
     'footer.shop': '商店',
     'footer.catalog': '商品目录',
     'footer.fasteners': '紧固件',
@@ -3031,6 +3049,12 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'footer.delivery': '配送与支付',
     'footer.certificates': '认证与合规',
     'footer.helpCenter': '帮助中心',
+    'lang.name.en': '英语',
+    'lang.name.en-US': '英语',
+    'lang.name.zh-CN': '简体中文',
+    'lang.name.zh-TW': '繁体中文',
+    'lang.name.pl': '波兰语',
+    'lang.name.pl-PL': '波兰语',
     'chrome.departments': '分类',
     'chrome.browseDepartment': '浏览 {label} →',
     'chrome.megaQuickOrderTitle': '快速下单 — 30 秒内 200+ 行',
@@ -4001,7 +4025,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.bidding.pagerCampaigns': '活動',
     'account.bidding.pagerReceipts': '回執',
     'account.addresses.yes': '是',
-    'footer.blurb': '工業元器件 B2B 批發。軸承、傳動、自動化、電氣、氣動與工具。當日發貨、帳期發票與完整技術資料。',
+    'footer.blurb': '面向 {categories} 的 B2B 批發與稀缺庫存競價批採。真實需求優先、可履約可追責。',
+    'footer.blurbCategoriesFallback': 'GPU、儲存、Mini 伺服器、電子器件與綠電硬體',
+    'footer.copyright': '© {year} Mobii Bidding · 莫比綠電股份有限公司 / Mobii Green Energy CO., LTD. · 統一編號 28010606',
     'footer.shop': '商店',
     'footer.catalog': '商品目錄',
     'footer.fasteners': '緊固件',
@@ -4028,6 +4054,12 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'footer.delivery': '配送與付款',
     'footer.certificates': '認證與合規',
     'footer.helpCenter': '說明中心',
+    'lang.name.en': '英語',
+    'lang.name.en-US': '英語',
+    'lang.name.zh-CN': '簡體中文',
+    'lang.name.zh-TW': '繁體中文',
+    'lang.name.pl': '波蘭語',
+    'lang.name.pl-PL': '波蘭語',
     'chrome.departments': '分類',
     'chrome.browseDepartment': '瀏覽 {label} →',
     'chrome.megaQuickOrderTitle': '快速下單 — 30 秒內 200+ 行',
@@ -5043,7 +5075,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'account.bidding.pagerCampaigns': 'Kampanie',
     'account.bidding.pagerReceipts': 'Paragony',
     'account.addresses.yes': 'tak',
-    'footer.blurb': 'Hurtownia B2B komponentów przemysłowych. Łożyska, napędy, automatyka, elektryka, pneumatyka i narzędzia. Wysyłka tego samego dnia, faktura z odroczonym terminem płatności i pełna dokumentacja techniczna.',
+    'footer.blurb': 'Hurtownia B2B i licytacja rzadkich partii: {categories}. Priorytet realnego popytu i rozliczalnej realizacji.',
+    'footer.blurbCategoriesFallback': 'GPU, pamięć, mini serwery, elektronika i sprzęt zielonej energii',
+    'footer.copyright': '© {year} Mobii Bidding · Mobii Green Energy CO., LTD. · NIP 28010606',
     'footer.shop': 'Sklep',
     'footer.catalog': 'Katalog',
     'footer.fasteners': 'Łączniki',
@@ -5070,6 +5104,12 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'footer.delivery': 'Dostawa i płatności',
     'footer.certificates': 'Certyfikaty i zgodność',
     'footer.helpCenter': 'Centrum pomocy',
+    'lang.name.en': 'angielski',
+    'lang.name.en-US': 'angielski',
+    'lang.name.zh-CN': 'chiński uproszczony',
+    'lang.name.zh-TW': 'chiński tradycyjny',
+    'lang.name.pl': 'polski',
+    'lang.name.pl-PL': 'polski',
     'chrome.departments': 'Działy',
     'chrome.browseDepartment': 'Przeglądaj {label} →',
     'chrome.megaQuickOrderTitle': 'Quick Order — 200+ pozycji w 30 s',

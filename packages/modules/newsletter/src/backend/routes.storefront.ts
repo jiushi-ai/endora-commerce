@@ -68,6 +68,7 @@ export async function registerNewsletterStorefrontRoutes(
       source: body.source ?? 'storefront',
       ...(body.tags ? { tags: body.tags } : {}),
       ...(body.customFields ? { customFields: body.customFields } : {}),
+      ...(body.language ? { language: body.language } : {}),
     });
     return reply.send({ data: result });
   });

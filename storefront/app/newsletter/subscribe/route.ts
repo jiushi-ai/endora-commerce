@@ -114,12 +114,15 @@ export async function POST(request: Request): Promise<Response> {
   if (field(form, 'topicsRequired') === 'on' && topics.length === 0) return answer({ error: 'topics' });
 
   const channelCode = request.headers.get(SALES_CHANNEL_REQUEST_HEADER) || 'default';
+  const languageRaw = field(form, 'language').trim();
+  const language = languageRaw.length >= 2 && languageRaw.length <= 35 ? languageRaw : undefined;
   try {
     const result = await subscribeNewsletter({
       email: email.data,
       channelCode,
       ...(topics.length > 0 ? { tags: topics } : {}),
       source: 'cms-block',
+      ...(language ? { language } : {}),
     });
     return answer({ status: result.status });
   } catch {

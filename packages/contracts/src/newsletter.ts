@@ -423,6 +423,8 @@ export const newsletterSubscribeRequestSchema = z.object({
   tags: z.array(z.string().min(1)).optional(),
   customFields: z.record(z.string(), customFieldValueSchema).optional(),
   source: z.string().max(64).optional(),
+  /** Batch 64 — UI / request language hint when the address has no preferredLanguage. */
+  language: z.string().min(2).max(35).optional(),
 });
 export type NewsletterSubscribeRequest = z.infer<typeof newsletterSubscribeRequestSchema>;
 
