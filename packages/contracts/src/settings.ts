@@ -64,8 +64,9 @@ const groupCodeRe = /^[a-z][a-z0-9_]{0,118}[a-z0-9]$/;
  * (`ModuleActivationSchema` in `modules.ts`) declares the code of an ordinary
  * Setting row and must validate it identically.
  */
-export const settingCodeRe = /^[a-z][a-z0-9_][a-z0-9_.]*[a-z0-9]$/;
-const moduleCodeRe = /^[a-z][a-z0-9_]{0,118}[a-z0-9]$/;
+// Leading `_` is allowed for platform-internal module ids such as `_i18n`.
+export const settingCodeRe = /^[a-z_][a-z0-9_][a-z0-9_.]*[a-z0-9]$/;
+const moduleCodeRe = /^[a-z_][a-z0-9_]{0,118}[a-z0-9]$/;
 
 export const GroupManifestEntrySchema = z.object({
   code: z.string().regex(groupCodeRe),

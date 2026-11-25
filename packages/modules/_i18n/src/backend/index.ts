@@ -254,4 +254,8 @@ export {
   type I18nReconcileFailure,
 } from './services/bundle-reconciler.js';
 export { registerI18nAdminRoutes, type I18nAdminDeps } from './routes.admin.js';
+export {
+  readDefaultUiLanguage,
+  readNotificationEmailLanguage,
+} from './services/admin-language-policy.js';
 export type { I18nReconcileEntry, I18nReconcileResult };

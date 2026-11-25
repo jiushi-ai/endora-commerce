@@ -13,7 +13,73 @@
 // buyer's code path for a year without anybody reading it as wrong (#234).
 
 import { z } from 'zod';
-import { SupportedLanguageSchema, type SupportedLanguage } from './platform-language.js';
+import {
+  LANGUAGE_FALLBACK,
+  SupportedLanguageSchema,
+  supportedLanguageOf,
+  type SupportedLanguage,
+} from './platform-language.js';
+
+/**
+ * Platform settings owned by `_i18n` (batch 65.2). Codes are the setting store
+ * keys; enum values match what each manifest declares.
+ */
+export const I18N_SETTING_CODES = {
+  DEFAULT_UI_LANGUAGE: '_i18n.admin.default_ui_language',
+  NOTIFICATION_EMAIL_LANGUAGE: '_i18n.admin.notification_email_language',
+} as const;
+
+/**
+ * BCP-47-style tags for admin notification transactional e-mails
+ * (`_i18n.admin.notification_email_language`). Aligns with
+ * `NEW_ORG_REGISTRATION_DEFAULT` language keys — not the Admin UI
+ * `SupportedLanguage` set (`en` has no region; mail uses `en-US`).
+ */
+export const NOTIFICATION_EMAIL_LANGUAGE_SCHEMA = z.enum(['en-US', 'zh-CN', 'zh-TW', 'pl-PL']);
+export type NotificationEmailLanguage = z.infer<typeof NOTIFICATION_EMAIL_LANGUAGE_SCHEMA>;
+export const NOTIFICATION_EMAIL_LANGUAGE_DEFAULT: NotificationEmailLanguage = 'en-US';
+
+/** Maps a notification e-mail language tag to Admin / bundle `SupportedLanguage`. */
+export function notificationEmailLanguageToSupported(language: string): SupportedLanguage {
+  const tag = language.trim();
+  if (tag === 'en-US' || tag === 'en') return 'en';
+  if (tag === 'pl-PL' || tag === 'pl') return 'pl';
+  const supported = supportedLanguageOf(tag);
+  return supported;
+}
+
+/** Maps Admin UI language to the transactional template tag for admin notification mail. */
+export function supportedLanguageToNotificationEmail(
+  language: SupportedLanguage,
+): NotificationEmailLanguage {
+  switch (language) {
+    case 'en':
+      return 'en-US';
+    case 'pl':
+      return 'pl-PL';
+    case 'zh-CN':
+      return 'zh-CN';
+    case 'zh-TW':
+      return 'zh-TW';
+    default:
+      return NOTIFICATION_EMAIL_LANGUAGE_DEFAULT;
+  }
+}
+
+/** Normalizes a settings-store value for `_i18n.admin.notification_email_language`. */
+export function coerceNotificationEmailLanguage(
+  raw: unknown,
+): NotificationEmailLanguage {
+  if (typeof raw !== 'string') return NOTIFICATION_EMAIL_LANGUAGE_DEFAULT;
+  const parsed = NOTIFICATION_EMAIL_LANGUAGE_SCHEMA.safeParse(raw.trim());
+  return parsed.success ? parsed.data : NOTIFICATION_EMAIL_LANGUAGE_DEFAULT;
+}
+
+/** Normalizes a settings-store value for `_i18n.admin.default_ui_language`. */
+export function coerceDefaultUiLanguage(raw: unknown): SupportedLanguage {
+  if (typeof raw !== 'string') return LANGUAGE_FALLBACK;
+  return supportedLanguageOf(raw);
+}
 
 /**
  * @deprecated Use `SupportedLanguageSchema` from `platform-language.ts`. The set

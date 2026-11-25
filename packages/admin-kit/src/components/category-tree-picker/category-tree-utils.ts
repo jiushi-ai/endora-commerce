@@ -17,6 +17,8 @@ export interface CategoryTreeNode {
 const LOCALE_BY_ADMIN_LANGUAGE: Record<string, string> = {
   en: 'en-US',
   pl: 'pl-PL',
+  'zh-CN': 'zh-CN',
+  'zh-TW': 'zh-TW',
 };
 
 export function adminLanguageToLocale(language: string): string {

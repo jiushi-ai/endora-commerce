@@ -1,4 +1,9 @@
 {
+  "settingGroups.language.name": "Język",
+  "settingLabels._i18n.admin.default_ui_language.name": "Domyślny język panelu administracyjnego",
+  "settingLabels._i18n.admin.default_ui_language.description": "Język panelu po zalogowaniu, gdy administrator nie ma osobistej preferencji językowej. Stosowany także po wyczyszczeniu języka w profilu.",
+  "settingLabels._i18n.admin.notification_email_language.name": "Język powiadomień e-mail administratora",
+  "settingLabels._i18n.admin.notification_email_language.description": "Język powiadomień e-mail wysyłanych na skonfigurowane adresy (np. rejestracja nowej organizacji). Jedna wiadomość — jeden język; tagi BCP-47 zgodne z szablonami transakcyjnymi: en-US, zh-CN, zh-TW, pl-PL.",
   "action.amount_off_cart": "Zniżka Y zł na cały koszyk",
   "action.buy_x_get_y_free": "Kup X otrzymaj Y za darmo",
   "action.buy_x_units_amount_off": "Kup X sztuk produktu, Y zł zniżki na koszyk",
@@ -932,6 +937,7 @@
   "legacyMethods.fields.currency": "Waluta",
   "legacyMethods.fields.kind": "Typ",
   "legacyMethods.fields.nameEn": "Nazwa [en-US]",
+  "legacyMethods.fields.nameForLocale": "Nazwa [{locale}]",
   "legacyMethods.fields.namePl": "Nazwa [pl-PL]",
   "legacyMethods.fields.status": "Status",
   "legacyMethods.fields.statusOnFailure": "Status zamówienia — płatność nieudana",

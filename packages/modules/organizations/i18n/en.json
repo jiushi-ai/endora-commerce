@@ -1,4 +1,7 @@
 {
+  "settingGroups.organizations.name": "Organizations",
+  "settingLabels.organizations.notifications.new_registration_recipients.name": "New Organization registration — email recipients",
+  "settingLabels.organizations.notifications.new_registration_recipients.description": "List of email addresses receiving a notification on every new Organization registration. Validated syntactically; max 50 entries; case-insensitive dedup. Empty list ⇒ no emails sent (in-app admin notification still fires).",
   "nav.organizations.label": "Organizations",
   "actions.openOrganizations.label": "Organizations",
   "actions.openOrganizations.description": "Customer accounts",

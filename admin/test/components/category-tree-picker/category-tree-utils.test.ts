@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  adminLanguageToLocale,
   ancestorIdsForSelected,
   buildCategoryTree,
   computeParentIndeterminateIds,
@@ -51,6 +52,13 @@ describe('category-tree-utils', () => {
   it('flattenCategoryTree walks depth-first', () => {
     const flat = flattenCategoryTree(buildCategoryTree(SAMPLE));
     expect(flat.map((n) => n.category.id)).toEqual(['root-a', 'child-y', 'child-z', 'root-b']);
+  });
+
+  it('adminLanguageToLocale maps admin UI languages to content locales', () => {
+    expect(adminLanguageToLocale('en')).toBe('en-US');
+    expect(adminLanguageToLocale('pl')).toBe('pl-PL');
+    expect(adminLanguageToLocale('zh-CN')).toBe('zh-CN');
+    expect(adminLanguageToLocale('zh-TW')).toBe('zh-TW');
   });
 
   it('pickCategoryDisplayName prefers locale then en-US then slug', () => {

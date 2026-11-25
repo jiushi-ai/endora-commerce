@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { slugify, type CustomFieldType, type NewsletterCustomField, type NewsletterTag } from '@endora-commerce/contracts';
 import { useAuth } from '@endora-commerce/admin-kit/lib';
+import { useTranslation } from '@endora-commerce/admin-kit/i18n';
 import { Alert, AlertDescription, Button, Card, CardContent, CardHeader, CardTitle, Input, PageHeader, Select } from '@endora-commerce/admin-kit/ui';
 import { newsletterClient } from '../api/newsletter-client.js';
+import { customFieldTypeLabel } from '../lib/labels.js';
 
 /** Backend requires tag codes / field keys to match this pattern. */
 const CODE_RE = /^[a-z][a-z0-9_]*$/;
@@ -33,6 +35,7 @@ function slugifyCode(input: string): string {
 }
 
 export function TagsPage(): React.ReactElement {
+  const t = useTranslation('newsletter');
   const { hasPermission } = useAuth();
   const canWrite = hasPermission('newsletter:write');
   const [tags, setTags] = useState<NewsletterTag[]>([]);
@@ -64,10 +67,10 @@ export function TagsPage(): React.ReactElement {
 
   const addTag = (): void =>
     void run(async () => {
-      if (tagName.trim() === '') throw new Error('Tag name is required.');
+      if (tagName.trim() === '') throw new Error(t('tags.error.nameRequired'));
       const code = slugifyCode(tagCode.trim() || tagName);
       if (!CODE_RE.test(code)) {
-        throw new Error('Code must start with a letter and use only lowercase letters, digits and underscores.');
+        throw new Error(t('tags.error.codeInvalid'));
       }
       await newsletterClient.createTag({ code, name: tagName.trim() });
       setTagCode('');
@@ -76,10 +79,10 @@ export function TagsPage(): React.ReactElement {
 
   const addField = (): void =>
     void run(async () => {
-      if (fieldLabel.trim() === '') throw new Error('Field label is required.');
+      if (fieldLabel.trim() === '') throw new Error(t('tags.fields.error.labelRequired'));
       const key = slugifyCode(fieldKey.trim() || fieldLabel);
       if (!CODE_RE.test(key)) {
-        throw new Error('Key must start with a letter and use only lowercase letters, digits and underscores.');
+        throw new Error(t('tags.fields.error.keyInvalid'));
       }
       await newsletterClient.createCustomField({ key, label: fieldLabel.trim(), type: fieldType });
       setFieldKey('');
@@ -90,14 +93,14 @@ export function TagsPage(): React.ReactElement {
   if (!hasPermission('newsletter:read')) {
     return (
       <Alert>
-        <AlertDescription>You do not have permission to view the newsletter.</AlertDescription>
+        <AlertDescription>{t('permission.viewDenied')}</AlertDescription>
       </Alert>
     );
   }
 
   return (
     <div className="space-y-4">
-      <PageHeader title="Newsletter — Tags &amp; fields" description="Segmentation tags and custom subscriber fields." />
+      <PageHeader title={t('tags.page.title')} description={t('tags.page.description')} />
       {error ? (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
@@ -105,49 +108,46 @@ export function TagsPage(): React.ReactElement {
       ) : null}
       <Card>
         <CardHeader>
-          <CardTitle>Tags</CardTitle>
+          <CardTitle>{t('tags.card.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {canWrite ? (
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <Input placeholder="code (optional)" value={tagCode} onChange={(e) => setTagCode(e.target.value)} className="max-w-[160px]" />
-                <Input placeholder="name" value={tagName} onChange={(e) => setTagName(e.target.value)} className="max-w-[200px]" />
+                <Input placeholder={t('tags.codeOptional')} value={tagCode} onChange={(e) => setTagCode(e.target.value)} className="max-w-[160px]" />
+                <Input placeholder={t('tags.namePlaceholder')} value={tagName} onChange={(e) => setTagName(e.target.value)} className="max-w-[200px]" />
                 <Button size="sm" onClick={addTag}>
-                  Add tag
+                  {t('tags.addTag')}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Code uses lowercase letters, digits and underscores. Spaces and other characters are converted
-                automatically; leave it empty to derive one from the name.
-              </p>
+              <p className="text-xs text-muted-foreground">{t('tags.codeHint')}</p>
             </div>
           ) : null}
           <ul className="divide-y text-sm">
-            {tags.map((t) => {
-              const et = editTag && editTag.id === t.id ? editTag : null;
+            {tags.map((tagRow) => {
+              const et = editTag && editTag.id === tagRow.id ? editTag : null;
               return (
-                <li key={t.id} className="flex items-center justify-between gap-2 py-2">
+                <li key={tagRow.id} className="flex items-center justify-between gap-2 py-2">
                   {et ? (
                     <div className="flex flex-1 flex-wrap items-center gap-2">
-                      <span className="font-mono text-xs text-muted-foreground">{t.code}</span>
+                      <span className="font-mono text-xs text-muted-foreground">{tagRow.code}</span>
                       <Input
                         value={et.name}
-                        placeholder="name"
+                        placeholder={t('tags.namePlaceholder')}
                         onChange={(e) => setEditTag({ ...et, name: e.target.value })}
                         className="max-w-[200px]"
                       />
                       <Input
                         value={et.description}
-                        placeholder="description"
+                        placeholder={t('tags.descriptionPlaceholder')}
                         onChange={(e) => setEditTag({ ...et, description: e.target.value })}
                         className="max-w-[240px]"
                       />
                     </div>
                   ) : (
                     <span>
-                      <span className="font-mono text-xs">{t.code}</span> — {t.name}
-                      {t.description ? <span className="text-muted-foreground"> · {t.description}</span> : null}
+                      <span className="font-mono text-xs">{tagRow.code}</span> — {tagRow.name}
+                      {tagRow.description ? <span className="text-muted-foreground"> · {tagRow.description}</span> : null}
                     </span>
                   )}
                   {canWrite ? (
@@ -159,8 +159,8 @@ export function TagsPage(): React.ReactElement {
                             size="sm"
                             onClick={() =>
                               void run(async () => {
-                                if (et.name.trim() === '') throw new Error('Tag name is required.');
-                                await newsletterClient.updateTag(t.id, {
+                                if (et.name.trim() === '') throw new Error(t('tags.error.nameRequired'));
+                                await newsletterClient.updateTag(tagRow.id, {
                                   name: et.name.trim(),
                                   description: et.description.trim() === '' ? null : et.description.trim(),
                                 });
@@ -168,10 +168,10 @@ export function TagsPage(): React.ReactElement {
                               })
                             }
                           >
-                            Save
+                            {t('common.save')}
                           </Button>
                           <Button variant="ghost" size="sm" onClick={() => setEditTag(null)}>
-                            Cancel
+                            {t('common.cancel')}
                           </Button>
                         </>
                       ) : (
@@ -179,12 +179,12 @@ export function TagsPage(): React.ReactElement {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setEditTag({ id: t.id, name: t.name, description: t.description ?? '' })}
+                            onClick={() => setEditTag({ id: tagRow.id, name: tagRow.name, description: tagRow.description ?? '' })}
                           >
-                            Edit
+                            {t('common.edit')}
                           </Button>
-                          <Button variant="ghost" size="sm" onClick={() => void run(() => newsletterClient.deleteTag(t.id))}>
-                            Delete
+                          <Button variant="ghost" size="sm" onClick={() => void run(() => newsletterClient.deleteTag(tagRow.id))}>
+                            {t('common.delete')}
                           </Button>
                         </>
                       )}
@@ -198,14 +198,14 @@ export function TagsPage(): React.ReactElement {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Custom subscriber fields</CardTitle>
+          <CardTitle>{t('tags.fields.cardTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {canWrite ? (
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <Input placeholder="key (optional)" value={fieldKey} onChange={(e) => setFieldKey(e.target.value)} className="max-w-[160px]" />
-                <Input placeholder="label" value={fieldLabel} onChange={(e) => setFieldLabel(e.target.value)} className="max-w-[200px]" />
+                <Input placeholder={t('tags.fields.keyOptional')} value={fieldKey} onChange={(e) => setFieldKey(e.target.value)} className="max-w-[160px]" />
+                <Input placeholder={t('tags.fields.labelPlaceholder')} value={fieldLabel} onChange={(e) => setFieldLabel(e.target.value)} className="max-w-[200px]" />
                 <Select
                   value={fieldType}
                   onChange={(e) => setFieldType(e.target.value as CustomFieldType)}
@@ -213,18 +213,15 @@ export function TagsPage(): React.ReactElement {
                 >
                   {CUSTOM_FIELD_TYPES.map((ty) => (
                     <option key={ty} value={ty}>
-                      {ty}
+                      {customFieldTypeLabel(t, ty)}
                     </option>
                   ))}
                 </Select>
                 <Button size="sm" onClick={addField}>
-                  Add field
+                  {t('tags.fields.addField')}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Key uses lowercase letters, digits and underscores. Spaces and other characters are converted
-                automatically; leave it empty to derive one from the label. Key and type cannot be changed later.
-              </p>
+              <p className="text-xs text-muted-foreground">{t('tags.fields.keyHint')}</p>
             </div>
           ) : null}
           <ul className="divide-y text-sm">
@@ -237,7 +234,7 @@ export function TagsPage(): React.ReactElement {
                       <span className="font-mono text-xs text-muted-foreground">{f.key}</span>
                       <Input
                         value={ef.label}
-                        placeholder="label"
+                        placeholder={t('tags.fields.labelPlaceholder')}
                         onChange={(e) => setEditField({ ...ef, label: e.target.value })}
                         className="max-w-[240px]"
                       />
@@ -245,7 +242,7 @@ export function TagsPage(): React.ReactElement {
                     </div>
                   ) : (
                     <span>
-                      <span className="font-mono text-xs">{f.key}</span> — {f.label} ({f.type})
+                      <span className="font-mono text-xs">{f.key}</span> — {f.label} ({customFieldTypeLabel(t, f.type)})
                     </span>
                   )}
                   {canWrite ? (
@@ -257,16 +254,16 @@ export function TagsPage(): React.ReactElement {
                             size="sm"
                             onClick={() =>
                               void run(async () => {
-                                if (ef.label.trim() === '') throw new Error('Field label is required.');
+                                if (ef.label.trim() === '') throw new Error(t('tags.fields.error.labelRequired'));
                                 await newsletterClient.updateCustomField(f.id, { label: ef.label.trim() });
                                 setEditField(null);
                               })
                             }
                           >
-                            Save
+                            {t('common.save')}
                           </Button>
                           <Button variant="ghost" size="sm" onClick={() => setEditField(null)}>
-                            Cancel
+                            {t('common.cancel')}
                           </Button>
                         </>
                       ) : (
@@ -276,14 +273,14 @@ export function TagsPage(): React.ReactElement {
                             size="sm"
                             onClick={() => setEditField({ id: f.id, label: f.label })}
                           >
-                            Edit
+                            {t('common.edit')}
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => void run(() => newsletterClient.deleteCustomField(f.id))}
                           >
-                            Delete
+                            {t('common.delete')}
                           </Button>
                         </>
                       )}

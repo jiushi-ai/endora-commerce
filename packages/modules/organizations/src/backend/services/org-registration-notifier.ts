@@ -3,6 +3,15 @@ import { rethrowIfModuleDisabled } from '@endora-commerce/platform/kernel';
 import { Organization } from '../entities/organization.entity.js';
 import type { AdminNotificationRecordPort, EmailMailerPort } from '@endora-commerce/contracts';
 import { noopOrgTemplateEmail, type OrgTemplateEmail } from './org-template-email.js';
+import {
+  adminLanguageForOrgRegistration,
+  resolveNewOrgRegistrationStatusLabel,
+  type OrgRegistrationStatus,
+} from './org-registration-language.js';
+import {
+  organizationsProse,
+  type OrganizationsTranslate,
+} from './organizations-prose.js';
 
 /**
  * OrgRegistrationNotifier — subscribes to `organization.registered.v1` and
@@ -15,6 +24,8 @@ import { noopOrgTemplateEmail, type OrgTemplateEmail } from './org-template-emai
  *     per recipient. Empty / unset list ⇒ no e-mails (the admin bell still
  *     fires).
  *
+ * Copy language follows `_i18n.admin.notification_email_language` (batch 65.2).
+ *
  * The notifier is best-effort by design — a downstream failure never
  * poisons the registration itself, which has already committed before the
  * event was emitted.
@@ -24,6 +35,8 @@ export interface OrgRegistrationNotifierDeps {
   adminNotificationService: AdminNotificationRecordPort;
   mailer: EmailMailerPort;
   resolveRecipients: () => Promise<string[]>;
+  resolveNotificationEmailLanguage: () => Promise<string>;
+  translate?: OrganizationsTranslate;
   onError?: (err: unknown) => void;
   /** Feature 047 — optional admin-editable template path. */
   templateEmail?: OrgTemplateEmail;
@@ -38,8 +51,11 @@ export class OrgRegistrationNotifier {
       const org = await em.findOne(Organization, { id: organizationId, deletedAt: null });
       if (!org) return;
 
-      await this.writeAdminNotification(org);
-      await this.dispatchRecipientEmails(org);
+      const notificationEmailLanguage = await this.deps.resolveNotificationEmailLanguage();
+      const adminLanguage = adminLanguageForOrgRegistration(notificationEmailLanguage);
+
+      await this.writeAdminNotification(org, adminLanguage);
+      await this.dispatchRecipientEmails(org, notificationEmailLanguage, adminLanguage);
     } catch (err) {
       // `writeAdminNotification` reaches `admin_notifications` through a gated
       // port, and that module declares no `activation.nonDeactivatable`: switch
@@ -55,22 +71,39 @@ export class OrgRegistrationNotifier {
     }
   }
 
-  private async writeAdminNotification(org: Organization): Promise<void> {
+  private async writeAdminNotification(
+    org: Organization,
+    adminLanguage: ReturnType<typeof adminLanguageForOrgRegistration>,
+  ): Promise<void> {
+    const status = org.status as OrgRegistrationStatus;
+    const title = await organizationsProse(
+      this.deps.translate,
+      'notifications.newRegistration.title',
+      adminLanguage,
+      { name: org.name },
+    );
+    const bodyKey =
+      status === 'pending_verification'
+        ? 'notifications.newRegistration.body.pending'
+        : 'notifications.newRegistration.body.active';
+    const body = await organizationsProse(this.deps.translate, bodyKey, adminLanguage);
+
     await this.deps.adminNotificationService.record({
       audience: 'all_admins',
       kind: 'organization.registered',
       subjectType: 'organization',
       subjectId: org.id,
-      title: `Nowa Organizacja: ${org.name}`,
-      body:
-        org.status === 'pending_verification'
-          ? 'Oczekuje na weryfikację.'
-          : 'Zarejestrowana automatycznie.',
+      title,
+      body,
       linkPath: `/organizations/${org.id}`,
     });
   }
 
-  private async dispatchRecipientEmails(org: Organization): Promise<void> {
+  private async dispatchRecipientEmails(
+    org: Organization,
+    notificationEmailLanguage: string,
+    adminLanguage: ReturnType<typeof adminLanguageForOrgRegistration>,
+  ): Promise<void> {
     let recipients: string[] = [];
     try {
       recipients = await this.deps.resolveRecipients();
@@ -79,8 +112,18 @@ export class OrgRegistrationNotifier {
     }
     if (recipients.length === 0) return;
     const template = this.deps.templateEmail ?? noopOrgTemplateEmail;
-    const statusLabel =
-      org.status === 'pending_verification' ? 'Oczekuje na weryfikację' : 'Aktywna';
+    const status = org.status as OrgRegistrationStatus;
+    const statusLabel = await resolveNewOrgRegistrationStatusLabel({
+      status,
+      notificationEmailLanguage,
+      ...(this.deps.translate !== undefined ? { translate: this.deps.translate } : {}),
+    });
+    const subject = await organizationsProse(
+      this.deps.translate,
+      'notifications.newRegistration.title',
+      adminLanguage,
+      { name: org.name },
+    );
     for (const to of recipients) {
       const messageId = `organization.registered.${org.id}.${to.toLowerCase()}`;
       try {
@@ -100,8 +143,8 @@ export class OrgRegistrationNotifier {
           const outcome = await this.deps.mailer.send({
             messageId,
             to,
-            subject: `Nowa Organizacja: ${org.name}`,
-            text: this.composeBody(org),
+            subject,
+            text: await this.composeBody(org, statusLabel, adminLanguage),
             meta: { organizationId: org.id, kind: 'organization.registered' },
           });
           // Only the transport's refusal is named here. `logged` (issue #186) is the
@@ -124,15 +167,21 @@ export class OrgRegistrationNotifier {
     }
   }
 
-  private composeBody(org: Organization): string {
-    return [
-      `Zarejestrowała się nowa Organizacja na platformie B2B.`,
-      ``,
-      `  Nazwa:   ${org.name}`,
-      `  NIP/VAT: ${org.taxId}`,
-      `  Status:  ${org.status === 'pending_verification' ? 'Oczekuje na weryfikację' : 'Aktywna'}`,
-      ``,
-      `Otwórz w Panelu Administracyjnym: /organizations/${org.id}`,
-    ].join('\n');
+  private async composeBody(
+    org: Organization,
+    statusLabel: string,
+    adminLanguage: ReturnType<typeof adminLanguageForOrgRegistration>,
+  ): Promise<string> {
+    return organizationsProse(
+      this.deps.translate,
+      'notifications.newRegistration.email.body',
+      adminLanguage,
+      {
+        name: org.name,
+        taxId: org.taxId,
+        status: statusLabel,
+        linkPath: `/organizations/${org.id}`,
+      },
+    );
   }
 }

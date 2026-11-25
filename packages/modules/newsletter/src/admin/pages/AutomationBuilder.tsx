@@ -9,7 +9,9 @@ import type {
   NewsletterTag,
 } from '@endora-commerce/contracts';
 import { useAuth } from '@endora-commerce/admin-kit/lib';
+import { useTranslation } from '@endora-commerce/admin-kit/i18n';
 import { Alert, AlertDescription, Button, Card, CardContent, CardHeader, CardTitle, Input, PageHeader } from '@endora-commerce/admin-kit/ui';
+import { automationTriggerLabel } from '../lib/labels.js';
 import {
   EmailEditorPane,
   EmailSubjectWithVariables,
@@ -47,6 +49,7 @@ function fromApiSteps(steps: AutomationStep[]): LocalStep[] {
 }
 
 export function AutomationBuilder(): React.ReactElement {
+  const t = useTranslation('newsletter');
   const { id } = useParams<{ id: string }>();
   const isNew = !id || id === 'new';
   const navigate = useNavigate();
@@ -108,7 +111,7 @@ export function AutomationBuilder(): React.ReactElement {
         ? await newsletterClient.createAutomation(payload)
         : await newsletterClient.updateAutomation(id!, { ...payload, expectedVersion: detail!.version });
       setDetail(saved);
-      setNotice('Saved.');
+      setNotice(t('common.saved'));
       if (isNew) navigate(`/newsletter/automations/${saved.id}`, { replace: true });
       return saved;
     } catch (err) {
@@ -123,7 +126,7 @@ export function AutomationBuilder(): React.ReactElement {
     try {
       const a = await newsletterClient.activateAutomation(saved.id, saved.version);
       setDetail(a);
-      setNotice('Activated.');
+      setNotice(t('automationBuilder.noticeActivated'));
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     }
@@ -132,7 +135,7 @@ export function AutomationBuilder(): React.ReactElement {
   if (!hasPermission('newsletter:read')) {
     return (
       <Alert>
-        <AlertDescription>You do not have permission to view the newsletter.</AlertDescription>
+        <AlertDescription>{t('permission.viewDenied')}</AlertDescription>
       </Alert>
     );
   }
@@ -142,15 +145,15 @@ export function AutomationBuilder(): React.ReactElement {
   return (
     <div className="space-y-4">
       <PageHeader
-        title={isNew ? 'New automation' : name || 'Automation'}
-        back={{ label: 'Automations', to: '/newsletter/automations' }}
+        title={isNew ? t('automationBuilder.newTitle') : name || t('automations.page.title')}
+        back={{ label: t('common.back.automations'), to: '/newsletter/automations' }}
         actions={
           canWrite ? (
             <>
               <Button variant="outline" onClick={() => void save()}>
-                Save
+                {t('common.save')}
               </Button>
-              <Button onClick={() => void activate()}>Activate</Button>
+              <Button onClick={() => void activate()}>{t('automationBuilder.activate')}</Button>
             </>
           ) : null
         }
@@ -168,19 +171,19 @@ export function AutomationBuilder(): React.ReactElement {
 
       <Card>
         <CardHeader>
-          <CardTitle>Trigger</CardTitle>
+          <CardTitle>{t('automationBuilder.trigger')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Input placeholder="Automation name" value={name} onChange={(e) => setName(e.target.value)} disabled={!canWrite} />
+          <Input placeholder={t('automationBuilder.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} disabled={!canWrite} />
           <select
             className="border rounded px-2 py-1 text-sm"
             value={triggerType}
             onChange={(e) => setTriggerType(e.target.value as AutomationTriggerType)}
             disabled={!canWrite}
           >
-            <option value="all">All subscribers</option>
-            <option value="tag">Tag</option>
-            <option value="tag_list">Tag list</option>
+            <option value="all">{automationTriggerLabel(t, 'all')}</option>
+            <option value="tag">{automationTriggerLabel(t, 'tag')}</option>
+            <option value="tag_list">{automationTriggerLabel(t, 'tag_list')}</option>
           </select>
           {(triggerType === 'tag' || triggerType === 'tag_list') ? (
             <div className="flex flex-wrap gap-2">
@@ -205,14 +208,14 @@ export function AutomationBuilder(): React.ReactElement {
       <EmailVariablesProvider variables={variables}>
         <Card>
           <CardHeader>
-            <CardTitle>Steps</CardTitle>
+            <CardTitle>{t('automationBuilder.steps')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {steps.map((step, idx) => (
               <div key={idx} className="rounded border p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">
-                    {idx + 1}. {step.type === 'send' ? 'Send email' : 'Wait'}
+                    {idx + 1}. {step.type === 'send' ? t('automationBuilder.step.send') : t('automationBuilder.step.wait')}
                   </span>
                   {canWrite ? (
                     <span className="flex gap-1">
@@ -236,7 +239,7 @@ export function AutomationBuilder(): React.ReactElement {
                         setSteps((p) => p.map((s, i) => (i === idx && s.type === 'send' ? { ...s, subject } : s)))
                       }
                       disabled={!canWrite}
-                      placeholder="Subject"
+                      placeholder={t('automationBuilder.subjectPlaceholder')}
                     />
                     <EmailEditorPane
                       editorKey={`automation:${id ?? 'new'}:step:${idx}`}
@@ -266,7 +269,7 @@ export function AutomationBuilder(): React.ReactElement {
                   </>
                 ) : (
                   <label className="flex items-center gap-2 text-sm">
-                    Wait
+                    {t('automationBuilder.step.wait')}
                     <Input
                       type="number"
                       min={1}
@@ -279,7 +282,7 @@ export function AutomationBuilder(): React.ReactElement {
                       }
                       disabled={!canWrite}
                     />
-                    days
+                    {t('automationBuilder.step.waitDays')}
                   </label>
                 )}
               </div>
@@ -291,10 +294,10 @@ export function AutomationBuilder(): React.ReactElement {
                   size="sm"
                   onClick={() => setSteps((p) => [...p, { type: 'send', subject: '', content: emptyData }])}
                 >
-                  + Send email
+                  {t('automationBuilder.addSend')}
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => setSteps((p) => [...p, { type: 'wait', days: 1 }])}>
-                  + Wait
+                  {t('automationBuilder.addWait')}
                 </Button>
               </div>
             ) : null}

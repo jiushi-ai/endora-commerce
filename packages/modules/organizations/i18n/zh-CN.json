@@ -1,4 +1,7 @@
 {
+  "settingGroups.organizations.name": "组织",
+  "settingLabels.organizations.notifications.new_registration_recipients.name": "新组织注册 — 邮件收件人",
+  "settingLabels.organizations.notifications.new_registration_recipients.description": "每次有新组织注册时接收通知的邮箱地址列表。进行语法校验；最多 50 个条目；不区分大小写去重。空列表表示不发送邮件（应用内管理通知仍会触发）。",
   "nav.organizations.label": "组织",
   "actions.openOrganizations.label": "组织机构",
   "actions.openOrganizations.description": "客户账户",
@@ -54,5 +57,11 @@
   "create.status.pending_verification": "待验证",
   "create.submit": "创建组织",
   "create.cancel": "取消",
-  "create.error": "无法创建该组织。"
+  "create.error": "无法创建该组织。",
+  "notifications.newRegistration.title": "新组织：{name}",
+  "notifications.newRegistration.body.pending": "等待验证。",
+  "notifications.newRegistration.body.active": "已自动注册。",
+  "notifications.newRegistration.status.pending": "等待验证",
+  "notifications.newRegistration.status.active": "活跃",
+  "notifications.newRegistration.email.body": "B2B 平台上注册了新组织。\n\n  名称：   {name}\n  税号：   {taxId}\n  状态：   {status}\n\n在管理后台中打开：{linkPath}"
 }

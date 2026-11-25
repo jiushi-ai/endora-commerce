@@ -46,6 +46,7 @@ const CORE_KEYS = [
   'legacyMethods.columns.status',
   'legacyMethods.fields.code',
   'legacyMethods.fields.nameEn',
+  'legacyMethods.fields.nameForLocale',
   'legacyMethods.fields.namePl',
   'legacyMethods.fields.cost',
   'legacyMethods.fields.currency',

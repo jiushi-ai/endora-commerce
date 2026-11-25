@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { adminPreferencesSchema } from './admin-preferences.js';
 import { isoDateTimeSchema, uuidSchema } from './common.js';
 import { organizationRoleRefSchema } from './organization-roles.js';
+import { SupportedLanguageSchema } from './platform-language.js';
 
 /**
  * Admin module contracts (US4) — AdminUser, AdminRole, Impersonation,
@@ -49,12 +50,18 @@ export type AdminRole = z.infer<typeof adminRoleSchema>;
  * backend could not resolve a usable value (the setting is not registered, or
  * holds something that is not a positive number); a backend older than this
  * field omits it. In both cases the Admin UI applies its built-in default.
+ *
+ * `platformDefaultUiLanguage` is `_i18n.admin.default_ui_language` — the Admin
+ * UI language when `admin_users.preferred_language` is null. Same delivery
+ * rationale as `idleLogoutMinutes`: every signed-in administrator needs it
+ * without `settings:read`.
  */
 export const adminMeResponseSchema = z.object({
   adminUser: adminUserSchema,
   role: adminRoleSchema.nullable(),
   permissions: z.array(z.string()),
   idleLogoutMinutes: z.number().positive().nullable(),
+  platformDefaultUiLanguage: SupportedLanguageSchema,
   /**
    * The signed-in admin's own preferences (feature 164, FR-016). `null` when the
    * server could not read them; the Admin UI then opens with the defaults and

@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { CampaignSummary } from '@endora-commerce/contracts';
 import { useAuth } from '@endora-commerce/admin-kit/lib';
+import { useTranslation } from '@endora-commerce/admin-kit/i18n';
 import { Alert, AlertDescription, Button, Card, CardContent, PageHeader } from '@endora-commerce/admin-kit/ui';
 import { newsletterClient } from '../api/newsletter-client.js';
+import { campaignStatusLabel, campaignTargetLabel } from '../lib/labels.js';
 
 export function CampaignsPage(): React.ReactElement {
+  const t = useTranslation('newsletter');
   const { hasPermission } = useAuth();
   const [items, setItems] = useState<CampaignSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +23,7 @@ export function CampaignsPage(): React.ReactElement {
   if (!hasPermission('newsletter:read')) {
     return (
       <Alert>
-        <AlertDescription>You do not have permission to view the newsletter.</AlertDescription>
+        <AlertDescription>{t('permission.viewDenied')}</AlertDescription>
       </Alert>
     );
   }
@@ -28,12 +31,12 @@ export function CampaignsPage(): React.ReactElement {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Newsletter — Campaigns"
-        description="One-off mailings to a target audience."
+        title={t('campaigns.page.title')}
+        description={t('campaigns.page.description')}
         actions={
           hasPermission('newsletter:write') ? (
             <Link to="/newsletter/campaigns/new">
-              <Button>New campaign</Button>
+              <Button>{t('campaigns.new')}</Button>
             </Link>
           ) : null
         }
@@ -48,10 +51,10 @@ export function CampaignsPage(): React.ReactElement {
           <table className="w-full text-sm">
             <thead className="border-b text-left text-muted-foreground">
               <tr>
-                <th className="p-3 font-medium">Name</th>
-                <th className="p-3 font-medium">Subject</th>
-                <th className="p-3 font-medium">Target</th>
-                <th className="p-3 font-medium">Status</th>
+                <th className="p-3 font-medium">{t('common.name')}</th>
+                <th className="p-3 font-medium">{t('campaigns.table.subject')}</th>
+                <th className="p-3 font-medium">{t('campaigns.table.target')}</th>
+                <th className="p-3 font-medium">{t('common.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -63,14 +66,14 @@ export function CampaignsPage(): React.ReactElement {
                     </Link>
                   </td>
                   <td className="p-3">{c.subject}</td>
-                  <td className="p-3 text-xs">{c.targetType}</td>
-                  <td className="p-3">{c.status}</td>
+                  <td className="p-3 text-xs">{campaignTargetLabel(t, c.targetType)}</td>
+                  <td className="p-3">{campaignStatusLabel(t, c.status)}</td>
                 </tr>
               ))}
               {items.length === 0 ? (
                 <tr>
                   <td className="p-3 text-muted-foreground" colSpan={4}>
-                    No campaigns yet.
+                    {t('campaigns.empty')}
                   </td>
                 </tr>
               ) : null}

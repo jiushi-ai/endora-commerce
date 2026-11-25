@@ -19,6 +19,7 @@ import type { AdminUser } from './entities/admin-user.entity.js';
 import type { TwoFactorEnrolmentReader } from './services/two-factor-enrolments.js';
 import type { RequireAdminFactory, SettingsReadPort } from '@endora-commerce/platform/kernel';
 import { readIdleLogoutMinutes } from './services/idle-logout-policy.js';
+import { readPlatformDefaultUiLanguage } from './services/default-ui-language-policy.js';
 import type { AdminPreferenceService } from './services/admin-preference-service.js';
 
 /**
@@ -136,6 +137,7 @@ export async function registerAdminUsersAdminRoutes(
           role: role ? serializeAdminRole(role) : null,
           permissions,
           idleLogoutMinutes: await readIdleLogoutMinutes(settingsReadPort),
+          platformDefaultUiLanguage: await readPlatformDefaultUiLanguage(settingsReadPort),
           preferences,
         },
       };

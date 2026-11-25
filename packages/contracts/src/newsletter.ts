@@ -167,6 +167,12 @@ export const patchSubscriberRequestSchema = z.object({
 });
 export type PatchSubscriberRequest = z.infer<typeof patchSubscriberRequestSchema>;
 
+/** Replace a subscriber's tag set (admin). Unknown codes are ignored. */
+export const setSubscriberTagsRequestSchema = z.object({
+  tags: z.array(z.string().min(1)),
+});
+export type SetSubscriberTagsRequest = z.infer<typeof setSubscriberTagsRequestSchema>;
+
 export const unsubscribeSubscriberRequestSchema = z.object({
   reason: z.string().max(2000).optional(),
   expectedVersion: z.number().int(),

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import type { ProviderConfig } from '@endora-commerce/contracts';
 import { useAuth } from '@endora-commerce/admin-kit/lib';
+import { useTranslation } from '@endora-commerce/admin-kit/i18n';
 import { Alert, AlertDescription, Button, Card, CardContent, CardHeader, CardTitle, Input, PageHeader } from '@endora-commerce/admin-kit/ui';
 import { newsletterClient } from '../api/newsletter-client.js';
 
 export function ProviderSettingsPage(): React.ReactElement {
+  const t = useTranslation('newsletter');
   const { hasPermission } = useAuth();
   const canWrite = hasPermission('newsletter:write');
   const [cfg, setCfg] = useState<ProviderConfig | null>(null);
@@ -21,11 +23,11 @@ export function ProviderSettingsPage(): React.ReactElement {
   if (!hasPermission('newsletter:read')) {
     return (
       <Alert>
-        <AlertDescription>You do not have permission to view the newsletter.</AlertDescription>
+        <AlertDescription>{t('permission.viewDenied')}</AlertDescription>
       </Alert>
     );
   }
-  if (!cfg) return <p className="text-sm text-muted-foreground">Loading…</p>;
+  if (!cfg) return <p className="text-sm text-muted-foreground">{t('common.loading')}</p>;
 
   function set<K extends keyof ProviderConfig>(key: K, value: ProviderConfig[K]): void {
     setCfg((prev) => (prev ? { ...prev, [key]: value } : prev));
@@ -46,7 +48,7 @@ export function ProviderSettingsPage(): React.ReactElement {
         rateLimitPerSecond: cfg.rateLimitPerSecond,
       });
       setCfg(saved);
-      setNotice('Saved.');
+      setNotice(t('provider.notice.saved'));
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     }
@@ -57,7 +59,7 @@ export function ProviderSettingsPage(): React.ReactElement {
     setNotice(null);
     try {
       const r = await newsletterClient.testProvider();
-      setNotice(r.ok ? 'Provider OK.' : `Provider error: ${r.error}`);
+      setNotice(r.ok ? t('provider.notice.ok') : t('provider.notice.error', { error: r.error ?? '' }));
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     }
@@ -66,15 +68,15 @@ export function ProviderSettingsPage(): React.ReactElement {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Newsletter — Sending provider"
-        description="The SMTP connection + credentials come from an Email adapter credential configuration referenced by the newsletter.email_credentials setting (Credentials / Settings screen). This page manages the sender identity and throttle."
+        title={t('provider.page.title')}
+        description={t('provider.page.description')}
         actions={
           canWrite ? (
             <>
               <Button variant="outline" onClick={() => void test()}>
-                Test
+                {t('provider.test')}
               </Button>
-              <Button onClick={() => void save()}>Save</Button>
+              <Button onClick={() => void save()}>{t('common.save')}</Button>
             </>
           ) : null
         }
@@ -91,24 +93,24 @@ export function ProviderSettingsPage(): React.ReactElement {
       ) : null}
       <Card>
         <CardHeader>
-          <CardTitle>Sender &amp; throttle</CardTitle>
+          <CardTitle>{t('provider.card.title')}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">
           <Input
-            placeholder="From email"
+            placeholder={t('provider.fromEmail')}
             value={cfg.sender.fromEmail}
             onChange={(e) => setSender('fromEmail', e.target.value)}
             disabled={!canWrite}
           />
           <Input
-            placeholder="From name"
+            placeholder={t('provider.fromName')}
             value={cfg.sender.fromName}
             onChange={(e) => setSender('fromName', e.target.value)}
             disabled={!canWrite}
           />
           <Input
             type="number"
-            placeholder="Rate limit / second"
+            placeholder={t('provider.rateLimit')}
             value={cfg.rateLimitPerSecond}
             onChange={(e) => set('rateLimitPerSecond', Number(e.target.value))}
             disabled={!canWrite}

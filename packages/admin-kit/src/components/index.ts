@@ -61,6 +61,12 @@ export type { CurrencyPickerProps } from './dictionary-picker/CurrencyPicker.js'
 export { listDictionaryCountries, listDictionaryCurrencies } from './dictionary-picker/dictionary-api.js';
 export { useCountriesQuery } from './country-select/useCountriesQuery.js';
 export type { UseCountriesQueryResult } from './country-select/useCountriesQuery.js';
+export {
+  MOBII_CONTENT_LANGUAGE_FALLBACK,
+  buildLocalizedNamePayload,
+  mergeContentLanguageCodes,
+  useActiveContentLanguageCodes,
+} from './use-active-content-language-codes.js';
 export { CustomFieldListFilters } from './custom-field-filters/CustomFieldListFilters.js';
 export type { CustomFieldListFiltersProps } from './custom-field-filters/CustomFieldListFilters.js';
 export {

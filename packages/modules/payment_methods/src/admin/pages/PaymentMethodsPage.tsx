@@ -13,7 +13,9 @@ import { AdminZone, useAdminZone } from '@endora-commerce/admin-kit/zones';
 import {
   MethodSalesChannelsCell,
   MethodSalesChannelsField,
+  buildLocalizedNamePayload,
   salesChannelIdsToSubmit,
+  useActiveContentLanguageCodes,
   useSalesChannelOptions,
   type MethodSalesChannelOptions,
 } from '@endora-commerce/admin-kit/components';
@@ -115,9 +117,11 @@ export function PaymentMethodsPage(): ReactNode {
 
   const handleUpsert = useCallback(
     async (input: UpsertFormValue): Promise<void> => {
-      const name: Record<string, string> = {};
-      if (input.nameEn) name['en-US'] = input.nameEn;
-      if (input.namePl) name['pl-PL'] = input.namePl;
+      const name = buildLocalizedNamePayload(input.names);
+      if (!name) {
+        setError(t('legacyMethods.errors.save'));
+        return;
+      }
       try {
         await paymentMethodsClient.upsert(input.code, {
           code: input.code,
@@ -372,8 +376,7 @@ function AvailabilityNote({ method }: { method: AdminPaymentMethod }): ReactNode
 
 interface UpsertFormValue {
   code: string;
-  nameEn: string;
-  namePl: string;
+  names: Record<string, string>;
   kind: AdminPaymentMethod['kind'];
   adapter: string;
   additionalPrice: number;
@@ -402,9 +405,28 @@ function UpsertForm({
 }): ReactNode {
   const t = useTranslation('core');
   const isEdit = Boolean(initial);
+  const localeCodes = useActiveContentLanguageCodes(initial?.name);
   const [code, setCode] = useState(initial?.code ?? '');
-  const [nameEn, setNameEn] = useState(initial?.name['en-US'] ?? '');
-  const [namePl, setNamePl] = useState(initial?.name['pl-PL'] ?? '');
+  const [names, setNames] = useState<Record<string, string>>(() => {
+    const seed: Record<string, string> = {};
+    for (const locale of localeCodes) {
+      seed[locale] = initial?.name[locale] ?? '';
+    }
+    return seed;
+  });
+  useEffect(() => {
+    setNames((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const locale of localeCodes) {
+        if (!(locale in next)) {
+          next[locale] = initial?.name[locale] ?? '';
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [initial?.name, localeCodes]);
   const [kind, setKind] = useState<AdminPaymentMethod['kind']>(initial?.kind ?? 'bank_transfer');
   const [adapter, setAdapter] = useState(initial?.adapter ?? '');
   const [additionalPrice, setAdditionalPrice] = useState(String(initial?.additionalPrice ?? '0'));
@@ -448,10 +470,10 @@ function UpsertForm({
       className="space-y-4"
       onSubmit={(e: FormEvent): void => {
         e.preventDefault();
+        if (!buildLocalizedNamePayload(names)) return;
         void onSubmit({
           code,
-          nameEn,
-          namePl,
+          names,
           kind,
           adapter,
           additionalPrice: Number(additionalPrice),
@@ -504,14 +526,20 @@ function UpsertForm({
             ))}
           </Select>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="pmnameen">{t('legacyMethods.fields.nameEn')}</Label>
-          <Input id="pmnameen" value={nameEn} onChange={(e): void => setNameEn(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="pmnamepl">{t('legacyMethods.fields.namePl')}</Label>
-          <Input id="pmnamepl" value={namePl} onChange={(e): void => setNamePl(e.target.value)} />
-        </div>
+        {localeCodes.map((locale) => (
+          <div key={locale} className="space-y-2">
+            <Label htmlFor={`pmname-${locale}`}>
+              {t('legacyMethods.fields.nameForLocale', { locale })}
+            </Label>
+            <Input
+              id={`pmname-${locale}`}
+              value={names[locale] ?? ''}
+              onChange={(e): void =>
+                setNames((prev) => ({ ...prev, [locale]: e.target.value }))
+              }
+            />
+          </div>
+        ))}
         <div className="space-y-2">
           <Label htmlFor="pmprice">{t('legacyMethods.fields.additionalPrice')}</Label>
           <Input

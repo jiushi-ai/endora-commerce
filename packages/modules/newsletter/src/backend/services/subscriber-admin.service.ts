@@ -112,6 +112,31 @@ export class NewsletterSubscriberAdminService {
     return this.toDetail(sub, tagMap.get(id) ?? []);
   }
 
+  /** Replace tag links for a subscriber (clear + set). Unknown codes are skipped. */
+  async setTags(id: string, codes: string[]): Promise<SubscriberDetail> {
+    const em = this.emFactory();
+    const sub = await em.findOne(NewsletterSubscriber, { id });
+    if (!sub) throw new HttpError(404, ERROR_CODES.NOT_FOUND, 'Subscriber not found.');
+    const existingLinks = await em.find(NewsletterSubscriberTag, { subscriberId: id });
+    for (const link of existingLinks) em.remove(link);
+    const normalized = [...new Set(codes.map((c) => c.trim()).filter((c) => c.length > 0))];
+    if (normalized.length > 0) {
+      const tags = await em.find(NewsletterTag, { code: { $in: normalized } });
+      for (const tag of tags) {
+        em.create(NewsletterSubscriberTag, { subscriberId: id, tagId: tag.id });
+      }
+    }
+    await em.flush();
+    await this.auditLog?.record({
+      action: 'newsletter_subscriber.set_tags',
+      objectType: 'newsletter_subscriber',
+      objectId: sub.id,
+      stateAfter: { tags: normalized },
+    });
+    const tagMap = await this.tagsFor(em, [id]);
+    return this.toDetail(sub, tagMap.get(id) ?? []);
+  }
+
   async remove(id: string): Promise<void> {
     const em = this.emFactory();
     const sub = await em.findOne(NewsletterSubscriber, { id });

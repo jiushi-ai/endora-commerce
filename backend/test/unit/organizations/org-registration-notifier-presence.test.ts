@@ -31,6 +31,7 @@ function notifier(
     adminNotificationService: { record } as never,
     mailer: { send: async () => undefined } as never,
     resolveRecipients: async () => [],
+    resolveNotificationEmailLanguage: async () => 'en-US',
     onError: (err) => recorded.errors.push(err),
   });
   return { subject, recorded };

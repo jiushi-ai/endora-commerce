@@ -61,6 +61,8 @@ export const newsletterClient = {
       .then((r) => ({ ...r.data, scopeNotice: scopeNoticeOf(r) })),
   getSubscriber: (id: string): Promise<SubscriberDetail> =>
     unwrap(apiClient.get<Wrap<SubscriberDetail>>(`${BASE}/subscribers/${id}`)),
+  setSubscriberTags: (id: string, tags: string[]): Promise<SubscriberDetail> =>
+    unwrap(apiClient.put<Wrap<SubscriberDetail>>(`${BASE}/subscribers/${id}/tags`, { tags })),
   unsubscribe: (id: string, expectedVersion: number, reason?: string): Promise<SubscriberDetail> =>
     unwrap(apiClient.post<Wrap<SubscriberDetail>>(`${BASE}/subscribers/${id}/unsubscribe`, { expectedVersion, reason })),
   deactivate: (id: string, expectedVersion: number): Promise<SubscriberDetail> =>

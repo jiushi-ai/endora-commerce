@@ -1,4 +1,9 @@
 {
+  "settingGroups.language.name": "Language",
+  "settingLabels._i18n.admin.default_ui_language.name": "Default Admin UI language",
+  "settingLabels._i18n.admin.default_ui_language.description": "Admin UI language after sign-in when an administrator has no personal language preference. Also used when the profile language is cleared.",
+  "settingLabels._i18n.admin.notification_email_language.name": "Admin notification e-mail language",
+  "settingLabels._i18n.admin.notification_email_language.description": "Language for admin notification e-mails sent to configured addresses (for example new organization registration). One language per message — use the same BCP-47 tags as transactional templates: en-US, zh-CN, zh-TW, pl-PL.",
   "action.amount_off_cart": "Y off the whole cart",
   "action.buy_x_get_y_free": "Buy X get Y free",
   "action.buy_x_units_amount_off": "Buy X units of a product, Y off the cart",
@@ -932,6 +937,7 @@
   "legacyMethods.fields.currency": "Currency",
   "legacyMethods.fields.kind": "Kind",
   "legacyMethods.fields.nameEn": "Name [en-US]",
+  "legacyMethods.fields.nameForLocale": "Name [{locale}]",
   "legacyMethods.fields.namePl": "Name [pl-PL]",
   "legacyMethods.fields.status": "Status",
   "legacyMethods.fields.statusOnFailure": "Order status — payment failed",

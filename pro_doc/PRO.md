@@ -1161,3 +1161,16 @@ feat-26-11-23 22:35:39 [63.1~63.5]：页脚动态一级分类与菜单精简；k
 汇总：页脚 Shop 对齐顶栏蓝框子级分类；去掉 Industria NIP/KRS；确认信不再写死英文；账户「E-mail language」切 en 时显示 English 等。发版需重建 storefront + contracts + newsletter 模块。
 
 feat-26-11-24 00:04:42 [64.1~64.5]：页脚catalog子级与莫比绿电版权四语；Support灰显；newsletter确认信preferredLanguage；E-mail language跟UI语系
+
+### 65. 大 B 支付/配送 Name 动态语系 + Language 设置 + Newsletter i18n/打标签
+
+- [x] 65.1 payment_methods + delivery_methods：Name 按 /api/v1/i18n/config 启用语系动态渲染；列表 pickCategoryDisplayName；adminLanguageToLocale 补 zh
+- [x] 65.2 Settings 顶层 Language：`_i18n.admin.default_ui_language`（登录默认 UI）+ `_i18n.admin.notification_email_language`（通知邮件语）；org 注册邮件/铃铛跟通知语，去掉 PL 硬编码；me 返回 platformDefaultUiLanguage
+- [x] 65.3 settingLabels 四语（Language 组 + organizations 注册收件人等）
+- [x] 65.4 Newsletter Admin 全页 i18n；Blocks 侧栏译为「邮件片段」
+- [x] 65.5 Subscribers：PUT tags API + Edit tags 弹窗；Actions ghost Button
+- [x] 65.6 本 §99；建议 commit 如下（未执行）
+
+汇总：支付/配送名称跟平台启用语系；大 B Language 设置控制登录默认语与通知邮件语（方案 A）；Newsletter 管理页四语 + 订阅者打标签。发版需重建 admin/admin-shell/contracts/_i18n/organizations/newsletter/payment_methods/delivery_methods；实例 Settings→Language 设两项；settings reconcile 吸入新 setting。
+
+feat-26-11-24 19:37:19 [65.1~65.6]：支付配送Name动态语系；大B Language设置与注册通知；Newsletter i18n与订阅者打标签

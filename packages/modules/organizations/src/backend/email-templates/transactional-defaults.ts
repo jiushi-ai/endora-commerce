@@ -118,6 +118,8 @@ export const NEW_ORG_REGISTRATION_DEFAULT = {
   defaultSubject: {
     'en-US': 'New organization: {{var organizationName}}',
     'pl-PL': 'Nowa organizacja: {{var organizationName}}',
+    'zh-CN': '新组织：{{var organizationName}}',
+    'zh-TW': '新組織：{{var organizationName}}',
   } as Record<string, string>,
   defaultContent: {
     schema_version: 1,
@@ -148,9 +150,35 @@ export const NEW_ORG_REGISTRATION_DEFAULT = {
           'Otwórz w Panelu Administracyjnym: {{var linkPath}}',
         ].join('\n'),
       }),
+      'zh-CN': simpleEmailBodyTree({
+        idPrefix: 'new-org',
+        heading: '新组织已注册',
+        text: [
+          'B2B 平台上注册了新的组织。',
+          '',
+          '  名称：   {{var organizationName}}',
+          '  税号：   {{var taxId}}',
+          '  状态：   {{var statusLabel}}',
+          '',
+          '在管理后台中打开：{{var linkPath}}',
+        ].join('\n'),
+      }),
+      'zh-TW': simpleEmailBodyTree({
+        idPrefix: 'new-org',
+        heading: '新組織已註冊',
+        text: [
+          'B2B 平台上註冊了新的組織。',
+          '',
+          '  名稱：   {{var organizationName}}',
+          '  稅號：   {{var taxId}}',
+          '  狀態：   {{var statusLabel}}',
+          '',
+          '在管理後台中開啟：{{var linkPath}}',
+        ].join('\n'),
+      }),
     },
   } as Record<string, unknown>,
-  languages: LANGS,
+  languages: ['en-US', 'pl-PL', 'zh-CN', 'zh-TW'],
 };
 
 /**

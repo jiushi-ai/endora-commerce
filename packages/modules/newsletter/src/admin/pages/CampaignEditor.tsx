@@ -9,7 +9,9 @@ import type {
   SubscriberSummary,
 } from '@endora-commerce/contracts';
 import { useAuth } from '@endora-commerce/admin-kit/lib';
+import { useTranslation } from '@endora-commerce/admin-kit/i18n';
 import { Alert, AlertDescription, Button, Card, CardContent, CardHeader, CardTitle, Input, PageHeader } from '@endora-commerce/admin-kit/ui';
+import { campaignStatusLabel, campaignTargetLabel } from '../lib/labels.js';
 import {
   EmailEditorPane,
   EmailSubjectWithVariables,
@@ -29,6 +31,7 @@ function asData(content: Record<string, unknown> | undefined): Data {
 }
 
 export function CampaignEditor(): React.ReactElement {
+  const t = useTranslation('newsletter');
   const { id } = useParams<{ id: string }>();
   const isNew = !id || id === 'new';
   const navigate = useNavigate();
@@ -95,7 +98,7 @@ export function CampaignEditor(): React.ReactElement {
         saved = await newsletterClient.setCampaignGroup(saved.id, targetSubscriberIds);
       }
       setCampaign(saved);
-      setNotice('Saved.');
+      setNotice(t('common.saved'));
       if (isNew) navigate(`/newsletter/campaigns/${saved.id}`, { replace: true });
       return saved;
     } catch (err) {
@@ -121,7 +124,7 @@ export function CampaignEditor(): React.ReactElement {
     try {
       const sent = await newsletterClient.sendCampaign(saved.id, saved.version);
       setCampaign(sent);
-      setNotice(`Campaign ${sent.status}.`);
+      setNotice(t('campaignEditor.noticeSent', { status: campaignStatusLabel(t, sent.status) }));
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     }
@@ -130,7 +133,7 @@ export function CampaignEditor(): React.ReactElement {
   if (!hasPermission('newsletter:read')) {
     return (
       <Alert>
-        <AlertDescription>You do not have permission to view the newsletter.</AlertDescription>
+        <AlertDescription>{t('permission.viewDenied')}</AlertDescription>
       </Alert>
     );
   }
@@ -140,23 +143,23 @@ export function CampaignEditor(): React.ReactElement {
   return (
     <div className="space-y-4">
       <PageHeader
-        title={isNew ? 'New campaign' : name || 'Campaign'}
-        back={{ label: 'Campaigns', to: '/newsletter/campaigns' }}
+        title={isNew ? t('campaignEditor.newTitle') : name || t('campaigns.page.title')}
+        back={{ label: t('common.back.campaigns'), to: '/newsletter/campaigns' }}
         actions={
           canWrite ? (
             <>
               {!isNew ? (
                 <Link to={`/newsletter/campaigns/${id}/stats`}>
-                  <Button variant="outline">Stats</Button>
+                  <Button variant="outline">{t('campaignEditor.stats')}</Button>
                 </Link>
               ) : null}
               <Button variant="outline" onClick={() => void doPreview()}>
-                Preview
+                {t('campaignEditor.preview')}
               </Button>
               <Button variant="outline" onClick={() => void save()}>
-                Save
+                {t('common.save')}
               </Button>
-              <Button onClick={() => void doSend()}>Send</Button>
+              <Button onClick={() => void doSend()}>{t('campaignEditor.send')}</Button>
             </>
           ) : null
         }
@@ -175,16 +178,16 @@ export function CampaignEditor(): React.ReactElement {
       <EmailVariablesProvider variables={variables}>
         <Card>
           <CardHeader>
-            <CardTitle>Content</CardTitle>
+            <CardTitle>{t('campaignEditor.content')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Input placeholder="Campaign name" value={name} onChange={(e) => setName(e.target.value)} disabled={!canWrite} />
-            <Input placeholder="Language (e.g. en-US)" value={language} onChange={(e) => setLanguage(e.target.value)} disabled={!canWrite} />
+            <Input placeholder={t('campaignEditor.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} disabled={!canWrite} />
+            <Input placeholder={t('campaignEditor.languagePlaceholder')} value={language} onChange={(e) => setLanguage(e.target.value)} disabled={!canWrite} />
             <EmailSubjectWithVariables
               value={subject}
               onChange={setSubject}
               disabled={!canWrite}
-              placeholder="Subject (supports {{var …}})"
+              placeholder={t('campaignEditor.subjectPlaceholder')}
             />
             <EmailEditorPane
               editorKey={`campaign:${id ?? 'new'}:${language}`}
@@ -215,7 +218,7 @@ export function CampaignEditor(): React.ReactElement {
 
       <Card>
         <CardHeader>
-          <CardTitle>Audience</CardTitle>
+          <CardTitle>{t('campaignEditor.audience')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <select
@@ -224,24 +227,24 @@ export function CampaignEditor(): React.ReactElement {
             onChange={(e) => setTargetType(e.target.value as CampaignTargetType)}
             disabled={!canWrite}
           >
-            <option value="all">All subscribers</option>
-            <option value="tag">Single tag</option>
-            <option value="tag_list">Tag list</option>
-            <option value="group">Manual group</option>
+            <option value="all">{campaignTargetLabel(t, 'all')}</option>
+            <option value="tag">{campaignTargetLabel(t, 'tag')}</option>
+            <option value="tag_list">{campaignTargetLabel(t, 'tag_list')}</option>
+            <option value="group">{campaignTargetLabel(t, 'group')}</option>
           </select>
           {(targetType === 'tag' || targetType === 'tag_list') ? (
             tags.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No tags yet — create tags on the{' '}
+                {t('campaignEditor.noTagsHint')}{' '}
                 <Link to="/newsletter/tags" className="underline">
-                  Tags &amp; fields
+                  {t('campaignEditor.tagsPageLink')}
                 </Link>{' '}
-                page first.
+                {t('campaignEditor.tagsPageSuffix')}
               </p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 <p className="w-full text-sm text-muted-foreground">
-                  {targetType === 'tag' ? 'Select a tag:' : 'Select one or more tags:'}
+                  {targetType === 'tag' ? t('campaignEditor.selectOneTag') : t('campaignEditor.selectManyTags')}
                 </p>
                 {tags.map((t) => (
                   <label key={t.id} className="flex items-center gap-1 text-sm">
@@ -268,12 +271,12 @@ export function CampaignEditor(): React.ReactElement {
           {targetType === 'group' ? (
             subscribers.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No active subscribers to add to a manual group yet.
+                {t('campaignEditor.noActiveSubscribers')}
               </p>
             ) : (
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  Pick the subscribers for this campaign&apos;s manual group:
+                  {t('campaignEditor.manualGroupHint')}
                 </p>
                 <div className="flex max-h-64 flex-col gap-1 overflow-y-auto rounded border p-2">
                   {subscribers.map((s) => (
@@ -294,7 +297,7 @@ export function CampaignEditor(): React.ReactElement {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {targetSubscriberIds.length} selected — saved when you save the campaign.
+                  {t('campaignEditor.manualGroupSelected', { count: targetSubscriberIds.length })}
                 </p>
               </div>
             )
@@ -305,7 +308,7 @@ export function CampaignEditor(): React.ReactElement {
       {preview ? (
         <Card>
           <CardHeader>
-            <CardTitle>Preview</CardTitle>
+            <CardTitle>{t('campaignEditor.previewCard')}</CardTitle>
           </CardHeader>
           <CardContent>
             <iframe title="preview" sandbox="" srcDoc={preview} className="h-96 w-full rounded border" />

@@ -1,4 +1,9 @@
 {
+  "settingGroups.language.name": "語言",
+  "settingLabels._i18n.admin.default_ui_language.name": "預設管理後台介面語言",
+  "settingLabels._i18n.admin.default_ui_language.description": "管理員未設定個人語言偏好時，登入後使用的管理後台介面語言；清除個人語言設定時亦使用此項。",
+  "settingLabels._i18n.admin.notification_email_language.name": "管理通知郵件語言",
+  "settingLabels._i18n.admin.notification_email_language.description": "寄送至已設定地址的管理通知郵件語言（例如新組織註冊）。每封郵件僅一種語言；使用與交易性範本一致的 BCP-47 標籤：en-US、zh-CN、zh-TW、pl-PL。",
   "action.amount_off_cart": "Y 關閉整個購物車",
   "action.buy_x_get_y_free": "買 X 送 Y",
   "action.buy_x_units_amount_off": "購買 X 件產品，從購物車中取出 Y 件",
@@ -932,6 +937,7 @@
   "legacyMethods.fields.currency": "貨幣",
   "legacyMethods.fields.kind": "種類",
   "legacyMethods.fields.nameEn": "名稱 [en-US]",
+  "legacyMethods.fields.nameForLocale": "名稱 [{locale}]",
   "legacyMethods.fields.namePl": "姓名 [pl-PL]",
   "legacyMethods.fields.status": "状态",
   "legacyMethods.fields.statusOnFailure": "訂單狀態——支付失敗",

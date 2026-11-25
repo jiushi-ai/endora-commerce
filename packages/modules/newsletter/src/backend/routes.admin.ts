@@ -8,6 +8,7 @@ import {
   createSubscriberRequestSchema,
   subscriberListQuerySchema,
   unsubscribeSubscriberRequestSchema,
+  setSubscriberTagsRequestSchema,
   createNewsletterTagRequestSchema,
   updateNewsletterTagRequestSchema,
   createNewsletterCustomFieldRequestSchema,
@@ -116,6 +117,10 @@ export async function registerNewsletterAdminRoutes(
       ...(body.customFields ? { customFields: body.customFields } : {}),
     });
     return reply.status(201).send({ data: result });
+  });
+  app.put(`${base}/subscribers/:id/tags`, write, async (req, reply) => {
+    const body = setSubscriberTagsRequestSchema.parse(req.body);
+    return reply.send({ data: await deps.subscriberAdmin.setTags(idOf(req), body.tags) });
   });
   app.post(`${base}/subscribers/:id/unsubscribe`, write, async (req, reply) => {
     const body = unsubscribeSubscriberRequestSchema.parse(req.body);

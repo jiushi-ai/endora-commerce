@@ -1,4 +1,9 @@
-import type { ReactNode } from 'react';
+import { useContext, type ReactNode } from 'react';
+import {
+  adminLanguageToLocale,
+  pickCategoryDisplayName,
+} from '@endora-commerce/admin-kit/components';
+import { AppLanguageContext } from '@endora-commerce/admin-kit/i18n';
 import type { AdminDeliveryMethod } from '../api/delivery-methods-client.js';
 
 /**
@@ -11,14 +16,42 @@ import type { AdminDeliveryMethod } from '../api/delivery-methods-client.js';
  */
 export type AdminDeliveryMethodRenderer = (method: AdminDeliveryMethod) => ReactNode;
 
-function pickName(name: Record<string, string>): string {
-  return name['en-US'] ?? name.default ?? Object.values(name)[0] ?? '';
+function pickMethodDisplayNameWithoutAdminLanguage(
+  name: Record<string, string>,
+  code: string,
+): string {
+  const en = name['en-US']?.trim();
+  if (en) return en;
+  const zh = name['zh-CN']?.trim();
+  if (zh) return zh;
+  const first = Object.values(name).find((v) => v?.trim());
+  if (first?.trim()) return first.trim();
+  return code;
+}
+
+function DefaultAdminDeliveryMethodRendererInner({
+  method,
+}: {
+  method: AdminDeliveryMethod;
+}): ReactNode {
+  const appLanguage = useContext(AppLanguageContext);
+  const displayName = appLanguage
+    ? pickCategoryDisplayName(
+        method.name,
+        method.code,
+        adminLanguageToLocale(appLanguage.language),
+      )
+    : pickMethodDisplayNameWithoutAdminLanguage(method.name, method.code);
+
+  return (
+    <span>
+      {displayName} <code className="font-mono text-xs">({method.adapter})</code>
+    </span>
+  );
 }
 
 export const DefaultAdminDeliveryMethodRenderer: AdminDeliveryMethodRenderer = (method) => (
-  <span>
-    {pickName(method.name)} <code className="font-mono text-xs">({method.adapter})</code>
-  </span>
+  <DefaultAdminDeliveryMethodRendererInner method={method} />
 );
 
 const registry = new Map<string, AdminDeliveryMethodRenderer>();

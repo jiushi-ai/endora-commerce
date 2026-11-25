@@ -64,6 +64,23 @@ describe('newsletter subscriber admin (US3)', () => {
     void b;
   });
 
+  it('replaces subscriber tags', async () => {
+    const em = db.em();
+    const a = em.create(NewsletterSubscriber, { email: 'tags@x.test', status: 'active' });
+    await em.flush();
+    const t1 = await tags.create({ code: 'vip', name: 'VIP' });
+    const t2 = await tags.create({ code: 'promo', name: 'Promo' });
+    em.create(NewsletterSubscriberTag, { subscriberId: a.id, tagId: t1.id });
+    await em.flush();
+
+    const updated = await admin.setTags(a.id, ['promo']);
+    expect(updated.tags).toEqual(['promo']);
+
+    const links = await db.em().find(NewsletterSubscriberTag, { subscriberId: a.id });
+    expect(links).toHaveLength(1);
+    expect(links[0]?.tagId).toBe(t2.id);
+  });
+
   it('deactivate (version-checked) and delete (writes suppression) work', async () => {
     const em = db.em();
     const s = em.create(NewsletterSubscriber, { email: 'd@x.test', status: 'active' });

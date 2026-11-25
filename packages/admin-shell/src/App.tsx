@@ -137,7 +137,9 @@ export function App({ contributions, modulePresence }: AppProps): ReactNode {
   // payload's `preferredLanguage`; falls back to English (FR-003).
   // Lives at App scope so changes to it (driven by ProfilePage's
   // language selector) re-render the whole authenticated tree.
-  const initialLanguage = (me?.adminUser.preferredLanguage ?? 'en') as SupportedAdminLanguage;
+  const initialLanguage = (me?.adminUser.preferredLanguage ??
+    me?.platformDefaultUiLanguage ??
+    'en') as SupportedAdminLanguage;
   const [language, setLanguage] = useState<SupportedAdminLanguage>(initialLanguage);
 
   // `useState` reads `initialLanguage` only on first mount, when `me` is
@@ -146,7 +148,8 @@ export function App({ contributions, modulePresence }: AppProps): ReactNode {
   // `preferredLanguage: 'pl'`. Re-sync whenever `me.preferredLanguage`
   // flips, but only when the user hasn't already chosen a different one
   // via ProfilePage in this same session.
-  const sessionLanguage = me?.adminUser.preferredLanguage ?? null;
+  const sessionLanguage =
+    me?.adminUser.preferredLanguage ?? me?.platformDefaultUiLanguage ?? null;
   useEffect(() => {
     if (sessionLanguage && sessionLanguage !== language) {
       setLanguage(sessionLanguage as SupportedAdminLanguage);

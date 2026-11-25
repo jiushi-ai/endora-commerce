@@ -1,4 +1,9 @@
-import type { ReactNode } from 'react';
+import { useContext, type ReactNode } from 'react';
+import {
+  adminLanguageToLocale,
+  pickCategoryDisplayName,
+} from '@endora-commerce/admin-kit/components';
+import { AppLanguageContext } from '@endora-commerce/admin-kit/i18n';
 import type { AdminPaymentMethod } from '../api/payment-methods-client.js';
 
 /**
@@ -11,14 +16,42 @@ import type { AdminPaymentMethod } from '../api/payment-methods-client.js';
  */
 export type AdminPaymentMethodRenderer = (method: AdminPaymentMethod) => ReactNode;
 
-function pickName(name: Record<string, string>): string {
-  return name['en-US'] ?? name.default ?? Object.values(name)[0] ?? '';
+function pickMethodDisplayNameWithoutAdminLanguage(
+  name: Record<string, string>,
+  code: string,
+): string {
+  const en = name['en-US']?.trim();
+  if (en) return en;
+  const zh = name['zh-CN']?.trim();
+  if (zh) return zh;
+  const first = Object.values(name).find((v) => v?.trim());
+  if (first?.trim()) return first.trim();
+  return code;
+}
+
+function DefaultAdminPaymentMethodRendererInner({
+  method,
+}: {
+  method: AdminPaymentMethod;
+}): ReactNode {
+  const appLanguage = useContext(AppLanguageContext);
+  const displayName = appLanguage
+    ? pickCategoryDisplayName(
+        method.name,
+        method.code,
+        adminLanguageToLocale(appLanguage.language),
+      )
+    : pickMethodDisplayNameWithoutAdminLanguage(method.name, method.code);
+
+  return (
+    <span>
+      {displayName} <code className="font-mono text-xs">({method.adapter})</code>
+    </span>
+  );
 }
 
 export const DefaultAdminPaymentMethodRenderer: AdminPaymentMethodRenderer = (method) => (
-  <span>
-    {pickName(method.name)} <code className="font-mono text-xs">({method.adapter})</code>
-  </span>
+  <DefaultAdminPaymentMethodRendererInner method={method} />
 );
 
 const registry = new Map<string, AdminPaymentMethodRenderer>();

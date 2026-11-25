@@ -1,4 +1,7 @@
 {
+  "settingGroups.organizations.name": "組織",
+  "settingLabels.organizations.notifications.new_registration_recipients.name": "新組織註冊 — 郵件收件人",
+  "settingLabels.organizations.notifications.new_registration_recipients.description": "每次有新組織註冊時接收通知的電子郵件地址清單。進行語法驗證；最多 50 個項目；不區分大小寫去重。空清單表示不寄送郵件（應用內管理通知仍會觸發）。",
   "nav.organizations.label": "組織",
   "actions.openOrganizations.label": "組織機構",
   "actions.openOrganizations.description": "客戶賬戶",
@@ -54,5 +57,11 @@
   "create.status.pending_verification": "待驗證",
   "create.submit": "創建組織",
   "create.cancel": "取消",
-  "create.error": "無法創建該組織。"
+  "create.error": "無法創建該組織。",
+  "notifications.newRegistration.title": "新組織：{name}",
+  "notifications.newRegistration.body.pending": "等待驗證。",
+  "notifications.newRegistration.body.active": "已自動註冊。",
+  "notifications.newRegistration.status.pending": "等待驗證",
+  "notifications.newRegistration.status.active": "活躍",
+  "notifications.newRegistration.email.body": "B2B 平台上註冊了新組織。\n\n  名稱：   {name}\n  稅號：   {taxId}\n  狀態：   {status}\n\n在管理後台中開啟：{linkPath}"
 }

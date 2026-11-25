@@ -1,4 +1,7 @@
 {
+  "settingGroups.organizations.name": "Organizacje",
+  "settingLabels.organizations.notifications.new_registration_recipients.name": "Rejestracja nowej Organizacji — odbiorcy e-mail",
+  "settingLabels.organizations.notifications.new_registration_recipients.description": "Lista adresów e-mail powiadamianych o każdej nowej rejestracji Organizacji. Walidacja składniowa; maks. 50 wpisów; deduplikacja bez rozróżniania wielkości liter. Pusta lista ⇒ brak e-maili (powiadomienie w aplikacji nadal się pojawia).",
   "nav.organizations.label": "Organizacje",
   "actions.openOrganizations.label": "Organizacje",
   "actions.openOrganizations.description": "Konta klientów",

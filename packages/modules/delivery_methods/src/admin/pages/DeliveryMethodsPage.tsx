@@ -2,11 +2,13 @@ import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from
 import { Pencil, Trash2 } from 'lucide-react';
 import { ApiError, formatMoney, useSurfaceVisibility } from '@endora-commerce/admin-kit/lib';
 import { Alert, AlertDescription, Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Label, PageHeader, Select, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@endora-commerce/admin-kit/ui';
-import { CurrencyPicker } from '@endora-commerce/admin-kit/components';
 import {
+  CurrencyPicker,
   MethodSalesChannelsCell,
   MethodSalesChannelsField,
+  buildLocalizedNamePayload,
   salesChannelIdsToSubmit,
+  useActiveContentLanguageCodes,
   useSalesChannelOptions,
   type MethodSalesChannelOptions,
 } from '@endora-commerce/admin-kit/components';
@@ -141,8 +143,7 @@ export function DeliveryMethodsPage(): ReactNode {
     async (input: {
       code: string;
       adapter: string;
-      nameEn: string;
-      namePl: string;
+      names: Record<string, string>;
       cost: number;
       currency: string;
       status: 'active' | 'inactive';
@@ -151,9 +152,11 @@ export function DeliveryMethodsPage(): ReactNode {
       /** `undefined` leaves the method's channels as they are — see `salesChannelIdsToSubmit`. */
       salesChannelIds: string[] | undefined;
     }): Promise<void> => {
-      const name: Record<string, string> = {};
-      if (input.nameEn) name['en-US'] = input.nameEn;
-      if (input.namePl) name['pl-PL'] = input.namePl;
+      const name = buildLocalizedNamePayload(input.names);
+      if (!name) {
+        setError(t('legacyMethods.errors.save'));
+        return;
+      }
       try {
         await deliveryMethodsClient.upsert(input.code, {
           code: input.code,
@@ -177,7 +180,7 @@ export function DeliveryMethodsPage(): ReactNode {
         setError(err instanceof ApiError ? err.envelope.error.message : t('legacyMethods.errors.save'));
       }
     },
-    [refresh],
+    [refresh, t],
   );
 
   const handleEdit = useCallback((row: AdminDeliveryMethod): void => {
@@ -409,8 +412,7 @@ function UpsertForm({
   onSubmit: (input: {
     code: string;
     adapter: string;
-    nameEn: string;
-    namePl: string;
+    names: Record<string, string>;
     cost: number;
     currency: string;
     status: 'active' | 'inactive';
@@ -441,8 +443,27 @@ function UpsertForm({
   const keepsCurrentOption =
     editing !== null && !adapters.some((a) => a.key === editing.adapter);
   const adapterHintId = 'dadapter-hint';
-  const [nameEn, setNameEn] = useState(editing?.name['en-US'] ?? '');
-  const [namePl, setNamePl] = useState(editing?.name['pl-PL'] ?? '');
+  const localeCodes = useActiveContentLanguageCodes(editing?.name);
+  const [names, setNames] = useState<Record<string, string>>(() => {
+    const seed: Record<string, string> = {};
+    for (const locale of localeCodes) {
+      seed[locale] = editing?.name[locale] ?? '';
+    }
+    return seed;
+  });
+  useEffect(() => {
+    setNames((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const locale of localeCodes) {
+        if (!(locale in next)) {
+          next[locale] = editing?.name[locale] ?? '';
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [editing?.name, localeCodes]);
   const [cost, setCost] = useState(editing ? String(editing.cost.amount) : '0');
   const [currency, setCurrency] = useState(editing?.cost.currency ?? 'PLN');
   const [status, setStatus] = useState<'active' | 'inactive'>(editing?.status ?? 'active');
@@ -462,11 +483,11 @@ function UpsertForm({
         // the same rule for a submit that did not come through the browser's
         // own validation.
         if (!adapter) return;
+        if (!buildLocalizedNamePayload(names)) return;
         void onSubmit({
           code,
           adapter,
-          nameEn,
-          namePl,
+          names,
           cost: Number(cost),
           currency,
           status,
@@ -536,14 +557,20 @@ function UpsertForm({
             ) : null}
           </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="dnameen">{t('legacyMethods.fields.nameEn')}</Label>
-          <Input id="dnameen" value={nameEn} onChange={(e): void => setNameEn(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="dnamepl">{t('legacyMethods.fields.namePl')}</Label>
-          <Input id="dnamepl" value={namePl} onChange={(e): void => setNamePl(e.target.value)} />
-        </div>
+        {localeCodes.map((locale) => (
+          <div key={locale} className="space-y-2">
+            <Label htmlFor={`dname-${locale}`}>
+              {t('legacyMethods.fields.nameForLocale', { locale })}
+            </Label>
+            <Input
+              id={`dname-${locale}`}
+              value={names[locale] ?? ''}
+              onChange={(e): void =>
+                setNames((prev) => ({ ...prev, [locale]: e.target.value }))
+              }
+            />
+          </div>
+        ))}
         <div className="space-y-2">
           <Label htmlFor="dcost">{t('legacyMethods.fields.cost')}</Label>
           <Input

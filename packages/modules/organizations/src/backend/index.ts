@@ -75,7 +75,9 @@ import {
   type SalesRepAssignmentPort,
 } from './services/sales-rep-assignment-service.js';
 import { OrganizationStaffAssignmentService } from './services/staff-assignment-service.js';
+import { readNotificationEmailLanguage } from './services/notification-email-language-policy.js';
 import { OrgRegistrationNotifier } from './services/org-registration-notifier.js';
+import { makeOrgRegistrationTemplateEmail } from './services/org-registration-template-email.js';
 import { makeSetCartApprovalPolicyCommand } from './commands/set-cart-approval-policy.command.js';
 import { Organization } from './entities/organization.entity.js';
 import { OrganizationRole } from './entities/organization-role.entity.js';
@@ -603,7 +605,22 @@ export function registerModule(ctx: ModuleContext): void {
                 notificationRecipientsSchema,
                 [],
               ),
-            templateEmail: lazyPort<TemplateEmailPort>(ctx, 'templateEmailPort'),
+            resolveNotificationEmailLanguage: () =>
+              readNotificationEmailLanguage(cradle().settingsReadPort),
+            translate: (key, language, params) =>
+              lazyPort<AdminI18nTranslatePort>(ctx, 'adminI18nService').translate(
+                'organizations',
+                key,
+                language,
+                params,
+              ),
+            templateEmail: makeOrgRegistrationTemplateEmail({
+              getSender: () => cradle().transactionalEmailSenderAccessor(),
+              resolveSalesChannelId: async () =>
+                (await cradle().salesChannelResolutionPort.getSystemDefault()).id,
+              resolveLanguage: () =>
+                readNotificationEmailLanguage(cradle().settingsReadPort),
+            }),
           }),
       )
       .singleton(),

@@ -55,8 +55,8 @@ export interface AdminMe {
     adminRoleId: string | null;
     twoFactorEnabled: boolean;
     status: 'active' | 'inactive';
-    /** Feature 019 — Admin UI preferred language; null = no preference saved (default to English). */
-    preferredLanguage: 'en' | 'pl' | null;
+    /** Feature 019 — Admin UI preferred language; null = use platform default from settings. */
+    preferredLanguage: 'en' | 'pl' | 'zh-CN' | 'zh-TW' | null;
   };
   role: {
     id: string;
@@ -72,6 +72,11 @@ export interface AdminMe {
    * predates the field. Either way the consumer applies its own default.
    */
   idleLogoutMinutes?: number | null;
+  /**
+   * `_i18n.admin.default_ui_language` when the admin has no `preferredLanguage`.
+   * Delivered on the session so the shell need not call settings:read.
+   */
+  platformDefaultUiLanguage?: 'en' | 'pl' | 'zh-CN' | 'zh-TW';
   /**
    * Feature 164 — the admin's own Admin UI preferences (FR-016). `null` when the
    * server could not read them; absent from a backend that predates the field.

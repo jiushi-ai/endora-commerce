@@ -2,7 +2,9 @@ import { useEffect, useState, useCallback } from 'react';
 import type { Data } from '@puckeditor/core';
 import type { NewsletterCustomField, NewsletterEmailBlockSummary } from '@endora-commerce/contracts';
 import { useAuth } from '@endora-commerce/admin-kit/lib';
+import { useTranslation } from '@endora-commerce/admin-kit/i18n';
 import { Alert, AlertDescription, Button, Card, CardContent, CardHeader, CardTitle, Input, PageHeader } from '@endora-commerce/admin-kit/ui';
+import { EMPTY_CELL } from '../lib/labels.js';
 import {
   EmailEditorPane,
   EmailVariablesProvider,
@@ -21,6 +23,7 @@ function asData(content: unknown): Data {
 }
 
 export function BlocksPage(): React.ReactElement {
+  const t = useTranslation('newsletter');
   const { hasPermission } = useAuth();
   const canWrite = hasPermission('newsletter:write');
   const [items, setItems] = useState<NewsletterEmailBlockSummary[]>([]);
@@ -82,7 +85,7 @@ export function BlocksPage(): React.ReactElement {
   if (!hasPermission('newsletter:read')) {
     return (
       <Alert>
-        <AlertDescription>You do not have permission to view the newsletter.</AlertDescription>
+        <AlertDescription>{t('permission.viewDenied')}</AlertDescription>
       </Alert>
     );
   }
@@ -91,7 +94,7 @@ export function BlocksPage(): React.ReactElement {
 
   return (
     <div className="space-y-4">
-      <PageHeader title="Newsletter — Email blocks" description="Reusable email-safe blocks (e.g. header / footer)." />
+      <PageHeader title={t('blocks.page.title')} description={t('blocks.page.description')} />
       {error ? (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
@@ -101,12 +104,12 @@ export function BlocksPage(): React.ReactElement {
         {canWrite && edit ? (
           <Card>
             <CardHeader>
-              <CardTitle>Edit block</CardTitle>
+              <CardTitle>{t('blocks.edit.title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <Input value={edit.code} readOnly disabled className="max-w-sm font-mono" />
               <Input
-                placeholder="name"
+                placeholder={t('blocks.namePlaceholder')}
                 value={edit.name}
                 onChange={(e) => setEdit((prev) => (prev ? { ...prev, name: e.target.value } : prev))}
                 className="max-w-sm"
@@ -140,7 +143,7 @@ export function BlocksPage(): React.ReactElement {
                   checked={edit.active}
                   onChange={(e) => setEdit((prev) => (prev ? { ...prev, active: e.target.checked } : prev))}
                 />
-                Active
+                {t('blocks.active')}
               </label>
               <div className="flex gap-2">
                 <Button
@@ -157,10 +160,10 @@ export function BlocksPage(): React.ReactElement {
                     })
                   }
                 >
-                  Save changes
+                  {t('blocks.saveChanges')}
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => setEdit(null)}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
               </div>
             </CardContent>
@@ -169,10 +172,10 @@ export function BlocksPage(): React.ReactElement {
         {canWrite && !edit ? (
           <Card>
             <CardHeader>
-              <CardTitle>New block</CardTitle>
+              <CardTitle>{t('blocks.new.title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Input placeholder="code (e.g. promo_footer)" value={code} onChange={(e) => setCode(e.target.value)} className="max-w-sm" />
+              <Input placeholder={t('blocks.codePlaceholder')} value={code} onChange={(e) => setCode(e.target.value)} className="max-w-sm" />
               <Input placeholder="name" value={name} onChange={(e) => setName(e.target.value)} className="max-w-sm" />
               <EmailEditorPane
                 editorKey={`nl-block:new:${code || 'draft'}`}
@@ -205,7 +208,7 @@ export function BlocksPage(): React.ReactElement {
                   })
                 }
               >
-                Create block
+                {t('blocks.create')}
               </Button>
             </CardContent>
           </Card>
@@ -216,11 +219,11 @@ export function BlocksPage(): React.ReactElement {
           <table className="w-full text-sm">
             <thead className="border-b text-left text-muted-foreground">
               <tr>
-                <th className="p-3 font-medium">Code</th>
-                <th className="p-3 font-medium">Name</th>
-                <th className="p-3 font-medium">Active</th>
-                <th className="p-3 font-medium">System</th>
-                {canWrite ? <th className="p-3 font-medium">Actions</th> : null}
+                <th className="p-3 font-medium">{t('common.code')}</th>
+                <th className="p-3 font-medium">{t('common.name')}</th>
+                <th className="p-3 font-medium">{t('blocks.table.active')}</th>
+                <th className="p-3 font-medium">{t('blocks.table.system')}</th>
+                {canWrite ? <th className="p-3 font-medium">{t('common.actions')}</th> : null}
               </tr>
             </thead>
             <tbody>
@@ -228,20 +231,20 @@ export function BlocksPage(): React.ReactElement {
                 <tr key={b.id} className="border-b last:border-0 hover:bg-muted/40">
                   <td className="p-3 font-mono text-xs">{b.code}</td>
                   <td className="p-3">{b.name}</td>
-                  <td className="p-3">{b.active ? 'Yes' : '—'}</td>
-                  <td className="p-3">{b.isSystem ? 'Yes' : '—'}</td>
+                  <td className="p-3">{b.active ? t('common.yes') : EMPTY_CELL}</td>
+                  <td className="p-3">{b.isSystem ? t('common.yes') : EMPTY_CELL}</td>
                   {canWrite ? (
                     <td className="p-3">
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" onClick={() => startEdit(b.id)}>
-                          Edit
+                          {t('common.edit')}
                         </Button>
                         {!b.isSystem ? (
                           <Button variant="ghost" size="sm" onClick={() => void run(() => newsletterClient.deleteBlock(b.id))}>
-                            Delete
+                            {t('common.delete')}
                           </Button>
                         ) : (
-                          <span className="self-center text-xs text-muted-foreground">protected</span>
+                          <span className="self-center text-xs text-muted-foreground">{t('common.protected')}</span>
                         )}
                       </div>
                     </td>
@@ -251,7 +254,7 @@ export function BlocksPage(): React.ReactElement {
               {items.length === 0 ? (
                 <tr>
                   <td className="p-3 text-muted-foreground" colSpan={canWrite ? 5 : 4}>
-                    No blocks yet.
+                    {t('blocks.empty')}
                   </td>
                 </tr>
               ) : null}

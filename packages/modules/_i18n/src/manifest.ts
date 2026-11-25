@@ -1,8 +1,12 @@
 import type { EntityManager } from '@mikro-orm/postgresql';
 import {
   defineModuleManifest,
+  defineModuleSettingsManifest,
+  I18N_SETTING_CODES,
+  NOTIFICATION_EMAIL_LANGUAGE_DEFAULT,
   type ModuleCliCommand,
   type ModuleLifecycleParticipant,
+  LANGUAGE_FALLBACK,
 } from '@endora-commerce/contracts';
 import type { ModuleContext } from '@endora-commerce/platform/kernel';
 
@@ -32,7 +36,33 @@ export const manifest = defineModuleManifest({
   // `auth` owns the `requireAdmin` port every route here is gated by;
   // `admin_users` owns the service the preferred-language setter writes through.
   // Neither depends back on this module, so the graph stays acyclic.
-  dependencies: ['_lifecycle', 'auth', 'admin_users'],
+  dependencies: ['_lifecycle', 'auth', 'admin_users', 'settings'],
+  settings: defineModuleSettingsManifest({
+    moduleCode: '_i18n',
+    groups: [{ code: 'language', name: 'Language' }],
+    settings: [
+      {
+        code: I18N_SETTING_CODES.DEFAULT_UI_LANGUAGE,
+        name: 'Default Admin UI language',
+        description:
+          'Admin UI language after sign-in when an administrator has no personal language preference. Also used when the profile language is cleared.',
+        groupCode: 'language',
+        valueType: 'string',
+        enumOptions: ['en', 'zh-CN', 'zh-TW', 'pl'],
+        defaultValue: LANGUAGE_FALLBACK,
+      },
+      {
+        code: I18N_SETTING_CODES.NOTIFICATION_EMAIL_LANGUAGE,
+        name: 'Admin notification e-mail language',
+        description:
+          'Language for admin notification e-mails sent to configured addresses (for example new organization registration). One language per message — BCP-47 tags matching transactional templates (`en-US`, `zh-CN`, `zh-TW`, `pl-PL`).',
+        groupCode: 'language',
+        valueType: 'string',
+        enumOptions: ['en-US', 'zh-CN', 'zh-TW', 'pl-PL'],
+        defaultValue: NOTIFICATION_EMAIL_LANGUAGE_DEFAULT,
+      },
+    ],
+  }),
   i18n: { bundlesDir: 'i18n' },
   docs: { dir: 'docs' },
   // Feature 074 (Constitution XVII), test C1 — reachability. Two grounds hold

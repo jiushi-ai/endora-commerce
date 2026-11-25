@@ -95,6 +95,7 @@ describe('adminMeResponseSchema — preferences', () => {
     role: null,
     permissions: [],
     idleLogoutMinutes: null,
+    platformDefaultUiLanguage: 'en',
   };
 
   it('accepts a full preferences document', () => {

@@ -81,10 +81,17 @@ vi.mock('@endora-commerce/admin-kit/lib', async () => {
   return {
     ...actual,
     apiClient: {
-      get: (url: string) =>
-        url === '/api/v1/admin/delivery-methods/sales-channels'
-          ? channelsRequest(url)
-          : Promise.reject(new Error(`unexpected GET ${url}`)),
+      get: (url: string) => {
+        if (url === '/api/v1/admin/delivery-methods/sales-channels') {
+          return channelsRequest(url);
+        }
+        if (url === '/api/v1/i18n/config') {
+          return Promise.resolve({
+            data: { languages: [{ code: 'en-US' }, { code: 'pl-PL' }] },
+          });
+        }
+        return Promise.reject(new Error(`unexpected GET ${url}`));
+      },
       post: vi.fn(),
       put: vi.fn(),
       patch: vi.fn(),
