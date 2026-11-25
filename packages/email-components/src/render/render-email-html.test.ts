@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { renderDirectives } from '../directives/directive-engine.js';
 import { renderEmailHtml } from './render-email-html.js';
 import type { PuckDataTree } from '../schema/envelope.js';
 
@@ -78,6 +79,33 @@ describe('renderEmailHtml', () => {
     );
     expect(html).toContain('align="right"');
     expect(html).toContain('margin:0 0 0 auto');
+  });
+
+  it('skips branding EmailLogo when logoUrl resolves empty', () => {
+    const fragment = renderEmailHtml(
+      tree([
+        {
+          type: 'transactional_emails.EmailLogo',
+          props: {
+            src: '{{var branding.logoUrl}}',
+            alt: 'Logo',
+            width: 160,
+            align: 'center',
+          },
+        },
+      ]),
+      { document: false },
+    );
+    expect(fragment).toContain('{{if branding.logoUrl}}');
+    const empty = renderDirectives(fragment, { branding: { logoUrl: '' } }, { escape: true });
+    expect(empty).not.toContain('<img');
+    expect(empty).not.toMatch(/src=""/);
+    const withLogo = renderDirectives(
+      fragment,
+      { branding: { logoUrl: 'https://cdn.example.com/logo.png' } },
+      { escape: true },
+    );
+    expect(withLogo).toContain('src="https://cdn.example.com/logo.png"');
   });
 
   it('turns FooterLegal unsubscribe var into an anchor', () => {

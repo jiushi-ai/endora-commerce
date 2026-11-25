@@ -116,5 +116,6 @@ describe('Footer — batch 63/64 shop / account / support / copyright', () => {
     expect(html).toContain('name="consent"');
     expect(html).toContain('name="language"');
     expect(html).toContain('value="zh-CN"');
+    expect(html).toContain('name="returnTo" value="/newsletter/subscribed"');
   });
 });

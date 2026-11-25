@@ -152,7 +152,7 @@ export function DeliveryMethodsPage(): ReactNode {
       /** `undefined` leaves the method's channels as they are — see `salesChannelIdsToSubmit`. */
       salesChannelIds: string[] | undefined;
     }): Promise<void> => {
-      const name = buildLocalizedNamePayload(input.names);
+      const name = buildLocalizedNamePayload(input.names, editing?.name);
       if (!name) {
         setError(t('legacyMethods.errors.save'));
         return;
@@ -483,7 +483,7 @@ function UpsertForm({
         // the same rule for a submit that did not come through the browser's
         // own validation.
         if (!adapter) return;
-        if (!buildLocalizedNamePayload(names)) return;
+        if (!buildLocalizedNamePayload(names, editing?.name)) return;
         void onSubmit({
           code,
           adapter,

@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
+import { getServerContext } from '../../../lib/server-context';
+import { tForLocale } from '../../../lib/i18n/messages';
 
 /**
  * Not indexed (`specs/098-storefront-ssr-seo-a11y-suite/`, FR-010): an
@@ -14,17 +16,18 @@ export default async function NewsletterSubscribedPage({
 }: {
   searchParams: Promise<{ status?: string }>;
 }): Promise<ReactNode> {
-  const { status } = await searchParams;
-  const message =
+  const [{ locale }, { status }] = await Promise.all([getServerContext(), searchParams]);
+  const t = tForLocale(locale);
+  const messageKey =
     status === 'active'
-      ? 'You are subscribed. Thank you!'
+      ? 'newsletter.signupOutcome.active'
       : status === 'error'
-        ? 'We could not complete your subscription. Please try again.'
-        : 'Almost there — please check your inbox and confirm your subscription.';
+        ? 'newsletter.signupOutcome.error'
+        : 'newsletter.signupOutcome.pending';
   return (
     <main className="mx-auto max-w-lg px-4 py-16 text-center">
-      <h1 className="text-2xl font-semibold">Newsletter</h1>
-      <p className="mt-4 text-muted-foreground">{message}</p>
+      <h1 className="text-2xl font-semibold">{t('newsletter.title')}</h1>
+      <p className="mt-4 text-muted-foreground">{t(messageKey)}</p>
     </main>
   );
 }

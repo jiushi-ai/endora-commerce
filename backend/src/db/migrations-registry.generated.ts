@@ -400,6 +400,7 @@ import { Migration20260912T094654TaxesSalesChannelTaxes } from '@endora-commerce
 import { Migration20260629T113442TransactionalEmailsInit } from '@endora-commerce/mod-transactional-emails/migrations';
 import { Migration20260801T111001TransactionalEmailsEmailDefaultsReseed } from '@endora-commerce/mod-transactional-emails/migrations';
 import { Migration20260903T101748TransactionalEmailsNamespaceBlockNames } from '@endora-commerce/mod-transactional-emails/migrations';
+import { Migration20261125T094500TransactionalEmailsDefaultBlocksFourLocales } from '@endora-commerce/mod-transactional-emails/migrations';
 
 // ── webhooks ────────────────────────────────────────────────────────────────
 import { Migration20260425T091359WebhooksUs7Init } from '@endora-commerce/mod-webhooks/migrations';
@@ -781,6 +782,7 @@ export const MIGRATION_REGISTRY: readonly MigrationRegistryEntry[] = [
   migration('transactional_emails', Migration20260629T113442TransactionalEmailsInit),
   migration('transactional_emails', Migration20260801T111001TransactionalEmailsEmailDefaultsReseed),
   migration('transactional_emails', Migration20260903T101748TransactionalEmailsNamespaceBlockNames),
+  migration('transactional_emails', Migration20261125T094500TransactionalEmailsDefaultBlocksFourLocales),
 
   // ── webhooks ────────────────────────────────────────────────────────────────
   migration('webhooks', Migration20260425T091359WebhooksUs7Init),

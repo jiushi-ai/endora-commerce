@@ -62,9 +62,11 @@ export { listDictionaryCountries, listDictionaryCurrencies } from './dictionary-
 export { useCountriesQuery } from './country-select/useCountriesQuery.js';
 export type { UseCountriesQueryResult } from './country-select/useCountriesQuery.js';
 export {
+  ADMIN_UI_CONTENT_LOCALES,
   MOBII_CONTENT_LANGUAGE_FALLBACK,
   buildLocalizedNamePayload,
   mergeContentLanguageCodes,
+  offeredAdminContentLanguageCodes,
   useActiveContentLanguageCodes,
 } from './use-active-content-language-codes.js';
 export { CustomFieldListFilters } from './custom-field-filters/CustomFieldListFilters.js';

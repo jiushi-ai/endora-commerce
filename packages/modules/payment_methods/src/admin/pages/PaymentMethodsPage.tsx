@@ -117,7 +117,7 @@ export function PaymentMethodsPage(): ReactNode {
 
   const handleUpsert = useCallback(
     async (input: UpsertFormValue): Promise<void> => {
-      const name = buildLocalizedNamePayload(input.names);
+      const name = buildLocalizedNamePayload(input.names, editing?.name);
       if (!name) {
         setError(t('legacyMethods.errors.save'));
         return;
@@ -470,7 +470,7 @@ function UpsertForm({
       className="space-y-4"
       onSubmit={(e: FormEvent): void => {
         e.preventDefault();
-        if (!buildLocalizedNamePayload(names)) return;
+        if (!buildLocalizedNamePayload(names, initial?.name)) return;
         void onSubmit({
           code,
           names,

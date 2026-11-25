@@ -164,6 +164,9 @@ export type MessageKey =
   | 'newsletter.reasonPlaceholder'
   | 'newsletter.subscribe'
   | 'newsletter.unsubscribe'
+  | 'newsletter.signupOutcome.pending'
+  | 'newsletter.signupOutcome.active'
+  | 'newsletter.signupOutcome.error'
   | 'catalog.price.heading'
   | 'catalog.price.min'
   | 'catalog.price.max'
@@ -1239,6 +1242,11 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'newsletter.reasonPlaceholder': 'Reason (optional)',
     'newsletter.subscribe': 'Subscribe',
     'newsletter.unsubscribe': 'Unsubscribe',
+    'newsletter.signupOutcome.pending':
+      'Almost there — please check your inbox and confirm your subscription.',
+    'newsletter.signupOutcome.active': 'You are subscribed. Thank you!',
+    'newsletter.signupOutcome.error':
+      'We could not complete your subscription. Please try again.',
     'catalog.price.heading': 'Price',
     'catalog.price.min': 'From',
     'catalog.price.max': 'To',
@@ -2287,6 +2295,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'newsletter.reasonPlaceholder': '原因（可选）',
     'newsletter.subscribe': '订阅',
     'newsletter.unsubscribe': '取消订阅',
+    'newsletter.signupOutcome.pending': '还差一步 — 请查收邮件并确认您的订阅。',
+    'newsletter.signupOutcome.active': '您已成功订阅，谢谢！',
+    'newsletter.signupOutcome.error': '无法完成订阅，请重试。',
     'catalog.price.heading': '价格',
     'catalog.price.min': '最低',
     'catalog.price.max': '最高',
@@ -3292,6 +3303,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'newsletter.reasonPlaceholder': '原因（選填）',
     'newsletter.subscribe': '訂閱',
     'newsletter.unsubscribe': '取消訂閱',
+    'newsletter.signupOutcome.pending': '還差一步 — 請查收郵件並確認您的訂閱。',
+    'newsletter.signupOutcome.active': '您已成功訂閱，謝謝！',
+    'newsletter.signupOutcome.error': '無法完成訂閱，請重試。',
     'catalog.price.heading': '价格',
     'catalog.price.min': '最低',
     'catalog.price.max': '最高',
@@ -4298,6 +4312,11 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'newsletter.reasonPlaceholder': 'Powód (opcjonalnie)',
     'newsletter.subscribe': 'Zapisz się',
     'newsletter.unsubscribe': 'Wypisz się',
+    'newsletter.signupOutcome.pending':
+      'Prawie gotowe — sprawdź skrzynkę i potwierdź zapis do newslettera.',
+    'newsletter.signupOutcome.active': 'Jesteś zapisany. Dziękujemy!',
+    'newsletter.signupOutcome.error':
+      'Nie udało się dokończyć zapisu. Spróbuj ponownie.',
     'catalog.price.heading': 'Cena',
     'catalog.price.min': 'Od',
     'catalog.price.max': 'Do',

@@ -1174,3 +1174,24 @@ feat-26-11-24 00:04:42 [64.1~64.5]：页脚catalog子级与莫比绿电版权四
 汇总：支付/配送名称跟平台启用语系；大 B Language 设置控制登录默认语与通知邮件语（方案 A）；Newsletter 管理页四语 + 订阅者打标签。发版需重建 admin/admin-shell/contracts/_i18n/organizations/newsletter/payment_methods/delivery_methods；实例 Settings→Language 设两项；settings reconcile 吸入新 setting。
 
 feat-26-11-24 19:37:19 [65.1~65.6]：支付配送Name动态语系；大B Language设置与注册通知；Newsletter i18n与订阅者打标签
+
+### 66. 支付方式 Kind 中文错译修正（皮卡/网关）
+
+- [x] 66.1 zh-CN：`legacyMethods.payment.kind.pickup` 皮卡→自提付款；`gateway` 网关→支付网关
+- [x] 66.2 zh-TW：同 key，皮卡→自提付款；網關→支付網關
+- [x] 66.3 本 §99；建议 commit 如下（未执行）
+
+汇总：修正 Admin 支付方式 Kind 下拉简繁错译；英文/波兰语与其它 Kind 不动。发版需重建 `_i18n` 包后刷新 Admin。
+
+feat-26-11-24 23:01:32 [66.1~66.3]：支付方式Kind中文错译修正（自提付款/支付网关）
+
+### 67. 邮件页脚四语种子 + Name 跟顶栏对齐 + 页脚订阅结果页
+
+- [x] 67.1 transactional 默认 header/footer 四语种子与迁移；无 branding.logoUrl 不输出破图 img
+- [x] 67.2 支付/配送 Name 仅展示 Admin 顶栏三语（en-US/zh-CN/zh-TW）；保存保留历史 pl
+- [x] 67.3 页脚订阅 returnTo=/newsletter/subscribed，?status=；结果页四语 i18n
+- [x] 67.4 单测；本 §99；建议 commit 如下（未执行）
+
+汇总：系统邮件块补四语默认；Logo 未配 Branding 时不破图；Name 与 LanguagePicker 对齐；页脚订阅落结果提示页而非首页无 flash。发版需重建 email-components / transactional_emails / admin-kit / payment_methods / delivery_methods / storefront；跑新迁移；运营在 Transactional Emails→Branding 配 Header logo。
+
+feat-26-11-25 01:48:14 [67.1~67.4]：邮件页脚四语与无logo不破图；Name跟顶栏三语；页脚订阅结果页四语

@@ -50,30 +50,30 @@ import * as module2 from '@endora-commerce/mod-auth/backend';
 import { manifest as manifest2 } from '@endora-commerce/mod-auth';
 import * as module3 from '@endora-commerce/mod-admin-users/backend';
 import { manifest as manifest3 } from '@endora-commerce/mod-admin-users';
-import * as module4 from '@endora-commerce/mod-i18n/backend';
-import { manifest as manifest4 } from '@endora-commerce/mod-i18n';
-import * as module5 from '@endora-commerce/mod-admin-actions/backend';
-import { manifest as manifest5 } from '@endora-commerce/mod-admin-actions';
-import * as module6 from '@endora-commerce/mod-admin-notifications/backend';
-import { manifest as manifest6 } from '@endora-commerce/mod-admin-notifications';
-import * as module7 from '@endora-commerce/mod-assets-library/backend';
-import { manifest as manifest7 } from '@endora-commerce/mod-assets-library';
-import * as module8 from '@endora-commerce/mod-audit-logs/backend';
-import { manifest as manifest8 } from '@endora-commerce/mod-audit-logs';
-import * as module9 from '@endora-commerce/mod-currencies/backend';
-import { manifest as manifest9 } from '@endora-commerce/mod-currencies';
-import * as module10 from '@endora-commerce/mod-custom-fields/backend';
-import { manifest as manifest10 } from '@endora-commerce/mod-custom-fields';
-import * as module11 from '@endora-commerce/mod-email/backend';
-import { manifest as manifest11 } from '@endora-commerce/mod-email';
-import * as module12 from '@endora-commerce/mod-import-export/backend';
-import { manifest as manifest12 } from '@endora-commerce/mod-import-export';
-import * as module13 from '@endora-commerce/mod-languages/backend';
-import { manifest as manifest13 } from '@endora-commerce/mod-languages';
-import * as module14 from '@endora-commerce/mod-dictionaries/backend';
-import { manifest as manifest14 } from '@endora-commerce/mod-dictionaries';
-import * as module15 from '@endora-commerce/mod-settings/backend';
-import { manifest as manifest15 } from '@endora-commerce/mod-settings';
+import * as module4 from '@endora-commerce/mod-admin-notifications/backend';
+import { manifest as manifest4 } from '@endora-commerce/mod-admin-notifications';
+import * as module5 from '@endora-commerce/mod-assets-library/backend';
+import { manifest as manifest5 } from '@endora-commerce/mod-assets-library';
+import * as module6 from '@endora-commerce/mod-audit-logs/backend';
+import { manifest as manifest6 } from '@endora-commerce/mod-audit-logs';
+import * as module7 from '@endora-commerce/mod-currencies/backend';
+import { manifest as manifest7 } from '@endora-commerce/mod-currencies';
+import * as module8 from '@endora-commerce/mod-custom-fields/backend';
+import { manifest as manifest8 } from '@endora-commerce/mod-custom-fields';
+import * as module9 from '@endora-commerce/mod-email/backend';
+import { manifest as manifest9 } from '@endora-commerce/mod-email';
+import * as module10 from '@endora-commerce/mod-import-export/backend';
+import { manifest as manifest10 } from '@endora-commerce/mod-import-export';
+import * as module11 from '@endora-commerce/mod-languages/backend';
+import { manifest as manifest11 } from '@endora-commerce/mod-languages';
+import * as module12 from '@endora-commerce/mod-dictionaries/backend';
+import { manifest as manifest12 } from '@endora-commerce/mod-dictionaries';
+import * as module13 from '@endora-commerce/mod-settings/backend';
+import { manifest as manifest13 } from '@endora-commerce/mod-settings';
+import * as module14 from '@endora-commerce/mod-i18n/backend';
+import { manifest as manifest14 } from '@endora-commerce/mod-i18n';
+import * as module15 from '@endora-commerce/mod-admin-actions/backend';
+import { manifest as manifest15 } from '@endora-commerce/mod-admin-actions';
 import * as module16 from '@endora-commerce/mod-admin-feedback/backend';
 import { manifest as manifest16 } from '@endora-commerce/mod-admin-feedback';
 import * as module17 from '@endora-commerce/mod-admin-search/backend';
@@ -184,18 +184,18 @@ export const MODULES: readonly ModuleEntry[] = [
   { id: 'admin_roles', version: manifest1.version, registerModule: module1.registerModule },
   { id: 'auth', version: manifest2.version, registerModule: module2.registerModule },
   { id: 'admin_users', version: manifest3.version, registerModule: module3.registerModule },
-  { id: '_i18n', version: manifest4.version, registerModule: module4.registerModule },
-  { id: 'admin_actions', version: manifest5.version, registerModule: module5.registerModule },
-  { id: 'admin_notifications', version: manifest6.version, registerModule: module6.registerModule },
-  { id: 'assets_library', version: manifest7.version, registerModule: module7.registerModule },
-  { id: 'audit_logs', version: manifest8.version, registerModule: module8.registerModule },
-  { id: 'currencies', version: manifest9.version, registerModule: module9.registerModule },
-  { id: 'custom_fields', version: manifest10.version, registerModule: module10.registerModule },
-  { id: 'email', version: manifest11.version, registerModule: module11.registerModule },
-  { id: 'import_export', version: manifest12.version, registerModule: module12.registerModule },
-  { id: 'languages', version: manifest13.version, registerModule: module13.registerModule },
-  { id: 'dictionaries', version: manifest14.version, registerModule: module14.registerModule },
-  { id: 'settings', version: manifest15.version, registerModule: module15.registerModule },
+  { id: 'admin_notifications', version: manifest4.version, registerModule: module4.registerModule },
+  { id: 'assets_library', version: manifest5.version, registerModule: module5.registerModule },
+  { id: 'audit_logs', version: manifest6.version, registerModule: module6.registerModule },
+  { id: 'currencies', version: manifest7.version, registerModule: module7.registerModule },
+  { id: 'custom_fields', version: manifest8.version, registerModule: module8.registerModule },
+  { id: 'email', version: manifest9.version, registerModule: module9.registerModule },
+  { id: 'import_export', version: manifest10.version, registerModule: module10.registerModule },
+  { id: 'languages', version: manifest11.version, registerModule: module11.registerModule },
+  { id: 'dictionaries', version: manifest12.version, registerModule: module12.registerModule },
+  { id: 'settings', version: manifest13.version, registerModule: module13.registerModule },
+  { id: '_i18n', version: manifest14.version, registerModule: module14.registerModule },
+  { id: 'admin_actions', version: manifest15.version, registerModule: module15.registerModule },
   { id: 'admin_feedback', version: manifest16.version, registerModule: module16.registerModule },
   { id: 'admin_search', version: manifest17.version, registerModule: module17.registerModule },
   { id: 'analytics', version: manifest18.version, registerModule: module18.registerModule },

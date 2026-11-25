@@ -185,8 +185,11 @@ function renderButton(p: EmailButtonProps, accent: string): string {
   return row(`<div style="text-align:${p.align};">${btn}</div>`);
 }
 
+const BRANDING_LOGO_SRC = '{{var branding.logoUrl}}';
+
 function renderImage(p: EmailImageProps): string {
-  if (!p.src) return '';
+  const src = (p.src ?? '').trim();
+  if (!src) return '';
   const margin =
     p.align === 'center' ? '0 auto' : p.align === 'right' ? '0 0 0 auto' : '0';
   const img =
@@ -200,13 +203,21 @@ function renderImage(p: EmailImageProps): string {
 }
 
 function renderLogo(p: EmailLogoProps): string {
-  return renderImage({
+  const src = (p.src ?? '').trim();
+  if (!src) return '';
+  const row = renderImage({
     src: p.src,
     alt: p.alt || 'Logo',
     href: p.href,
     width: p.width || 160,
     align: p.align || 'center',
   });
+  if (!row) return '';
+  // Vars resolve after HTML render; guard empty branding.logoUrl at send time.
+  if (src === BRANDING_LOGO_SRC) {
+    return `{{if branding.logoUrl}}${row}{{/if}}`;
+  }
+  return row;
 }
 
 function renderSpacer(p: EmailSpacerProps): string {

@@ -144,7 +144,7 @@ export function Footer(props: {
             <LocalizedForm action="/newsletter/subscribe" method="POST">
               <input type="hidden" name="consent" value="on" />
               <input type="hidden" name="language" value={props.locale} />
-              <input type="hidden" name="returnTo" value="/" />
+              <input type="hidden" name="returnTo" value="/newsletter/subscribed" />
               <input
                 className="mb-2 w-full rounded-md border border-white/12 bg-white/4 px-2.5 py-2 text-[13px] text-white placeholder:text-[#71717a]"
                 type="email"

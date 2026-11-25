@@ -25,15 +25,18 @@
 import { Migration20260629T113442TransactionalEmailsInit } from './20260629T113442_transactional_emails_init.js';
 import { Migration20260801T111001TransactionalEmailsEmailDefaultsReseed } from './20260801T111001_transactional_emails_email_defaults_reseed.js';
 import { Migration20260903T101748TransactionalEmailsNamespaceBlockNames } from './20260903T101748_transactional_emails_namespace_block_names.js';
+import { Migration20261125T094500TransactionalEmailsDefaultBlocksFourLocales } from './20261125T094500_transactional_emails_default_blocks_four_locales.js';
 
 export const migrations = [
   Migration20260629T113442TransactionalEmailsInit,
   Migration20260801T111001TransactionalEmailsEmailDefaultsReseed,
   Migration20260903T101748TransactionalEmailsNamespaceBlockNames,
+  Migration20261125T094500TransactionalEmailsDefaultBlocksFourLocales,
 ];
 
 export {
   Migration20260629T113442TransactionalEmailsInit,
   Migration20260801T111001TransactionalEmailsEmailDefaultsReseed,
   Migration20260903T101748TransactionalEmailsNamespaceBlockNames,
+  Migration20261125T094500TransactionalEmailsDefaultBlocksFourLocales,
 };

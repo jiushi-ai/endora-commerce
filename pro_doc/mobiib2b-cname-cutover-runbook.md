@@ -203,7 +203,7 @@ ECS `.env` 里 `REGISTRY_IMAGE` 应仍是 **VPC** 域名，例如：
 ssh.exe aliyun-mobii
 cd /opt/b2b
 # 换成上一步 echo 出的 IMAGE_TAG
-sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${IMAGE_TAG}/" .env
+sed -i 's/^IMAGE_TAG=.*/IMAGE_TAG=e31b2f9a4-170-organization-roles-from-upstream-65.1-65.6/' .env
 # 若在 ECS 上没有该 shell 变量，直接手写：
 # sed -i 's/^IMAGE_TAG=.*/IMAGE_TAG=xxxxxxxx-mobiib2b1/' .env
 

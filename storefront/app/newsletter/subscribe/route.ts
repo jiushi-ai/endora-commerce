@@ -5,7 +5,8 @@
  *
  * The block is a plain `<form method="post">`, so a sign-up works without
  * JavaScript: the handler answers `303` back to the page it came from, with the
- * outcome in `?newsletter=pending|active|error&reason=…` and the section's
+ * outcome in `?newsletter=pending|active|error&reason=…` on the source page, or
+ * `?status=pending|active|error` when `returnTo` is the subscribed page, and the section's
  * anchor as the fragment. With JavaScript the block submits with
  * `Accept: application/json` and gets `{status}` or `{error}` instead.
  *
@@ -56,11 +57,24 @@ function field(form: FormData, name: string): string {
   return typeof value === 'string' ? value : '';
 }
 
+function isSubscribedReturnPath(pathname: string): boolean {
+  const normalized = pathname.replace(/\/+$/, '') || '/';
+  return normalized === '/newsletter/subscribed' || normalized.endsWith('/newsletter/subscribed');
+}
+
 function redirectTo(returnTo: URL, anchor: string | null, outcome: SignupOutcome): Response {
   const target = new URL(returnTo.href);
+  const useStatus = isSubscribedReturnPath(target.pathname);
   target.searchParams.delete('newsletter');
   target.searchParams.delete('reason');
-  if ('error' in outcome) {
+  target.searchParams.delete('status');
+  if (useStatus) {
+    if ('error' in outcome) {
+      target.searchParams.set('status', 'error');
+    } else {
+      target.searchParams.set('status', outcome.status);
+    }
+  } else if ('error' in outcome) {
     target.searchParams.set('newsletter', 'error');
     target.searchParams.set('reason', outcome.error);
   } else {

@@ -158,4 +158,23 @@ describe('POST /newsletter/subscribe', () => {
     expect(present).toHaveBeenCalledWith('newsletter');
     expect(subscribeNewsletter).not.toHaveBeenCalled();
   });
+
+  it('redirects to the subscribed page with ?status= when returnTo is /newsletter/subscribed', async () => {
+    const res = await post({
+      email: VALID.email,
+      consent: VALID.consent,
+      returnTo: '/newsletter/subscribed',
+    });
+    expect(res.status).toBe(303);
+    expect(res.headers.get('location')).toBe('/newsletter/subscribed?status=pending');
+  });
+
+  it('uses status=error on the subscribed page without consent', async () => {
+    const res = await post({
+      email: VALID.email,
+      consent: '',
+      returnTo: '/newsletter/subscribed',
+    });
+    expect(res.headers.get('location')).toBe('/newsletter/subscribed?status=error');
+  });
 });
