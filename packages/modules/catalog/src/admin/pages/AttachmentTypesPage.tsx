@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import {
+  adminLanguageToLocale,
+  buildLocalizedNamePayload,
+  pickCategoryDisplayName,
+  useActiveContentLanguageCodes,
+} from '@endora-commerce/admin-kit/components';
 import { ApiError, apiClient } from '@endora-commerce/admin-kit/lib';
 import { Alert, AlertDescription, Button, Card, CardContent, CardHeader, CardTitle, Input, Label, PageHeader, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@endora-commerce/admin-kit/ui';
-import { useTranslation } from '@endora-commerce/admin-kit/i18n';
+import { useTranslation, useTranslationContext } from '@endora-commerce/admin-kit/i18n';
 
 interface AttachmentType {
   id: string;
@@ -22,6 +28,8 @@ interface AttachmentType {
  */
 export function AttachmentTypesPage(): ReactNode {
   const t = useTranslation('catalog');
+  const { language } = useTranslationContext();
+  const listLocale = adminLanguageToLocale(language);
   const [types, setTypes] = useState<AttachmentType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,11 +55,16 @@ export function AttachmentTypesPage(): ReactNode {
   }, [refresh]);
 
   const handleCreate = useCallback(
-    async (input: { code: string; nameEn: string; namePl: string }): Promise<void> => {
+    async (input: { code: string; names: Record<string, string> }): Promise<void> => {
+      const name = buildLocalizedNamePayload(input.names);
+      if (!name) {
+        setError(t('attachmentTypes.error.create'));
+        return;
+      }
       try {
         await apiClient.post('/api/v1/admin/catalog/attachment-types', {
           code: input.code,
-          name: { 'en-US': input.nameEn, 'pl-PL': input.namePl || input.nameEn },
+          name,
         });
         setInfo(t('attachmentTypes.success.create', { code: input.code }));
         await refresh();
@@ -110,8 +123,7 @@ export function AttachmentTypesPage(): ReactNode {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t('attachmentTypes.column.code')}</TableHead>
-                  <TableHead>{t('attachmentTypes.column.nameEn')}</TableHead>
-                  <TableHead>{t('attachmentTypes.column.namePl')}</TableHead>
+                  <TableHead>{t('attachmentTypes.column.name')}</TableHead>
                   <TableHead>{t('attachmentTypes.column.position')}</TableHead>
                   <TableHead>{t('attachmentTypes.column.inUse')}</TableHead>
                   <TableHead className="w-[1%] whitespace-nowrap">{t('attachmentTypes.column.actions')}</TableHead>
@@ -121,8 +133,9 @@ export function AttachmentTypesPage(): ReactNode {
                 {types.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell className="font-mono">{row.code}</TableCell>
-                    <TableCell>{row.name['en-US'] ?? '—'}</TableCell>
-                    <TableCell>{row.name['pl-PL'] ?? '—'}</TableCell>
+                    <TableCell>
+                      {pickCategoryDisplayName(row.name, row.code, listLocale)}
+                    </TableCell>
                     <TableCell>{row.position}</TableCell>
                     <TableCell>{row.usageCount ?? 0}</TableCell>
                     <TableCell>
@@ -151,20 +164,39 @@ export function AttachmentTypesPage(): ReactNode {
 function CreateAttachmentTypeInline({
   onCreate,
 }: {
-  onCreate: (input: { code: string; nameEn: string; namePl: string }) => Promise<void>;
+  onCreate: (input: { code: string; names: Record<string, string> }) => Promise<void>;
 }): ReactNode {
   const t = useTranslation('catalog');
+  const tCore = useTranslation('core');
+  const localeCodes = useActiveContentLanguageCodes();
   const [code, setCode] = useState('');
-  const [nameEn, setNameEn] = useState('');
-  const [namePl, setNamePl] = useState('');
+  const [names, setNames] = useState<Record<string, string>>(() => {
+    const seed: Record<string, string> = {};
+    for (const locale of localeCodes) {
+      seed[locale] = '';
+    }
+    return seed;
+  });
+  useEffect(() => {
+    setNames((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const locale of localeCodes) {
+        if (!(locale in next)) {
+          next[locale] = '';
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [localeCodes]);
 
   const handleSubmit = (e: FormEvent): void => {
     e.preventDefault();
-    if (!code || !nameEn) return;
-    void onCreate({ code, nameEn, namePl }).then(() => {
+    if (!code || !buildLocalizedNamePayload(names)) return;
+    void onCreate({ code, names }).then(() => {
       setCode('');
-      setNameEn('');
-      setNamePl('');
+      setNames((prev) => Object.fromEntries(Object.keys(prev).map((locale) => [locale, ''])));
     });
   };
 
@@ -185,24 +217,20 @@ function CreateAttachmentTypeInline({
           required
         />
       </div>
-      <div className="space-y-1">
-        <Label htmlFor="atnameen">{t('attachmentTypes.field.nameEn')}</Label>
-        <Input
-          id="atnameen"
-          value={nameEn}
-          onChange={(e): void => setNameEn(e.target.value)}
-          required
-        />
-      </div>
-      <div className="space-y-1">
-        <Label htmlFor="atnamepl">{t('attachmentTypes.field.namePl')}</Label>
-        <Input
-          id="atnamepl"
-          value={namePl}
-          onChange={(e): void => setNamePl(e.target.value)}
-          placeholder={t('attachmentTypes.field.namePlPlaceholder')}
-        />
-      </div>
+      {localeCodes.map((locale) => (
+        <div key={locale} className="space-y-1">
+          <Label htmlFor={`atname-${locale}`}>
+            {tCore('legacyMethods.fields.nameForLocale', { locale })}
+          </Label>
+          <Input
+            id={`atname-${locale}`}
+            value={names[locale] ?? ''}
+            onChange={(e): void =>
+              setNames((prev) => ({ ...prev, [locale]: e.target.value }))
+            }
+          />
+        </div>
+      ))}
       <div className="md:col-span-4">
         <Button type="submit">{t('attachmentTypes.action.add')}</Button>
       </div>

@@ -3,9 +3,15 @@ import type {
   AttributeSet,
   AttributeSetDetail,
 } from '@endora-commerce/contracts';
+import {
+  adminLanguageToLocale,
+  buildLocalizedNamePayload,
+  pickCategoryDisplayName,
+  useActiveContentLanguageCodes,
+} from '@endora-commerce/admin-kit/components';
 import { ApiError, apiClient } from '@endora-commerce/admin-kit/lib';
 import { Alert, AlertDescription, Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Label, PageHeader, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@endora-commerce/admin-kit/ui';
-import { useTranslation } from '@endora-commerce/admin-kit/i18n';
+import { useTranslation, useTranslationContext } from '@endora-commerce/admin-kit/i18n';
 
 interface AdminAttribute {
   id: string;
@@ -139,18 +145,37 @@ interface CreateFormProps {
 
 function CreateAttributeSetForm({ onCreated, onError }: CreateFormProps): ReactNode {
   const t = useTranslation('catalog');
+  const tCore = useTranslation('core');
+  const localeCodes = useActiveContentLanguageCodes();
   const [code, setCode] = useState('');
-  const [labelEn, setLabelEn] = useState('');
-  const [labelPl, setLabelPl] = useState('');
+  const [names, setNames] = useState<Record<string, string>>(() => {
+    const seed: Record<string, string> = {};
+    for (const locale of localeCodes) {
+      seed[locale] = '';
+    }
+    return seed;
+  });
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    setNames((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const locale of localeCodes) {
+        if (!(locale in next)) {
+          next[locale] = '';
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [localeCodes]);
 
   const handleSubmit = useCallback(
     async (e: FormEvent): Promise<void> => {
       e.preventDefault();
-      const name: Record<string, string> = {};
-      if (labelEn) name['en-US'] = labelEn;
-      if (labelPl) name['pl-PL'] = labelPl;
-      if (!code || Object.keys(name).length === 0) {
+      const name = buildLocalizedNamePayload(names);
+      if (!code || !name) {
         onError(t('attributeSets.create.validationError'));
         return;
       }
@@ -162,15 +187,14 @@ function CreateAttributeSetForm({ onCreated, onError }: CreateFormProps): ReactN
         );
         onCreated(res.data.code);
         setCode('');
-        setLabelEn('');
-        setLabelPl('');
+        setNames((prev) => Object.fromEntries(Object.keys(prev).map((locale) => [locale, ''])));
       } catch (err) {
         onError(err instanceof ApiError ? err.envelope.error.message : t('attributeSets.error.create'));
       } finally {
         setSubmitting(false);
       }
     },
-    [code, labelEn, labelPl, onCreated, onError, t],
+    [code, names, onCreated, onError, t],
   );
 
   return (
@@ -192,24 +216,20 @@ function CreateAttributeSetForm({ onCreated, onError }: CreateFormProps): ReactN
               required
             />
           </div>
-          <div>
-            <Label htmlFor="set-label-en">{t('attributeSets.field.nameEn')}</Label>
-            <Input
-              id="set-label-en"
-              placeholder="Electronics"
-              value={labelEn}
-              onChange={(e) => setLabelEn(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="set-label-pl">{t('attributeSets.field.namePl')}</Label>
-            <Input
-              id="set-label-pl"
-              placeholder="Elektronika"
-              value={labelPl}
-              onChange={(e) => setLabelPl(e.target.value)}
-            />
-          </div>
+          {localeCodes.map((locale) => (
+            <div key={locale}>
+              <Label htmlFor={`set-label-${locale}`}>
+                {tCore('legacyMethods.fields.nameForLocale', { locale })}
+              </Label>
+              <Input
+                id={`set-label-${locale}`}
+                value={names[locale] ?? ''}
+                onChange={(e): void =>
+                  setNames((prev) => ({ ...prev, [locale]: e.target.value }))
+                }
+              />
+            </div>
+          ))}
           <div className="md:col-span-3">
             <Button type="submit" disabled={submitting}>
               {submitting ? t('attributeSets.create.submitting') : t('attributeSets.create.submit')}
@@ -234,6 +254,8 @@ interface RowProps {
 
 function AttributeSetRow({ set, allAttributes, onChanged, onError }: RowProps): ReactNode {
   const t = useTranslation('catalog');
+  const { language } = useTranslationContext();
+  const listLocale = adminLanguageToLocale(language);
   const [expanded, setExpanded] = useState(false);
   const [detail, setDetail] = useState<AttributeSetDetail | null>(null);
   const [busy, setBusy] = useState(false);
@@ -300,7 +322,7 @@ function AttributeSetRow({ set, allAttributes, onChanged, onError }: RowProps): 
     }
   }, [set.id, set.code, onChanged, onError, t]);
 
-  const localizedName = set.name['en-US'] ?? set.name['pl-PL'] ?? Object.values(set.name)[0] ?? '—';
+  const localizedName = pickCategoryDisplayName(set.name, set.code, listLocale);
 
   const assignedIds = new Set(detail?.attributes.map((a) => a.id) ?? []);
   const unassigned = allAttributes.filter((a) => !assignedIds.has(a.id));

@@ -1195,3 +1195,15 @@ feat-26-11-24 23:01:32 [66.1~66.3]：支付方式Kind中文错译修正（自提
 汇总：系统邮件块补四语默认；Logo 未配 Branding 时不破图；Name 与 LanguagePicker 对齐；页脚订阅落结果提示页而非首页无 flash。发版需重建 email-components / transactional_emails / admin-kit / payment_methods / delivery_methods / storefront；跑新迁移；运营在 Transactional Emails→Branding 配 Header logo。
 
 feat-26-11-25 01:48:14 [67.1~67.4]：邮件页脚四语与无logo不破图；Name跟顶栏三语；页脚订阅结果页四语
+
+### 68. Catalog Name 顶栏三语 + 商品 Tab / 事务邮件 i18n + Blocks 命名
+
+- [x] 68.1 attachment-types / attribute-sets / attributes：Name 跟 Admin 顶栏三语（useActiveContentLanguageCodes）
+- [x] 68.2 ProductEditor Tabs：productEditor.tab.* 四语
+- [x] 68.3 Transactional Emails 列表 + Templates + Blocks 页 chrome i18n
+- [x] 68.4 Messaging「屏蔽」→「事务邮件片段」；EN Transactional snippets；Newsletter 保持邮件片段
+- [x] 68.5 本 §99；建议 commit 如下（未执行）
+
+汇总：Catalog 字典 Name 对齐支付/配送模式；商品详情 Tab 四语；事务邮件列表/模板页接线；双 Email Blocks 入口用命名区分（数据仍分属两表）。发版需重建 catalog + transactional_emails（及 admin 消费端）。
+
+feat-26-11-25 03:35:22 [68.1~68.5]：Catalog Name顶栏三语；商品Tab与事务邮件i18n；事务邮件片段命名

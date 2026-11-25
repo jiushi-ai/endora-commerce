@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import { Pencil } from 'lucide-react';
+import {
+  adminLanguageToLocale,
+  buildLocalizedNamePayload,
+  pickCategoryDisplayName,
+  useActiveContentLanguageCodes,
+} from '@endora-commerce/admin-kit/components';
 import { ApiError, apiClient } from '@endora-commerce/admin-kit/lib';
 import { Alert, AlertDescription, Button, Card, CardContent, CardHeader, CardTitle, Checkbox, Input, Label, PageHeader, Select, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@endora-commerce/admin-kit/ui';
-import { useTranslation } from '@endora-commerce/admin-kit/i18n';
+import { useTranslation, useTranslationContext } from '@endora-commerce/admin-kit/i18n';
 
 // Feature 002 (T035) — DB-level value types. Foundation 001 had
 // the original 5 (string, number, boolean, enum, date); 002 adds
@@ -75,6 +81,8 @@ function flagsEqual(a: FlagSet, b: FlagSet): boolean {
 
 export function AttributesManager(): ReactNode {
   const t = useTranslation('catalog');
+  const { language } = useTranslationContext();
+  const listLocale = adminLanguageToLocale(language);
   const [attrs, setAttrs] = useState<AdminAttribute[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -119,12 +127,13 @@ export function AttributesManager(): ReactNode {
     setFlagDrafts((prev) => ({ ...prev, [id]: { ...prev[id]!, [key]: value } }));
   }, []);
 
-  const buildAttributePayload = (input: AttributeFormValues): Record<string, unknown> => {
-    const label: Record<string, string> = {};
-    if (input.labelEn) label['en-US'] = input.labelEn;
-    if (input.labelPl) label['pl-PL'] = input.labelPl;
+  const buildAttributePayload = (
+    input: AttributeFormValues,
+    storedLabel?: Record<string, string> | null,
+  ): Record<string, unknown> => {
+    const label = buildLocalizedNamePayload(input.labels, storedLabel);
     return {
-      label,
+      ...(label ? { label } : {}),
       isSearchable: input.isSearchable,
       isFilterable: input.isFilterable,
       isVariantAxis: input.isVariantAxis,
@@ -141,6 +150,11 @@ export function AttributesManager(): ReactNode {
 
   const handleCreate = useCallback(
     async (input: AttributeFormValues): Promise<void> => {
+      const label = buildLocalizedNamePayload(input.labels);
+      if (!label) {
+        setError(t('attributes.error.create'));
+        return;
+      }
       // enumValues required for both `enum` (single-select) and `multiselect`.
       const enumValues =
         input.valueType === 'enum' || input.valueType === 'multiselect'
@@ -167,10 +181,15 @@ export function AttributesManager(): ReactNode {
 
   const handleEditSave = useCallback(
     async (attr: AdminAttribute, input: AttributeFormValues): Promise<void> => {
+      const label = buildLocalizedNamePayload(input.labels, attr.label);
+      if (!label) {
+        setError(t('attributes.error.update'));
+        return;
+      }
       try {
         await apiClient.patch<{ data: AdminAttribute }>(
           `/api/v1/admin/catalog/attributes/${attr.key}`,
-          buildAttributePayload(input),
+          buildAttributePayload(input, attr.label),
         );
         setInfo(t('attributes.success.update', { key: attr.key }));
         setEditingId(null);
@@ -305,7 +324,9 @@ export function AttributesManager(): ReactNode {
                       <TableCell>
                         <code className="font-mono text-xs">{a.key}</code>
                       </TableCell>
-                      <TableCell>{a.label['en-US'] ?? Object.values(a.label)[0] ?? ''}</TableCell>
+                      <TableCell>
+                        {pickCategoryDisplayName(a.label, a.labelDefault, listLocale)}
+                      </TableCell>
                       <TableCell>{a.valueType}</TableCell>
                       <TableCell className="text-muted-foreground">
                         {a.enumValues && a.enumValues.length ? a.enumValues.join(', ') : '—'}
@@ -346,8 +367,7 @@ export function AttributesManager(): ReactNode {
 
 interface AttributeFormValues {
   key: string;
-  labelEn: string;
-  labelPl: string;
+  labels: Record<string, string>;
   valueType: ValueType;
   enumValues: string;
   isSearchable: boolean;
@@ -373,16 +393,46 @@ interface AttributeFormProps {
  * (immutable server-side) while the label and flags stay editable; enum /
  * multiselect options are managed by the separate {@link AttributeOptionsEditor}.
  */
+function seedLabelsFromStored(
+  stored: Record<string, string> | undefined,
+  localeCodes: readonly string[],
+  labelDefault?: string,
+): Record<string, string> {
+  const seed: Record<string, string> = {};
+  for (const locale of localeCodes) {
+    seed[locale] =
+      stored?.[locale]?.trim() ||
+      (locale === 'en-US'
+        ? stored?.['en']?.trim() || labelDefault?.trim() || ''
+        : locale === 'pl-PL'
+          ? stored?.['pl']?.trim() || ''
+          : '');
+  }
+  return seed;
+}
+
 function AttributeForm({ mode, attribute, onSubmit, onCancel }: AttributeFormProps): ReactNode {
   const t = useTranslation('catalog');
+  const tCore = useTranslation('core');
   const isEdit = mode === 'edit';
+  const localeCodes = useActiveContentLanguageCodes(attribute?.label);
   const [key, setKey] = useState(attribute?.key ?? '');
-  // Pre-fill from the stored label, tolerating older rows whose locale keys are
-  // `en`/`pl` (or only `labelDefault`) rather than the canonical `en-US`/`pl-PL`.
-  const [labelEn, setLabelEn] = useState(
-    attribute?.label['en-US'] ?? attribute?.label['en'] ?? attribute?.labelDefault ?? '',
+  const [labels, setLabels] = useState<Record<string, string>>(() =>
+    seedLabelsFromStored(attribute?.label, localeCodes, attribute?.labelDefault),
   );
-  const [labelPl, setLabelPl] = useState(attribute?.label['pl-PL'] ?? attribute?.label['pl'] ?? '');
+  useEffect(() => {
+    setLabels((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const locale of localeCodes) {
+        if (!(locale in next)) {
+          next[locale] = attribute?.label[locale] ?? '';
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [attribute?.label, localeCodes]);
   const [valueType, setValueType] = useState<ValueType>(attribute?.valueType ?? 'string');
   const [enumValues, setEnumValues] = useState('');
   const [isSearchable, setIsSearchable] = useState(attribute?.isSearchable ?? false);
@@ -399,8 +449,7 @@ function AttributeForm({ mode, attribute, onSubmit, onCancel }: AttributeFormPro
 
   const collect = (): AttributeFormValues => ({
     key,
-    labelEn,
-    labelPl,
+    labels,
     valueType,
     enumValues,
     isSearchable,
@@ -416,8 +465,7 @@ function AttributeForm({ mode, attribute, onSubmit, onCancel }: AttributeFormPro
 
   const reset = (): void => {
     setKey('');
-    setLabelEn('');
-    setLabelPl('');
+    setLabels((prev) => Object.fromEntries(Object.keys(prev).map((locale) => [locale, ''])));
     setEnumValues('');
     setIsSearchable(false);
     setIsFilterable(false);
@@ -435,6 +483,7 @@ function AttributeForm({ mode, attribute, onSubmit, onCancel }: AttributeFormPro
       className="space-y-4"
       onSubmit={(e: FormEvent): void => {
         e.preventDefault();
+        if (!buildLocalizedNamePayload(labels, attribute?.label)) return;
         setBusy(true);
         void onSubmit(collect())
           .then(() => {
@@ -471,14 +520,20 @@ function AttributeForm({ mode, attribute, onSubmit, onCancel }: AttributeFormPro
             ))}
           </Select>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="alen">{t('attributes.field.labelEn')}</Label>
-          <Input id="alen" value={labelEn} onChange={(e): void => setLabelEn(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="alpl">{t('attributes.field.labelPl')}</Label>
-          <Input id="alpl" value={labelPl} onChange={(e): void => setLabelPl(e.target.value)} />
-        </div>
+        {localeCodes.map((locale) => (
+          <div key={locale} className="space-y-2">
+            <Label htmlFor={`alabel-${locale}`}>
+              {tCore('legacyMethods.fields.nameForLocale', { locale })}
+            </Label>
+            <Input
+              id={`alabel-${locale}`}
+              value={labels[locale] ?? ''}
+              onChange={(e): void =>
+                setLabels((prev) => ({ ...prev, [locale]: e.target.value }))
+              }
+            />
+          </div>
+        ))}
       </div>
       {isEdit ? (
         <p className="text-xs text-muted-foreground">{t('attributes.edit.lockedHint')}</p>

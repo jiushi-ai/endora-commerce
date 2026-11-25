@@ -380,25 +380,28 @@ export function ProductEditor(): ReactNode {
     );
 
   const tabs: Array<{ id: string; label: string; icon: ReactNode; show: boolean }> = [
-    { id: 'details', label: 'Details', icon: <FileTextIcon size={14} />, show: true },
-    { id: 'attributes', label: 'Attributes', icon: <SlidersHorizontal size={14} />, show: !isNew },
+    { id: 'details', label: t('productEditor.tab.details'), icon: <FileTextIcon size={14} />, show: true },
+    { id: 'attributes', label: t('productEditor.tab.attributes'), icon: <SlidersHorizontal size={14} />, show: !isNew },
     { id: 'pricing', label: t('productEditor.tab.pricing'), icon: <CircleDollarSign size={14} />, show: !isNew },
     {
       id: 'variants',
-      label: 'Variants',
+      label: t('productEditor.tab.variants'),
       icon: <Layers size={14} />,
       show: !isNew && type === 'configurable',
     },
     {
       id: 'composite',
-      label: type === 'grouped' ? 'Grouped items' : 'Bundle slots',
+      label:
+        type === 'grouped'
+          ? t('productEditor.tab.groupedItems')
+          : t('productEditor.tab.bundleSlots'),
       icon: <Layers size={14} />,
       show: !isNew && (type === 'grouped' || type === 'bundle'),
     },
-    { id: 'media', label: 'Media', icon: <ImageIcon size={14} />, show: !isNew },
-    { id: 'inventory', label: 'Inventory', icon: <WarehouseIcon size={14} />, show: !isNew },
-    { id: 'attachments', label: 'Attachments', icon: <Paperclip size={14} />, show: !isNew },
-    { id: 'links', label: 'Related', icon: <LinkIcon size={14} />, show: !isNew },
+    { id: 'media', label: t('productEditor.tab.media'), icon: <ImageIcon size={14} />, show: !isNew },
+    { id: 'inventory', label: t('productEditor.tab.inventory'), icon: <WarehouseIcon size={14} />, show: !isNew },
+    { id: 'attachments', label: t('productEditor.tab.attachments'), icon: <Paperclip size={14} />, show: !isNew },
+    { id: 'links', label: t('productEditor.tab.related'), icon: <LinkIcon size={14} />, show: !isNew },
     // Feature 091 / P7a, Z15 — the tab body is a zone, so the button is shown
     // by counting it. `useAdminZone` has already applied both presence axes and
     // each contributor's permission, so its length is the honest answer to "is
@@ -407,11 +410,11 @@ export function ProductEditor(): ReactNode {
     // place (Z14); what it stops knowing is which module fills it.
     {
       id: 'channels',
-      label: 'Channels',
+      label: t('productEditor.tab.channels'),
       icon: <StoreIcon size={14} />,
       show: !isNew && channelContributions.length > 0,
     },
-    { id: 'seo', label: 'SEO', icon: <Globe size={14} />, show: !isNew },
+    { id: 'seo', label: t('productEditor.tab.seo'), icon: <Globe size={14} />, show: !isNew },
   ];
   const visibleTabs = tabs.filter((t) => t.show);
 

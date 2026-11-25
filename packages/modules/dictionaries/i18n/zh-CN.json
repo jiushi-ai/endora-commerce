@@ -23,7 +23,7 @@
   "audit.copyCsv": "复制 CSV",
   "audit.invalidateCache": "使缓存无效",
   "audit.generatedAt": "生成 {date}",
-  "audit.orphanReferences": "孤儿参考文献",
+  "audit.orphanReferences": "孤立引用",
   "audit.loading": "加载中",
   "audit.groupCount": "{count} 组",
   "audit.column.dictionary": "词典",

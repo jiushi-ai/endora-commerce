@@ -90,11 +90,21 @@ const seedAttribute = (massEditable: boolean, isPriceRule = false): unknown => (
   massEditable,
 });
 
+function mockGet(url: string): Promise<unknown> {
+  if (url === '/api/v1/i18n/config') {
+    return Promise.resolve({
+      data: { languages: [{ code: 'en-US' }, { code: 'zh-CN' }, { code: 'zh-TW' }] },
+    });
+  }
+  return Promise.reject(new Error(`unexpected GET ${url}`));
+}
+
 describe('AttributesManager — Mass-editable toggle (T027)', () => {
   beforeEach(() => {
     postSpy.mockReset();
     getSpy.mockReset();
     patchSpy.mockReset();
+    getSpy.mockImplementation((url: string) => mockGet(url));
   });
 
   afterEach(() => {
@@ -102,7 +112,11 @@ describe('AttributesManager — Mass-editable toggle (T027)', () => {
   });
 
   it('patches the attribute when the Mass-editable flag is toggled and saved', async () => {
-    getSpy.mockResolvedValue({ data: [seedAttribute(false)] });
+    getSpy.mockImplementation((url: string) =>
+      url === '/api/v1/admin/catalog/attributes'
+        ? Promise.resolve({ data: [seedAttribute(false)] })
+        : mockGet(url),
+    );
     patchSpy.mockResolvedValue({ data: seedAttribute(true) });
 
     renderWithI18n(<AttributesManager />, BUNDLE);
@@ -135,7 +149,11 @@ describe('AttributesManager — Mass-editable toggle (T027)', () => {
   });
 
   it('renders the checkbox as checked when the attribute is already flagged', async () => {
-    getSpy.mockResolvedValue({ data: [seedAttribute(true)] });
+    getSpy.mockImplementation((url: string) =>
+      url === '/api/v1/admin/catalog/attributes'
+        ? Promise.resolve({ data: [seedAttribute(true)] })
+        : mockGet(url),
+    );
 
     renderWithI18n(<AttributesManager />, BUNDLE);
 
@@ -156,6 +174,7 @@ describe('AttributesManager — Price-rule flag', () => {
     postSpy.mockReset();
     getSpy.mockReset();
     patchSpy.mockReset();
+    getSpy.mockImplementation((url: string) => mockGet(url));
   });
 
   afterEach(() => {
@@ -163,7 +182,11 @@ describe('AttributesManager — Price-rule flag', () => {
   });
 
   it('renders the column and reflects the persisted flag', async () => {
-    getSpy.mockResolvedValue({ data: [seedAttribute(false, true)] });
+    getSpy.mockImplementation((url: string) =>
+      url === '/api/v1/admin/catalog/attributes'
+        ? Promise.resolve({ data: [seedAttribute(false, true)] })
+        : mockGet(url),
+    );
 
     renderWithI18n(<AttributesManager />, BUNDLE);
 
@@ -174,7 +197,11 @@ describe('AttributesManager — Price-rule flag', () => {
   });
 
   it('patches isPriceRule when the list toggle is flipped and saved', async () => {
-    getSpy.mockResolvedValue({ data: [seedAttribute(false)] });
+    getSpy.mockImplementation((url: string) =>
+      url === '/api/v1/admin/catalog/attributes'
+        ? Promise.resolve({ data: [seedAttribute(false)] })
+        : mockGet(url),
+    );
     patchSpy.mockResolvedValue({ data: seedAttribute(false, true) });
 
     renderWithI18n(<AttributesManager />, BUNDLE);
@@ -193,7 +220,11 @@ describe('AttributesManager — Price-rule flag', () => {
   });
 
   it('sends isPriceRule from the create form', async () => {
-    getSpy.mockResolvedValue({ data: [] });
+    getSpy.mockImplementation((url: string) =>
+      url === '/api/v1/admin/catalog/attributes'
+        ? Promise.resolve({ data: [] })
+        : mockGet(url),
+    );
     postSpy.mockResolvedValue({ data: seedAttribute(false, true) });
 
     renderWithI18n(<AttributesManager />, BUNDLE);
@@ -205,6 +236,7 @@ describe('AttributesManager — Price-rule flag', () => {
     // The key is the form's one required field; without it the browser's own
     // validation stops the submit before the handler runs.
     await user.type(document.getElementById('akey') as HTMLInputElement, 'margin_class');
+    await user.type(document.getElementById('alabel-en-US') as HTMLInputElement, 'Margin class');
     await user.click(screen.getByText('attributes.action.create'));
 
     await waitFor(() => expect(postSpy).toHaveBeenCalledTimes(1));
