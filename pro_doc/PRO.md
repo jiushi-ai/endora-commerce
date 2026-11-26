@@ -1250,3 +1250,13 @@ feat-26-11-25 22:50:25 [70.1~70.5]：Quick Order链接样式与CSV中文解码�
 汇总：依据 chatlog/2026-11-26-chat1；优惠码应用非申请流；促销机翻与 Rule 英文硬编码；ADLINK failure 为库存 reserved/可售。发版需重建 promotions + admin-kit + inventory + _i18n（及 admin）。
 
 feat-26-11-26 00:15:11 [71.1~71.4]：促销Action与RuleBuilder四语；库存不足文案修正
+
+### 72. Invoice ledger 业务文案（发票台账）+ 去 Endora 展示名
+
+- [x] 72.1 invoice_ledger 四语：侧栏/页题改为「发票台账」；Deliveries→过账记录；Endora number→本平台/Platform number
+- [x] 72.2 无 `_i18n` 同名 key；manifest 设置说明 Endora-assigned→platform-assigned
+- [x] 72.3 本 §99；建议 commit 如下（未执行）
+
+汇总：分类账/交货等机翻修正；编号下拉去开源品牌字。发版需重建 invoice_ledger（及 admin）。
+
+feat-26-11-26 01:10:00 [72.1~72.3]：发票台账四语业务化；编号下拉改为本平台编号

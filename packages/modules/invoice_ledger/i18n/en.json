@@ -11,7 +11,7 @@
   "nav.routing.label": "Ledger routing",
   "routing.form.title": "Instance routing",
   "routing.numberingMode": "Invoice numbering",
-  "routing.numberingMode.endora": "Endora number (mode A)",
+  "routing.numberingMode.endora": "Platform number (mode A)",
   "routing.numberingMode.vendor": "Wait for vendor number (mode B)",
   "routing.ksefRouting": "KSeF routing",
   "routing.ksefRouting.native": "Native KSeF module",

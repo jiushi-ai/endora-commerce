@@ -11,7 +11,7 @@
   "nav.routing.label": "Trasowanie księgi",
   "routing.form.title": "Trasowanie instancji",
   "routing.numberingMode": "Numeracja faktur",
-  "routing.numberingMode.endora": "Numer Endora (tryb A)",
+  "routing.numberingMode.endora": "Numer platformy (tryb A)",
   "routing.numberingMode.vendor": "Czekaj na numer dostawcy (tryb B)",
   "routing.ksefRouting": "Trasowanie KSeF",
   "routing.ksefRouting.native": "Natywny moduł KSeF",

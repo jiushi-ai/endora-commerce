@@ -15,7 +15,7 @@ export const invoiceLedgerSettingsManifest = defineModuleSettingsManifest({
       code: INVOICE_LEDGER_SETTING_CODES.NUMBERING_MODE,
       name: 'Invoice numbering source',
       description:
-        'Whether issued VAT numbers stay Endora-assigned (mode A) or wait for the ledger vendor (mode B). Sales-channel value overrides the instance default.',
+        'Whether issued VAT numbers stay platform-assigned (mode A) or wait for the ledger vendor (mode B). Sales-channel value overrides the instance default.',
       groupCode: 'invoice_ledger',
       valueType: 'string',
       enumOptions: ['endora', 'vendor'],
