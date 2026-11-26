@@ -253,7 +253,7 @@ export default async function CheckoutPage({
 
         <CouponField
           applied={cart.discount ?? null}
-          error={params.couponError ?? null}
+          error={params.couponError ? couponRejectionMessage(params.couponError, locale) : null}
           applyAction={applyCouponAction}
           clearAction={clearCouponAction}
           locale={locale}
@@ -526,10 +526,10 @@ async function applyCouponAction(formData: FormData): Promise<void> {
   const jar = await readJar();
   if (!jar.session && !jar.anon) return await localeRedirect('/login?next=/checkout');
   const code = ((formData.get('couponCode') as string | null) ?? '').trim();
-  if (!code) return await localeRedirect('/checkout');
+  if (!code) return await localeRedirect('/checkout?couponError=coupon_format_invalid');
   const result = await applyCartCoupon(jar, code);
   if (result.outcome === 'rejected') {
-    return await localeRedirect(`/checkout?couponError=${encodeURIComponent(couponRejectionMessage(result.reason))}`);
+    return await localeRedirect(`/checkout?couponError=${encodeURIComponent(result.reason)}`);
   }
   return await localeRedirect('/checkout');
 }
@@ -542,21 +542,29 @@ async function clearCouponAction(): Promise<void> {
   return await localeRedirect('/checkout');
 }
 
-/** Map the typed coupon-rejection reasons to a localized buyer message. */
-function couponRejectionMessage(reason: string): string {
+/**
+ * Map coupon-rejection reason codes to storefront copy (same keys as cart).
+ * URL carries the code; the page translates for the active locale.
+ * / 将优惠码拒绝原因码映射为小 b 文案（与购物车同一套 key）；URL 只带 code，页面再按语系翻译。
+ */
+function couponRejectionMessage(reason: string, locale: string): string {
+  const t = tForLocale(locale);
   switch (reason) {
     case 'invalid_code':
-    case 'coupon_format_invalid':
-      return 'This coupon code is invalid.';
+      return t('cart.coupon.rejected.invalid');
     case 'expired':
-      return 'This coupon has expired.';
+      return t('cart.coupon.rejected.expired');
     case 'below_min_spend':
-      return 'Your cart does not meet this coupon’s minimum spend.';
+      return t('cart.coupon.rejected.belowMinBare');
     case 'wrong_channel':
+      return t('cart.coupon.rejected.wrongChannel');
     case 'wrong_customer_group':
+      return t('cart.coupon.rejected.wrongGroup');
     case 'wrong_organization':
-      return 'This coupon is not available for your account.';
+      return t('cart.coupon.rejected.wrongOrg');
+    case 'coupon_format_invalid':
+      return t('cart.coupon.rejected.format');
     default:
-      return 'This coupon could not be applied.';
+      return t('cart.coupon.rejected.generic');
   }
 }

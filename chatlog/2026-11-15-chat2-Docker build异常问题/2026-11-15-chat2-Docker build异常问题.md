@@ -8,20 +8,15 @@
 
 时间：2026-11-15 22:30
 
-
 会不会是 wsl 配置 有限制导致的，图1 是wsl 配置 文件大小配置 ，图2是内存和处理器配置。
 
 是否有关系上面的错误？
 
 ---
 
-
-
-
 ## chat rep
 
 时间：2026-11-13 22:30
-
 
 是的。`docker build` 就是在本机 Docker Desktop 里跑的，会占它的磁盘。
 
@@ -98,7 +93,6 @@ docker system prune -af
 
 时间：2026-11-13 22:30
 
-
 结论先说：**图 1 / 图 2 基本不是这次 “Disk full” 的原因。**
 
 ## 图 1（Default VHD size = 1048576 MB ≈ 1TB）
@@ -133,7 +127,7 @@ docker system prune -af
 
 ## 你可以怎么验证（和 WSL 设置无关）
 
-Docker 能启动后执行：
+Docker 能启动后执行：查看docker 使用情况
 
 ```bash
 docker system df

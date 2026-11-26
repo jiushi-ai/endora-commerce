@@ -1218,3 +1218,24 @@ feat-26-11-25 03:35:22 [68.1~68.5]：Catalog Name顶栏三语；商品Tab与事�
 汇总：Attributes 编辑可见性与删除补齐；Categories Name 对齐 68 模式；到货通知状态徽章四语。发版需重建 catalog + _i18n（及 admin）。
 
 feat-26-11-25 18:20:00 [69.1~69.4]：Attributes编辑删除；Categories Name顶栏三语；到货通知status四语
+
+### 69（续）. Attributes 删除确认框补齐 zh-CN/zh-TW
+
+- [x] 69.5 catalog i18n：补 `attributes.deleteConfirm` 等（zh-CN/zh-TW；en/pl 已有，代码已接 t()）
+- [x] 69.6 本 §99；建议 commit 如下（未执行）
+
+汇总：删除确认此前缺 zh-CN/zh-TW 词条故回退英文；现四语齐全，跟顶栏语系。发版需重建 catalog（及 admin）。
+
+feat-26-11-25 18:56:00 [69.5~69.6]：Attributes删除确认补齐zh-CN/zh-TW词条
+
+### 70. Quick Order 模板链接样式 + CSV 中文解码 + 优惠码流程说明
+
+- [x] 70.1 Quick Order：模板/页内链接补 `b2b-account__link`（对齐开源观感）
+- [x] 70.2 CSV 导入：UTF-8 → GB18030 回退解码 + 单测（拒绝区 CJK 可读）
+- [x] 70.3 Checkout 优惠码拒绝：URL 带 reason code，页面接 `cart.coupon.rejected.*` 四语
+- [x] 70.4 `pro_doc/coupon-apply-flow.md` 优惠码端到端说明（本仓与开源同构）
+- [x] 70.5 本 §99；建议 commit 如下（未执行）
+
+汇总：模板链接灰字因缺 account link class；CSV 乱码因强制 UTF-8；优惠码流程已存在仅补说明与拒绝文案 i18n。Quick Order 大合并（session 预览等）未纳入本批。发版需重建 quick_order + storefront。
+
+feat-26-11-25 22:50:25 [70.1~70.5]：Quick Order链接样式与CSV中文解码；优惠码拒绝i18n与流程说明

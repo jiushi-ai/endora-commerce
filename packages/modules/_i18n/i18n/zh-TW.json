@@ -2382,7 +2382,7 @@
   "pageBuilder.assetPicker.selectVideo": "選擇視頻",
   "pageBuilder.assetPicker.selectFile": "選擇文件",
   "pageBuilder.blogCategory.all": "所有類別",
-  "pageBuilder.blogCategory.slugPlaceholder": "類別蛞蝓",
+  "pageBuilder.blogCategory.slugPlaceholder": "類別別名",
   "profilePage.language.option.zh-CN": "簡體中文",
   "profilePage.language.option.zh-TW": "繁體中文"
 }
