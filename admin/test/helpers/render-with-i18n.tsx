@@ -1,7 +1,7 @@
 import { render, type RenderOptions, type RenderResult } from '@testing-library/react';
 import type { ReactElement, ReactNode } from 'react';
 import { TranslationProvider } from '../../../packages/admin-shell/src/i18n/TranslationProvider';
-import type { Bundle } from '../../../packages/admin-shell/src/i18n/types';
+import type { Bundle, SupportedAdminLanguage } from '../../../packages/admin-shell/src/i18n/types';
 
 /**
  * Test wrapper that mounts a component inside the admin i18n
@@ -11,14 +11,15 @@ import type { Bundle } from '../../../packages/admin-shell/src/i18n/types';
 export function renderWithI18n(
   ui: ReactElement,
   bundle: Bundle = {},
-  options?: Omit<RenderOptions, 'wrapper'>,
+  options?: Omit<RenderOptions, 'wrapper'> & { language?: SupportedAdminLanguage },
 ): RenderResult {
+  const { language = 'en', ...renderOptions } = options ?? {};
   const wrapper = ({ children }: { children: ReactNode }): ReactElement => (
-    <TranslationProvider language="en" initialBundle={bundle}>
+    <TranslationProvider language={language} initialBundle={bundle}>
       <>{children}</>
     </TranslationProvider>
   );
-  return render(ui, { wrapper, ...options });
+  return render(ui, { wrapper, ...renderOptions });
 }
 
 /** Minimal bundle that resolves every key to itself so tests can

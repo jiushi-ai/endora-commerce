@@ -297,14 +297,6 @@ export const PromotionEditPage = (): ReactNode => {
               onChange={setRule}
               attributeFields={attributeFields}
               fieldOptions={fieldOptions}
-              // This screen has option sets too (payment and delivery methods),
-              // so it gets the same value picker — and its copy translated
-              // rather than the component's English fallback.
-              labels={{
-                valuesPlaceholder: t('ruleBuilder.values.placeholder'),
-                valuesLabel: t('ruleBuilder.values.label'),
-                valuesSearchPlaceholder: t('ruleBuilder.values.search'),
-              }}
             />
           </CardContent>
         </Card>
@@ -601,26 +593,26 @@ function ActionConfigEditor({
     case 'percentage_off_cart':
       return (
         <div className={grid}>
-          <NumberField label="percent" value={action.percent} onChange={(percent) => onChange({ ...action, percent })} />
+          <NumberField label={t('promotions.actionField.percent')} value={action.percent} onChange={(percent) => onChange({ ...action, percent })} />
         </div>
       );
     case 'amount_off_cart':
       return (
         <div className={grid}>
-          <NumberField label="amount" value={action.amount} onChange={(amount) => onChange({ ...action, amount })} />
+          <NumberField label={t('promotions.actionField.amount')} value={action.amount} onChange={(amount) => onChange({ ...action, amount })} />
           <CurrencyField value={action.currency} onChange={(currency) => onChange({ ...action, currency })} />
         </div>
       );
     case 'buy_x_get_y_free':
       return (
         <div className={grid}>
-          <NumberField label="buyQuantity" value={action.buyQuantity} onChange={(buyQuantity) => onChange({ ...action, buyQuantity })} />
-          <NumberField label="freeQuantity" value={action.freeQuantity} onChange={(freeQuantity) => onChange({ ...action, freeQuantity })} />
+          <NumberField label={t('promotions.actionField.buyQuantity')} value={action.buyQuantity} onChange={(buyQuantity) => onChange({ ...action, buyQuantity })} />
+          <NumberField label={t('promotions.actionField.freeQuantity')} value={action.freeQuantity} onChange={(freeQuantity) => onChange({ ...action, freeQuantity })} />
           <div className="flex flex-col gap-1">
-            <Label>target</Label>
+            <Label>{t('promotions.actionField.target')}</Label>
             <Select value={action.target} onChange={(e) => onChange({ ...action, target: e.target.value as 'cheapest' | 'most_expensive' })}>
-              <option value="cheapest">cheapest</option>
-              <option value="most_expensive">most_expensive</option>
+              <option value="cheapest">{t('promotions.actionField.target.cheapest')}</option>
+              <option value="most_expensive">{t('promotions.actionField.target.most_expensive')}</option>
             </Select>
           </div>
         </div>
@@ -628,48 +620,48 @@ function ActionConfigEditor({
     case 'spend_x_percent_off':
       return (
         <div className={grid}>
-          <NumberField label="spendStep" value={action.spendStep} onChange={(spendStep) => onChange({ ...action, spendStep })} />
-          <NumberField label="percent" value={action.percent} onChange={(percent) => onChange({ ...action, percent })} />
+          <NumberField label={t('promotions.actionField.spendStep')} value={action.spendStep} onChange={(spendStep) => onChange({ ...action, spendStep })} />
+          <NumberField label={t('promotions.actionField.percent')} value={action.percent} onChange={(percent) => onChange({ ...action, percent })} />
           <CurrencyField value={action.currency} onChange={(currency) => onChange({ ...action, currency })} />
         </div>
       );
     case 'spend_x_amount_off':
       return (
         <div className={grid}>
-          <NumberField label="spendStep" value={action.spendStep} onChange={(spendStep) => onChange({ ...action, spendStep })} />
-          <NumberField label="amount" value={action.amount} onChange={(amount) => onChange({ ...action, amount })} />
+          <NumberField label={t('promotions.actionField.spendStep')} value={action.spendStep} onChange={(spendStep) => onChange({ ...action, spendStep })} />
+          <NumberField label={t('promotions.actionField.amount')} value={action.amount} onChange={(amount) => onChange({ ...action, amount })} />
           <CurrencyField value={action.currency} onChange={(currency) => onChange({ ...action, currency })} />
         </div>
       );
     case 'every_nth_product_percent_off':
       return (
         <div className={grid}>
-          <NumberField label="nth" value={action.nth} onChange={(nth) => onChange({ ...action, nth })} />
-          <NumberField label="percent" value={action.percent} onChange={(percent) => onChange({ ...action, percent })} />
+          <NumberField label={t('promotions.actionField.nth')} value={action.nth} onChange={(nth) => onChange({ ...action, nth })} />
+          <NumberField label={t('promotions.actionField.percent')} value={action.percent} onChange={(percent) => onChange({ ...action, percent })} />
         </div>
       );
     case 'buy_x_units_y_free':
       return (
         <div className={grid}>
           <ProductIdField value={action.productId} onChange={(productId) => onChange({ ...action, productId })} />
-          <NumberField label="buyUnits" value={action.buyUnits} onChange={(buyUnits) => onChange({ ...action, buyUnits })} />
-          <NumberField label="freeUnits" value={action.freeUnits} onChange={(freeUnits) => onChange({ ...action, freeUnits })} />
+          <NumberField label={t('promotions.actionField.buyUnits')} value={action.buyUnits} onChange={(buyUnits) => onChange({ ...action, buyUnits })} />
+          <NumberField label={t('promotions.actionField.freeUnits')} value={action.freeUnits} onChange={(freeUnits) => onChange({ ...action, freeUnits })} />
         </div>
       );
     case 'buy_x_units_percent_off':
       return (
         <div className={grid}>
           <ProductIdField value={action.productId} onChange={(productId) => onChange({ ...action, productId })} />
-          <NumberField label="buyUnits" value={action.buyUnits} onChange={(buyUnits) => onChange({ ...action, buyUnits })} />
-          <NumberField label="percent" value={action.percent} onChange={(percent) => onChange({ ...action, percent })} />
+          <NumberField label={t('promotions.actionField.buyUnits')} value={action.buyUnits} onChange={(buyUnits) => onChange({ ...action, buyUnits })} />
+          <NumberField label={t('promotions.actionField.percent')} value={action.percent} onChange={(percent) => onChange({ ...action, percent })} />
         </div>
       );
     case 'buy_x_units_amount_off':
       return (
         <div className={grid}>
           <ProductIdField value={action.productId} onChange={(productId) => onChange({ ...action, productId })} />
-          <NumberField label="buyUnits" value={action.buyUnits} onChange={(buyUnits) => onChange({ ...action, buyUnits })} />
-          <NumberField label="amount" value={action.amount} onChange={(amount) => onChange({ ...action, amount })} />
+          <NumberField label={t('promotions.actionField.buyUnits')} value={action.buyUnits} onChange={(buyUnits) => onChange({ ...action, buyUnits })} />
+          <NumberField label={t('promotions.actionField.amount')} value={action.amount} onChange={(amount) => onChange({ ...action, amount })} />
           <CurrencyField value={action.currency} onChange={(currency) => onChange({ ...action, currency })} />
         </div>
       );
@@ -677,19 +669,25 @@ function ActionConfigEditor({
 }
 
 function CurrencyField({ value, onChange }: { value: string; onChange: (v: string) => void }): ReactNode {
+  const t = useTranslation('core');
   return (
     <div className="flex flex-col gap-1">
-      <Label>currency</Label>
+      <Label>{t('promotions.actionField.currency')}</Label>
       <Input value={value} maxLength={3} onChange={(e) => onChange(e.target.value.toUpperCase())} />
     </div>
   );
 }
 
 function ProductIdField({ value, onChange }: { value: string; onChange: (v: string) => void }): ReactNode {
+  const t = useTranslation('core');
   return (
     <div className="flex flex-col gap-1">
-      <Label>productId</Label>
-      <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder="product UUID" />
+      <Label>{t('promotions.actionField.productId')}</Label>
+      <Input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={t('promotions.actionField.productIdPlaceholder')}
+      />
     </div>
   );
 }

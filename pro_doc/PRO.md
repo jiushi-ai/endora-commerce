@@ -1239,3 +1239,14 @@ feat-26-11-25 18:56:00 [69.5~69.6]：Attributes删除确认补齐zh-CN/zh-TW词�
 汇总：模板链接灰字因缺 account link class；CSV 乱码因强制 UTF-8；优惠码流程已存在仅补说明与拒绝文案 i18n。Quick Order 大合并（session 预览等）未纳入本批。发版需重建 quick_order + storefront。
 
 feat-26-11-25 22:50:25 [70.1~70.5]：Quick Order链接样式与CSV中文解码；优惠码拒绝i18n与流程说明
+
+### 71. 促销业务文案 + RuleBuilder 四语 + 库存不足文案
+
+- [x] 71.1 PromotionEditPage Action 字段接 t()；promotions/_i18n 业务化错译（全球限制、amount off 等）
+- [x] 71.2 admin-kit RuleBuilder 接 useTranslation + `_i18n` ruleBuilder.* 四语；测试更新
+- [x] 71.3 inventory `errors.STOCK_UNAVAILABLE` 四语改为「库存不足以满足订购数量」
+- [x] 71.4 本 §99；建议 commit 如下（未执行）
+
+汇总：依据 chatlog/2026-11-26-chat1；优惠码应用非申请流；促销机翻与 Rule 英文硬编码；ADLINK failure 为库存 reserved/可售。发版需重建 promotions + admin-kit + inventory + _i18n（及 admin）。
+
+feat-26-11-26 00:15:11 [71.1~71.4]：促销Action与RuleBuilder四语；库存不足文案修正

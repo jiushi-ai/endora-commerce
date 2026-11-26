@@ -4,6 +4,7 @@ import { Button } from '../../ui/button.js';
 import { Input } from '../../ui/input.js';
 import { MultiSelect } from '../../ui/multi-select.js';
 import { Select } from '../../ui/select.js';
+import { useTranslation } from '../../i18n/useTranslation.js';
 import type { PromotionRule } from '@endora-commerce/contracts';
 
 /**
@@ -17,26 +18,15 @@ import type { PromotionRule } from '@endora-commerce/contracts';
  * carts. Forking the file would have made this the admin's *third* rule builder
  * and forked its accessibility and bug fixes with it (Principle IX).
  *
- * The generalisation is deliberately conservative. Every new prop is optional
- * and every default reproduces the promotion behaviour **exactly** — the same
- * catalogue in the same order, the same operators, the same seed condition
- * (`cartTotal >= 0`) and the same copy. `admin/test/components/RuleBuilder.test.tsx`
- * pins all of it, because the incumbent callers (`PromotionRulesPage`,
- * `PromotionEditPage`) are live screens that must not shift under this feature.
+ * Issue #1433 (DS-16, SHELL-07) moved every word the component draws itself
+ * into the `core` bundle. Every entry of {@link RuleBuilderLabels} still
+ * overrides its default.
  */
 export interface RuleAttributeField {
   attributeKey: string;
   label: string;
 }
 
-/**
- * The structural rule tree the component actually manipulates. Every concrete
- * AST it edits (`PromotionRule`, the feed's `ProductSelectionRule`) is a
- * narrowing of this: same three node kinds, different field catalogue and
- * operator enum. Typing against the structure rather than one module's contract
- * is what lets a second caller reuse the component without either contract
- * learning about the other.
- */
 export type StructuralRuleField =
   | { kind: 'builtin'; key: string }
   | { kind: 'attribute'; attributeKey: string }
@@ -60,31 +50,31 @@ export interface RuleBuilderBuiltinField {
   key: string;
   kind: 'number' | 'string' | 'set';
   ops: string[];
-  /** Shown in the picker. Defaults to `key`, which is what promotions renders. */
   label?: string;
-  /**
-   * The operator and values used when this field seeds a brand-new condition.
-   * Only the first field of a catalogue ever needs it; it exists so the
-   * promotion default (`cartTotal >= 0`) survives the generalisation verbatim
-   * instead of silently becoming `cartTotal = ∅`.
-   */
   seed?: { op: string; values: StructuralRuleValue[] };
 }
 
-/** Copy the component cannot know, because it depends on what is being filtered. */
 export interface RuleBuilderLabels {
-  /** Heading of the built-in `optgroup`. */
   builtinGroup?: string;
-  /** Heading of the attribute `optgroup`. */
   attributeGroup?: string;
-  /** The sentence shown on the `all` node. */
   matchAll?: string;
-  /** Trigger text for the value picker while nothing is chosen. */
   valuesPlaceholder?: string;
-  /** Accessible name for the value picker's trigger. */
   valuesLabel?: string;
-  /** Placeholder inside the value picker's search box. */
   valuesSearchPlaceholder?: string;
+  valuesInputPlaceholder?: string;
+  fieldLabel?: string;
+  operatorLabel?: string;
+  addCondition?: string;
+  addGroup?: string;
+  combineWith?: string;
+  groupOperatorLabel?: string;
+  groupAll?: string;
+  groupAny?: string;
+  groupSuffix?: string;
+  addChildCondition?: string;
+  addChildGroup?: string;
+  removeCondition?: string;
+  removeChild?: string;
 }
 
 const BUILTIN_FIELDS: RuleBuilderBuiltinField[] = [
@@ -103,13 +93,27 @@ const BUILTIN_FIELDS: RuleBuilderBuiltinField[] = [
   { key: 'category', kind: 'set', ops: ['in', 'notIn'] },
 ];
 
-const DEFAULT_LABELS: Required<RuleBuilderLabels> = {
-  builtinGroup: 'Cart & relationship',
-  attributeGroup: 'Attributes',
-  matchAll: 'Matches all carts.',
-  valuesPlaceholder: 'Any value',
-  valuesLabel: 'Value',
-  valuesSearchPlaceholder: 'Search…',
+const DEFAULT_LABEL_KEYS: Readonly<Record<keyof RuleBuilderLabels, string>> = {
+  builtinGroup: 'ruleBuilder.group.builtin',
+  attributeGroup: 'ruleBuilder.group.attribute',
+  matchAll: 'ruleBuilder.matchAll',
+  valuesPlaceholder: 'ruleBuilder.values.placeholder',
+  valuesLabel: 'ruleBuilder.values.label',
+  valuesSearchPlaceholder: 'ruleBuilder.values.search',
+  valuesInputPlaceholder: 'ruleBuilder.values.input',
+  fieldLabel: 'ruleBuilder.field.label',
+  operatorLabel: 'ruleBuilder.operator.label',
+  addCondition: 'ruleBuilder.add.condition',
+  addGroup: 'ruleBuilder.add.group',
+  combineWith: 'ruleBuilder.combineWith',
+  groupOperatorLabel: 'ruleBuilder.groupOp.label',
+  groupAll: 'ruleBuilder.groupOp.all',
+  groupAny: 'ruleBuilder.groupOp.any',
+  groupSuffix: 'ruleBuilder.groupOp.suffix',
+  addChildCondition: 'ruleBuilder.add.childCondition',
+  addChildGroup: 'ruleBuilder.add.childGroup',
+  removeCondition: 'ruleBuilder.remove.condition',
+  removeChild: 'ruleBuilder.remove.child',
 };
 
 const ATTRIBUTE_OPS: string[] = ['eq', 'neq', 'in', 'notIn', 'between'];
@@ -160,13 +164,20 @@ function textToValues(text: string, numeric: boolean): Array<string | number> {
     .map((s) => (numeric ? Number(s) : s));
 }
 
-/** Option lists for fields that should render a value picker, keyed by field key. */
+function catalogLabel(
+  t: (key: string) => string,
+  key: string,
+  fallback: string,
+): string {
+  const value = t(key);
+  return value === `core.${key}` ? fallback : value;
+}
+
 export type RuleFieldOptions = Partial<Record<string, Array<{ value: string; label: string }>>>;
 
 export interface RuleBuilderProps<T extends StructuralRule = PromotionRule> {
   value: T;
   onChange: (next: T) => void;
-  /** Defaults to the promotion cart catalogue — see the file header. */
   builtinFields?: RuleBuilderBuiltinField[];
   attributeFields?: RuleAttributeField[];
   fieldOptions?: RuleFieldOptions;
@@ -183,14 +194,17 @@ export function RuleBuilder<T extends StructuralRule = PromotionRule>({
   labels,
   disabled = false,
 }: RuleBuilderProps<T>): ReactNode {
-  const copy: Required<RuleBuilderLabels> = { ...DEFAULT_LABELS, ...labels };
+  const t = useTranslation('core');
+  const copy = Object.fromEntries(
+    (Object.keys(DEFAULT_LABEL_KEYS) as Array<keyof RuleBuilderLabels>).map((name) => [
+      name,
+      labels?.[name] ?? t(DEFAULT_LABEL_KEYS[name]),
+    ]),
+  ) as Required<RuleBuilderLabels>;
   return (
-    <div className="rounded-md border border-line p-3">
+    <div className="rounded-md border border-line p-3" data-slot="rule-builder">
       <RuleNode
         node={value}
-        // The editor produces structural nodes; the caller owns the concrete
-        // AST. Every node this component can build is valid in `T` because the
-        // caller supplied the field catalogue and the operator lists it uses.
         onChange={(next): void => onChange(next as T)}
         builtinFields={builtinFields}
         attributeFields={attributeFields}
@@ -198,6 +212,7 @@ export function RuleBuilder<T extends StructuralRule = PromotionRule>({
         labels={copy}
         disabled={disabled}
         depth={0}
+        t={t}
       />
     </div>
   );
@@ -212,6 +227,7 @@ function RuleNode({
   labels,
   disabled,
   depth,
+  t,
 }: {
   node: StructuralRule;
   onChange: (next: StructuralRule) => void;
@@ -221,13 +237,14 @@ function RuleNode({
   labels: Required<RuleBuilderLabels>;
   disabled: boolean;
   depth: number;
+  t: (key: string) => string;
 }): ReactNode {
   if (node.kind === 'all') {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span>{labels.matchAll}</span>
         <Button type="button" size="sm" variant="outline" disabled={disabled} onClick={() => onChange(defaultCondition(builtinFields))}>
-          <Plus className="mr-1 h-3 w-3" /> Add condition
+          <Plus className="mr-1 h-3 w-3" aria-hidden="true" /> {labels.addCondition}
         </Button>
         <Button
           type="button"
@@ -238,7 +255,7 @@ function RuleNode({
             onChange({ kind: 'group', op: 'AND', children: [defaultCondition(builtinFields)] })
           }
         >
-          <Plus className="mr-1 h-3 w-3" /> Add group
+          <Plus className="mr-1 h-3 w-3" aria-hidden="true" /> {labels.addGroup}
         </Button>
       </div>
     );
@@ -256,6 +273,7 @@ function RuleNode({
           labels={labels}
           disabled={disabled}
           onRemove={() => onChange({ kind: 'all' })}
+          t={t}
         />
         <div>
           <Button
@@ -271,14 +289,13 @@ function RuleNode({
               })
             }
           >
-            <Plus className="mr-1 h-3 w-3" /> Combine with…
+            <Plus className="mr-1 h-3 w-3" aria-hidden="true" /> {labels.combineWith}
           </Button>
         </div>
       </div>
     );
   }
 
-  // group
   const setChild = (idx: number, child: StructuralRule): void => {
     onChange({ ...node, children: node.children.map((c, i) => (i === idx ? child : c)) });
   };
@@ -295,12 +312,13 @@ function RuleNode({
           className="w-24"
           value={node.op}
           disabled={disabled}
+          aria-label={labels.groupOperatorLabel}
           onChange={(e) => onChange({ ...node, op: e.target.value as 'AND' | 'OR' })}
         >
-          <option value="AND">ALL of</option>
-          <option value="OR">ANY of</option>
+          <option value="AND">{labels.groupAll}</option>
+          <option value="OR">{labels.groupAny}</option>
         </Select>
-        <span className="text-xs text-muted-foreground">the following conditions:</span>
+        <span className="text-xs text-muted-foreground">{labels.groupSuffix}</span>
       </div>
       <div className="flex flex-col gap-2 border-l-2 border-line pl-3">
         {node.children.map((child, idx) => (
@@ -315,10 +333,18 @@ function RuleNode({
                 labels={labels}
                 disabled={disabled}
                 depth={depth + 1}
+                t={t}
               />
             </div>
-            <Button type="button" size="icon" variant="ghost" disabled={disabled} onClick={() => removeChild(idx)}>
-              <Trash2 className="h-3 w-3" />
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              disabled={disabled}
+              aria-label={labels.removeChild}
+              onClick={() => removeChild(idx)}
+            >
+              <Trash2 className="h-3 w-3" aria-hidden="true" />
             </Button>
           </div>
         ))}
@@ -335,7 +361,7 @@ function RuleNode({
               })
             }
           >
-            <Plus className="mr-1 h-3 w-3" /> Condition
+            <Plus className="mr-1 h-3 w-3" aria-hidden="true" /> {labels.addChildCondition}
           </Button>
           {depth < 4 ? (
             <Button
@@ -353,7 +379,7 @@ function RuleNode({
                 })
               }
             >
-              <Plus className="mr-1 h-3 w-3" /> Group
+              <Plus className="mr-1 h-3 w-3" aria-hidden="true" /> {labels.addChildGroup}
             </Button>
           ) : null}
         </div>
@@ -371,6 +397,7 @@ function ConditionRow({
   labels,
   disabled,
   onRemove,
+  t,
 }: {
   condition: StructuralRuleCondition;
   onChange: (next: StructuralRule) => void;
@@ -380,6 +407,7 @@ function ConditionRow({
   labels: Required<RuleBuilderLabels>;
   disabled: boolean;
   onRemove: () => void;
+  t: (key: string) => string;
 }): ReactNode {
   const numeric = isNumericField(condition.field, builtinFields);
   const ops = opsForField(condition.field, builtinFields);
@@ -396,11 +424,17 @@ function ConditionRow({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Select className="w-44" value={fieldKey(condition.field)} disabled={disabled} onChange={(e) => onFieldChange(e.target.value)}>
+      <Select
+        className="w-44"
+        value={fieldKey(condition.field)}
+        disabled={disabled}
+        aria-label={labels.fieldLabel}
+        onChange={(e) => onFieldChange(e.target.value)}
+      >
         <optgroup label={labels.builtinGroup}>
           {builtinFields.map((f) => (
             <option key={f.key} value={`builtin:${f.key}`}>
-              {f.label ?? f.key}
+              {catalogLabel(t, `ruleBuilder.builtin.${f.key}`, f.label ?? f.key)}
             </option>
           ))}
         </optgroup>
@@ -418,21 +452,16 @@ function ConditionRow({
         className="w-28"
         value={condition.op}
         disabled={disabled}
+        aria-label={labels.operatorLabel}
         onChange={(e) => onChange({ ...condition, op: e.target.value })}
       >
         {ops.map((op) => (
           <option key={op} value={op}>
-            {op}
+            {catalogLabel(t, `ruleBuilder.op.${op}`, op)}
           </option>
         ))}
       </Select>
       {options ? (
-        // Not a native `<select multiple>`: its only way to pick a second
-        // option is ctrl-click, which most people have never been taught, and
-        // one stray click silently drops everything already selected. It also
-        // has no search — and categories, the field this is used for most, are
-        // exactly the long list that makes worst. `MultiSelect` is the same
-        // control every other filter surface in the admin uses (Principle IX).
         <MultiSelect
           className="w-48"
           options={options}
@@ -441,7 +470,6 @@ function ConditionRow({
           placeholder={labels.valuesPlaceholder}
           ariaLabel={labels.valuesLabel}
           disabled={disabled}
-          // Worth it wherever the set can be long; harmless when it is short.
           searchable
           searchPlaceholder={labels.valuesSearchPlaceholder}
         />
@@ -450,12 +478,20 @@ function ConditionRow({
           className="w-48"
           value={valuesToText(condition.values)}
           disabled={disabled}
-          placeholder={numeric ? '0' : 'value(s), comma-separated'}
+          aria-label={labels.valuesLabel}
+          placeholder={numeric ? '0' : labels.valuesInputPlaceholder}
           onChange={(e) => onChange({ ...condition, values: textToValues(e.target.value, numeric) })}
         />
       )}
-      <Button type="button" size="icon" variant="ghost" disabled={disabled} onClick={onRemove}>
-        <Trash2 className="h-3 w-3" />
+      <Button
+        type="button"
+        size="icon"
+        variant="ghost"
+        disabled={disabled}
+        aria-label={labels.removeCondition}
+        onClick={onRemove}
+      >
+        <Trash2 className="h-3 w-3" aria-hidden="true" />
       </Button>
     </div>
   );
