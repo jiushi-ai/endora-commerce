@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
-import { Pencil } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import {
   adminLanguageToLocale,
   buildLocalizedNamePayload,
@@ -152,7 +152,7 @@ export function AttributesManager(): ReactNode {
     async (input: AttributeFormValues): Promise<void> => {
       const label = buildLocalizedNamePayload(input.labels);
       if (!label) {
-        setError(t('attributes.error.create'));
+        setError(t('attributes.error.labelRequired'));
         return;
       }
       // enumValues required for both `enum` (single-select) and `multiselect`.
@@ -183,7 +183,7 @@ export function AttributesManager(): ReactNode {
     async (attr: AdminAttribute, input: AttributeFormValues): Promise<void> => {
       const label = buildLocalizedNamePayload(input.labels, attr.label);
       if (!label) {
-        setError(t('attributes.error.update'));
+        setError(t('attributes.error.labelRequired'));
         return;
       }
       try {
@@ -225,6 +225,37 @@ export function AttributesManager(): ReactNode {
     setFlagDrafts(Object.fromEntries(attrs.map((a) => [a.id, flagsOf(a)])));
   }, [attrs]);
 
+  const startEdit = useCallback((attr: AdminAttribute): void => {
+    setError(null);
+    setInfo(null);
+    setEditingId(attr.id);
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const handleDelete = useCallback(
+    async (attr: AdminAttribute): Promise<void> => {
+      if (!confirm(t('attributes.deleteConfirm', { key: attr.key }))) return;
+      setError(null);
+      try {
+        await apiClient.delete<void>(`/api/v1/admin/catalog/attributes/${attr.key}`);
+        if (editingId === attr.id) setEditingId(null);
+        setInfo(t('attributes.success.delete', { key: attr.key }));
+        await refresh();
+      } catch (err) {
+        if (err instanceof ApiError) {
+          setError(err.envelope.error.message);
+        } else {
+          setError(t('attributes.error.update'));
+        }
+      }
+    },
+    [editingId, refresh, t],
+  );
+
+  const reportLabelRequired = useCallback((): void => {
+    setError(t('attributes.error.labelRequired'));
+  }, [t]);
+
   return (
     <>
       <PageHeader
@@ -250,10 +281,12 @@ export function AttributesManager(): ReactNode {
           </CardHeader>
           <CardContent className="space-y-6">
             <AttributeForm
+              key={editingAttr ? `edit-${editingAttr.id}` : 'create'}
               mode="edit"
               attribute={editingAttr}
               onSubmit={(input): Promise<void> => handleEditSave(editingAttr, input)}
               onCancel={(): void => setEditingId(null)}
+              onLabelValidationError={reportLabelRequired}
             />
             {editingAttr.valueType === 'enum' || editingAttr.valueType === 'multiselect' ? (
               <AttributeOptionsEditor
@@ -270,7 +303,12 @@ export function AttributesManager(): ReactNode {
             <CardTitle>{t('attributes.create.title')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <AttributeForm mode="create" onSubmit={handleCreate} />
+            <AttributeForm
+              key="create"
+              mode="create"
+              onSubmit={handleCreate}
+              onLabelValidationError={reportLabelRequired}
+            />
           </CardContent>
         </Card>
       )}
@@ -341,17 +379,27 @@ export function AttributesManager(): ReactNode {
                         </TableCell>
                       ))}
                       <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(): void => {
-                            setEditingId(a.id);
-                            setInfo(null);
-                          }}
-                        >
-                          <Pencil />
-                          {t('attributes.action.edit')}
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            type="button"
+                            onClick={(): void => startEdit(a)}
+                          >
+                            <Pencil />
+                            {t('attributes.action.edit')}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            type="button"
+                            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            onClick={(): void => void handleDelete(a)}
+                          >
+                            <Trash2 />
+                            {t('attributes.action.delete')}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -386,6 +434,7 @@ interface AttributeFormProps {
   attribute?: AdminAttribute;
   onSubmit: (input: AttributeFormValues) => Promise<void>;
   onCancel?: () => void;
+  onLabelValidationError?: () => void;
 }
 
 /**
@@ -411,7 +460,13 @@ function seedLabelsFromStored(
   return seed;
 }
 
-function AttributeForm({ mode, attribute, onSubmit, onCancel }: AttributeFormProps): ReactNode {
+function AttributeForm({
+  mode,
+  attribute,
+  onSubmit,
+  onCancel,
+  onLabelValidationError,
+}: AttributeFormProps): ReactNode {
   const t = useTranslation('catalog');
   const tCore = useTranslation('core');
   const isEdit = mode === 'edit';
@@ -483,7 +538,10 @@ function AttributeForm({ mode, attribute, onSubmit, onCancel }: AttributeFormPro
       className="space-y-4"
       onSubmit={(e: FormEvent): void => {
         e.preventDefault();
-        if (!buildLocalizedNamePayload(labels, attribute?.label)) return;
+        if (!buildLocalizedNamePayload(labels, attribute?.label)) {
+          onLabelValidationError?.();
+          return;
+        }
         setBusy(true);
         void onSubmit(collect())
           .then(() => {

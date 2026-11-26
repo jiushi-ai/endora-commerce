@@ -230,7 +230,7 @@ export function AvailabilityNotificationsPage(): ReactNode {
                           r.status === 'cancelled' && 'b2b-badge--muted',
                         )}
                       >
-                        {r.status}
+                        {t(`inventory.availability.status.${r.status}`)}
                       </span>
                     </td>
                     <td>

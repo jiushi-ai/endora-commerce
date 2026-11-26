@@ -1207,3 +1207,14 @@ feat-26-11-25 01:48:14 [67.1~67.4]：邮件页脚四语与无logo不破图；Nam
 汇总：Catalog 字典 Name 对齐支付/配送模式；商品详情 Tab 四语；事务邮件列表/模板页接线；双 Email Blocks 入口用命名区分（数据仍分属两表）。发版需重建 catalog + transactional_emails（及 admin 消费端）。
 
 feat-26-11-25 03:35:22 [68.1~68.5]：Catalog Name顶栏三语；商品Tab与事务邮件i18n；事务邮件片段命名
+
+### 69. Attributes 编辑/删除 + Categories Name 三语 + 到货通知 status i18n
+
+- [x] 69.1 AttributesManager：Edit 滚动置顶 + form key；Delete + 四语；标签校验提示
+- [x] 69.2 CategoriesTree：Name 跟顶栏三语（useActiveContentLanguageCodes）
+- [x] 69.3 AvailabilityNotifications：表格 status 接 t()；queued→待通知 等情景译文
+- [x] 69.4 本 §99；建议 commit 如下（未执行）
+
+汇总：Attributes 编辑可见性与删除补齐；Categories Name 对齐 68 模式；到货通知状态徽章四语。发版需重建 catalog + _i18n（及 admin）。
+
+feat-26-11-25 18:20:00 [69.1~69.4]：Attributes编辑删除；Categories Name顶栏三语；到货通知status四语

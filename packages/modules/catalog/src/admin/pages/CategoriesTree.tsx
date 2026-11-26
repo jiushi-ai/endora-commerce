@@ -3,7 +3,15 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Eye, EyeOff, FileText } from 'lucide-react';
 import { ApiError, apiClient, cn } from '@endora-commerce/admin-kit/lib';
 import { Alert, AlertDescription, Badge, Button, Card, CardContent, Input, Label, PageHeader, Select, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@endora-commerce/admin-kit/ui';
-import { AssetPicker, adminLanguageToLocale, buildCategoryTree, flattenCategoryTree, pickCategoryDisplayName } from '@endora-commerce/admin-kit/components';
+import {
+  AssetPicker,
+  adminLanguageToLocale,
+  buildCategoryTree,
+  buildLocalizedNamePayload,
+  flattenCategoryTree,
+  pickCategoryDisplayName,
+  useActiveContentLanguageCodes,
+} from '@endora-commerce/admin-kit/components';
 import type { CategoryTreePickerCategory } from '@endora-commerce/admin-kit/components';
 import { useTranslation, useTranslationContext } from '@endora-commerce/admin-kit/i18n';
 import { AdminZone, useAdminZone } from '@endora-commerce/admin-kit/zones';
@@ -98,13 +106,14 @@ export function CategoriesTree(): ReactNode {
     async (input: {
       parentCategoryId: string | null;
       slug: string;
-      nameEn: string;
-      namePl: string;
+      names: Record<string, string>;
     }): Promise<void> => {
+      const name = buildLocalizedNamePayload(input.names);
+      if (!name) {
+        setError(t('categories.error.create'));
+        return;
+      }
       try {
-        const name: Record<string, string> = {};
-        if (input.nameEn) name['en-US'] = input.nameEn;
-        if (input.namePl) name['pl-PL'] = input.namePl;
         await apiClient.post<{ data: AdminCategory }>('/api/v1/admin/catalog/categories', {
           parentCategoryId: input.parentCategoryId,
           slug: input.slug,
@@ -123,16 +132,18 @@ export function CategoriesTree(): ReactNode {
   const handleUpdate = useCallback(
     async (
       id: string,
-      input: { slug?: string; nameEn?: string; namePl?: string; parentCategoryId?: string | null },
+      input: { slug?: string; names?: Record<string, string>; parentCategoryId?: string | null },
     ): Promise<void> => {
+      const existing = categories.find((c) => c.id === id);
       const payload: Record<string, unknown> = {};
       if (input.slug !== undefined) payload['slug'] = input.slug;
       if (input.parentCategoryId !== undefined) payload['parentCategoryId'] = input.parentCategoryId;
-      if (input.nameEn !== undefined || input.namePl !== undefined) {
-        const existing = categories.find((c) => c.id === id);
-        const name: Record<string, string> = { ...(existing?.name ?? {}) };
-        if (input.nameEn !== undefined) name['en-US'] = input.nameEn;
-        if (input.namePl !== undefined) name['pl-PL'] = input.namePl;
+      if (input.names !== undefined) {
+        const name = buildLocalizedNamePayload(input.names, existing?.name);
+        if (!name) {
+          setError(t('categories.error.update'));
+          return;
+        }
         payload['name'] = name;
       }
       try {
@@ -383,13 +394,35 @@ function CreateForm({
   onCancel,
 }: {
   parentLabel: string;
-  onSubmit: (input: { slug: string; nameEn: string; namePl: string }) => void;
+  onSubmit: (input: { slug: string; names: Record<string, string> }) => void;
   onCancel: () => void;
 }): ReactNode {
   const t = useTranslation('catalog');
+  const tCore = useTranslation('core');
+  const localeCodes = useActiveContentLanguageCodes();
   const [slug, setSlug] = useState('');
-  const [nameEn, setNameEn] = useState('');
-  const [namePl, setNamePl] = useState('');
+  const [names, setNames] = useState<Record<string, string>>(() => {
+    const seed: Record<string, string> = {};
+    for (const locale of localeCodes) {
+      seed[locale] = '';
+    }
+    return seed;
+  });
+
+  useEffect(() => {
+    setNames((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const locale of localeCodes) {
+        if (!(locale in next)) {
+          next[locale] = '';
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [localeCodes]);
+
   return (
     <Card className="mb-4">
       <CardContent className="pt-6">
@@ -397,7 +430,8 @@ function CreateForm({
           className="space-y-4"
           onSubmit={(e: FormEvent): void => {
             e.preventDefault();
-            onSubmit({ slug, nameEn, namePl });
+            if (!buildLocalizedNamePayload(names)) return;
+            onSubmit({ slug, names });
           }}
         >
           <p className="text-sm">
@@ -415,14 +449,20 @@ function CreateForm({
                 title="kebab-case"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="cen">{t('categories.field.nameEn')}</Label>
-              <Input id="cen" value={nameEn} onChange={(e): void => setNameEn(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="cpl">{t('categories.field.namePl')}</Label>
-              <Input id="cpl" value={namePl} onChange={(e): void => setNamePl(e.target.value)} />
-            </div>
+            {localeCodes.map((locale) => (
+              <div key={locale} className="space-y-2">
+                <Label htmlFor={`cname-${locale}`}>
+                  {tCore('legacyMethods.fields.nameForLocale', { locale })}
+                </Label>
+                <Input
+                  id={`cname-${locale}`}
+                  value={names[locale] ?? ''}
+                  onChange={(e): void =>
+                    setNames((prev) => ({ ...prev, [locale]: e.target.value }))
+                  }
+                />
+              </div>
+            ))}
           </div>
           <div className="flex gap-2">
             <Button type="submit">{t('categories.action.create')}</Button>
@@ -446,26 +486,48 @@ function EditForm({
   categories: AdminCategory[];
   onSubmit: (input: {
     slug: string;
-    nameEn: string;
-    namePl: string;
+    names: Record<string, string>;
     parentCategoryId: string | null;
   }) => void;
   onCancel: () => void;
 }): ReactNode {
   const t = useTranslation('catalog');
+  const tCore = useTranslation('core');
   const { language } = useTranslationContext();
   const locale = adminLanguageToLocale(language);
+  const localeCodes = useActiveContentLanguageCodes(category.name);
   const [slug, setSlug] = useState(category.slug);
-  const [nameEn, setNameEn] = useState(category.name['en-US'] ?? '');
-  const [namePl, setNamePl] = useState(category.name['pl-PL'] ?? '');
+  const [names, setNames] = useState<Record<string, string>>(() => {
+    const seed: Record<string, string> = {};
+    for (const code of localeCodes) {
+      seed[code] = category.name[code] ?? '';
+    }
+    return seed;
+  });
   const [parentId, setParentId] = useState<string>(category.parentCategoryId ?? '');
   const contributions = useAdminZone('category.editor.after', { categoryId: category.id });
+
+  useEffect(() => {
+    setNames((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const code of localeCodes) {
+        if (!(code in next)) {
+          next[code] = category.name[code] ?? '';
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [category.name, localeCodes]);
+
   return (
     <form
       className="space-y-4"
       onSubmit={(e: FormEvent): void => {
         e.preventDefault();
-        onSubmit({ slug, nameEn, namePl, parentCategoryId: parentId === '' ? null : parentId });
+        if (!buildLocalizedNamePayload(names, category.name)) return;
+        onSubmit({ slug, names, parentCategoryId: parentId === '' ? null : parentId });
       }}
     >
       <div className="grid gap-3 md:grid-cols-2">
@@ -491,14 +553,18 @@ function EditForm({
               ))}
           </Select>
         </div>
-        <div className="space-y-2">
-          <Label>{t('categories.field.nameEn')}</Label>
-          <Input value={nameEn} onChange={(e): void => setNameEn(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>{t('categories.field.namePl')}</Label>
-          <Input value={namePl} onChange={(e): void => setNamePl(e.target.value)} />
-        </div>
+        {localeCodes.map((code) => (
+          <div key={code} className="space-y-2">
+            <Label htmlFor={`ename-${category.id}-${code}`}>
+              {tCore('legacyMethods.fields.nameForLocale', { locale: code })}
+            </Label>
+            <Input
+              id={`ename-${category.id}-${code}`}
+              value={names[code] ?? ''}
+              onChange={(e): void => setNames((prev) => ({ ...prev, [code]: e.target.value }))}
+            />
+          </div>
+        ))}
       </div>
       <div className="flex gap-2">
         <Button type="submit" size="sm">
