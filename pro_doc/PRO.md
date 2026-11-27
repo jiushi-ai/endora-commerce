@@ -1270,3 +1270,14 @@ feat-26-11-26 01:10:00 [72.1~72.3]：发票台账四语业务化；编号下拉�
 汇总：货币切换器标签与 LocaleSwitcher 同模式；冒号版式保留；未改 messages.ts。
 
 feat-26-11-26 23:00:14 [73.1~73.3]：Header货币标签Waluta改接chrome.currency
+
+### 74. 小 b 首页竞价四格 + 精选卡接真实数据
+
+- [x] 74.1 contracts + `GET /api/v1/bidding/homepage-summary`（开放场次 / 参与组织数 / 成交笔数 / 窗口小时 + 最新 published）
+- [x] 74.2 storefront 四格去掉硬编码 `—`/`48h`，接 summary
+- [x] 74.3 右侧精选卡改为最新 published 场次（无场次时空态）；CTA 登录后进该场
+- [x] 74.4 单测 + changeset + 本 §99；建议 commit 如下（未执行）
+
+汇总：原 48h 为营销占位；场次窗口改为 featured 的 opensAt→closesAt；认证供方=投过标的 distinct org；成交履约=receipt `converted`。发版需重建 contracts + bidding + storefront。
+
+feat-26-11-26 23:43:01 [74.1~74.4]：首页竞价统计与精选卡接homepage-summary

@@ -280,6 +280,31 @@ export const biddingCampaignListEnvelopeSchema = collectionEnvelope(biddingCampa
 export const biddingReceiptEnvelopeSchema = dataEnvelope(biddingReceiptSchema);
 export const biddingReceiptListEnvelopeSchema = collectionEnvelope(biddingReceiptAdminSchema);
 
+/**
+ * Anonymous storefront homepage strip + featured lot card (no sealed prices).
+ * `windowHours` is derived from the featured campaign's opensAt→closesAt.
+ */
+export const biddingHomepageFeaturedSchema = z.object({
+  id: uuidSchema,
+  code: z.string(),
+  title: z.string(),
+  qty: qtySchema,
+  opensAt: isoDateTimeSchema,
+  closesAt: isoDateTimeSchema,
+});
+export type BiddingHomepageFeatured = z.infer<typeof biddingHomepageFeaturedSchema>;
+
+export const biddingHomepageSummarySchema = z.object({
+  openCampaignCount: z.number().int().nonnegative(),
+  participatingOrgCount: z.number().int().nonnegative(),
+  fulfilledDealCount: z.number().int().nonnegative(),
+  windowHours: z.number().int().nonnegative().nullable(),
+  featured: biddingHomepageFeaturedSchema.nullable(),
+});
+export type BiddingHomepageSummary = z.infer<typeof biddingHomepageSummarySchema>;
+
+export const biddingHomepageSummaryEnvelopeSchema = dataEnvelope(biddingHomepageSummarySchema);
+
 // ---------------------------------------------------------------------------
 // Fulfilment gate port (Batch E wires shipment; declared for composition)
 // ---------------------------------------------------------------------------

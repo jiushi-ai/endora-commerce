@@ -1,3 +1,5 @@
+import { apiGet } from './client';
+import type { RequestContext } from './client';
 import { apiGetAuthed, apiMutate } from './mutations';
 
 /**
@@ -15,6 +17,33 @@ export interface StorefrontBiddingCampaign {
   closesAt: string;
   qty: number;
   intentTemplateAssetId?: string | null;
+}
+
+/** Anonymous homepage strip + featured published campaign. */
+export interface StorefrontBiddingHomepageSummary {
+  openCampaignCount: number;
+  participatingOrgCount: number;
+  fulfilledDealCount: number;
+  windowHours: number | null;
+  featured: {
+    id: string;
+    code: string;
+    title: string;
+    qty: number;
+    opensAt: string;
+    closesAt: string;
+  } | null;
+}
+
+export async function getBiddingHomepageSummary(
+  ctx: RequestContext = {},
+): Promise<StorefrontBiddingHomepageSummary> {
+  const res = await apiGet<{ data: StorefrontBiddingHomepageSummary }>(
+    '/api/v1/bidding/homepage-summary',
+    ctx,
+    { revalidate: 60, tags: ['bidding:homepage'] },
+  );
+  return res.data;
 }
 
 export interface StorefrontBiddingReceipt {

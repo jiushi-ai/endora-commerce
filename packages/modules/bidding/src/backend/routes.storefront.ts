@@ -6,6 +6,7 @@ import { BiddingCampaign } from './entities/bidding-campaign.entity.js';
 import { BidReceipt } from './entities/bid-receipt.entity.js';
 import type { BiddingReceiptService } from './services/receipt-service.js';
 import { toCampaignDto } from './services/campaign-mapper.js';
+import { loadHomepageSummary } from './services/homepage-summary.js';
 
 export interface BiddingStorefrontRoutesDeps {
   emFactory: () => EntityManager;
@@ -28,6 +29,12 @@ export async function registerBiddingStorefrontRoutes(
   deps: BiddingStorefrontRoutesDeps,
 ): Promise<void> {
   const { emFactory, requireCustomer, resolveCustomerContext, receipts } = deps;
+
+  /** Anonymous homepage strip + featured published campaign (no sealed prices). */
+  app.get('/api/v1/bidding/homepage-summary', async () => {
+    const data = await loadHomepageSummary(emFactory());
+    return { data };
+  });
 
   app.get('/api/v1/bidding/campaigns', { preHandler: requireCustomer }, async (request) => {
     const { organizationId } = resolveCustomerContext(request);

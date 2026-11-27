@@ -807,6 +807,9 @@ export type MessageKey =
   | 'home.demo.datasheet'
   | 'home.demo.certificate'
   | 'home.demo.model3d'
+  | 'home.featured.tagWindow'
+  | 'home.featured.empty'
+  | 'home.featured.lotMeta'
   | 'home.assortment.eyebrow'
   | 'home.assortment.title'
   | 'home.assortment.body'
@@ -2088,6 +2091,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.demo.tagQty': '200 units',
     'home.demo.tagSealed': 'Sealed bid',
     'home.demo.tagWindow': '48h window',
+    'home.featured.tagWindow': '{hours}h window',
+    'home.featured.empty': 'No open campaign right now — check the bidding desk soon.',
+    'home.featured.lotMeta': '{code} · sealed bid',
     'home.demo.intent': 'Intent pack',
     'home.demo.verify': 'KYC / KYB',
     'home.demo.fulfill': 'Trade desk',
@@ -3095,6 +3101,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.demo.tagQty': '200 台',
     'home.demo.tagSealed': '密封报价',
     'home.demo.tagWindow': '48 小时窗口',
+    'home.featured.tagWindow': '{hours} 小时窗口',
+    'home.featured.empty': '暂无开放场次 — 请稍后前往竞价台查看。',
+    'home.featured.lotMeta': '{code} · 密封报价',
     'home.demo.intent': '意向模板',
     'home.demo.verify': '资质核验',
     'home.demo.fulfill': '成交台',
@@ -4103,6 +4112,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.demo.tagQty': '200 台',
     'home.demo.tagSealed': '密封報價',
     'home.demo.tagWindow': '48 小時窗口',
+    'home.featured.tagWindow': '{hours} 小時窗口',
+    'home.featured.empty': '暫無開放場次 — 請稍後前往競價台查看。',
+    'home.featured.lotMeta': '{code} · 密封報價',
     'home.demo.intent': '意向模板',
     'home.demo.verify': '資質核驗',
     'home.demo.fulfill': '成交台',
@@ -5158,6 +5170,9 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.demo.tagQty': '200 szt.',
     'home.demo.tagSealed': 'Oferta zamknięta',
     'home.demo.tagWindow': 'Okno 48 h',
+    'home.featured.tagWindow': 'Okno {hours} h',
+    'home.featured.empty': 'Brak otwartej kampanii — wkrótce sprawdź biurko ofert.',
+    'home.featured.lotMeta': '{code} · oferta zamknięta',
     'home.demo.intent': 'Szablon intencji',
     'home.demo.verify': 'KYC / KYB',
     'home.demo.fulfill': 'Biuro transakcji',

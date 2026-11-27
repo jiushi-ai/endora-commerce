@@ -4,8 +4,10 @@ import { listProducts, getCategoryTree } from '../lib/api/catalog';
 import { getCmsPageBySlug } from '../lib/api/cms';
 import { getHomepageConfig } from '../lib/api/homepage';
 import {
+  getBiddingHomepageSummary,
   listBiddingCampaigns,
   type StorefrontBiddingCampaign,
+  type StorefrontBiddingHomepageSummary,
 } from '../lib/api/bidding';
 import { getServerContext } from '../lib/server-context';
 import { getSessionCookie } from '../lib/session';
@@ -101,7 +103,15 @@ export default async function HomePage({
   const biddingPresent = modules.isPresent('bidding');
   const biddingHref = session ? BIDDING_DESK : BIDDING_LOGIN;
 
-  const [tree, products, campaigns] = await Promise.all([
+  const emptyHomepageSummary: StorefrontBiddingHomepageSummary = {
+    openCampaignCount: 0,
+    participatingOrgCount: 0,
+    fulfilledDealCount: 0,
+    windowHours: null,
+    featured: null,
+  };
+
+  const [tree, products, campaigns, homepageSummary] = await Promise.all([
     getCategoryTree(ctx).catch(() => [] as Awaited<ReturnType<typeof getCategoryTree>>),
     listProducts({ limit: 4 }, ctx).catch(() => ({
       data: [],
@@ -110,13 +120,26 @@ export default async function HomePage({
     biddingPresent && session
       ? listBiddingCampaigns(session).catch(() => [] as StorefrontBiddingCampaign[])
       : Promise.resolve([] as StorefrontBiddingCampaign[]),
+    biddingPresent
+      ? getBiddingHomepageSummary(ctx).catch(() => emptyHomepageSummary)
+      : Promise.resolve(emptyHomepageSummary),
   ]);
 
   const openCampaigns = campaigns
     .filter((c) => c.status === 'published')
     .slice(0, 4);
+  const featured = homepageSummary.featured;
 
   const t = tForLocale(locale);
+  const heroStats: Array<[string, string]> = [
+    [String(homepageSummary.openCampaignCount), t('home.stat.stock')],
+    [String(homepageSummary.participatingOrgCount), t('home.stat.makers')],
+    [
+      homepageSummary.windowHours != null ? `${homepageSummary.windowHours}h` : '—',
+      t('home.stat.cutoff'),
+    ],
+    [String(homepageSummary.fulfilledDealCount), t('home.stat.availability')],
+  ];
   const fallbackCategories = FALLBACK_CATEGORY_DEFS.map((c) => ({
     slug: c.slug,
     name: t(c.nameKey),
@@ -201,12 +224,7 @@ export default async function HomePage({
               </LocalizedLink>
             </div>
             <div className="grid grid-cols-4 gap-[24px] max-[720px]:grid-cols-2">
-              {[
-                ['—', t('home.stat.stock')],
-                ['—', t('home.stat.makers')],
-                ['48h', t('home.stat.cutoff')],
-                ['—', t('home.stat.availability')],
-              ].map(([num, label]) => (
+              {heroStats.map(([num, label]) => (
                 <div key={label}>
                   <div className="font-mono text-[22px] font-semibold tracking-[-0.02em] text-fg">
                     {num}
@@ -219,33 +237,59 @@ export default async function HomePage({
             </div>
           </div>
 
-          {/* Illustrative scarce-lot card — chrome via messages; not live DB */}
+          {/* Featured published campaign — live code/title/qty/window; chrome via messages */}
           <div className="relative overflow-hidden rounded-xl bg-[var(--ink-900)] p-[24px] text-[#f4f4f5]">
-            <div className="mb-[18px] flex items-baseline justify-between font-mono text-[12px] text-[#a1a1aa]">
-              <span className="font-medium text-white">LOT-A100-200</span>
-              <span>{t('home.demo.lotMeta')}</span>
-            </div>
-            <div className="mt-[12px] mb-[16px] font-mono text-[40px] font-semibold leading-none tracking-[-0.03em]">
-              <small className="mb-2 block text-[11px] font-medium uppercase tracking-[0.08em] text-[#a1a1aa]">
-                {t('home.demo.dynamicLoad')}
-              </small>
-              {t('home.demo.refPrice')}
-            </div>
-            <div className="mb-[24px] flex flex-wrap gap-2">
-              {[
-                t('home.demo.tagGpu'),
-                t('home.demo.tagQty'),
-                t('home.demo.tagSealed'),
-                t('home.demo.tagWindow'),
-              ].map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-white/12 bg-white/8 px-[10px] py-[4px] font-mono text-[11px] text-[#e5e7eb]"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            {featured ? (
+              <>
+                <div className="mb-[18px] flex items-baseline justify-between font-mono text-[12px] text-[#a1a1aa]">
+                  <span className="font-medium text-white">{featured.code}</span>
+                  <span>
+                    {t('home.featured.lotMeta').replace('{code}', featured.code)}
+                  </span>
+                </div>
+                <div className="mt-[12px] mb-[16px] font-mono text-[40px] font-semibold leading-none tracking-[-0.03em]">
+                  <small className="mb-2 block text-[11px] font-medium uppercase tracking-[0.08em] text-[#a1a1aa]">
+                    {t('home.demo.refPrice')}
+                  </small>
+                  <span className="block text-[28px] leading-[1.15] tracking-[-0.02em]">
+                    {featured.title}
+                  </span>
+                </div>
+                <div className="mb-[24px] flex flex-wrap gap-2">
+                  {[
+                    t('home.campaigns.qty').replace(
+                      '{count}',
+                      featured.qty.toLocaleString(locale),
+                    ),
+                    t('home.demo.tagSealed'),
+                    homepageSummary.windowHours != null
+                      ? t('home.featured.tagWindow').replace(
+                          '{hours}',
+                          String(homepageSummary.windowHours),
+                        )
+                      : null,
+                  ]
+                    .filter((tag): tag is string => Boolean(tag))
+                    .map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-white/12 bg-white/8 px-[10px] py-[4px] font-mono text-[11px] text-[#e5e7eb]"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                </div>
+              </>
+            ) : (
+              <div className="mb-[24px]">
+                <div className="mb-[18px] font-mono text-[12px] text-[#a1a1aa]">
+                  {t('home.demo.refPrice')}
+                </div>
+                <p className="m-0 text-[14px] leading-[1.5] text-[#e5e7eb]">
+                  {t('home.featured.empty')}
+                </p>
+              </div>
+            )}
             <div className="grid grid-cols-3 gap-2">
               {[
                 [<DocIcon key="d" />, t('home.demo.intent'), t('home.demo.datasheet')],
@@ -268,7 +312,14 @@ export default async function HomePage({
             </div>
             {biddingPresent ? (
               <div className="mt-5">
-                <LocalizedLink href={biddingHref} className="btn btn--lg w-full justify-center bg-white text-[var(--ink-900)] hover:bg-white/90">
+                <LocalizedLink
+                  href={
+                    featured && session
+                      ? `/account/bidding/${encodeURIComponent(featured.id)}`
+                      : biddingHref
+                  }
+                  className="btn btn--lg w-full justify-center bg-white text-[var(--ink-900)] hover:bg-white/90"
+                >
                   {t('home.hero.ctaBidding')} <ArrowRightIcon />
                 </LocalizedLink>
               </div>
