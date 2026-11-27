@@ -75,7 +75,7 @@ export function Header(props: {
         <div className="mx-auto max-w-[1360px] px-[24px] industria-topbar__inner">
           <div className="industria-topbar__left">
             <span className="industria-topbar__item">
-              <PhoneIcon /> +48 22 397 12 84
+              <PhoneIcon /> +886 2 2707 8600
             </span>
             <span className="industria-topbar__sep" aria-hidden="true" />
             <span className="industria-topbar__item">
@@ -88,9 +88,9 @@ export function Header(props: {
           </div>
           <div className="industria-topbar__right">
             <span className="industria-topbar__chip">
-              <strong>NIP</strong> 7251234567
+              <strong>Tax ID</strong> 28010606
             </span>
-            <CurrencySwitcher currency={props.currency} />
+            <CurrencySwitcher currency={props.currency} label={t('chrome.currency')} />
             <span className="industria-topbar__sep" aria-hidden="true" />
             <LocalizedAnchor href="/help" className="industria-topbar__item">
               <HelpIcon /> {t('chrome.b2bSupport')}

@@ -1260,3 +1260,13 @@ feat-26-11-26 00:15:11 [71.1~71.4]：促销Action与RuleBuilder四语；库存�
 汇总：分类账/交货等机翻修正；编号下拉去开源品牌字。发版需重建 invoice_ledger（及 admin）。
 
 feat-26-11-26 01:10:00 [72.1~72.3]：发票台账四语业务化；编号下拉改为本平台编号
+
+### 73. 小 b Header 货币标签改接 i18n
+
+- [x] 73.1 CurrencySwitcher 收 `label`，去掉硬编码 `Waluta:`
+- [x] 73.2 Header 传入 `t('chrome.currency')`（沿用既有四语词条）
+- [x] 73.3 本 §99；建议 commit 如下（未执行）
+
+汇总：货币切换器标签与 LocaleSwitcher 同模式；冒号版式保留；未改 messages.ts。
+
+feat-26-11-26 23:00:14 [73.1~73.3]：Header货币标签Waluta改接chrome.currency

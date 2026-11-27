@@ -13,7 +13,6 @@ docker exec <backend容器名或ID> stat -c '%n %s' /usr/share/fonts/truetype/no
 
 这里容器名或ID 怎么获取？
 
-
 ---
 
 ## chat rep
@@ -63,8 +62,8 @@ docker exec <NAMES或ID> ls -la /usr/share/fonts/truetype/noto/
 
 容器已找到：
 
-- **名称：** `b2b-backend-1`  
-- **服务名：** `backend`  
+- **名称：** `b2b-backend-1`
+- **服务名：** `backend`
 - **当前镜像：** `…/backend:b7a910eb7-batch-44-ops-checklist`（仍是 batch 44 标签；batch 45 的字体校验要等你用新 Dockerfile 重建后再验）
 
 在 ECS 的 `b2b` 目录执行：
