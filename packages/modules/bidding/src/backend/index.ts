@@ -4,6 +4,7 @@ import type {
   AdminRolePort,
   AssetsLibraryPort,
   BiddingFulfilmentGatePort,
+  BiddingRegularPurchaseGatePort,
   CartWritePort,
   CatalogProductReadPort,
   CustomerAccountReadPort,
@@ -27,6 +28,10 @@ import { BiddingCampaignService } from './services/campaign-service.js';
 import { assertBiddingReceiptShipReady } from './services/fulfilment-gate.js';
 import { BiddingIntentAttachmentUploadService } from './services/intent-attachment-upload-service.js';
 import { BiddingReceiptService } from './services/receipt-service.js';
+import {
+  assertRegularPurchaseAllowed,
+  listPublishedOccupiedProductIds,
+} from './services/occupied-products.js';
 import { seedBiddingRoles } from './services/seed-roles.js';
 
 /**
@@ -99,6 +104,24 @@ export function registerModule(ctx: ModuleContext): void {
             if (!receipt) return;
             assertBiddingReceiptShipReady(receipt);
           },
+        }),
+      )
+      .singleton(),
+  );
+
+  /**
+   * Regular-purchase isolation (rule 2): only `published` campaigns occupy a
+   * product for cart add. Convert-to-order seeds via `replaceItemsForCustomer`
+   * and never asks this port.
+   */
+  ctx.di.providePort<BiddingRegularPurchaseGatePort>(
+    'biddingRegularPurchaseGatePort',
+    ctx
+      .asFunction(
+        ({ emFactory }: BiddingCradle): BiddingRegularPurchaseGatePort => ({
+          assertRegularPurchaseAllowed: (productId) =>
+            assertRegularPurchaseAllowed(emFactory(), productId),
+          listOccupiedProductIds: () => listPublishedOccupiedProductIds(emFactory()),
         }),
       )
       .singleton(),

@@ -132,6 +132,27 @@ export const manifest = defineModuleManifest({
     },
   ],
   /**
+   * `bidding` publishes `biddingRegularPurchaseGatePort`. This module is
+   * non-deactivatable and `bidding` already declares `carts`, so a
+   * `dependencies` entry would cycle and freeze bidding's activation switch.
+   * Presence is asked per add (`effectiveState.isPresent('bidding')`); when
+   * absent, regular cart adds proceed without the scarce-stock gate.
+   */
+  nonBindingDependencies: [
+    {
+      moduleId: 'bidding',
+      name: 'biddingRegularPurchaseGatePort',
+      kind: 'degrades-without',
+      whenAbsent:
+        'products bound to scarce-stock bidding campaigns can still be added to a regular cart',
+      reason:
+        'Cart add/batch asks whether the product is on a published bidding campaign. ' +
+        '`bidding` declares this module, so `dependencies` would close a cycle; this ' +
+        'module is non-deactivatable, so binding would make `bidding.enabled` unusable. ' +
+        '`CartService` asks presence before the port call.',
+    },
+  ],
+  /**
    * The first three error codes this module owns — feature 090 Phase 3
    * (`specs/090-module-owned-error-codes/contracts/error-code-declaration.md`
    * §1.1). This is where each sentence is looked up from: `errors.<CODE>` in this
@@ -190,6 +211,8 @@ export const manifest = defineModuleManifest({
     // Raised by `orders` at placement, like `CART_EMPTY`: the noun is the cart
     // line's price, and the domain noun decides the owner, never the thrower.
     { code: 'CART_PRICE_CHANGED' },
+    // Scarce-stock bidding isolation (rule 2): product on a published campaign.
+    { code: 'CART_PRODUCT_IN_BIDDING' },
   ],
   settings,
   // Feature 074 (Constitution XVII), test C2 — functional base. This reverses

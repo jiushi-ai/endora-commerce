@@ -28,6 +28,7 @@ describe('buildHomepageSummary', () => {
           qty: 50,
           opensAt: opens,
           closesAt: closes,
+          productVariantId: 'prod-a',
         },
         {
           id: 'c-old',
@@ -36,6 +37,7 @@ describe('buildHomepageSummary', () => {
           qty: 10,
           opensAt: new Date('2026-05-01T00:00:00.000Z'),
           closesAt: new Date('2026-05-02T00:00:00.000Z'),
+          productVariantId: 'prod-a',
         },
       ],
       receipts: [
@@ -50,6 +52,7 @@ describe('buildHomepageSummary', () => {
     expect(summary.participatingOrgCount).toBe(3);
     expect(summary.fulfilledDealCount).toBe(2);
     expect(summary.windowHours).toBe(48);
+    expect(summary.occupiedProductIds).toEqual(['prod-a']);
     expect(summary.featured).toEqual({
       id: 'c-new',
       code: 'LOT-2',
@@ -69,5 +72,6 @@ describe('buildHomepageSummary', () => {
     expect(summary.fulfilledDealCount).toBe(1);
     expect(summary.featured).toBeNull();
     expect(summary.windowHours).toBeNull();
+    expect(summary.occupiedProductIds).toEqual([]);
   });
 });

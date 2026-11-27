@@ -36,6 +36,7 @@ import { JsonLd } from '../../../../lib/seo/JsonLd';
 import { ViewItemTracker } from '../../../../components/analytics/EcommerceTrackers';
 import { getStorefrontQuoteRequestSettings } from '../../../../lib/api/rfq';
 import { getProductBySlug } from '../../../../lib/api/catalog';
+import { getBiddingHomepageSummary } from '../../../../lib/api/bidding';
 import { getResolvedPrice, PRICING_UNAVAILABLE } from '../../../../lib/api/pricing';
 import { getStorefrontProductStock } from '../../../../lib/api/inventory';
 import { getMe } from '../../../../lib/api/account';
@@ -124,7 +125,7 @@ export default async function ProductPage({
   const { slug } = await params;
   const search = searchParams ? await searchParams : {};
   const selectedVariantSku = typeof search.variant === 'string' ? search.variant : null;
-  const { ctx, locale } = await getServerContext();
+  const { ctx, locale, modules } = await getServerContext();
   const t = tForLocale(locale);
 
   let product;
@@ -138,6 +139,13 @@ export default async function ProductPage({
   const primaryCategory = product.categories[0];
   const rfqSettings = await getStorefrontQuoteRequestSettings();
   const stock = await getStorefrontProductStock(product.id, ctx);
+  const biddingOccupied =
+    modules.isPresent('bidding') &&
+    (
+      await getBiddingHomepageSummary(ctx).catch(() => ({
+        occupiedProductIds: [] as string[],
+      }))
+    ).occupiedProductIds.includes(product.id);
   const customerEmail = await readCustomerEmail();
   /**
    * D-287 P0 — **one** resolution prices this page. The product detail carries
@@ -409,7 +417,7 @@ export default async function ProductPage({
                       productName={product.name}
                       unitPrice={price ?? null}
                       {...(selectedVariantId ? { variantId: selectedVariantId } : {})}
-                      showCart={!!price && !stock?.showNotifyButton}
+                      showCart={!!price && !stock?.showNotifyButton && !biddingOccupied}
                       showQuote={rfqSettings.showAddToQuoteOnPdp}
                       packagingUnits={product.packagingUnits}
                       singlePieceLabel={t('product.packaging.singlePiece')}

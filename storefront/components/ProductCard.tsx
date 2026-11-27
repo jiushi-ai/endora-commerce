@@ -60,14 +60,23 @@ export function ProductCard(props: {
    * the backend from the browser, where no request header carries it.
    */
   salesChannelCode: string | undefined;
+  /**
+   * Rule 2 — product is on a `published` bidding campaign: show bidding badge
+   * and hide regular add-to-cart (backend also refuses).
+   */
+  biddingOccupied?: boolean;
 }): ReactNode {
   const { product, locale, stock, resolved } = props;
+  const biddingOccupied = props.biddingOccupied === true;
   // Issue #852 — the product's own rate for this buyer, as the catalogue read
   // resolved it; none, and the card shows the net, labelled net.
   const vatRate = (props.vatRate !== undefined ? props.vatRate : product.vatRate) ?? null;
   const t = tForLocale(locale);
 
   const stockNode = stock ? renderFromStorefrontStock(stock, locale, t) : stockFor(product, t);
+  const buyable =
+    !biddingOccupied &&
+    (resolved ? resolved.displayMode !== 'none' : product.price != null);
 
   return (
     // The `active:` half is the click's own acknowledgement, and it is not
@@ -91,6 +100,11 @@ export function ProductCard(props: {
         className="relative flex aspect-square items-center justify-center overflow-hidden rounded-t-lg border-b border-line bg-surface-alt"
         aria-label={product.name}
       >
+        {biddingOccupied ? (
+          <span className="absolute left-2 top-2 z-[1] rounded-sm bg-[var(--ink-900)] px-[8px] py-[3px] font-mono text-[10px] font-semibold uppercase tracking-[0.06em] text-white">
+            {t('product.biddingBadge')}
+          </span>
+        ) : null}
         {product.primaryAssetUrl ? (
           <img
             src={toAbsoluteAssetUrl(product.primaryAssetUrl)}
@@ -136,7 +150,7 @@ export function ProductCard(props: {
           productSlug={product.slug}
           productName={product.name}
           unitPrice={product.price ?? null}
-          buyable={resolved ? resolved.displayMode !== 'none' : product.price != null}
+          buyable={buyable}
           minOrderQuantity={product.minOrderQuantity ?? null}
           addToCartMinimumLabel={cardAddToCartLabel(product.minOrderQuantity, locale)}
           locale={locale}

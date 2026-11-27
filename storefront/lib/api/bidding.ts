@@ -33,6 +33,8 @@ export interface StorefrontBiddingHomepageSummary {
     opensAt: string;
     closesAt: string;
   } | null;
+  /** Product ids on a `published` campaign — regular cart must refuse these. */
+  occupiedProductIds: string[];
 }
 
 export async function getBiddingHomepageSummary(

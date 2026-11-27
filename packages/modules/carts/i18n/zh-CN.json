@@ -4,6 +4,7 @@
   "errors.CART_PRODUCT_QUOTE_ONLY": "该产品仅根据要求出售，因此无法添加到购物车。请索取报价。",
   "errors.CART_QUANTITY_INVALID": "数量必须至少为 {minimum}。",
   "errors.CART_PRODUCT_UNPRICED": "该产品没有价格，因此无法添加到购物车。",
+  "errors.CART_PRODUCT_IN_BIDDING": "该产品仅可通过竞价获取，无法加入购物车。请前往开放场次参与竞价。",
   "errors.CART_PRICE_CHANGED": "您购物车中的价格已更改。检查您的购物车并再次下订单。",
   "errors.CART_COUPON_REJECTED": "无法应用此优惠券代码。",
   "errors.CART_COUPON_REJECTED.invalid_code": "该优惠券代码无效。",

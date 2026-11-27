@@ -7,6 +7,7 @@ import {
   isProductVisibleTo,
   minimumRefusal,
   pickLocalized,
+  type BiddingRegularPurchaseGatePort,
   type CartBatchLineInput,
   type CartBatchLineOutcome,
   type CartMergeOutcome,
@@ -24,7 +25,11 @@ import type {
   OrganizationDetailsPort,
 } from '@endora-commerce/contracts';
 import type { SalesChannelMembershipPort } from '@endora-commerce/platform/kernel';
-import { outOfRequestChannel, rethrowIfModuleDisabled } from '@endora-commerce/platform/kernel';
+import {
+  effectiveState,
+  outOfRequestChannel,
+  rethrowIfModuleDisabled,
+} from '@endora-commerce/platform/kernel';
 import type { CartApprovalService } from './cart-approval-service.js';
 import type { CartAuditService } from './cart-audit-service.js';
 import type { CartRecomputeCache } from './cart-recompute-cache.js';
@@ -172,12 +177,28 @@ export class CartService {
     private readonly approvalService?: CartApprovalService,
     private readonly auditService?: CartAuditService,
     private readonly recomputeCache?: CartRecomputeCache,
+    /**
+     * Optional — when `bidding` is present, refuses regular add for products
+     * bound to a `published` campaign. Convert seeds bypass `addItem` /
+     * `addItems`, so they never hit this gate.
+     */
+    private readonly biddingRegularPurchaseGate?: BiddingRegularPurchaseGatePort,
   ) {
     this.#linePricing = new CartLinePricing(
       this.pricingService,
       this.displayModes,
       this.organizations,
     );
+  }
+
+  /**
+   * Rule 2 isolation: a product on a published bidding campaign cannot enter
+   * the regular cart. Absent / off bidding → no-op (degrades-without).
+   */
+  async #assertNotBiddingOccupied(productId: string): Promise<void> {
+    if (!this.biddingRegularPurchaseGate) return;
+    if (!effectiveState.isPresent('bidding')) return;
+    await this.biddingRegularPurchaseGate.assertRegularPurchaseAllowed(productId);
   }
 
   /** What a line may cost at its current quantity — see `cart-line-pricing.ts`. */
@@ -332,6 +353,7 @@ export class CartService {
 
     const resolved = await this.#resolveLine(actor, input);
     const { product, packagingUnit, effectiveQuantity } = resolved;
+    await this.#assertNotBiddingOccupied(product.id);
 
     // Feature 155 (FR-006, FR-006a, FR-028) — the order minimums, judged on the
     // basket as this add would leave it. After the resolver, so a product this
@@ -444,7 +466,9 @@ export class CartService {
     const resolvedLines: Array<{ index: number; input: CartBatchLineInput; resolved: ResolvedCartLine }> = [];
     for (const [index, input] of lines.entries()) {
       try {
-        resolvedLines.push({ index, input, resolved: await this.#resolveLine(actor, input) });
+        const resolved = await this.#resolveLine(actor, input);
+        await this.#assertNotBiddingOccupied(resolved.product.id);
+        resolvedLines.push({ index, input, resolved });
       } catch (err) {
         // A presence answer is about the whole batch, never one line (issue #124).
         rethrowIfModuleDisabled(err);

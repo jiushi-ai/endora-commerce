@@ -300,6 +300,11 @@ export const biddingHomepageSummarySchema = z.object({
   fulfilledDealCount: z.number().int().nonnegative(),
   windowHours: z.number().int().nonnegative().nullable(),
   featured: biddingHomepageFeaturedSchema.nullable(),
+  /**
+   * Product ids bound to a `published` campaign (`productVariantId` column
+   * stores a simple product id). Used for storefront isolation (badge + cart).
+   */
+  occupiedProductIds: z.array(uuidSchema),
 });
 export type BiddingHomepageSummary = z.infer<typeof biddingHomepageSummarySchema>;
 
@@ -315,4 +320,14 @@ export const biddingHomepageSummaryEnvelopeSchema = dataEnvelope(biddingHomepage
  */
 export interface BiddingFulfilmentGatePort {
   assertShipAllowed(orderId: string): Promise<void>;
+}
+
+/**
+ * Container name: `biddingRegularPurchaseGatePort`. Owner: `bidding`.
+ * Carts asks this before a regular add-to-cart / batch add when bidding is present.
+ * Only `published` campaigns occupy a product; closed_for_bids / allocated release it.
+ */
+export interface BiddingRegularPurchaseGatePort {
+  assertRegularPurchaseAllowed(productId: string): Promise<void>;
+  listOccupiedProductIds(): Promise<string[]>;
 }

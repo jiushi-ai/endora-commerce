@@ -6,6 +6,7 @@ import { ERROR_CODES, createProductTaxRateResolver } from '@endora-commerce/cont
 import type {
   CartQueryPort,
   CartReadPort,
+  BiddingRegularPurchaseGatePort,
   CartWritePort,
   CatalogProductReadPort,
   CustomerAccountReadPort,
@@ -249,6 +250,7 @@ export function registerModule(ctx: ModuleContext): void {
             cartApprovalService,
             cartAuditService,
             cartRecomputeCache,
+            lazyPort<BiddingRegularPurchaseGatePort>(ctx, 'biddingRegularPurchaseGatePort'),
           ),
       )
       .singleton(),

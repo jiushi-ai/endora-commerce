@@ -180,6 +180,7 @@ export type MessageKey =
   | 'product.listPrice'
   | 'product.yourPrice'
   | 'product.addToCart'
+  | 'product.biddingBadge'
   | 'product.addToCartFailed'
   | 'product.oneClickFailed'
   | 'product.details'
@@ -810,6 +811,11 @@ export type MessageKey =
   | 'home.featured.tagWindow'
   | 'home.featured.empty'
   | 'home.featured.lotMeta'
+  | 'home.biddingProducts.eyebrow'
+  | 'home.biddingProducts.title'
+  | 'home.biddingProducts.body'
+  | 'home.biddingProducts.seeAll'
+  | 'home.biddingProducts.empty'
   | 'home.assortment.eyebrow'
   | 'home.assortment.title'
   | 'home.assortment.body'
@@ -1264,6 +1270,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'product.listPrice': 'List price',
     'product.yourPrice': 'Your price',
     'product.addToCart': 'Add to cart',
+    'product.biddingBadge': 'Bidding',
     'product.addToCartFailed': 'Could not add the product to the cart.',
     'product.oneClickFailed': 'Could not place the order.',
     'product.details': 'Details',
@@ -2094,6 +2101,12 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.featured.tagWindow': '{hours}h window',
     'home.featured.empty': 'No open campaign right now — check the bidding desk soon.',
     'home.featured.lotMeta': '{code} · sealed bid',
+    'home.biddingProducts.eyebrow': '03 / Scarce lots',
+    'home.biddingProducts.title': 'Products in open bidding',
+    'home.biddingProducts.body':
+      'These SKUs are only available through sealed bidding while a campaign is published.',
+    'home.biddingProducts.seeAll': 'Bidding desk',
+    'home.biddingProducts.empty': 'No products in an open bidding campaign right now.',
     'home.demo.intent': 'Intent pack',
     'home.demo.verify': 'KYC / KYB',
     'home.demo.fulfill': 'Trade desk',
@@ -2317,6 +2330,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'product.listPrice': '标价',
     'product.yourPrice': '您的价格',
     'product.addToCart': '加入购物车',
+    'product.biddingBadge': '竞价',
     'product.addToCartFailed': '无法将商品加入购物车。',
     'product.oneClickFailed': '无法下单。',
     'product.details': '详情',
@@ -3104,6 +3118,11 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.featured.tagWindow': '{hours} 小时窗口',
     'home.featured.empty': '暂无开放场次 — 请稍后前往竞价台查看。',
     'home.featured.lotMeta': '{code} · 密封报价',
+    'home.biddingProducts.eyebrow': '03 / 稀缺场次',
+    'home.biddingProducts.title': '参与竞价产品',
+    'home.biddingProducts.body': '场次开放期间，下列 SKU 仅可通过密封竞价获取，不可普通加购。',
+    'home.biddingProducts.seeAll': '竞价台',
+    'home.biddingProducts.empty': '暂无处于开放竞价中的产品。',
     'home.demo.intent': '意向模板',
     'home.demo.verify': '资质核验',
     'home.demo.fulfill': '成交台',
@@ -3328,6 +3347,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'product.listPrice': '标价',
     'product.yourPrice': '您的价格',
     'product.addToCart': '加入购物车',
+    'product.biddingBadge': '竞价',
     'product.addToCartFailed': '无法将商品加入购物车。',
     'product.oneClickFailed': '无法下单。',
     'product.details': '详情',
@@ -4115,6 +4135,11 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.featured.tagWindow': '{hours} 小時窗口',
     'home.featured.empty': '暫無開放場次 — 請稍後前往競價台查看。',
     'home.featured.lotMeta': '{code} · 密封報價',
+    'home.biddingProducts.eyebrow': '03 / 稀缺場次',
+    'home.biddingProducts.title': '參與競價產品',
+    'home.biddingProducts.body': '場次開放期間，下列 SKU 僅可透過密封競價取得，不可普通加購。',
+    'home.biddingProducts.seeAll': '競價台',
+    'home.biddingProducts.empty': '暫無處於開放競價中的產品。',
     'home.demo.intent': '意向模板',
     'home.demo.verify': '資質核驗',
     'home.demo.fulfill': '成交台',
@@ -4343,6 +4368,7 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'product.listPrice': 'Cena katalogowa',
     'product.yourPrice': 'Twoja cena',
     'product.addToCart': 'Dodaj do koszyka',
+    'product.biddingBadge': 'Licytacja',
     'product.addToCartFailed': 'Nie udało się dodać produktu do koszyka.',
     'product.oneClickFailed': 'Nie udało się złożyć zamówienia.',
     'product.details': 'Szczegóły',
@@ -5173,6 +5199,12 @@ const MESSAGES: Record<string, Record<MessageKey, string>> = {
     'home.featured.tagWindow': 'Okno {hours} h',
     'home.featured.empty': 'Brak otwartej kampanii — wkrótce sprawdź biurko ofert.',
     'home.featured.lotMeta': '{code} · oferta zamknięta',
+    'home.biddingProducts.eyebrow': '03 / Rzadkie partie',
+    'home.biddingProducts.title': 'Produkty w otwartej licytacji',
+    'home.biddingProducts.body':
+      'Te SKU są dostępne tylko przez ofertę zamkniętą, dopóki kampania jest opublikowana.',
+    'home.biddingProducts.seeAll': 'Biurko ofert',
+    'home.biddingProducts.empty': 'Brak produktów w otwartej kampanii licytacyjnej.',
     'home.demo.intent': 'Szablon intencji',
     'home.demo.verify': 'KYC / KYB',
     'home.demo.fulfill': 'Biuro transakcji',

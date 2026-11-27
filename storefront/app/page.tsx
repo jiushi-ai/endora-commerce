@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { listProducts, getCategoryTree } from '../lib/api/catalog';
+import { listProducts, getCategoryTree, getProductBySlug } from '../lib/api/catalog';
+import type { ProductSummary } from '@endora-commerce/contracts';
 import { getCmsPageBySlug } from '../lib/api/cms';
 import { getHomepageConfig } from '../lib/api/homepage';
 import {
@@ -109,13 +110,15 @@ export default async function HomePage({
     fulfilledDealCount: 0,
     windowHours: null,
     featured: null,
+    occupiedProductIds: [],
   };
 
   const [tree, products, campaigns, homepageSummary] = await Promise.all([
     getCategoryTree(ctx).catch(() => [] as Awaited<ReturnType<typeof getCategoryTree>>),
-    listProducts({ limit: 4 }, ctx).catch(() => ({
-      data: [],
-      pagination: { limit: 4, cursor: null, hasMore: false },
+    // Over-fetch so we can drop bidding-occupied SKUs and still fill 4 regular cards.
+    listProducts({ limit: 16 }, ctx).catch(() => ({
+      data: [] as ProductSummary[],
+      pagination: { limit: 16, cursor: null, hasMore: false },
     })),
     biddingPresent && session
       ? listBiddingCampaigns(session).catch(() => [] as StorefrontBiddingCampaign[])
@@ -129,6 +132,19 @@ export default async function HomePage({
     .filter((c) => c.status === 'published')
     .slice(0, 4);
   const featured = homepageSummary.featured;
+  const occupiedIds = new Set(homepageSummary.occupiedProductIds);
+  const regularProducts = products.data.filter((p) => !occupiedIds.has(p.id)).slice(0, 4);
+
+  const biddingProductRows = biddingPresent
+    ? await Promise.all(
+        homepageSummary.occupiedProductIds.slice(0, 8).map((id) =>
+          getProductBySlug(id, ctx).catch(() => null),
+        ),
+      )
+    : [];
+  const biddingProducts = biddingProductRows.filter(
+    (p): p is NonNullable<typeof p> => p != null,
+  );
 
   const t = tForLocale(locale);
   const heroStats: Array<[string, string]> = [
@@ -439,44 +455,78 @@ export default async function HomePage({
         </section>
       ) : null}
 
-      <section className="mx-auto max-w-[1360px] px-[24px] section">
-        <div className="section__head">
-          <div>
-            <span className="section__eyebrow">{t('home.assortment.eyebrow')}</span>
-            <h2>{t('home.assortment.title')}</h2>
-            <p>{t('home.assortment.body')}</p>
+      {biddingPresent ? (
+        <section className="mx-auto max-w-[1360px] px-[24px] section">
+          <div className="section__head">
+            <div>
+              <span className="section__eyebrow">{t('home.biddingProducts.eyebrow')}</span>
+              <h2>{t('home.biddingProducts.title')}</h2>
+              <p>{t('home.biddingProducts.body')}</p>
+            </div>
+            <LocalizedLink href={biddingHref} className="btn btn--ghost">
+              {t('home.biddingProducts.seeAll')} <ArrowRightIcon />
+            </LocalizedLink>
           </div>
-          <LocalizedLink href="/catalog" className="btn btn--ghost">
-            {t('home.assortment.seeAll')} <ArrowRightIcon />
-          </LocalizedLink>
-        </div>
-        <div className="grid grid-cols-6 gap-[16px] max-[1100px]:grid-cols-3 max-[600px]:grid-cols-2">
-          {categoryTiles.map((c, i) => {
-            const glyph = GLYPH_KEYS[i % GLYPH_KEYS.length] as keyof typeof GLYPHS;
-            return (
-              <LocalizedLink
-                key={c.href}
-                href={c.href}
-                className="relative block rounded-lg border border-line bg-surface p-[22px] transition hover:-translate-y-[2px] hover:border-[var(--ink-700)]"
-              >
-                <div className="mb-[14px] inline-flex h-[56px] w-[56px] items-center justify-center rounded-md border border-line bg-surface-alt [&_svg]:h-[36px] [&_svg]:w-[36px]">
-                  {GLYPHS[glyph]}
-                </div>
-                <h3 className="m-0 mb-1 block text-[14px] font-semibold text-fg">{c.name}</h3>
-                <span className="font-mono text-[12px] text-muted">
-                  {t('home.assortment.products').replace(
-                    '{count}',
-                    c.count.toLocaleString(locale),
-                  )}
-                </span>
-                <span className="absolute right-[22px] top-[22px] text-line-strong">
-                  <ArrowUpRightIcon />
-                </span>
-              </LocalizedLink>
-            );
-          })}
-        </div>
-      </section>
+          {biddingProducts.length === 0 ? (
+            <p className="m-0 rounded-lg border border-dashed border-line bg-surface-alt px-6 py-8 text-[14px] text-muted">
+              {t('home.biddingProducts.empty')}
+            </p>
+          ) : (
+            <ul className="m-0 grid list-none grid-cols-4 gap-[16px] p-0 max-[1100px]:grid-cols-2">
+              {biddingProducts.map((p) => (
+                <li key={p.id}>
+                  <ProductCard
+                    product={p}
+                    locale={locale}
+                    resolved={p.resolvedPrice ?? null}
+                    salesChannelCode={ctx.salesChannelCode}
+                    biddingOccupied
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ) : (
+        <section className="mx-auto max-w-[1360px] px-[24px] section">
+          <div className="section__head">
+            <div>
+              <span className="section__eyebrow">{t('home.assortment.eyebrow')}</span>
+              <h2>{t('home.assortment.title')}</h2>
+              <p>{t('home.assortment.body')}</p>
+            </div>
+            <LocalizedLink href="/catalog" className="btn btn--ghost">
+              {t('home.assortment.seeAll')} <ArrowRightIcon />
+            </LocalizedLink>
+          </div>
+          <div className="grid grid-cols-6 gap-[16px] max-[1100px]:grid-cols-3 max-[600px]:grid-cols-2">
+            {categoryTiles.map((c, i) => {
+              const glyph = GLYPH_KEYS[i % GLYPH_KEYS.length] as keyof typeof GLYPHS;
+              return (
+                <LocalizedLink
+                  key={c.href}
+                  href={c.href}
+                  className="relative block rounded-lg border border-line bg-surface p-[22px] transition hover:-translate-y-[2px] hover:border-[var(--ink-700)]"
+                >
+                  <div className="mb-[14px] inline-flex h-[56px] w-[56px] items-center justify-center rounded-md border border-line bg-surface-alt [&_svg]:h-[36px] [&_svg]:w-[36px]">
+                    {GLYPHS[glyph]}
+                  </div>
+                  <h3 className="m-0 mb-1 block text-[14px] font-semibold text-fg">{c.name}</h3>
+                  <span className="font-mono text-[12px] text-muted">
+                    {t('home.assortment.products').replace(
+                      '{count}',
+                      c.count.toLocaleString(locale),
+                    )}
+                  </span>
+                  <span className="absolute right-[22px] top-[22px] text-line-strong">
+                    <ArrowUpRightIcon />
+                  </span>
+                </LocalizedLink>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto max-w-[1360px] px-[24px] section pt-0">
         <div className="grid grid-cols-4 gap-[16px] max-[920px]:grid-cols-2 max-[600px]:grid-cols-1">
@@ -519,7 +569,7 @@ export default async function HomePage({
         </div>
       </section>
 
-      {products.data.length > 0 ? (
+      {regularProducts.length > 0 ? (
         <section className="mx-auto max-w-[1360px] px-[24px] section">
           <div className="section__head">
             <div>
@@ -532,13 +582,14 @@ export default async function HomePage({
             </LocalizedLink>
           </div>
           <ul className="m-0 grid list-none grid-cols-4 gap-[16px] p-0 max-[1100px]:grid-cols-2">
-            {products.data.map((p) => (
+            {regularProducts.map((p) => (
               <li key={p.id}>
                 <ProductCard
                   product={p}
                   locale={locale}
                   resolved={p.resolvedPrice ?? null}
                   salesChannelCode={ctx.salesChannelCode}
+                  biddingOccupied={occupiedIds.has(p.id)}
                 />
               </li>
             ))}

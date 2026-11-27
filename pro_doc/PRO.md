@@ -1281,3 +1281,14 @@ feat-26-11-26 23:00:14 [73.1~73.3]：Header货币标签Waluta改接chrome.curren
 汇总：原 48h 为营销占位；场次窗口改为 featured 的 opensAt→closesAt；认证供方=投过标的 distinct org；成交履约=receipt `converted`。发版需重建 contracts + bidding + storefront。
 
 feat-26-11-26 23:43:01 [74.1~74.4]：首页竞价统计与精选卡接homepage-summary
+
+### 75. 竞价商品与普通批采隔离（规则 2）
+
+- [x] 75.1 `biddingRegularPurchaseGatePort` + cart `CART_PRODUCT_IN_BIDDING`（仅 `published` 占用；convert 种子路径不拦）
+- [x] 75.2 ProductCard 竞价 badge + 隐藏加购；PDP `showCart` 同步
+- [x] 75.3 首页上栏改「参与竞价产品」列表；下栏「适合常规下单」排除占用 SKU
+- [x] 75.4 单测 + changeset + 本 §99；建议 commit 如下（未执行）
+
+汇总：无商品永久 flag；closed_for_bids/allocated 自动恢复普采。发版需重建 contracts + bidding + carts + storefront。
+
+feat-26-11-27 01:03:08 [75.1~75.4]：竞价published占用禁加购；首页竞价/普采分区

@@ -15,6 +15,7 @@ export function campaignWindowHours(opensAt: Date, closesAt: Date): number {
  * Pure aggregate for the anonymous homepage strip + featured card.
  * Fulfilled = receipts that reached `converted` (actual trade closed).
  * Participating orgs = distinct organizations that submitted any receipt.
+ * Occupied products = distinct product ids on `published` campaigns only.
  */
 export function buildHomepageSummary(input: {
   published: Array<{
@@ -24,6 +25,7 @@ export function buildHomepageSummary(input: {
     qty: number;
     opensAt: Date;
     closesAt: Date;
+    productVariantId: string;
   }>;
   receipts: Array<{ organizationId: string; status: string }>;
 }): BiddingHomepageSummary {
@@ -46,6 +48,9 @@ export function buildHomepageSummary(input: {
       ? campaignWindowHours(featuredRow.opensAt, featuredRow.closesAt)
       : null,
     featured,
+    occupiedProductIds: [
+      ...new Set(input.published.map((c) => c.productVariantId)),
+    ],
   };
 }
 
@@ -70,6 +75,7 @@ export async function loadHomepageSummary(em: EntityManager): Promise<BiddingHom
       qty: c.qty,
       opensAt: c.opensAt,
       closesAt: c.closesAt,
+      productVariantId: c.productVariantId,
     })),
     receipts: receipts.map((r) => ({
       organizationId: r.organizationId,

@@ -200,6 +200,11 @@ export const ERROR_CODES = {
   /** No price list and no price of the Product's own applies, so the line has no price to be ordered at. */
   CART_PRODUCT_UNPRICED: 'CART_PRODUCT_UNPRICED',
   /**
+   * The product is bound to a published scarce-stock bidding campaign, so it
+   * cannot be added through regular cart / batch purchase (rule 2 isolation).
+   */
+  CART_PRODUCT_IN_BIDDING: 'CART_PRODUCT_IN_BIDDING',
+  /**
    * Order placement: a cart line's stored unit price is not the price it may be
    * ordered at now (`details.lines`). The cart has been brought up to date and
    * the buyer reviews it before placing again.
